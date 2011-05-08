@@ -20,20 +20,12 @@
 
 qx.Theme.define("darktheme.theme.Appearance",
 {
-  extend: qx.theme.modern.Appearance,
+  aliases: {
+    decoration: "darktheme/decoration"
+  },
 
   appearances:
   {
-    "atom/label": 
-	{
-      style : function(states)
-      {
-        return {
-          textColor : states.disabled ? "text-disabled" : undefined
-        };
-      }
-    },
-	
     "button":
     {
       style: function(states)
@@ -161,13 +153,272 @@ qx.Theme.define("darktheme.theme.Appearance",
         }
       }
     },
+    
+    /*
+    ---------------------------------------------------------------------------
+      CHECKBOX
+    ---------------------------------------------------------------------------
+    */
+
+    "checkbox":
+    {
+      alias : "atom",
+
+      style : function(states)
+      {
+        // "disabled" state is not handled here with purpose. The image widget
+        // does handle this already by replacing the current image with a
+        // disabled version (if available). If no disabled image is found the
+        // opacity style is used.
+        var icon;
+        if (states.checked && states.focused) {
+          icon = "checkbox-checked-focused";
+        } else if (states.checked && states.disabled) {
+          icon = "checkbox-checked-disabled";
+        } else if (states.checked && states.pressed) {
+          icon = "checkbox-checked-pressed";
+        } else if (states.checked && states.hovered) {
+          icon = "checkbox-checked-hovered";
+        } else if (states.checked) {
+          icon = "checkbox-checked";
+        } else if (states.focused) {
+          icon = "checkbox-focused";
+        } else if (states.pressed) {
+          icon = "checkbox-pressed";
+        } else if (states.hovered) {
+          icon = "checkbox-hovered";
+        } else {
+          icon = "checkbox";
+        }
+
+        var invalid = states.invalid && !states.disabled ? "-invalid" : "";
+
+        return {
+          icon: "decoration/form/" + icon + invalid + ".png",
+          gap: 6
+        };
+      }
+    },
+    
+    /*
+    ---------------------------------------------------------------------------
+      COLOR POPUP
+    ---------------------------------------------------------------------------
+    */
+
+    "colorpopup" :
+    {
+      alias : "popup",
+      include : "popup",
+
+      style : function(states)
+      {
+        return {
+          padding : 5,
+          backgroundColor : "background-application"
+        };
+      }
+    },
+
+    "colorpopup/field":
+    {
+      style : function(states)
+      {
+        return {
+          decorator : "main",
+          margin : 2,
+          width : 14,
+          height : 14,
+          backgroundColor : "background-light"
+        };
+      }
+    },
+
+    "colorpopup/selector-button" : "button",
+    "colorpopup/auto-button" : "button",
+    "colorpopup/preview-pane" : "groupbox",
+
+    "colorpopup/current-preview":
+    {
+      style : function(state)
+      {
+        return {
+          height : 20,
+          padding: 4,
+          marginLeft : 4,
+          decorator : "main",
+          allowGrowX : true
+        };
+      }
+    },
+
+    "colorpopup/selected-preview":
+    {
+      style : function(state)
+      {
+        return {
+          height : 20,
+          padding: 4,
+          marginRight : 4,
+          decorator : "main",
+          allowGrowX : true
+        };
+      }
+    },
+
+    "colorpopup/colorselector-okbutton":
+    {
+      alias : "button",
+      include : "button",
+
+      style : function(states)
+      {
+        return {
+          icon : "icon/16/actions/dialog-ok.png"
+        };
+      }
+    },
+
+    "colorpopup/colorselector-cancelbutton":
+   {
+      alias : "button",
+      include : "button",
+
+      style : function(states)
+      {
+        return {
+          icon : "icon/16/actions/dialog-cancel.png"
+        };
+      }
+    },
+    
+    /*
+    ---------------------------------------------------------------------------
+      COLOR SELECTOR
+    ---------------------------------------------------------------------------
+    */
+
+    "colorselector" : "widget",
+    "colorselector/control-bar" : "widget",
+    "colorselector/control-pane": "widget",
+    "colorselector/visual-pane" : "groupbox",
+    "colorselector/preset-grid" : "widget",
+
+    "colorselector/colorbucket":
+    {
+      style : function(states)
+      {
+        return {
+          decorator : "main",
+          width : 16,
+          height : 16
+        };
+      }
+    },
+
+    "colorselector/preset-field-set" : "groupbox",
+    "colorselector/input-field-set" : "groupbox",
+    "colorselector/preview-field-set" : "groupbox",
+
+    "colorselector/hex-field-composite" : "widget",
+    "colorselector/hex-field" : "textfield",
+
+    "colorselector/rgb-spinner-composite" : "widget",
+    "colorselector/rgb-spinner-red" : "spinner",
+    "colorselector/rgb-spinner-green" : "spinner",
+    "colorselector/rgb-spinner-blue" : "spinner",
+
+    "colorselector/hsb-spinner-composite" : "widget",
+    "colorselector/hsb-spinner-hue" : "spinner",
+    "colorselector/hsb-spinner-saturation" : "spinner",
+    "colorselector/hsb-spinner-brightness" : "spinner",
+
+    "colorselector/preview-content-old":
+    {
+      style : function(states)
+      {
+        return {
+          decorator : "main",
+          width : 50,
+          height : 10
+        };
+      }
+    },
+
+    "colorselector/preview-content-new":
+    {
+      style : function(states)
+      {
+        return {
+          decorator : "main",
+          backgroundColor : "background-light",
+          width : 50,
+          height : 10
+        };
+      }
+    },
+
+
+    "colorselector/hue-saturation-field":
+    {
+      style : function(states)
+      {
+        return {
+          decorator : "main",
+          margin : 5
+        };
+      }
+    },
+
+    "colorselector/brightness-field":
+    {
+      style : function(states)
+      {
+        return {
+          decorator : "main",
+          margin : [5, 7]
+        };
+      }
+    },
+
+    "colorselector/hue-saturation-pane": "widget",
+    "colorselector/hue-saturation-handle" : "widget",
+    "colorselector/brightness-pane": "widget",
+    "colorselector/brightness-handle" : "widget",
 	
 	/*
     ---------------------------------------------------------------------------
       COMBOBOX
     ---------------------------------------------------------------------------
     */
-	
+	"combobox" :
+    {
+      style : function(states)
+      {
+        var decorator;
+
+        var focused = !!states.focused;
+        var invalid = !!states.invalid;
+        var disabled = !!states.disabled;
+
+        if (focused && invalid && !disabled) {
+          decorator = "input-focused-invalid";
+        } else if (focused && !invalid && !disabled) {
+          decorator = "input-focused";
+        } else if (disabled) {
+          decorator = "input-disabled";
+        } else if (!focused && invalid && !disabled) {
+          decorator = "border-invalid";
+        } else {
+          decorator = "input";
+        }
+
+        return {
+          decorator : decorator
+        };
+      }
+    },
+    
 	"combobox/button":
     {
       include: "button-simple",
@@ -176,15 +427,132 @@ qx.Theme.define("darktheme.theme.Appearance",
       style : function(states)
       {
         var ret = {
-          icon: "darktheme/decoration/arrows/down-invert.png",
+          icon: "decoration/arrows/down-invert.png",
           padding: 2
         };
 
         return ret;
       }
     },
+    
+    "combobox/list" : {
+      alias : "list"
+    },
 	
 	"combobox/popup" : "popup",
+    
+    "combobox/textfield" :
+    {
+      include : "textfield",
+
+      style : function(states)
+      {
+        return {
+          decorator : undefined
+        };
+      }
+    },
+    
+    /*
+    ---------------------------------------------------------------------------
+      CORE
+    ---------------------------------------------------------------------------
+    */
+
+    "widget" : {},
+
+    "root" :
+    {
+      style : function(states)
+      {
+        return {
+          backgroundColor : "background-application",
+          textColor       : "text-label",
+          font            : "default"
+        };
+      }
+    },
+
+    "label" :
+    {
+      style : function(states)
+      {
+        return {
+          textColor : states.disabled ? "text-disabled" : undefined
+        };
+      }
+    },
+
+    "move-frame" :
+    {
+      style : function(states)
+      {
+        return {
+          decorator : "main"
+        };
+      }
+    },
+
+    "resize-frame" : "move-frame",
+
+    "dragdrop-cursor" :
+    {
+      style : function(states)
+      {
+        var icon = "nodrop";
+
+        if (states.copy) {
+          icon = "copy";
+        } else if (states.move) {
+          icon = "move";
+        } else if (states.alias) {
+          icon = "alias";
+        }
+
+        return {
+          source : "decoration/cursors/" + icon + ".gif",
+          position : "right-top",
+          offset : [ 2, 16, 2, 6 ]
+        };
+      }
+    },
+
+    "image" :
+    {
+      style : function(states)
+      {
+        return {
+          opacity : !states.replacement && states.disabled ? 0.3 : 1
+        };
+      }
+    },
+
+    "atom" : {},
+    
+    "atom/label": 
+	{
+      style : function(states)
+      {
+        return {
+          textColor : states.disabled ? "text-disabled" : undefined
+        };
+      }
+    },
+    
+    "atom/icon" : "image",
+
+    "popup": 
+    {
+      style: function(states)
+      {
+        return {
+          decorator: "menu",
+		  textColor: "white",
+		  backgroundColor: "background-light",
+          shadow: "shadow-window"
+        }
+      }
+    },
 	
 	/*
     ---------------------------------------------------------------------------
@@ -235,15 +603,15 @@ qx.Theme.define("darktheme.theme.Appearance",
         };
 
         if (states.lastYear) {
-          result.icon = "darktheme/decoration/arrows/rewind-invert.png";
+          result.icon = "decoration/arrows/rewind-invert.png";
           result.marginRight = 1;
         } else if (states.lastMonth) {
-          result.icon = "darktheme/decoration/arrows/left-invert.png";
+          result.icon = "decoration/arrows/left-invert.png";
         } else if (states.nextYear) {
-          result.icon = "darktheme/decoration/arrows/forward-invert.png";
+          result.icon = "decoration/arrows/forward-invert.png";
           result.marginLeft = 1;
         } else if (states.nextMonth) {
-          result.icon = "darktheme/decoration/arrows/right-invert.png";
+          result.icon = "decoration/arrows/right-invert.png";
         }
 
         return result;
@@ -299,12 +667,60 @@ qx.Theme.define("darktheme.theme.Appearance",
         };
       }
     },
+    
+    /*
+    ---------------------------------------------------------------------------
+      DATEFIELD
+    ---------------------------------------------------------------------------
+    */
+
+    "datefield" : "combobox",
+
+    "datefield/button" :
+    {
+      alias : "combobox/button",
+      include : "combobox/button",
+
+      style : function(states)
+      {
+        return {
+          icon : "icon/16/apps/office-calendar.png",
+          padding : [0, 3],
+          decorator : undefined
+        };
+      }
+    },
+
+    "datefield/textfield" : "combobox/textfield",
+
+    "datefield/list" :
+    {
+      alias : "datechooser",
+      include : "datechooser",
+
+      style : function(states)
+      {
+        return {
+          decorator : undefined
+        };
+      }
+    },
 	
 	/*
     ---------------------------------------------------------------------------
       GROUPBOX
     ---------------------------------------------------------------------------
     */
+    
+    "groupbox" :
+    {
+      style : function(states)
+      {
+        return {
+          legendPosition : "top"
+        };
+      }
+    },
 
 	"groupbox/frame" :
     {
@@ -313,6 +729,54 @@ qx.Theme.define("darktheme.theme.Appearance",
         return {
           padding   : 6,
           decorator : "group"
+        };
+      }
+    },
+    
+    "groupbox/legend" :
+    {
+      alias : "atom",
+
+      style : function(states)
+      {
+        return {
+          padding   : [1, 0, 1, 4],
+          textColor : states.invalid ? "invalid" : "text-title",
+          font      : "bold"
+        };
+      }
+    },
+    
+    "check-groupbox" : "groupbox",
+
+    "check-groupbox/legend" :
+    {
+      alias : "checkbox",
+      include : "checkbox",
+
+      style : function(states)
+      {
+        return {
+          padding   : [1, 0, 1, 4],
+          textColor : states.invalid ? "invalid" : "text-title",
+          font      : "bold"
+        };
+      }
+    },
+
+    "radio-groupbox" : "groupbox",
+
+    "radio-groupbox/legend" :
+    {
+      alias : "radiobutton",
+      include : "radiobutton",
+
+      style : function(states)
+      {
+        return {
+          padding   : [1, 0, 1, 4],
+          textColor : states.invalid ? "invalid" : "text-title",
+          font      : "bold"
         };
       }
     },
@@ -333,6 +797,22 @@ qx.Theme.define("darktheme.theme.Appearance",
           backgroundColor : "white",
 		  decorator: "input"
         }
+      }
+    },
+    
+    /*
+    ---------------------------------------------------------------------------
+      IFRAME
+    ---------------------------------------------------------------------------
+    */
+
+    "iframe" :
+    {
+      style : function(states)
+      {
+        return {
+          decorator : "main"
+        };
       }
     },
 	
@@ -373,6 +853,8 @@ qx.Theme.define("darktheme.theme.Appearance",
       }
     },
 	
+    "list/pane" : "widget",
+    
 	"listitem" :
     {
       style : function(states)
@@ -397,6 +879,83 @@ qx.Theme.define("darktheme.theme.Appearance",
       MENU
     ---------------------------------------------------------------------------
     */
+    "menu" :
+    {
+      style : function(states)
+      {
+        var result =
+        {
+          decorator : "menu",
+          shadow : "shadow-popup",
+          spacingX : 6,
+          spacingY : 1,
+          iconColumnWidth : 16,
+          arrowColumnWidth : 4,
+          placementModeY : states.submenu || states.contextmenu ? "best-fit" : "keep-align"
+        };
+
+        if (states.submenu)
+        {
+          result.position = "right-top";
+          result.offset = [-2, -3];
+        }
+
+        return result;
+      }
+    },
+    
+    "menu/slidebar" : "menu-slidebar",
+
+    "menu-slidebar" : "widget",
+
+    "menu-slidebar-button" :
+    {
+      style : function(states)
+      {
+        return {
+          decorator : states.hovered  ? "selected" : undefined,
+          padding : 7,
+          center : true
+        };
+      }
+    },
+
+    "menu-slidebar/button-backward" :
+    {
+      include : "menu-slidebar-button",
+
+      style : function(states)
+      {
+        return {
+          icon : states.hovered ? "decoration/arrows/up-invert.png" : "decoration/arrows/up.png"
+        };
+      }
+    },
+
+    "menu-slidebar/button-forward" :
+    {
+      include : "menu-slidebar-button",
+
+      style : function(states)
+      {
+        return {
+          icon : states.hovered ? "decoration/arrows/down-invert.png" : "decoration/arrows/down.png"
+        };
+      }
+    },
+
+    "menu-separator" :
+    {
+      style : function(states)
+      {
+        return {
+          height : 0,
+          decorator : "menu-separator",
+          margin    : [ 4, 2 ]
+        };
+      }
+    },
+    
 	"menubar" :
     {
       style : function(states)
@@ -404,6 +963,20 @@ qx.Theme.define("darktheme.theme.Appearance",
         return {
           decorator : "menubar",
 		  shadow: "shadow-window"
+        }
+      }
+    },
+    
+    "menubar-button" :
+    {
+      alias : "atom",
+
+      style : function(states)
+      {
+        return {
+          decorator : states.pressed || states.hovered ? "menubar-selected" : undefined,
+          textColor : states.pressed || states.hovered ? "text-selected" : "text-button",
+          padding   : [ 3, 8 ]
         }
       }
     },
@@ -421,6 +994,45 @@ qx.Theme.define("darktheme.theme.Appearance",
         };
       }
     },
+    
+    "menu-button/icon" :
+    {
+      include : "image",
+
+      style : function(states)
+      {
+        return {
+          alignY : "middle"
+        };
+      }
+    },
+
+    "menu-button/label" :
+    {
+      include : "label",
+
+      style : function(states)
+      {
+        return {
+          alignY : "middle",
+          padding : 1
+        };
+      }
+    },
+
+    "menu-button/shortcut" :
+    {
+      include : "label",
+
+      style : function(states)
+      {
+        return {
+          alignY : "middle",
+          marginLeft : 14,
+          padding : 1
+        };
+      }
+    },
 	
 	"menu-button/arrow" :
     {
@@ -429,7 +1041,7 @@ qx.Theme.define("darktheme.theme.Appearance",
       style : function(states)
       {
         return {
-          source : "darktheme/decoration/arrows/right-invert.png",
+          source : "decoration/arrows/right-invert.png",
           alignY : "middle"
         };
       }
@@ -461,60 +1073,134 @@ qx.Theme.define("darktheme.theme.Appearance",
       }
     },
 	
-	"menubar-button" :
+    /*
+    ---------------------------------------------------------------------------
+      RADIOBUTTON
+    ---------------------------------------------------------------------------
+    */
+    "radiobutton":
     {
       alias : "atom",
 
       style : function(states)
       {
-        return {
-          decorator : states.pressed || states.hovered ? "menubar-selected" : undefined,
-          textColor : states.pressed || states.hovered ? "text-selected" : "text-button",
-          padding   : [ 3, 8 ]
+        // "disabled" state is not handled here with purpose. The image widget
+        // does handle this already by replacing the current image with a
+        // disabled version (if available). If no disabled image is found the
+        // opacity style is used.
+        var icon;
+        if (states.checked && states.focused) {
+          icon = "radiobutton-checked-focused";
+        } else if (states.checked && states.disabled) {
+          icon = "radiobutton-checked-disabled";
+        } else if (states.checked && states.pressed) {
+          icon = "radiobutton-checked-pressed";
+        } else if (states.checked && states.hovered) {
+          icon = "radiobutton-checked-hovered";
+        } else if (states.checked) {
+          icon = "radiobutton-checked";
+        } else if (states.focused) {
+          icon = "radiobutton-focused";
+        } else if (states.pressed) {
+          icon = "radiobutton-pressed";
+        } else if (states.hovered) {
+          icon = "radiobutton-hovered";
+        } else {
+          icon = "radiobutton";
         }
+
+        var invalid = states.invalid && !states.disabled ? "-invalid" : "";
+
+        return {
+          icon: "decoration/form/" + icon + invalid + ".png",
+          gap : 6
+        };
       }
     },
-	
-	/*
+    
+    /*
     ---------------------------------------------------------------------------
-      POPUP
-    ---------------------------------------------------------------------------
-    */
-	"popup": 
-    {
-      style: function(states)
-      {
-        return {
-          decorator: "menu",
-		  textColor: "white",
-		  backgroundColor: "background-light",
-          shadow: "shadow-window"
-        }
-      }
-    },
-	
-	/*
-    ---------------------------------------------------------------------------
-      ROOT
+      RESIZER
     ---------------------------------------------------------------------------
     */
-	"root" :
+    "resizer" :
     {
       style : function(states)
       {
         return {
-          backgroundColor : "background-application",
-          textColor       : "text-label",
-          font            : "default"
+          decorator : "pane"
         };
       }
     },
+    
+    /*
+    ---------------------------------------------------------------------------
+      SCROLLAREA
+    ---------------------------------------------------------------------------
+    */
+
+    "scrollarea" :
+    {
+      style : function(states)
+      {
+        return {
+          // since the scroll container disregards the min size of the scrollbars
+          // we have to set the min size of the scroll area to ensure that the
+          // scrollbars always have a usable size.
+          minWidth : 50,
+          minHeight : 50
+        };
+      }
+    },
+
+    "scrollarea/corner" :
+    {
+      style : function(states)
+      {
+        return {
+          backgroundColor : "background-application"
+        };
+      }
+    },
+
+    "scrollarea/pane" : "widget",
+    "scrollarea/scrollbar-x" : "scrollbar",
+    "scrollarea/scrollbar-y" : "scrollbar",
 	
 	/*
     ---------------------------------------------------------------------------
       SCROLLBAR
     ---------------------------------------------------------------------------
     */
+    "scrollbar" :
+    {
+      style : function(states)
+      {
+        if (states["native"]) {
+          return {};
+        }
+
+        return {
+          width     : states.horizontal ? undefined : 16,
+          height    : states.horizontal ? 16 : undefined,
+          decorator : states.horizontal ? "scrollbar-horizontal" : "scrollbar-vertical",
+          padding   : 1
+        };
+      }
+    },
+
+    "scrollbar/slider" :
+    {
+      alias : "slider",
+
+      style : function(states)
+      {
+        return {
+          padding : states.horizontal ? [0, 1, 0, 1] : [1, 0, 1, 0]
+        };
+      }
+    },
+    
 	"scrollbar/slider/knob" :
     {
       include : "button-frame",
@@ -550,7 +1236,7 @@ qx.Theme.define("darktheme.theme.Appearance",
     {
       style : function(states)
       {
-        var icon = "darktheme/decoration/scrollbar/";
+        var icon = "decoration/scrollbar/";
 		var decorator;
         if (states.left) {
           icon += "left";
@@ -594,11 +1280,34 @@ qx.Theme.define("darktheme.theme.Appearance",
         }
       }
     },
+    
+    "scrollbar/button-begin" : "scrollbar/button",
+    "scrollbar/button-end" : "scrollbar/button",
 	
 	/*-------------------------------------------------------------------------
       SELECTBOX
     ---------------------------------------------------------------------------
     */
+    "selectbox" :
+    {
+      alias : "button-frame",
+      include : "button-frame",
+
+      style : function(states)
+      {
+        return {
+          padding : [ 2, 8 ]
+        };
+      }
+    },
+
+    "selectbox/atom" : "atom",
+    "selectbox/popup" : "popup",
+
+    "selectbox/list" : {
+      alias : "list"
+    },
+    
 	"selectbox/arrow" :
     {
       include : "image",
@@ -606,7 +1315,7 @@ qx.Theme.define("darktheme.theme.Appearance",
       style : function(states)
       {
         return {
-          source : "darktheme/decoration/arrows/down-small-invert.png",
+          source : "decoration/arrows/down-small-invert.png",
           paddingLeft : 5
         };
       }
@@ -632,8 +1341,8 @@ qx.Theme.define("darktheme.theme.Appearance",
           padding : 5,
           center : true,
           icon : states.vertical ?
-            "darktheme/decoration/arrows/down-invert.png" :
-            "darktheme/decoration/arrows/right-invert.png"
+            "decoration/arrows/down-invert.png" :
+            "decoration/arrows/right-invert.png"
         };
       }
     },
@@ -649,8 +1358,8 @@ qx.Theme.define("darktheme.theme.Appearance",
           padding : 5,
           center : true,
           icon : states.vertical ?
-            "darktheme/decoration/arrows/up-invert.png" :
-            "darktheme/decoration/arrows/left-invert.png"
+            "decoration/arrows/up-invert.png" :
+            "decoration/arrows/left-invert.png"
         };
       }
     },
@@ -708,6 +1417,34 @@ qx.Theme.define("darktheme.theme.Appearance",
       SPINNER
     ---------------------------------------------------------------------------
     */
+    "spinner" :
+    {
+      style : function(states)
+      {
+        var decorator;
+
+        var focused = !!states.focused;
+        var invalid = !!states.invalid;
+        var disabled = !!states.disabled;
+
+        if (focused && invalid && !disabled) {
+          decorator = "input-focused-invalid";
+        } else if (focused && !invalid && !disabled) {
+          decorator = "input-focused";
+        } else if (disabled) {
+          decorator = "input-disabled";
+        } else if (!focused && invalid && !disabled) {
+          decorator = "border-invalid";
+        } else {
+          decorator = "input";
+        }
+
+        return {
+          decorator : decorator
+        };
+      }
+    },
+    
 	"spinner/upbutton" :
     {
       alias : "button-simple",
@@ -716,7 +1453,7 @@ qx.Theme.define("darktheme.theme.Appearance",
       style : function(states)
       {
         return {
-          icon : "darktheme/decoration/arrows/up-small-invert.png",
+          icon : "decoration/arrows/up-small-invert.png",
           padding : states.pressed ? [2, 2, 0, 4] : [1, 3, 1, 3],
           shadow: undefined
         }
@@ -731,7 +1468,7 @@ qx.Theme.define("darktheme.theme.Appearance",
       style : function(states)
       {
         return {
-          icon : "darktheme/decoration/arrows/down-small-invert.png",
+          icon : "decoration/arrows/down-small-invert.png",
           padding : states.pressed ? [2, 2, 0, 4] : [1, 3, 1, 3],
           shadow: undefined
         };
@@ -755,6 +1492,8 @@ qx.Theme.define("darktheme.theme.Appearance",
       SPLITBUTTON
     ---------------------------------------------------------------------------
     */
+    "splitbutton" : {},
+    
 	"splitbutton/button": 
     {
       alias: "atom",
@@ -782,7 +1521,7 @@ qx.Theme.define("darktheme.theme.Appearance",
       style : function(states)
       {
         return {
-          icon : "darktheme/decoration/arrows/down-small-invert.png",
+          icon : "decoration/arrows/down-small-invert.png",
 		  decorator: states.pressed || states.checked ?
                         "splitbutton-right-checked" :
                      states.hovered && !states.disabled ?
@@ -799,12 +1538,46 @@ qx.Theme.define("darktheme.theme.Appearance",
       SPLITPANE
     ---------------------------------------------------------------------------
     */
+    "splitpane" :
+    {
+      style : function(states)
+      {
+        return {
+          decorator : "splitpane"
+        };
+      }
+    },
+
+    "splitpane/splitter" :
+    {
+      style : function(states)
+      {
+        return {
+          width : states.horizontal ? 3 : undefined,
+          height : states.vertical ? 3 : undefined,
+          backgroundColor : "background-splitpane"
+        };
+      }
+    },
+    
 	"splitpane/splitter/knob" :
     {
       style : function(states)
       {
         return {
-          source : states.horizontal ? "darktheme/decoration/splitpane/knob-horizontal.png" : "darktheme/decoration/splitpane/knob-vertical.png"
+          source : states.horizontal ? "decoration/splitpane/knob-horizontal.png" : "decoration/splitpane/knob-vertical.png"
+        };
+      }
+    },
+    
+    "splitpane/slider" :
+    {
+      style : function(states)
+      {
+        return {
+          width : states.horizontal ? 3 : undefined,
+          height : states.vertical ? 3 : undefined,
+          backgroundColor : "background-splitpane"
         };
       }
     },
@@ -826,6 +1599,19 @@ qx.Theme.define("darktheme.theme.Appearance",
         };
       }
     },
+    
+    "table-header": {},
+
+    "table/statusbar" :
+    {
+      style : function(states)
+      {
+        return {
+          decorator : "table-statusbar",
+          padding   : [ 0, 2 ]
+        };
+      }
+    },
 	
 	"table/column-button" :
     {
@@ -836,7 +1622,66 @@ qx.Theme.define("darktheme.theme.Appearance",
         return {
           decorator : "table-header-cell",
           padding   : 3,
-          icon      : "darktheme/decoration/table/select-column-order-invert.png"
+          icon      : "decoration/table/select-column-order-invert.png"
+        };
+      }
+    },
+    
+    "table-column-reset-button" :
+    {
+      include : "menu-button",
+      alias : "menu-button",
+
+      style : function()
+      {
+        return {
+          icon : "icon/16/actions/view-refresh.png"
+        };
+      }
+    },
+
+    "table-scroller" : "widget",
+
+    "table-scroller/scrollbar-x": "scrollbar",
+    "table-scroller/scrollbar-y": "scrollbar",
+
+    "table-scroller/header":
+    {
+      style : function(states)
+      {
+        return {
+          decorator : "table-scroller-header"
+        };
+      }
+    },
+
+    "table-scroller/pane" :
+    {
+      style : function(states)
+      {
+        return {
+          backgroundColor : "table-pane"
+        };
+      }
+    },
+
+    "table-scroller/focus-indicator" :
+    {
+      style : function(states)
+      {
+        return {
+          decorator : "table-scroller-focus-indicator"
+        };
+      }
+    },
+
+    "table-scroller/resize-line" :
+    {
+      style : function(states)
+      {
+        return {
+          backgroundColor : "border-separator",
+          width : 2
         };
       }
     },
@@ -854,9 +1699,86 @@ qx.Theme.define("darktheme.theme.Appearance",
           padding   : states.hovered ? [ 1, 3, 3, 5 ] : [ 0, 4, 4, 4 ],
           decorator : states.hovered ? "table-header-cell-selected" : "table-header-cell",
           sortIcon  : states.sorted ?
-              (states.sortedAscending ? "darktheme/decoration/arrows/down-invert.png" : "darktheme/decoration/arrows/up-invert.png")
+              (states.sortedAscending ? "decoration/arrows/down-invert.png" : "decoration/arrows/up-invert.png")
               : undefined
         }
+      }
+    },
+    
+    "table-header-cell/label" :
+    {
+      style : function(states)
+      {
+        return {
+          minWidth : 0,
+          alignY : "middle",
+          paddingRight : 5
+        };
+      }
+    },
+
+    "table-header-cell/sort-icon" :
+    {
+      style : function(states)
+      {
+        return {
+          alignY : "middle",
+          alignX : "right"
+        };
+      }
+    },
+
+    "table-header-cell/icon" :
+    {
+      style : function(states)
+      {
+        return {
+          minWidth : 0,
+          alignY : "middle",
+          paddingRight : 5
+        };
+      }
+    },
+
+    "table-editor-textfield" :
+    {
+      include : "textfield",
+
+      style : function(states)
+      {
+        return {
+          decorator : undefined,
+          padding : [ 2, 2 ],
+          backgroundColor : "background-light"
+        };
+      }
+    },
+
+    "table-editor-selectbox" :
+    {
+      include : "selectbox",
+      alias : "selectbox",
+
+      style : function(states)
+      {
+        return {
+          padding : [ 0, 2 ],
+          backgroundColor : "background-light"
+        };
+      }
+    },
+
+    "table-editor-combobox" :
+    {
+      include : "combobox",
+      alias : "combobox",
+
+      style : function(states)
+      {
+        return {
+          decorator : undefined,
+          backgroundColor : "background-light"
+        };
       }
     },
    
@@ -998,6 +1920,8 @@ qx.Theme.define("darktheme.theme.Appearance",
       }
     },
 
+    "tabview-page" : "widget",
+    
     "tabview-page/button" :
     {
       alias : "atom",
@@ -1140,12 +2064,29 @@ qx.Theme.define("darktheme.theme.Appearance",
 	    var icon;
 	    if (states.hovered)
 		{
-		  icon = "darktheme/decoration/tabview/close-button-hovered.png";
+		  icon = "decoration/tabview/close-button-hovered.png";
 		} else {
-		  icon = "darktheme/decoration/tabview/close-button.png";
+		  icon = "decoration/tabview/close-button.png";
 		}
         return {
           icon: icon
+        };
+      }
+    },
+    
+    /*
+    ---------------------------------------------------------------------------
+      TEXTAREA
+    ---------------------------------------------------------------------------
+    */
+    "textarea" :
+    {
+      include : "textfield",
+
+      style : function(states)
+      {
+        return {
+          padding   : 4
         };
       }
     },
@@ -1199,14 +2140,36 @@ qx.Theme.define("darktheme.theme.Appearance",
       TOOLBAR
     ---------------------------------------------------------------------------
     */
+    "toolbar" :
+    {
+      style : function(states)
+      {
+        return {
+          decorator : "toolbar",
+          spacing : 2
+        };
+      }
+    },
+    
 	"toolbar/part": "widget",
 	
+    "toolbar/part/container" :
+    {
+      style : function(states)
+      {
+        return {
+          paddingLeft : 2,
+          paddingRight : 2
+        };
+      }
+    },
+
 	"toolbar/part/handle":
     {
       style: function(states)
       {
         return {
-          source: "darktheme/decoration/toolbar/toolbar-handle-knob.png",
+          source: "decoration/toolbar/toolbar-handle-knob.png",
           marginLeft: 3,
           marginRight: 3
         };
@@ -1249,6 +2212,19 @@ qx.Theme.define("darktheme.theme.Appearance",
       }
     },
 	
+    "toolbar-menubutton" :
+    {
+      alias : "toolbar-button",
+      include : "toolbar-button",
+
+      style : function(states)
+      {
+        return {
+          showArrow : true
+        };
+      }
+    },
+    
 	"toolbar-menubutton/arrow" :
     {
       alias : "image",
@@ -1257,7 +2233,18 @@ qx.Theme.define("darktheme.theme.Appearance",
       style : function(states)
       {
         return {
-          source : "darktheme/decoration/arrows/down-small-invert.png"
+          source : "decoration/arrows/down-small-invert.png"
+        };
+      }
+    },
+    
+    "toolbar-splitbutton" :
+    {
+      style : function(states)
+      {
+        return {
+          marginTop : 2,
+          marginBottom : 2
         };
       }
     },
@@ -1281,7 +2268,7 @@ qx.Theme.define("darktheme.theme.Appearance",
       style : function(states)
       {
         return {
-          icon : "darktheme/decoration/arrows/down-invert.png",
+          icon : "decoration/arrows/down-invert.png",
 		  padding: states.pressed || states.checked ? [6, 4, 4, 5] :
 		           states.hovered && !states.disabled ? [6, 5, 6, 5] : [6, 5, 6, 7],
 		  decorator: states.pressed || (states.checked && !states.hovered) || (states.checked && states.disabled) ?
@@ -1311,13 +2298,24 @@ qx.Theme.define("darktheme.theme.Appearance",
       style : function(states)
       {
         return {
-          icon : "darktheme/decoration/arrows/down-invert.png",
+          icon : "decoration/arrows/down-invert.png",
 		  padding: states.pressed || states.checked ? [6, 4, 4, 5] :
 		           states.hovered && !states.disabled ? [6, 5, 6, 5] : [6, 5, 6, 7],
 		  decorator: states.pressed || (states.checked && !states.hovered) || (states.checked && states.disabled) ?
                         "toolbar-button-light-checked" :
                       states.hovered && !states.disabled ?
                         "toolbar-splitbutton-light-arrow-hovered" : undefined
+        };
+      }
+    },
+    
+    "toolbar-separator" :
+    {
+      style : function(states)
+      {
+        return {
+          decorator : "toolbar-separator",
+          margin    : 7
         };
       }
     },
@@ -1347,6 +2345,8 @@ qx.Theme.define("darktheme.theme.Appearance",
       TREE
     ---------------------------------------------------------------------------
     */
+    "tree" : "list",
+    
     "tree-item":
     {
       style: function(states)
@@ -1358,6 +2358,247 @@ qx.Theme.define("darktheme.theme.Appearance",
         }
       }
     },
+    
+    "tree-item/icon" :
+    {
+      include : "image",
+
+      style : function(states)
+      {
+        return {
+          paddingRight : 5
+        };
+      }
+    },
+
+    "tree-item/label" : "label",
+
+    "tree-item/open" :
+    {
+      include : "image",
+
+      style : function(states)
+      {
+        var icon;
+        if (states.selected && states.opened)
+        {
+          icon = "decoration/tree/open-selected.png";
+        }
+        else if (states.selected && !states.opened)
+        {
+          icon = "decoration/tree/closed-selected.png";
+        }
+        else if (states.opened)
+        {
+          icon = "decoration/tree/open.png";
+        }
+        else
+        {
+          icon = "decoration/tree/closed.png";
+        }
+
+        return {
+          padding : [0, 5, 0, 2],
+          source  : icon
+        };
+      }
+    },
+
+    "tree-folder" :
+    {
+      include : "tree-item",
+      alias : "tree-item",
+
+      style : function(states)
+      {
+        var icon;
+        if (states.small) {
+          icon = states.opened ? "icon/16/places/folder-open.png" : "icon/16/places/folder.png";
+        } else if (states.large) {
+          icon = states.opened ? "icon/32/places/folder-open.png" : "icon/32/places/folder.png";
+        } else {
+          icon = states.opened ? "icon/22/places/folder-open.png" : "icon/22/places/folder.png";
+        }
+
+        return {
+          icon : icon
+        };
+      }
+    },
+
+    "tree-file" :
+    {
+      include : "tree-item",
+      alias : "tree-item",
+
+      style : function(states)
+      {
+        return {
+          icon :
+            states.small ? "icon/16/mimetypes/office-document.png" :
+            states.large ? "icon/32/mimetypes/office-document.png" :
+            "icon/22/mimetypes/office-document.png"
+        };
+      }
+    },
+    
+    /*
+    ---------------------------------------------------------------------------
+      TREEVIRTUAL
+    ---------------------------------------------------------------------------
+    */
+
+    "treevirtual" : "table",
+
+    "treevirtual-folder" :
+    {
+      style : function(states)
+      {
+        return {
+          icon : states.opened ?
+            "icon/16/places/folder-open.png" :
+            "icon/16/places/folder.png"
+        };
+      }
+    },
+
+    "treevirtual-file" :
+    {
+      include : "treevirtual-folder",
+      alias : "treevirtual-folder",
+
+      style : function(states)
+      {
+        return {
+          icon : "icon/16/mimetypes/office-document.png"
+        };
+      }
+    },
+
+    "treevirtual-line" :
+    {
+      style : function(states)
+      {
+        return {
+          icon : "qx/static/blank.gif"
+        };
+      }
+    },
+
+    "treevirtual-contract" :
+    {
+      style : function(states)
+      {
+        return {
+          icon : "decoration/tree/open.png",
+          paddingLeft : 5,
+          paddingTop : 2
+        };
+      }
+    },
+
+    "treevirtual-expand" :
+    {
+      style : function(states)
+      {
+        return {
+          icon : "decoration/tree/closed.png",
+          paddingLeft : 5,
+          paddingTop : 2
+        };
+      }
+    },
+
+    "treevirtual-only-contract" : "treevirtual-contract",
+    "treevirtual-only-expand" : "treevirtual-expand",
+    "treevirtual-start-contract" : "treevirtual-contract",
+    "treevirtual-start-expand" : "treevirtual-expand",
+    "treevirtual-end-contract" : "treevirtual-contract",
+    "treevirtual-end-expand" : "treevirtual-expand",
+    "treevirtual-cross-contract" : "treevirtual-contract",
+    "treevirtual-cross-expand" : "treevirtual-expand",
+
+    "treevirtual-end" :
+    {
+      style : function(states)
+      {
+        return {
+          icon : "qx/static/blank.gif"
+        };
+      }
+    },
+
+    "treevirtual-cross" :
+    {
+      style : function(states)
+      {
+        return {
+          icon : "qx/static/blank.gif"
+        };
+      }
+    },
+    
+    /*
+    ---------------------------------------------------------------------------
+      VIRTUAL WIDGETS
+    ---------------------------------------------------------------------------
+    */
+
+    "virtual-list" : "list",
+    "virtual-list/row-layer" : "row-layer",
+
+    "row-layer" :
+    {
+      style : function(states)
+      {
+        return {
+          colorEven : "white",
+          colorOdd : "white"
+        };
+      }
+    },
+
+    "column-layer" : "widget",
+
+    "cell" :
+    {
+      style : function(states)
+      {
+        return {
+          textColor: states.selected ? "text-selected" : "text-label",
+          padding: [3, 6],
+          font: "default"
+        };
+      }
+    },
+
+    "cell-string" : "cell",
+    "cell-number" :
+    {
+      include : "cell",
+      style : function(states)
+      {
+        return {
+          textAlign : "right"
+        };
+      }
+    },
+    "cell-image" : "cell",
+    "cell-boolean" :
+    {
+      include : "cell",
+      style : function(states)
+      {
+        return {
+          iconTrue : "decoration/table/boolean-true.png",
+          iconFalse : "decoration/table/boolean-false.png"
+        };
+      }
+    },
+    
+    "cell-atom" : "cell",
+    "cell-date" : "cell",
+    "cell-html" : "cell",
 	
 	/*
     ---------------------------------------------------------------------------
@@ -1378,6 +2619,29 @@ qx.Theme.define("darktheme.theme.Appearance",
     },
 	
 	"window/pane": "widget",
+    
+    "window/captionbar":
+    {
+      style: function(states)
+      {
+        return {
+          decorator: states.active ? "window-captionbar-active" : "window-captionbar-inactive",
+          textColor: states.active ? "text-active" : "text-disabled",
+          minHeight: 26,
+          paddingRight: 2
+        };
+      }
+    },
+    
+    "window/icon" :
+    {
+      style : function(states)
+      {
+        return {
+          margin : [ 5, 0, 3, 6 ]
+        };
+      }
+    },
 	
 	"window/title" :
     {
@@ -1403,15 +2667,15 @@ qx.Theme.define("darktheme.theme.Appearance",
 		switch (true)
 		{
 		  case states.pressed:
-		    icon = "darktheme/decoration/window/close-button-pressed.png";
+		    icon = "decoration/window/close-button-pressed.png";
 			break;
 			
 		  case states.hovered:
-		    icon = "darktheme/decoration/window/close-button-hovered.png";
+		    icon = "decoration/window/close-button-hovered.png";
 			break;
 			
 		  default:
-		    icon = "darktheme/decoration/window/close-button.png";
+		    icon = "decoration/window/close-button.png";
 		}
         return {
           icon: icon,
@@ -1430,15 +2694,15 @@ qx.Theme.define("darktheme.theme.Appearance",
 		switch (true)
 		{
 		  case states.pressed:
-		    icon = "darktheme/decoration/window/maximize-button-pressed.png";
+		    icon = "decoration/window/maximize-button-pressed.png";
 			break;
 			
 		  case states.hovered:
-		    icon = "darktheme/decoration/window/maximize-button-hovered.png";
+		    icon = "decoration/window/maximize-button-hovered.png";
 			break;
 			
 		  default:
-		    icon = "darktheme/decoration/window/maximize-button.png";
+		    icon = "decoration/window/maximize-button.png";
 		}
         return {
           icon: icon,
@@ -1457,15 +2721,15 @@ qx.Theme.define("darktheme.theme.Appearance",
 		switch (true)
 		{
 		  case states.pressed:
-		    icon = "darktheme/decoration/window/minimize-button-pressed.png";
+		    icon = "decoration/window/minimize-button-pressed.png";
 			break;
 			
 		  case states.hovered:
-		    icon = "darktheme/decoration/window/minimize-button-hovered.png";
+		    icon = "decoration/window/minimize-button-hovered.png";
 			break;
 			
 		  default:
-		    icon = "darktheme/decoration/window/minimize-button.png";
+		    icon = "decoration/window/minimize-button.png";
 		}
         return {
           icon: icon,
@@ -1473,10 +2737,8 @@ qx.Theme.define("darktheme.theme.Appearance",
         };
       }
     },
-	
-	"window/statusbar-text": {},
-	
-	"window/restore-button":
+    
+    "window/restore-button":
     {
       alias: "atom",
 
@@ -1486,22 +2748,36 @@ qx.Theme.define("darktheme.theme.Appearance",
 		switch (true)
 		{
 		  case states.pressed:
-		    icon = "darktheme/decoration/window/restore-button-pressed.png";
+		    icon = "decoration/window/restore-button-pressed.png";
 			break;
 			
 		  case states.hovered:
-		    icon = "darktheme/decoration/window/restore-button-hovered.png";
+		    icon = "decoration/window/restore-button-hovered.png";
 			break;
 			
 		  default:
-		    icon = "darktheme/decoration/window/restore-button.png";
+		    icon = "decoration/window/restore-button.png";
 		}
         return {
           icon: icon,
           margin : [ 2, 2, 2, 1 ] 
         };
       }
-    }
+    },
+	
+    "window/statusbar" :
+    {
+      style : function(states)
+      {
+        return {
+          padding   : [ 2, 6 ],
+          decorator : "window-statusbar",
+          minHeight : 18
+        };
+      }
+    },
+    
+	"window/statusbar-text": {}
 	
   }
 });
