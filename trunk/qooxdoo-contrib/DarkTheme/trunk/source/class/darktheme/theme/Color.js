@@ -14,6 +14,8 @@
 
 qx.Theme.define("darktheme.theme.Color",
 {
+  extend: qx.theme.modern.Color,
+  
   colors :
   {
     /*
@@ -125,8 +127,7 @@ qx.Theme.define("darktheme.theme.Color",
     // invalid form widgets
     "invalid": "#990000",
     "border-focused-invalid": "#FF9999",
-
-
+    
     /*
     ---------------------------------------------------------------------------
       TABLE COLORS

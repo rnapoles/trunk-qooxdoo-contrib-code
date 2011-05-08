@@ -14,8 +14,6 @@
 
 qx.Theme.define("darktheme.theme.Font",
 {
-  extend : qx.theme.modern.Font,
-
   fonts :
   {
     "default" :
