@@ -115,7 +115,7 @@ qx.Class.define("combotable.SearchableModel", {
             var anchor = this.getAnchorFront();
 
             if (this.getSearchAsRegEx()) {
-                var rx = new RegExp(newString);
+                var rx = new RegExp(newString,"i");
 
                 for (var i=0; i<d.length; i++) {
                     var idx = d[i][1].search(rx);

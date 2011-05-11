@@ -41,7 +41,7 @@ qx.Class.define("combotable.ComboTable", {
         this.base(arguments);
 
         if (!tableModel.setSearchString) {
-            throw new Error("tableModel must have a setSearchString method. Yes you have to add this yourself!");
+            throw new Error("tableModel must have a setSearchString method. Create your own model or use combotable.SearchableModel!");
         }
 
         this.__tableModel = tableModel;
@@ -194,9 +194,22 @@ qx.Class.define("combotable.ComboTable", {
 
             // once the user starts modifying the text of the combo box
             // start watching for table changes
-            this.getChildControl('textfield').addListenerOnce('input',function(e){
+            var textfield = this.getChildControl('textfield');
+
+            textfield.addListenerOnce('input',function(e){
                 tm.addListener('dataChanged', this._onTableDataChanged, this);
             },this);
+
+            var armClick = function(){
+                textfield.addListenerOnce('click',function(e){
+                    if (! textfield.hasState("selected")){
+                        textfield.selectAllText();
+                    }
+                });
+            };
+
+            armClick();        
+            textfield.addListener('focusout',armClick,this);
 
             table.getDataRowRenderer().setHighlightFocusRow(true);
 
@@ -244,38 +257,37 @@ qx.Class.define("combotable.ComboTable", {
             switch(iden)
             {
                 case "Down":
-                    case "Up":
-                        if (this.getLoading()) {
-                            e.stop();
-                            e.stopPropagation();
-                            return;
-                        }
-
-                        if (!popup.isVisible()) {
-                            this.open();
-                        }
-
-                        this['row' + iden]();
+                case "Up":
+                    if (this.getLoading()) {
                         e.stop();
                         e.stopPropagation();
-                        break;
+                        return;
+                    }
+                    if (!popup.isVisible()) {
+                        this.open();
+                    }
 
-                    case "Enter":
-                        case "Escape":
-                            case "Tab":
-                                if (this.getLoading()) {
-                                    e.stop();
-                                    e.stopPropagation();
-                                    return;
-                                }
+                    this['row' + iden]();
+                    e.stop();
+                    e.stopPropagation();
+                    break;
 
-                                if (popup.isVisible()) {
-                                    this.close();
-                                }
-
-                                break;
-                        }
-                    },
+                case "Enter":
+                case "Escape":
+                case "Tab":
+                     if (this.getLoading()) {
+                         e.stop();
+                         e.stopPropagation();
+                         return;
+                     }
+                     if (popup.isVisible()) {
+                         e.stop();
+                         e.stopPropagation();
+                         this.close();
+                     }
+                     break;
+            }
+        },
 
 
                     /**

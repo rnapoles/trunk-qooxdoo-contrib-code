@@ -21,7 +21,7 @@ qx.Class.define("combotable.demo.Application",
     main : function()
     {
       this.base(arguments);
-      if (qx.core.Variant.isSet("qx.debug", "on"))
+      if (qx.core.Environment.get("qx.debug") ==  "on")
       {
         qx.log.appender.Native;
         qx.log.appender.Console;
@@ -38,7 +38,9 @@ qx.Class.define("combotable.demo.Application",
 
       var button1 = new combotable.ComboTable(model1).set({
           width: 200,
-          placeholder: 'Select an include file'
+          placeholder: 'Select an include file',
+          value: '122',
+          model: '32'
       });
       doc.add(button1, {left: 100, top: 50});
 //    button1.setModel(1);
