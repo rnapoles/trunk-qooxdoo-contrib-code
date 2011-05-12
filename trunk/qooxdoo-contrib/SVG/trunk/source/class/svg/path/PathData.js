@@ -151,7 +151,7 @@ qx.Class.define("svg.path.PathData",
       }
 
       // only add params if they are specified (prevent "null" in string)
-      if (params) {
+      if (null !== params) {
         this.__path += params;
       }
 
