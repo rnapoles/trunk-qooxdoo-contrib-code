@@ -265,8 +265,9 @@ qx.Class.define("svg.coords.transform.TransformList",
      * 
      */
     pop : function() {
+      var transformation = this.__array.pop();
       transformation.removeListener("change", this.__onArrayElementChange, this);
-      return this.__array.pop();
+      return transformation;
     },
 
     /**
