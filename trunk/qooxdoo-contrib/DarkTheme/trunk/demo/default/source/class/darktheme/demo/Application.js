@@ -52,8 +52,6 @@ qx.Class.define("darktheme.demo.Application",
 
   members :
   {
-  editor: null,
-
     /**
      * This method contains the initial application code and gets called
      * during startup of the application
@@ -416,7 +414,6 @@ qx.Class.define("darktheme.demo.Application",
         Main GroupBox
       -------------------------------------------------------------------------
       */
-      
       mainContainer.add(this.createHeader());
       mainContainer.add(tbTop);
       mainContainer.add(stack, {flex: 1});
