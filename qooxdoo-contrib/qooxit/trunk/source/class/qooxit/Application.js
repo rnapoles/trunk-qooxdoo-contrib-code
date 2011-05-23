@@ -65,7 +65,7 @@ qx.Class.define("qooxit.Application",
                        qx.ui.treevirtual.MNode);
 
       // Enable logging in debug variant
-      if (qx.core.Variant.isSet("qx.debug", "on"))
+      if (qx.core.Environment.get("qx.debug"))
       {
         // support native logging capabilities, e.g. Firebug for Firefox
         qx.log.appender.Native;
@@ -281,7 +281,7 @@ qx.Class.define("qooxit.Application",
       //
 
       // Initially there's no text
-      text = "";
+      var text = "";
 
       // Clear the selection from the source tree, if one is specified
       sourceTree && sourceTree.resetSelection();
@@ -1051,7 +1051,7 @@ qx.Class.define("qooxit.Application",
             '      this.base(arguments);\n' +
             '\n' +
             '      // Enable logging in debug variant\n' +
-            '      if (qx.core.Variant.isSet("qx.debug", "on"))\n' +
+            '      if (qx.core.Environment.get("qx.debug"))\n' +
             '      {\n' +
             '        // support native logging capabilities,\n' +
             '        // e.g. Firebug for Firefox\n' +
