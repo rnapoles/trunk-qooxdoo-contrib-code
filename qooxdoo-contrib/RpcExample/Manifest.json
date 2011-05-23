@@ -3,22 +3,22 @@
   {
     "name" : "RpcExample",
 
-    "summary" : "Custom Application",
-    "description" : "This is a skeleton for a custom application with qooxdoo.",
+    "summary" : "Client program to exercise an RPC backend",
+    "description" : "Client (frontend) program to exercise an Remote Procedure Call backend",
     
     "homepage" : "http://some.homepage.url/",
 
-    "license" : "SomeLicense",
+    "license" : "LGPL/EPL",
     "authors" : 
     [
       {
-        "name" : "First Author (uid)",
-        "email" : "first.author@some.domain"
+        "name" : "Derrell Lipman (derrell)",
+        "email" : "derrell.lipman@unwireduniverse.com"
       }
     ],
 
     "version" : "trunk",
-    "qooxdoo-versions": ["0.8"]
+    "qooxdoo-versions": ["1.4"]
   },
   
   "provides" : 
