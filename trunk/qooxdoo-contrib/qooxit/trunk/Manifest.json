@@ -3,22 +3,22 @@
   {
     "name" : "qooxit",
 
-    "summary" : "Custom Application",
-    "description" : "This is a skeleton for a custom application with qooxdoo.",
+    "summary" : "Drag-and-drop GUI creator",
+    "description" : "When completed, qooxit will be a drag-and-drop GUI creator for qooxdoo.",
     
-    "homepage" : "http://some.homepage.url/",
+    "homepage" : "http://contrib.qooxdoo.org/project/qooxit",
 
-    "license" : "SomeLicense",
+    "license" : "LGPL/EPL",
     "authors" : 
     [
       {
-        "name" : "First Author (uid)",
-        "email" : "first.author@some.domain"
+        "name" : "Derrell Lipman (derrell)",
+        "email" : "derrell.lipman@unwireduniverse.com"
       }
     ],
 
     "version" : "trunk",
-    "qooxdoo-versions": ["0.9-pre"]
+    "qooxdoo-versions": ["1.4"]
   },
   
   "provides" : 
