@@ -45,7 +45,7 @@ qx.Class.define("svg.coords.transform.Translate",
 
   /**
    * 
-   * @param svg {svg.struct.Svg}
+   * @param svgElem {svg.struct.Svg}
    *   Any instance of SVG Element. May be null when not using matrix notation.
    * 
    * @param tx {Number?}
@@ -54,8 +54,8 @@ qx.Class.define("svg.coords.transform.Translate",
    * @param ty {Number?}
    *   Y-distance of translation.
    */
-  construct : function(svg, tx, ty) {
-    this.base(arguments, svg);
+  construct : function(svgElem, tx, ty) {
+    this.base(arguments, svgElem);
     this.initTx(tx || 0);
     this.initTy(ty || 0);
   },

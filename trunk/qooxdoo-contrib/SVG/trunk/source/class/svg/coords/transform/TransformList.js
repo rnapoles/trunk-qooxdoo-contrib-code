@@ -42,15 +42,15 @@ qx.Class.define("svg.coords.transform.TransformList",
   },
 
   /**
-   * @param svg {svg.struct.Svg}
+   * @param svgElem {svg.struct.Svg}
    *   Any instance of SVG Element. May be null when not using matrix notation.
    * 
    * @param matrixMode {String?}
    *   Matrix mode. Can be <code>concat</code> (default) or <code>multiply</code>.
    *   See description of {@link #matrixMode} property for more information.
    */
-  construct : function(svg, matrixMode) {
-    this.base(arguments, svg);
+  construct : function(svgElem, matrixMode) {
+    this.base(arguments, svgElem);
     this.initMatrixMode(matrixMode || "concat");
     this.__array = new qx.data.Array();
     this.__array.addListener("change", this.__onArrayChange, this);

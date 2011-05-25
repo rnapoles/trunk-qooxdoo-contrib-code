@@ -66,6 +66,11 @@ qx.Mixin.define("svg.coords.MTransform",
     }
   },
   
+  events :
+  {
+    transformed : "qx.event.type.Event"
+  },
+  
   members :
   {
 
@@ -75,18 +80,18 @@ qx.Mixin.define("svg.coords.MTransform",
       this.__setTransformAttribute(value, this.getTransformMode());
 
       if (value instanceof svg.coords.transform.Transformation) {
-        value.addListener("change", this.__changeListener, this);
+        value.addListener("change", this.__changeTransformListener, this);
       }
       
       if (old instanceof svg.coords.transform.Transformation) {
-        old.removeListener("change", this.__changeListener, this);
+        old.removeListener("change", this.__changeTransformListener, this);
       }
-      
     },
     
     //applies transformMode property
     __applyTransformMode: function(value, old) {
       this.__setTransformAttribute(this.getTransform(), value);
+      this.fireEvent("transformed");
     },
     
     /**
@@ -126,8 +131,9 @@ qx.Mixin.define("svg.coords.MTransform",
      * Handler for _change_ event of Transformation object when the transform property
      * is set instance of {@link svg.coords.transform.Transformation}. 
      */
-    __changeListener: function() {
+    __changeTransformListener: function() {
       this.__setTransformAttribute(this.getTransform(), this.getTransformMode());
+      this.fireEvent("transformed");
     }
     
   }

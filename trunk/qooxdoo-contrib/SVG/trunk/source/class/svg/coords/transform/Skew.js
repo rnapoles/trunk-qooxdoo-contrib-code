@@ -44,7 +44,7 @@ qx.Class.define("svg.coords.transform.Skew",
   },
 
   /**
-   * @param svg {svg.struct.Svg}
+   * @param svgElem {svg.struct.Svg}
    *   Any instance of SVG Element. May be null when not using matrix notation.
    * 
    * @param angle {Number}
@@ -53,8 +53,8 @@ qx.Class.define("svg.coords.transform.Skew",
    * @param mode {String?}
    *   Skewing mode. Must be <code>x</code> or <code>y</code>. Default <code>x</code>.
    */
-  construct : function(svg, angle, mode) {
-    this.base(arguments, svg);
+  construct : function(svgElem, angle, mode) {
+    this.base(arguments, svgElem);
     this.initAngle(angle);
     this.initMode(mode || "x");
   },

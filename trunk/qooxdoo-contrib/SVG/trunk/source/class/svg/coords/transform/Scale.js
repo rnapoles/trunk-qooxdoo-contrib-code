@@ -45,7 +45,7 @@ qx.Class.define("svg.coords.transform.Scale",
 
   /**
    * 
-   * @param svg {svg.struct.Svg}
+   * @param svgElem {svg.struct.Svg}
    *   Any instance of SVG Element. May be null when not using matrix notation.
    *   
    * @param xFactor {Number?}
@@ -54,8 +54,8 @@ qx.Class.define("svg.coords.transform.Scale",
    * @param yFactor {Number?}
    *   Y-scale factor. If not set, it will be equal to the xFactor.
    */
-  construct : function(svg, xFactor, yFactor) {
-    this.base(arguments, svg);
+  construct : function(svgElem, xFactor, yFactor) {
+    this.base(arguments, svgElem);
     this.initXFactor(xFactor || 0);
     this.initYFactor(yFactor || null);
   },
