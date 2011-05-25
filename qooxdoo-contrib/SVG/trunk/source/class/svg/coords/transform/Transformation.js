@@ -33,14 +33,15 @@ qx.Class.define("svg.coords.transform.Transformation",
   },
   
   /**
-   * @param svg {svg.struct.Svg?}
+   * @param svgElem {svg.struct.Svg?}
    *   Any instance of SVGElement. Mandatory when using matrix notation.
    *   May be set to _null_ if matrix notation is not used. 
    * 
    */
-  construct : function(svg)
+  construct : function(svgElem)
   {
-    this.__svg = svg || null;
+    this.base(arguments);
+    this.__svg = svgElem || null;
   },
   
   members :
@@ -95,8 +96,8 @@ qx.Class.define("svg.coords.transform.Transformation",
      * @param svg {svg.struct.Svg | null}
      *   Svg element
      */
-    setSvg : function(svg) {
-      this.__svg = svg;
+    setSvg : function(svgElem) {
+      this.__svg = svgElem;
     },
     
     /**

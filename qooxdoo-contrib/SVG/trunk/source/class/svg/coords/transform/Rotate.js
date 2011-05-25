@@ -54,7 +54,7 @@ qx.Class.define("svg.coords.transform.Rotate",
   },
 
   /**
-   * @param svg {svg.struct.Svg}
+   * @param svgElem {svg.struct.Svg}
    *   Any instance of SVG Element. May be null when not using matrix notation.
    * 
    * @param angle {Number}
@@ -66,8 +66,8 @@ qx.Class.define("svg.coords.transform.Rotate",
    * @param cy {Number?}
    *   Y-coord of point to rotate around (default 0).
    */
-  construct : function(svg, angle, cx, cy) {
-    this.base(arguments, svg);
+  construct : function(svgElem, angle, cx, cy) {
+    this.base(arguments, svgElem);
     this.initAngle(angle);
     this.initCx(cx || 0);
     this.initCy(cy || 0);
