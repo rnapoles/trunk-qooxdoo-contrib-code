@@ -45,12 +45,12 @@ qx.Class.define("combotable.CellHighlighter", {
          */
         _applySearchString : function(value, old) {
             if (value == null){
-                this.__searchRx = new RegExp(this._preg_quote(value), 'ig');
-                this.__searchEsc = qx.bom.String.escape(value);
-            }
-            else {
                 this.__searchRx = null;
                 this.__searchEsc = null;
+            }
+            else {
+                this.__searchRx = new RegExp(this._preg_quote(value), 'ig');
+                this.__searchEsc = qx.bom.String.escape(value);
             }
         },
 
