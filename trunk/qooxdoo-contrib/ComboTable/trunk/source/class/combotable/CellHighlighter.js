@@ -26,7 +26,8 @@ qx.Class.define("combotable.CellHighlighter", {
         searchString : {
             init  : null,
             check : "String",
-            apply : "_applySearchString"
+            apply : "_applySearchString",
+            nullable: true
         }
     },
 
