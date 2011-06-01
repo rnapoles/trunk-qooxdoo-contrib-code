@@ -588,8 +588,8 @@ qx.Class.define("timezonedate.TimezoneDate",
      */
     setHours : function(hours, minutes, seconds, milliseconds)
     {
-      this.setHours(this.constructor.__timezoneOffset, 
-                    hours, minutes, seconds, milliseconds);
+      this._setHours(this.constructor.__timezoneOffset, 
+                     hours, minutes, seconds, milliseconds);
     },
 
     /**
@@ -609,7 +609,7 @@ qx.Class.define("timezonedate.TimezoneDate",
      */
     setUTCHours : function(hours, minutes, seconds, milliseconds)
     {
-      this.setHours(0, hours, minutes, seconds, milliseconds);
+      this._setHours(0, hours, minutes, seconds, milliseconds);
     },
 
     /**
@@ -832,7 +832,7 @@ qx.Class.define("timezonedate.TimezoneDate",
      * @param milliseconds {Integer|null}
      *   The milliseconds to set, in the range 0-999
      */
-    setSeconds : function(timezoneOffset, seconds, milliseconds)
+    _setSeconds : function(timezoneOffset, seconds, milliseconds)
     {
       // Get the formatted date in the current timezone
       var dateString = this.format(timezoneOffset, 
