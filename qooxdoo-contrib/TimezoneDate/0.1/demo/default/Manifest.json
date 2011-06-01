@@ -1,0 +1,34 @@
+{
+  "info" : 
+  {
+    "name" : "TimezoneDate Demo",
+
+    "summary" : "TimezoneDate Demo",
+    "description" : "This is a skeleton for a qooxdoo contribution demo.",
+    
+    "homepage" : "http://demo.qooxdoo.org/contrib/TimezoneDate",
+
+    "license" : "LGPL/EPL",
+    "authors" : 
+    [
+      {
+        "name" : "First Author (uid)",
+        "email" : "first.author@some.domain"
+      }
+    ],
+
+    "version" : "trunk",
+    "qooxdoo-versions": ["1.2-pre"]
+  },
+  
+  "provides" : 
+  {
+    "namespace"   : "timezonedate.demo",
+    "encoding"    : "utf-8",
+    "class"       : "source/class",
+    "resource"    : "source/resource",
+    "translation" : "source/translation",
+    "type"        : "application"
+  }
+}
+
