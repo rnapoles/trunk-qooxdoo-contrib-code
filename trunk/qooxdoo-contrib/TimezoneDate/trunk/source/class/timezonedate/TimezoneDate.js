@@ -380,15 +380,21 @@ qx.Class.define("timezonedate.TimezoneDate",
     },
 
     /**
-     * Set the day of month field of the date
+     * Set the day of month field of the date. This is the internal function
+     * common to the UTC and non-UTC public functions.
+     *
+     * @param timezoneOffset {Integer}
+     *   The number of minutes of time zone offset difference from UTC. The
+     *   number is positive to represent west of Greenwich, England; negative
+     *   to represent east of Greenwich.
      *
      * @param dayOfMonth {Integer}
      *   The day of the month, in the range 1-31
      */
-    setDate : function(dayOfMonth)
+    _setDate : function(timezoneOffset, dayOfMonth)
     {
       // Get the formatted date in the current timezone
-      var dateString = this.format(this.constructor.__timezoneOffset, 
+      var dateString = this.format(timezoneOffset, 
                                    this.constructor._formatIso8601);
 
       // Convert the parameter to an appropriate string
@@ -398,7 +404,18 @@ qx.Class.define("timezonedate.TimezoneDate",
       dateString = dateString.slice(0, 7) + newpart + dateString.slice(9);
 
       // Parse the new date string and set the object value
-      this.__date = new Date(this.constructor.parse(value));
+      this.__date = new Date(this.constructor.parse(dateString));
+    },
+
+    /**
+     * Set the day of month field of the date
+     *
+     * @param dayOfMonth {Integer}
+     *   The day of the month, in the range 1-31
+     */
+    setDate : function(dayOfMonth)
+    {
+      this._setDate(this.constructor.__timezoneOffset, dayOfMonth);
     },
 
     /**
@@ -409,18 +426,56 @@ qx.Class.define("timezonedate.TimezoneDate",
      */
     setUTCDate : function(dayOfMonth)
     {
+      this._setDate(0, dayOfMonth);
+    },
+
+    /**
+     * Set the year field of the date, and optionally the month and day of
+     * month. This is the internal function common to the UTC and non-UTC
+     * public functions.
+     *
+     * @param timezoneOffset {Integer}
+     *   The number of minutes of time zone offset difference from UTC. The
+     *   number is positive to represent west of Greenwich, England; negative
+     *   to represent east of Greenwich.
+     *
+     * @param year {Integer}
+     *   The year to set
+     *
+     * @param month {Integer|null}
+     *   The month to set, in the range 0-11
+     *
+     * @param dayOfMonth {Integer|null}
+     *   The day of month to set, in the range 1-31
+     */
+    _setFullYear : function(timezoneOffset, year, month, dayOfMonth)
+    {
       // Get the formatted date in the current timezone
-      var dateString = this.format(0,
+      var dateString = this.format(timezoneOffset, 
                                    this.constructor._formatIso8601);
 
       // Convert the parameter to an appropriate string
-      var newpart = ("00" + dayOfMonth).slice(-2);
+      var newpart = ("0000" + year).slice(-4);
       
       // Splice the new part in to the formatted date
-      dateString = dateString.slice(0, 7) + newpart + dateString.slice(9);
+      dateString = newpart + dateString.slice(4);
 
       // Parse the new date string and set the object value
-      this.__date = new Date(this.constructor.parse(value));
+      this.__date = new Date(this.constructor.parse(dateString));
+      
+      // If the month was specified...
+      if (month !== undefined)
+      {
+        // ... set it too
+        this.setMonth(month);
+      }
+
+      // If the optional day of month was specified...
+      if (dayOfMonth !== undefined)
+      {
+        // ... set it too
+        this.setDate(dayOfMonth);
+      }
     },
 
     /**
@@ -435,34 +490,10 @@ qx.Class.define("timezonedate.TimezoneDate",
      * @param dayOfMonth {Integer|null}
      *   The day of month to set, in the range 1-31
      */
-    setFullYear : function(year, month, day)
+    setFullYear : function(year, month, dayOfMonth)
     {
-      // Get the formatted date in the current timezone
-      var dateString = this.format(this.constructor.__timezoneOffset, 
-                                   this.constructor._formatIso8601);
-
-      // Convert the parameter to an appropriate string
-      var newpart = ("0000" + year).slice(-4);
-      
-      // Splice the new part in to the formatted date
-      dateString = newpart + dateString.slice(4);
-
-      // Parse the new date string and set the object value
-      this.__date = new Date(this.constructor.parse(value));
-      
-      // If the month was specified...
-      if (month !== undefined)
-      {
-        // ... set it too
-        this.setMonth(month);
-      }
-
-      // If the optional day of month was specified...
-      if (dayOfMonth !== undefined)
-      {
-        // ... set it too
-        this.setDate(dayOfMonth);
-      }
+      this._setFullYear(this.constructor.__timezoneOffset,
+                        year, month, dayOfMonth);
     },
 
     /**
@@ -477,33 +508,66 @@ qx.Class.define("timezonedate.TimezoneDate",
      * @param dayOfMonth {Integer|null}
      *   The day of month to set, in the range 1-31
      */
-    setUTCFullYear : function(year)
+    setUTCFullYear : function(year, month, dayOfMonth)
+    {
+      this._setFullYear(0, year, month, dayOfMonth);
+    },
+
+    /**
+     * Set the hours field of the date. This is the internal function
+     * common to the UTC and non-UTC public functions.
+     *
+     * @param timezoneOffset {Integer}
+     *   The number of minutes of time zone offset difference from UTC. The
+     *   number is positive to represent west of Greenwich, England; negative
+     *   to represent east of Greenwich.
+     *
+     * @param hours {Integer}
+     *   The hours to set, in the range 0-23
+     *
+     * @param minutes {Integer|null}
+     *   The minutes to set, in the range 0-59
+     *
+     * @param seconds {Integer|null}
+     *   The seconds to set, in the range 0-59
+     *
+     * @param milliseconds {Integer|null}
+     *   The milliseconds to set, in the range 0-999
+     */
+    _setHours : function(timezoneOffset, hours, minutes, seconds, milliseconds)
     {
       // Get the formatted date in the current timezone
-      var dateString = this.format(0,
+      var dateString = this.format(timezoneOffset, 
                                    this.constructor._formatIso8601);
 
       // Convert the parameter to an appropriate string
-      var newpart = ("0000" + year).slice(-4);
+      var newpart = ("00" + hours).slice(-2);
       
       // Splice the new part in to the formatted date
-      dateString = newpart + dateString.slice(4);
+      dateString = dateString.slice(0, 11) + newpart + dateString.slice(13);
 
       // Parse the new date string and set the object value
-      this.__date = new Date(this.constructor.parse(value));
-      
-      // If the month was specified...
-      if (month !== undefined)
+      this.__date = new Date(this.constructor.parse(dateString));
+
+      // If the optional minutes was specified...
+      if (minutes !== undefined)
       {
         // ... set it too
-        this.setMonth(month);
+        this._setMinutes(timezoneOffset, minutes);
       }
 
-      // If the optional day of month was specified...
-      if (dayOfMonth !== undefined)
+      // If the optional seconds was specified...
+      if (seconds !== undefined)
       {
         // ... set it too
-        this.setDate(dayOfMonth);
+        this._setSeconds(timezoneOffset, seconds);
+      }
+
+      // If the optional milliseconds was specified...
+      if (milliseconds !== undefined)
+      {
+        // ... set it too
+        this._setMilliseconds(timezoneOffset, milliseconds);
       }
     },
 
@@ -524,39 +588,8 @@ qx.Class.define("timezonedate.TimezoneDate",
      */
     setHours : function(hours, minutes, seconds, milliseconds)
     {
-      // Get the formatted date in the current timezone
-      var dateString = this.format(this.constructor.__timezoneOffset, 
-                                   this.constructor._formatIso8601);
-
-      // Convert the parameter to an appropriate string
-      var newpart = ("00" + hours).slice(-2);
-      
-      // Splice the new part in to the formatted date
-      dateString = dateString.slice(0, 11) + newpart + dateString.slice(13);
-
-      // Parse the new date string and set the object value
-      this.__date = new Date(this.constructor.parse(dateString));
-
-      // If the optional minutes was specified...
-      if (minutes !== undefined)
-      {
-        // ... set it too
-        this.setMinutes(minutes);
-      }
-
-      // If the optional seconds was specified...
-      if (seconds !== undefined)
-      {
-        // ... set it too
-        this.setSeconds(seconds);
-      }
-
-      // If the optional milliseconds was specified...
-      if (milliseconds !== undefined)
-      {
-        // ... set it too
-        this.setMilliseconds(milliseconds);
-      }
+      this.setHours(this.constructor.__timezoneOffset, 
+                    hours, minutes, seconds, milliseconds);
     },
 
     /**
@@ -574,41 +607,37 @@ qx.Class.define("timezonedate.TimezoneDate",
      * @param milliseconds {Integer|null}
      *   The milliseconds to set, in the range 0-999
      */
-    setUTCHours : function(hours)
+    setUTCHours : function(hours, minutes, seconds, milliseconds)
+    {
+      this.setHours(0, hours, minutes, seconds, milliseconds);
+    },
+
+    /**
+     * Set the milliseconds field of the date. This is the internal function
+     * common to the UTC and non-UTC public functions.
+     *
+     * @param timezoneOffset {Integer}
+     *   The number of minutes of time zone offset difference from UTC. The
+     *   number is positive to represent west of Greenwich, England; negative
+     *   to represent east of Greenwich.
+     *
+     * @param milliseconds {Integer}
+     *   The milliseconds to set, in the range 0-999
+     */
+    _setMilliseconds : function(timezoneOffset, milliseconds)
     {
       // Get the formatted date in the current timezone
-      var dateString = this.format(0,
+      var dateString = this.format(timezoneOffset, 
                                    this.constructor._formatIso8601);
 
       // Convert the parameter to an appropriate string
-      var newpart = ("00" + hours).slice(-2);
+      var newpart = (milliseconds + "000").slice(0, 3);
       
       // Splice the new part in to the formatted date
-      dateString = dateString.slice(0, 11) + newpart + dateString.slice(13);
+      dateString = dateString.slice(0, 20) + newpart + dateString.slice(23);
 
       // Parse the new date string and set the object value
       this.__date = new Date(this.constructor.parse(dateString));
-
-      // If the optional minutes was specified...
-      if (minutes !== undefined)
-      {
-        // ... set it too
-        this.setMinutes(minutes);
-      }
-
-      // If the optional seconds was specified...
-      if (seconds !== undefined)
-      {
-        // ... set it too
-        this.setSeconds(seconds);
-      }
-
-      // If the optional milliseconds was specified...
-      if (milliseconds !== undefined)
-      {
-        // ... set it too
-        this.setMilliseconds(milliseconds);
-      }
     },
 
     /**
@@ -619,18 +648,7 @@ qx.Class.define("timezonedate.TimezoneDate",
      */
     setMilliseconds : function(milliseconds)
     {
-      // Get the formatted date in the current timezone
-      var dateString = this.format(this.constructor.__timezoneOffset, 
-                                   this.constructor._formatIso8601);
-
-      // Convert the parameter to an appropriate string
-      var newpart = (milliseconds + "000").slice(0, 3);
-      
-      // Splice the new part in to the formatted date
-      dateString = dateString.slice(0, 20) + newpart + dateString.slice(23);
-
-      // Parse the new date string and set the object value
-      this.__date = new Date(this.constructor.parse(dateString));
+      this._setMilliseconds(this.constructor.__timezoneOffset, milliseconds);
     },
 
     /**
@@ -639,24 +657,63 @@ qx.Class.define("timezonedate.TimezoneDate",
      * @param milliseconds {Integer}
      *   The hours to set, in the range 0-23
      */
-    setUTCMilliseconds : function(hours)
+    setUTCMilliseconds : function(milliseconds)
     {
-      // Get the formatted date in the current timezone
-      var dateString = this.format(0,
-                                   this.constructor._formatIso8601);
-
-      // Convert the parameter to an appropriate string
-      var newpart = (milliseconds + "000").slice(0, 3);
-      
-      // Splice the new part in to the formatted date
-      dateString = dateString.slice(0, 20) + newpart + dateString.slice(23);
-
-      // Parse the new date string and set the object value
-      this.__date = new Date(this.constructor.parse(dateString));
+      this._setMilliseconds(0, milliseconds);
     },
 
     /**
-     * Set the minutes field of the date
+     * Set the minutes field of the date, and optionally, seconds and
+     * milliseconds. This is the internal function common to the UTC and
+     * non-UTC public functions.
+     *
+     * @param timezoneOffset {Integer}
+     *   The number of minutes of time zone offset difference from UTC. The
+     *   number is positive to represent west of Greenwich, England; negative
+     *   to represent east of Greenwich.
+     *
+     * @param minutes {Integer}
+     *   The minutes to set, in the range 0-59
+     *
+     * @param seconds {Integer|null}
+     *   The seconds to set, in the range 0-59
+     *
+     * @param milliseconds {Integer|null}
+     *   The milliseconds to set, in the range 0-999
+     */
+    _setMinutes : function(timezoneOffset, minutes, seconds, milliseconds)
+    {
+      // Get the formatted date in the current timezone
+      var dateString = this.format(this.constructor.__timezoneOffset, 
+                                   this.constructor._formatIso8601);
+
+      // Convert the minutes parameter to an appropriate string
+      var newpart = ("00" + minutes).slice(-2);
+      
+      // Splice the new part in to the formatted date
+      dateString = dateString.slice(0, 14) + newpart + dateString.slice(16);
+
+      // Parse the new date string and set the object value
+      this.__date = new Date(this.constructor.parse(dateString));
+
+      // If the optional seconds was specified...
+      if (seconds !== undefined)
+      {
+        // ... set it too
+        this._setSeconds(timezoneOffset, seconds);
+      }
+
+      // If the optional milliseconds was specified...
+      if (milliseconds !== undefined)
+      {
+        // ... set it too
+        this._setMilliseconds(timezoneOffset, milliseconds);
+      }
+    },
+
+    /**
+     * Set the minutes field of the date, and optionally, seconds and
+     * milliseconds.
      *
      * @param minutes {Integer}
      *   The minutes to set, in the range 0-59
@@ -669,36 +726,13 @@ qx.Class.define("timezonedate.TimezoneDate",
      */
     setMinutes : function(minutes, seconds, milliseconds)
     {
-      // Get the formatted date in the current timezone
-      var dateString = this.format(this.constructor.__timezoneOffset, 
-                                   this.constructor._formatIso8601);
-
-      // Convert the parameter to an appropriate string
-      var newpart = ("00" + minutes).slice(-2);
-      
-      // Splice the new part in to the formatted date
-      dateString = dateString.slice(0, 14) + newpart + dateString.slice(16);
-
-      // Parse the new date string and set the object value
-      this.__date = new Date(this.constructor.parse(dateString));
-
-      // If the optional seconds was specified...
-      if (seconds !== undefined)
-      {
-        // ... set it too
-        this.setSeconds(seconds);
-      }
-
-      // If the optional milliseconds was specified...
-      if (milliseconds !== undefined)
-      {
-        // ... set it too
-        this.setMilliseconds(milliseconds);
-      }
+      this._setMinutes(this.constructor.__timezoneOffset, 
+                       minutes, seconds, milliseconds);
     },
 
     /**
-     * Set the minutes field of the date (universal time)
+     * Set the minutes field of the date, and optionally, seconds and
+     * milliseconds (universal time).
      *
      * @param minutes {Integer}
      *   The minutes to set, in the range 0-59
@@ -711,36 +745,50 @@ qx.Class.define("timezonedate.TimezoneDate",
      */
     setUTCMinutes : function(minutes, seconds, milliseconds)
     {
+      this._setMinutes(0, minutes, seconds, milliseconds);
+    },
+
+    /**
+     * Set the month field of the date, and optionally the day of the
+     * month. This is the internal function common to the UTC and non-UTC
+     * public functions.
+     *
+     * @param timezoneOffset {Integer}
+     *   The number of minutes of time zone offset difference from UTC. The
+     *   number is positive to represent west of Greenwich, England; negative
+     *   to represent east of Greenwich.
+     *
+     * @param month {Integer}
+     *   The month to set, in the range 0-11
+     *
+     * @param dayOfMonth {Integer|null}
+     *   The day of the month, in the range 1-31
+     */
+    _setMonth : function(timezoneOffset, month, dayOfMonth)
+    {
       // Get the formatted date in the current timezone
-      var dateString = this.format(0,
+      var dateString = this.format(timezoneOffset, 
                                    this.constructor._formatIso8601);
 
-      // Convert the parameter to an appropriate string
-      var newpart = ("00" + minutes).slice(-2);
+      // Convert the month parameter to an appropriate string
+      var newpart = ("00" + (month + 1)).slice(-2);
       
       // Splice the new part in to the formatted date
-      dateString = dateString.slice(0, 14) + newpart + dateString.slice(16);
+      dateString = dateString.slice(0, 5) + newpart + dateString.slice(7);
 
       // Parse the new date string and set the object value
       this.__date = new Date(this.constructor.parse(dateString));
 
-      // If the optional seconds was specified...
-      if (seconds !== undefined)
+      // If the optional day of month was specified...
+      if (dayOfMonth !== undefined)
       {
         // ... set it too
-        this.setSeconds(seconds);
-      }
-
-      // If the optional milliseconds was specified...
-      if (milliseconds !== undefined)
-      {
-        // ... set it too
-        this.setMilliseconds(milliseconds);
+        this._setDate(timezoneOffset, dayOfMonth);
       }
     },
 
     /**
-     * Set the month field of the date
+     * Set the month field of the date, and optionally the day of the month.
      *
      * @param month {Integer}
      *   The month to set, in the range 0-11
@@ -750,58 +798,33 @@ qx.Class.define("timezonedate.TimezoneDate",
      */
     setMonth : function(month, dayOfMonth)
     {
-      // Get the formatted date in the current timezone
-      var dateString = this.format(this.constructor.__timezoneOffset, 
-                                   this.constructor._formatIso8601);
-
-      // Convert the minutes parameter to an appropriate string
-      var newpart = ("00" + (month + 1)).slice(-2);
-      
-      // Splice the new part in to the formatted date
-      dateString = dateString.slice(0, 5) + newpart + dateString.slice(7);
-
-      // Parse the new date string and set the object value
-      this.__date = new Date(this.constructor.parse(dateString));
-
-      // If the optional day of month was specified...
-      if (dayOfMonth !== undefined)
-      {
-        // ... set it too
-        this.setDate(dayOfMonth);
-      }
+      this._setMonth(this.constructor.__timezoneOffset, month, dayOfMonth);
     },
 
     /**
-     * Set the month field of the date (universal time)
+     * Set the month field of the date, and optionally the day of the month
+     * (universal time).
      *
      * @param month {Integer}
      *   The month to set, in the range 0-11
+     *
+     * @param dayOfMonth {Integer|null}
+     *   The day of the month, in the range 1-31
      */
     setUTCMonth : function(month, dayOfMonth)
     {
-      // Get the formatted date in the current timezone
-      var dateString = this.format(0,
-                                   this.constructor._formatIso8601);
-
-      // Convert the parameter to an appropriate string
-      var newpart = ("00" + (month + 1)).slice(-2);
-      
-      // Splice the new part in to the formatted date
-      dateString = dateString.slice(0, 5) + newpart + dateString.slice(7);
-
-      // Parse the new date string and set the object value
-      this.__date = new Date(this.constructor.parse(dateString));
-
-      // If the optional day of month was specified...
-      if (dayOfMonth !== undefined)
-      {
-        // ... set it too
-        this.setDate(dayOfMonth);
-      }
+      this._setMonth(0, month, dayOfMonth);
     },
 
     /**
-     * Set the seconds field of the date
+     * Set the seconds field of the date, and optionally the
+     * milliseconds. This is the internal function common to the UTC and
+     * non-UTC public functions.
+     *
+     * @param timezoneOffset {Integer}
+     *   The number of minutes of time zone offset difference from UTC. The
+     *   number is positive to represent west of Greenwich, England; negative
+     *   to represent east of Greenwich.
      *
      * @param seconds {Integer}
      *   The seconds to set, in the range 0-59
@@ -809,10 +832,10 @@ qx.Class.define("timezonedate.TimezoneDate",
      * @param milliseconds {Integer|null}
      *   The milliseconds to set, in the range 0-999
      */
-    setSeconds : function(seconds, milliseconds)
+    setSeconds : function(timezoneOffset, seconds, milliseconds)
     {
       // Get the formatted date in the current timezone
-      var dateString = this.format(this.constructor.__timezoneOffset, 
+      var dateString = this.format(timezoneOffset, 
                                    this.constructor._formatIso8601);
 
       // Convert the minutes parameter to an appropriate string
@@ -828,12 +851,28 @@ qx.Class.define("timezonedate.TimezoneDate",
       if (milliseconds !== undefined)
       {
         // ... set it too
-        this.setMilliseconds(milliseconds);
+        this._setMilliseconds(timezoneOffset, milliseconds);
       }
     },
 
     /**
-     * Set the seconds field of the date (universal time)
+     * Set the seconds field of the date, and optionally the milliseconds.
+     *
+     * @param seconds {Integer}
+     *   The seconds to set, in the range 0-59
+     *
+     * @param milliseconds {Integer|null}
+     *   The milliseconds to set, in the range 0-999
+     */
+    setSeconds : function(seconds, milliseconds)
+    {
+      this._setSeconds(this.constructor.__timezoneOffset,
+                       seconds, milliseconds);
+    },
+
+    /**
+     * Set the seconds field of the date, and optionally the milliseconds
+     * (universal time).
      *
      * @param seconds {Integer}
      *   The month to set, in the range 0-11
@@ -843,25 +882,7 @@ qx.Class.define("timezonedate.TimezoneDate",
      */
     setUTCSeconds : function(seconds, milliseconds)
     {
-      // Get the formatted date in the current timezone
-      var dateString = this.format(0,
-                                   this.constructor._formatIso8601);
-
-      // Convert the parameter to an appropriate string
-      var newpart = ("00" + seconds).slice(-2);
-      
-      // Splice the new part in to the formatted date
-      dateString = dateString.slice(0, 5) + newpart + dateString.slice(7);
-
-      // Parse the new date string and set the object value
-      this.__date = new Date(this.constructor.parse(dateString));
-
-      // If the optional milliseconds was specified...
-      if (milliseconds !== undefined)
-      {
-        // ... set it too
-        this.setMilliseconds(milliseconds);
-      }
+      this._setSeconds(0, seconds, milliseconds);
     },
 
     /**
