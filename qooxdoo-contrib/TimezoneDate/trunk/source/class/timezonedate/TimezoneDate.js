@@ -1,7 +1,7 @@
 /* ************************************************************************
 
    Copyright:
-     (c) 2010 Derrell Lipman
+     (c) 2010, 2011 Derrell Lipman
      
    License:
      LGPL: http://www.gnu.org/licenses/lgpl.html
