@@ -54,7 +54,7 @@ if (mySim.getConfigSetting("branch") == "branch_1_2_x") {
 
 var getLogHtml = function()
 {
-  var logWidget = selenium.getQxWidgetByLocator('qxh=qx.ui.container.Composite/qx.ui.splitpane.Pane/child[1]/[@classname="playground.view.Log"]/qx.ui.embed.Html');
+  var logWidget = selenium.getQxWidgetByLocator('qxhv=qx.ui.container.Composite/qx.ui.splitpane.Pane/*/qx.ui.embed.Html');
   return logWidget.getContentElement().getDomElement().innerHTML;
 };
 
