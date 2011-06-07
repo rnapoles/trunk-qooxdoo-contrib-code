@@ -499,7 +499,7 @@ public class JsonRpcServlet extends HttpServlet {
                 final String requestString = request.getParameter(SCRIPT_TRANSPORT_DATA);
                 final String res = handleRPC(request, requestString);
 
-                result = "qx.io.remote.ScriptTransport._requestFinished(\"" + jsTransportId + "\", " + res + ");";
+                result = "qx.io.remote.transport.Script._requestFinished(\"" + jsTransportId + "\", " + res + ");";
             } else {
                 result = makeJavaScriptServerInfo(request);
             }
