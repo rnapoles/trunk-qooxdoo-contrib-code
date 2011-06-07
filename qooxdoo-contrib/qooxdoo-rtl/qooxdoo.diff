@@ -1,0 +1,4815 @@
+Index: framework/source/class/qx/locale/Manager.js
+===================================================================
+--- framework/source/class/qx/locale/Manager.js	(revision 27592)
++++ framework/source/class/qx/locale/Manager.js	(working copy)
+@@ -198,7 +198,20 @@
+       return this.__language;
+     },
+ 
++    /**
++     * Get the direction of the current locale
++     *
++     * This is either right-to-left or nothing (default: left-to-right) for the direction of the language.
++     *
++     * @return {String} "left-to-right" or "right-to-left"
++     */
++    getDirection : function() {
++      var cldr_id = "cldr_layout_orientation_characters";
++      var dir = this.localize(cldr_id, [], this.__locale);
+ 
++      return (dir == cldr_id ? "left-to-right" : dir);
++    },
++
+     /**
+      * Get the territory code of the current locale
+      *
+Index: framework/source/class/qx/theme/Modern.js
+===================================================================
+--- framework/source/class/qx/theme/Modern.js	(revision 27592)
++++ framework/source/class/qx/theme/Modern.js	(working copy)
+@@ -32,5 +32,7 @@
+     font : qx.theme.modern.Font,
+     appearance : qx.theme.modern.Appearance,
+     icon : qx.theme.icon.Tango
+-  }
++  },
++
++	directions : ["left-to-right", "right-to-left"]
+ });
+Index: framework/source/class/qx/theme/classic/Decoration.js
+===================================================================
+--- framework/source/class/qx/theme/classic/Decoration.js	(revision 27592)
++++ framework/source/class/qx/theme/classic/Decoration.js	(working copy)
+@@ -237,6 +237,15 @@
+       }
+     },
+ 
++    "shadow-rtl" :
++    {
++      include : "shadow",
++
++      style : {
++        insets    : [ 4, 4, 8, 8 ]
++      }
++    },
++
+     "shadow-window" :
+     {
+       decorator : qx.ui.decoration.Grid,
+@@ -247,7 +256,16 @@
+       }
+     },
+ 
++    "shadow-window-rtl" :
++    {
++      include : "shadow-window",
+ 
++      style : {
++        insets    : [ 4, 4, 8, 8 ]
++      }
++    },
++
++
+     "shadow-small" :
+     {
+       decorator : qx.ui.decoration.Grid,
+@@ -258,6 +276,15 @@
+       }
+     },
+ 
++    "shadow-small-rtl" :
++    {
++      include : "shadow-small",
++
++      style : {
++        insets    : [ 0, 0, 3, 3 ]
++      }
++    },
++
+     "checkbox-invalid-shadow" :
+     {
+       decorator : qx.ui.decoration.Beveled,
+@@ -359,7 +386,6 @@
+ 
+ 
+ 
+-
+     /*
+     ---------------------------------------------------------------------------
+       MENU
+Index: framework/source/class/qx/theme/classic/Appearance.js
+===================================================================
+--- framework/source/class/qx/theme/classic/Appearance.js	(revision 27592)
++++ framework/source/class/qx/theme/classic/Appearance.js	(working copy)
+@@ -166,18 +166,19 @@
+       {
+         var icon = "nodrop";
+ 
++        var rtl = states.rtl;
+         if (states.copy) {
+-          icon = "copy";
++          icon = "copy" + rtl ? "-rtl" : "";
+         } else if (states.move) {
+           icon = "move";
+         } else if (states.alias) {
+-          icon = "alias";
++          icon = "alias" + rtl ? "-rtl" : "";
+         }
+ 
+         return {
+           source : "decoration/cursors/" + icon + ".gif",
+-          position : "right-top",
+-          offset : [ 2, 16, 2, 6 ]
++          position : rtl ? "left-top" : "right-top",
++          offset : rtl ? [ 2, 6, 2, 16 ] : [ 2, 16, 2, 6 ]
+         };
+       }
+     },
+@@ -200,7 +201,7 @@
+       {
+         if (states.pressed || states.abandoned || states.checked) {
+           var decorator = !states.inner && states.focused ? "focused-inset" : "inset";
+-          var padding = [ 4, 3, 2, 5 ];
++          var padding = states.rtl ? [ 4, 5, 2, 3 ] : [ 4, 3, 2, 5 ];
+         } else {
+           var decorator = !states.inner && states.focused ? "focused-outset" : "outset";
+           var padding = [ 3, 4 ];
+@@ -399,9 +400,12 @@
+         // (if available). If no disabled image is found, the opacity style
+         // is used.
+         var icon;
++				var rtl = "";
+ 
+         // Checked
+         if (states.checked) {
++					rtl = states.rtl ? "-rtl" : "";
++
+           if (states.disabled) {
+             icon = "checkbox-checked";
+           } else if (states.focused) {
+@@ -443,7 +447,7 @@
+         var invalid = states.invalid && !states.disabled ? "-invalid" : "";
+ 
+         return {
+-          icon: "decoration/form/" + icon + invalid + ".png",
++          icon: "decoration/form/" + icon + invalid + rtl + ".png",
+           gap: 6
+         }
+       }
+@@ -533,7 +537,7 @@
+       {
+         return {
+           icon : "decoration/arrows/up-small.gif",
+-          padding : states.pressed ? [2, 2, 0, 4] : [1, 3, 1, 3],
++          padding : states.pressed ? (states.rtl ? [2, 4, 0, 2] : [2, 2, 0, 4]) : [1, 3, 1, 3],
+           backgroundColor : states.hovered ? "button-hovered" : "button"
+         }
+       }
+@@ -548,7 +552,7 @@
+       {
+         return {
+           icon : "decoration/arrows/down-small.gif",
+-          padding : states.pressed ? [2, 2, 0, 4] : [1, 3, 1, 3],
++          padding : states.pressed ? (states.rtl ? [2, 4, 0, 2] : [2, 2, 0, 4]) : [1, 3, 1, 3],
+           backgroundColor : states.hovered ? "button-hovered" : "button"
+         };
+       }
+@@ -625,7 +629,7 @@
+         return {
+           backgroundColor : "background",
+           textColor : states.invalid ? "invalid" : undefined,
+-          padding   : [1, 0, 1, 4]
++          padding   : states.rtl ? [1, 4, 1, 0] : [1, 0, 1, 4]
+         };
+       }
+     },
+@@ -654,7 +658,7 @@
+         return {
+           backgroundColor : "background",
+           textColor : states.invalid ? "invalid" : undefined,
+-          padding   : [1, 0, 1, 4]
++          padding   : states.rtl ? [1, 4, 1, 0] : [1, 0, 1, 4]
+         };
+       }
+     },
+@@ -671,7 +675,7 @@
+         return {
+           backgroundColor : "background",
+           textColor : states.invalid ? "invalid" : undefined,
+-          padding   : [1, 0, 1, 4]
++          padding   : states.rtl ? [1, 4, 1, 0] : [1, 0, 1, 4]
+         };
+       }
+     },
+@@ -733,7 +737,7 @@
+         if (states.pressed || states.checked || states.abandoned)
+         {
+           var border = "inset-thin";
+-          var padding = [ 3, 2, 1, 4 ];
++          var padding = states.rtl ? [ 3, 4, 1, 2 ] : [ 3, 2, 1, 4 ];
+         }
+         else if (states.hovered)
+         {
+@@ -819,10 +823,10 @@
+ 
+       style : function(states)
+       {
++				var icon = states.vertical ? "down" : states.rtl ? "previous" : "next";
++
+         return {
+-          icon : states.vertical ?
+-            "decoration/arrows/down.gif" :
+-            "decoration/arrows/next.gif"
++          icon : "decoration/arrows/" + icon + ".gif" 
+         };
+       }
+     },
+@@ -834,10 +838,10 @@
+ 
+       style : function(states)
+       {
++				var icon = states.vertical ? "up" : states.rtl ? "right" : "left";
++
+         return {
+-          icon : states.vertical ?
+-            "decoration/arrows/up.gif" :
+-           "decoration/arrows/left.gif"
++          icon : "decoration/arrows/" + icon + ".gif"
+         };
+       }
+     },
+@@ -872,11 +876,13 @@
+           marginRight = -2;
+         }
+ 
++        var rtl = states.rtl;
++
+         return {
+           marginBottom : marginBottom,
+           marginTop : marginTop,
+-          marginLeft : marginLeft,
+-          marginRight : marginRight
++          marginLeft : rtl ? marginRight : marginLeft,
++          marginRight : rtl ? marginLeft : marginRight
+         };
+       }
+     },
+@@ -950,6 +956,7 @@
+       {
+         var decorator;
+         var marginTop=0, marginRight=0, marginBottom=0, marginLeft=0;
++				var rtl = states.rtl;
+ 
+         if (states.barTop || states.barBottom) {
+           var paddingTop=2, paddingBottom=2, paddingLeft=6, paddingRight=6;
+@@ -963,7 +970,7 @@
+         }
+         else if (states.barRight)
+         {
+-          decorator = "tabview-page-button-right";
++          decorator = "tabview-page-button-" + (rtl ? "left" : "right");
+         }
+         else if (states.barBottom)
+         {
+@@ -971,7 +978,7 @@
+         }
+         else
+         {
+-          decorator = "tabview-page-button-left";
++          decorator = "tabview-page-button-" + (rtl ? "right" : "left");
+         }
+ 
+         if (states.checked)
+@@ -1006,6 +1013,7 @@
+           if (!states.firstTab)
+           {
+             if (states.barTop || states.barBottom) {
++// his maybe needs to be changed too?? Depends on the layout order.
+               marginLeft = -4;
+             } else {
+               marginTop = -4;
+@@ -1015,6 +1023,7 @@
+           if (!states.lastTab)
+           {
+             if (states.barTop || states.barBottom) {
++// his maybe needs to be changed too?? Depends on the layout order.
+               marginRight = -4;
+             } else {
+               marginBottom = -4;
+@@ -1026,8 +1035,8 @@
+           zIndex : states.checked ? 10 : 5,
+           decorator : decorator,
+           backgroundColor : "background",
+-          padding : [ paddingTop, paddingRight, paddingBottom, paddingLeft ],
+-          margin : [ marginTop, marginRight, marginBottom, marginLeft ],
++          padding : [ paddingTop, rtl ? paddingLeft : paddingRight, paddingBottom, rtl ? paddingRight : paddingLeft ],
++          margin : [ marginTop, rtl ? marginLeft : marginRight, marginBottom, rtl ? marginRight : marginLeft ],
+           textColor : states.disabled ? "text-disabled" : undefined
+         };
+       }
+@@ -1104,11 +1113,13 @@
+ 
+       style : function(states)
+       {
++        var rtl = states.rtl;
+         var padding;
++
+         if (states.up || states.down)
+         {
+           if (states.pressed || states.abandoned || states.checked) {
+-            padding = [ 5, 2, 3, 4 ];
++            padding = rtl ? [ 5, 4, 3, 2 ] : [ 5, 2, 3, 4 ];
+           } else {
+             padding = [ 4, 3 ];
+           }
+@@ -1116,7 +1127,7 @@
+         else
+         {
+           if (states.pressed || states.abandoned || states.checked) {
+-            padding = [ 4, 3, 2, 5 ];
++            padding = rtl ? [ 4, 5, 2, 3 ] : [ 4, 3, 2, 5 ];
+           } else {
+             padding = [ 3, 4 ];
+           }
+@@ -1124,18 +1135,18 @@
+ 
+         var icon = "decoration/arrows/";
+         if (states.left) {
+-          icon += "left.gif";
++          icon += rtl ? "right" : "left";
+         } else if (states.right) {
+-          icon += "right.gif";
++          icon += rtl ? "left" : "right";
+         } else if (states.up) {
+-          icon += "up.gif";
++          icon += "up";
+         } else {
+-          icon += "down.gif";
++          icon += "down";
+         }
+ 
+         return {
+           padding : padding,
+-          icon : icon
++          icon : icon + ".gif"
+         }
+       }
+     },
+@@ -1214,7 +1225,7 @@
+       style : function(states)
+       {
+         return {
+-          padding : [2, 3, 2, 0],
++          padding : states.rtl ? [2, 0, 2, 3] : [2, 3, 2, 0],
+           icon : states.opened ? "icon/16/places/folder-open.png" : "icon/16/places/folder.png",
+           iconOpened : "icon/16/places/folder-open.png"
+         };
+@@ -1226,7 +1237,7 @@
+       style : function(states)
+       {
+         return {
+-          padding : [0, 4, 0, 0]
++          padding : states.rtl ? [0, 0, 0, 4] : [0, 4, 0, 0]
+         };
+       }
+     },
+@@ -1349,7 +1360,7 @@
+       style : function(states)
+       {
+         return {
+-          icon        : "decoration/treevirtual/only_minus.gif"
++          icon        : "decoration/treevirtual/only_minus" + (states.rt ? "-rtl" : "") + ".gif"
+         }
+       }
+     },
+@@ -1359,7 +1370,7 @@
+       style : function(states)
+       {
+         return {
+-          icon        : "decoration/treevirtual/only_plus.gif"
++          icon        : "decoration/treevirtual/only_plus" + (states.rtl ? "-rtl" : "") + ".gif"
+         }
+       }
+     },
+@@ -1369,7 +1380,7 @@
+       style : function(states)
+       {
+         return {
+-          icon        : "decoration/treevirtual/start_minus.gif"
++          icon        : "decoration/treevirtual/start_minus" + (states.rtl ? "-rtl" : "") + ".gif"
+         }
+       }
+     },
+@@ -1379,7 +1390,7 @@
+       style : function(states)
+       {
+         return {
+-          icon        : "decoration/treevirtual/start_plus.gif"
++          icon        : "decoration/treevirtual/start_plus" + (states.rtl ? "-rtl" : "") + ".gif"
+         }
+       }
+     },
+@@ -1389,7 +1400,7 @@
+       style : function(states)
+       {
+         return {
+-          icon        : "decoration/treevirtual/end_minus.gif"
++          icon        : "decoration/treevirtual/end_minus" + (states.rtl ? "-rtl" : "") + ".gif"
+         }
+       }
+     },
+@@ -1399,7 +1410,7 @@
+       style : function(states)
+       {
+         return {
+-          icon        : "decoration/treevirtual/end_plus.gif"
++          icon        : "decoration/treevirtual/end_plus" + (states.rtl ? "-rtl" : "") + ".gif"
+         }
+       }
+     },
+@@ -1409,7 +1420,7 @@
+       style : function(states)
+       {
+         return {
+-          icon        : "decoration/treevirtual/cross_minus.gif"
++          icon        : "decoration/treevirtual/cross_minus" + (states.rtl ? "-rtl" : "") + ".gif"
+         }
+       }
+     },
+@@ -1419,7 +1430,7 @@
+       style : function(states)
+       {
+         return {
+-          icon        : "decoration/treevirtual/cross_plus.gif"
++          icon        : "decoration/treevirtual/cross_plus" + (states.rtl ? "-rtl" : "") + ".gif"
+         }
+       }
+     },
+@@ -1430,7 +1441,7 @@
+       style : function(states)
+       {
+         return {
+-          icon        : "decoration/treevirtual/end.gif"
++          icon        : "decoration/treevirtual/end" + (states.rtl ? "-rtl" : "") + ".gif"
+         }
+       }
+     },
+@@ -1440,7 +1451,7 @@
+       style : function(states)
+       {
+         return {
+-          icon        : "decoration/treevirtual/cross.gif"
++          icon        : "decoration/treevirtual/cross" + (states.rtl ? "-rtl" : "") + ".gif"
+         }
+       }
+     },
+@@ -1487,9 +1498,7 @@
+     {
+       style : function(states)
+       {
+-        return {
+-          marginRight : 4
+-        };
++				return (states.rtl ? {marginLeft : 4} : {marginRight : 4});
+       }
+     },
+ 
+@@ -1497,12 +1506,15 @@
+     {
+       style : function(states)
+       {
+-        return {
+-          cursor : "default",
+-          font : "bold",
+-          marginRight : 20,
+-          alignY: "middle"
++        var styles = {
++         cursor : "default",
++         font : "bold",
++         alignY: "middle"
+         };
++
++        styles[states.rtl ? "marginLeft" : "marginRight"] = 20;
++
++        return styles;
+       }
+     },
+ 
+@@ -1515,7 +1527,7 @@
+       {
+         return {
+           icon : "decoration/window/minimize.gif",
+-          padding : states.pressed || states.abandoned ? [ 2, 1, 0, 3] : [ 1, 2 ]
++          padding : states.pressed || states.abandoned ? (states.rtl ? [ 2, 3, 0, 1 ] : [ 2, 1, 0, 3]) : [ 1, 2 ]
+         };
+       }
+     },
+@@ -1528,8 +1540,8 @@
+       style : function(states)
+       {
+         return {
+-          icon : "decoration/window/restore.gif",
+-          padding : states.pressed || states.abandoned ? [ 2, 1, 0, 3] : [ 1, 2 ]
++          icon : "decoration/window/restore" + (states.rtl ? "-rtl" : "") + ".gif",
++          padding : states.pressed || states.abandoned ? (states.rtl ? [ 2, 3, 0, 1 ] : [ 2, 1, 0, 3 ]) : [ 1, 2 ]
+         };
+       }
+     },
+@@ -1543,7 +1555,7 @@
+       {
+         return {
+           icon : "decoration/window/maximize.gif",
+-          padding : states.pressed || states.abandoned ? [ 2, 1, 0, 3] : [ 1, 2 ]
++          padding : states.pressed || states.abandoned ? (states.rtl ? [ 2, 3, 0, 1 ] : [ 2, 1, 0, 3 ]) : [ 1, 2 ]
+         };
+       }
+     },
+@@ -1555,11 +1567,14 @@
+ 
+       style : function(states)
+       {
+-        return {
+-          marginLeft : 2,
++        var styles = {
+           icon : "decoration/window/close.gif",
+-          padding : states.pressed || states.abandoned ? [ 2, 1, 0, 3] : [ 1, 2 ]
++          padding : states.pressed || states.abandoned ? (states.rtl ? [ 2, 3, 0, 1 ] : [ 2, 1, 0, 3 ]) : [ 1, 2 ]
+         };
++
++        styles[states.rtl ? "marginRight" : "marginLeft"] = 2;
++
++        return styles;
+       }
+     },
+ 
+@@ -1679,10 +1694,12 @@
+ 
+       style : function(states)
+       {
++        var rtl = states.rtl;
++
+         return {
+           source : "decoration/arrows/down.gif",
+-          paddingRight : 4,
+-          paddingLeft : 5
++          paddingRight : rtl ? 5 : 4,
++          paddingLeft : rtl ? 4 : 5
+         };
+       }
+     },
+@@ -1737,14 +1754,16 @@
+           show   : "icon"
+         };
+ 
++				var path = "decoration/arrows/";
++				var rtl = states.rtl;
+         if (states.lastYear) {
+-          result.icon = "decoration/arrows/rewind.gif";
++          result.icon = path + (rtl ? "forward" : "rewind") + ".gif";
+         } else if (states.lastMonth) {
+-          result.icon = "decoration/arrows/left.gif";
++          result.icon = path + (rtl ? "right" : "left") + ".gif";
+         } else if (states.nextYear) {
+-          result.icon = "decoration/arrows/forward.gif";
++          result.icon = path + (rtl ? "rewind" : "forward") + ".gif";
+         } else if (states.nextMonth) {
+-          result.icon = "decoration/arrows/right.gif";
++          result.icon = path + (rtl ? "left" : "right") + ".gif";
+         }
+ 
+         if (states.pressed || states.checked || states.abandoned) {
+@@ -1756,7 +1775,7 @@
+         }
+ 
+         if (states.pressed || states.checked || states.abandoned) {
+-          result.padding = [ 2, 0, 0, 2 ];
++          result.padding = rtl ? [ 2, 2, 0, 0 ] : [ 2, 0, 0, 2 ];
+         } else if (states.hovered) {
+           result.padding = 1;
+         } else {
+@@ -1922,7 +1941,7 @@
+ 
+         if (states.submenu)
+         {
+-          result.position = "right-top";
++          result.position = states.rtl ? "left-top" : "right-top";
+           result.offset = [-2, -3];
+         }
+ 
+@@ -2034,11 +2053,14 @@
+ 
+       style : function(states)
+       {
+-        return {
++        var styles = {
+           alignY : "middle",
+-          marginLeft : 14,
+           padding : 1
+         };
++
++        styles[states.rtl ? "marginRight" : "marginLeft"] = 14;
++
++        return styles;
+       }
+     },
+ 
+@@ -2048,8 +2070,12 @@
+ 
+       style : function(states)
+       {
++				var source = "decoration/arrows/";
++				source += states.rtl ? "left" : "right";
++				source += states.selected ? "-invert.gif" : ".gif";
++
+         return {
+-          source : states.selected ? "decoration/arrows/right-invert.gif" : "decoration/arrows/right.gif",
++          source : source,
+           alignY : "middle"
+         };
+       }
+@@ -2062,10 +2088,12 @@
+ 
+       style : function(states)
+       {
++				var icon = "decoration/menu/checkbox";
++				icon += states.selected ? "-invert" : "";
++				icon += states.rtl ? "-rtl" : "";
++
+         return {
+-          icon : !states.checked ? undefined :
+-            states.selected ? "decoration/menu/checkbox-invert.gif" :
+-              "decoration/menu/checkbox.gif"
++          icon : icon + ".gif"
+         }
+       }
+     },
+@@ -2251,7 +2279,7 @@
+         if (states.pressed || states.checked || states.abandoned)
+         {
+           border = "inset-thin";
+-          padding = [ 3, 2, 1, 4 ];
++          padding = states.rtl ? [ 3, 4, 1, 2 ] : [ 3, 2, 1, 4 ];
+         }
+         else if (states.hovered)
+         {
+@@ -2268,7 +2296,7 @@
+           decorator : border,
+           padding : padding,
+           backgroundColor : states.abandoned ? "button-abandoned" : "button",
+-          icon : "decoration/table/select-column-order.png"
++          icon : "decoration/table/select-column-order" + (states.rtl ? "-rtl" : "") + ".png"
+         };
+       }
+     },
+@@ -2355,9 +2383,7 @@
+     "table-header-cell/icon" : {
+       style : function(states)
+       {
+-        return {
+-          marginRight: 4
+-        }
++        return states.rtl ? { marginLeft : 4 } : { marginRight: 4 };
+       }
+     },
+ 
+@@ -2455,13 +2481,16 @@
+     {
+       style : function(state)
+       {
+-        return {
++        var styles = {
+           height : 20,
+           padding: 4,
+-          marginLeft : 4,
+           decorator : "inset-thin",
+           allowGrowX : true
+-        }
++        };
++
++        styles[state.rtl ? "marginRight" : "marginLeft"] = 4;
++
++        return styles;
+       }
+     },
+ 
+@@ -2469,13 +2498,16 @@
+     {
+       style : function(state)
+       {
+-        return {
++        var styles = {
+           height : 20,
+           padding: 4,
+-          marginRight : 4,
+           decorator : "inset-thin",
+           allowGrowX : true
+-        }
++        };
++
++        styles[state.rtl ? "marginLeft" : "marginRight"] = 4;
++
++        return styles;
+       }
+     },
+ 
+@@ -2569,6 +2601,7 @@
+       style : function(states)
+       {
+         return {
++					// Arabic numbers come from Hindu numerals and therefore LTR, and needs right align.
+           textAlign : "right"
+         }
+       }
+@@ -2645,4 +2678,4 @@
+ 
+     "app-header-label": "label"
+   }
+-});
+\ No newline at end of file
++});
+Index: framework/source/class/qx/theme/modern/Decoration.js
+===================================================================
+--- framework/source/class/qx/theme/modern/Decoration.js	(revision 27592)
++++ framework/source/class/qx/theme/modern/Decoration.js	(working copy)
+@@ -115,6 +115,17 @@
+       }
+     },
+ 
++    "pane-rtl" :
++    {
++      decorator : qx.ui.decoration.Grid,
++
++      style :
++      {
++        baseImage : "decoration/pane/pane.png",
++        insets    : [0, 0, 3, 2]
++      }
++    },
++
+     "pane-css" : {
+       decorator : [
+         qx.ui.decoration.MSingleBorder,
+@@ -213,6 +224,27 @@
+       }
+     },
+ 
++    "radiobutton-rtl" : {
++      decorator : [
++        qx.ui.decoration.MDoubleBorder,
++        qx.ui.decoration.MBackgroundColor,
++        qx.ui.decoration.MBorderRadius,
++        qx.ui.decoration.MBoxShadow
++      ],
++      style : {
++        backgroundColor : "radiobutton-background",
++        radius : 5,
++        width: 1,
++        innerWidth : 2,
++        color : "checkbox-border",
++        innerColor : "radiobutton-background",
++        shadowLength : 0,
++        shadowBlurRadius : 0,
++        shadowColor : "checkbox-focus",
++        insetRight: 5 // used for the shadow (3 border + 2 extra for the shadow)
++      }
++    },
++
+     "radiobutton-checked" : {
+       include : "radiobutton",
+       style : {
+@@ -330,6 +362,17 @@
+       }
+     },
+ 
++    "separator-horizontal" :
++    {
++      decorator: qx.ui.decoration.Single,
++
++      style :
++      {
++        widthRight : 1,
++        colorRight : "border-separator"
++      }
++    },
++
+     "separator-vertical" :
+     {
+       decorator: qx.ui.decoration.Single,
+@@ -359,6 +402,16 @@
+       }
+     },
+ 
++    "tooltip-error-rtl" :
++    {
++      decorator : qx.ui.decoration.Grid,
++
++      style : {
++        baseImage : "decoration/form/tooltip-error.png",
++        insets    : [ 2, 2, 5, 5 ]
++      }
++    },
++
+     "tooltip-error-css" :
+     {
+       decorator : [
+@@ -389,7 +442,18 @@
+       }
+     },
+ 
++    "tooltip-error-arrow-rtl" :
++    {
++      decorator: qx.ui.decoration.Background,
+ 
++      style: {
++        backgroundImage: "decoration/form/tooltip-error-arrow-rtl.png",
++        backgroundPositionY: "center",
++        backgroundRepeat: "no-repeat",
++        insets: [0, 10, 0, 0]
++      }
++    },
++
+     /*
+     ---------------------------------------------------------------------------
+       SHADOWS
+@@ -406,6 +470,16 @@
+       }
+     },
+ 
++    "shadow-window-rtl" :
++    {
++      decorator : qx.ui.decoration.Grid,
++
++      style : {
++        baseImage : "decoration/shadow/shadow.png",
++        insets    : [ 4, 4, 8, 8 ]
++      }
++    },
++
+     "shadow-window-css" :
+     {
+       decorator : [
+@@ -430,6 +504,16 @@
+       }
+     },
+ 
++    "shadow-popup-rtl" :
++    {
++      decorator : qx.ui.decoration.Grid,
++
++      style : {
++        baseImage : "decoration/shadow/shadow-small.png",
++        insets    : [ 0, 0, 3, 3 ]
++      }
++    },
++
+     "popup-css" :
+     {
+       decorator: [
+@@ -878,6 +962,30 @@
+       }
+     },
+ 
++    "checkbox-rtl" : {
++      decorator : [
++        qx.ui.decoration.MDoubleBorder,
++        qx.ui.decoration.MLinearBackgroundGradient,
++        qx.ui.decoration.MBoxShadow
++      ],
++
++      style : {
++        width: 1,
++        color: "checkbox-border",
++        innerWidth : 1,
++        innerColor : "checkbox-inner",
++
++        gradientStart : ["checkbox-start", 0],
++        gradientEnd : ["checkbox-end", 100],
++
++        shadowLength : 0,
++        shadowBlurRadius : 0,
++        shadowColor : "checkbox-focus",
++
++        insetRight: 4 // (2 for the border and two for the glow effect)
++      }
++    },
++
+     "checkbox-hovered" : {
+       include : "checkbox",
+       style : {
+@@ -1197,6 +1305,17 @@
+       }
+     },
+ 
++    "tabview-pane" :
++    {
++      decorator : qx.ui.decoration.Grid,
++
++      style :
++      {
++        baseImage : "decoration/tabview/tabview-pane.png",
++        insets : [ 4, 4, 7, 6 ]
++      }
++    },
++
+     "tabview-pane-css" :
+     {
+       decorator : [
+@@ -1308,6 +1427,26 @@
+       }
+     },
+ 
++    "tabview-page-button-top-active-css-rtl" :
++    {
++      decorator : [
++        qx.ui.decoration.MBorderRadius,
++        qx.ui.decoration.MSingleBorder,
++        qx.ui.decoration.MBackgroundColor,
++        qx.ui.decoration.MBoxShadow
++      ],
++
++      style : {
++        radius : [3, 0, 0, 3],
++        width: [1, 1, 0, 1],
++        color: "tabview-background",
++        backgroundColor : "tabview-start",
++        shadowLength: 1,
++        shadowColor: "shadow",
++        shadowBlurRadius: 2
++      }
++    },
++
+     "tabview-page-button-top-inactive-css" :
+     {
+       decorator : [
+@@ -1361,6 +1500,18 @@
+       }
+     },
+ 
++    "tabview-page-button-left-active-css-rtl" :
++    {
++      include : "tabview-page-button-top-active-css",
++
++      style : {
++        radius : [0, 3, 3, 0],
++        width: [1, 1, 1, 0],
++        shadowLength: 0,
++        shadowBlurRadius: 0
++      }
++    },
++
+     "tabview-page-button-left-inactive-css" :
+     {
+       include : "tabview-page-button-top-inactive-css",
+@@ -1373,6 +1524,18 @@
+       }
+     },
+ 
++    "tabview-page-button-left-inactive-css-rtl" :
++    {
++      include : "tabview-page-button-top-inactive-css",
++
++      style : {
++        radius : [0, 3, 3, 0],
++        width: [1, 1, 1, 0],
++        colorBottom : "tabview-inactive",
++        colorRight : "tabview-background"
++      }
++    },
++
+     "tabview-page-button-right-active-css" :
+     {
+       include : "tabview-page-button-top-active-css",
+@@ -1385,6 +1548,18 @@
+       }
+     },
+ 
++    "tabview-page-button-right-active-css-rtl" :
++    {
++      include : "tabview-page-button-top-active-css",
++
++      style : {
++        radius : [3, 0, 0, 3],
++        width: [1, 0, 1, 1],
++        shadowLength: 0,
++        shadowBlurRadius: 0
++      }
++    },
++
+     "tabview-page-button-right-inactive-css" :
+     {
+       include : "tabview-page-button-top-inactive-css",
+@@ -1397,10 +1572,22 @@
+       }
+     },
+ 
++    "tabview-page-button-right-inactive-css-rtl" :
++    {
++      include : "tabview-page-button-top-inactive-css",
+ 
++      style : {
++        radius : [3, 0, 0, 3],
++        width: [1, 0, 1, 1],
++        colorBottom : "tabview-inactive",
++        colorLeft : "tabview-background"
++      }
++    },
+ 
+ 
+ 
++
++
+     /*
+     ---------------------------------------------------------------------------
+       SPLITPANE
+@@ -1712,6 +1899,21 @@
+       }
+     },
+ 
++    "progressive-table-header-cell-rtl" :
++    {
++      decorator :  qx.ui.decoration.Single,
++
++      style :
++      {
++        backgroundImage  : "decoration/table/header-cell.png",
++        backgroundRepeat : "scale",
++
++        widthLeft : 1,
++        colorLeft : "progressive-table-header-border-right",
++        style      : "solid"
++      }
++    },
++
+     "progressive-table-header-cell-css" :
+     {
+       decorator :  [
+@@ -1729,7 +1931,24 @@
+       }
+     },
+ 
++    "progressive-table-header-cell-css-rtl" :
++    {
++      decorator :  [
++        qx.ui.decoration.MSingleBorder,
++        qx.ui.decoration.MLinearBackgroundGradient
++      ],
+ 
++      style :
++      {
++        gradientStart : ["table-header-start", 10],
++        gradientEnd : ["table-header-end", 90],
++
++        widthLeft : 1,
++        colorLeft : "progressive-table-header-border-right"
++      }
++    },
++
++
+     /*
+     ---------------------------------------------------------------------------
+       MENU
+Index: framework/source/class/qx/theme/modern/Appearance.js
+===================================================================
+--- framework/source/class/qx/theme/modern/Appearance.js	(revision 27592)
++++ framework/source/class/qx/theme/modern/Appearance.js	(working copy)
+@@ -103,19 +103,20 @@
+       style : function(states)
+       {
+         var icon = "nodrop";
++        var rtl = states.rtl;
+ 
+         if (states.copy) {
+-          icon = "copy";
++          icon = "copy" + rtl ? "-rtl" : "";
+         } else if (states.move) {
+           icon = "move";
+         } else if (states.alias) {
+-          icon = "alias";
++          icon = "alias" + rtl ? "-rtl" : "";
+         }
+ 
+         return {
+           source : "decoration/cursors/" + icon + ".gif",
+-          position : "right-top",
+-          offset : [ 2, 16, 2, 6 ]
++          position : rtl ? "left-top" : "right-top",
++          offset : rtl ? [ 2, 6, 2, 16 ] : [ 2, 16, 2, 6 ]
+         };
+       }
+     },
+@@ -279,11 +280,14 @@
+ 
+       style : function(states, superStyles)
+       {
+-        return {
++        var styles = {
+           icon : "decoration/arrows/down.png",
+-          padding : [superStyles.padding[0], superStyles.padding[1] - 6],
+-          marginLeft : 1
++          padding : [superStyles.padding[0], superStyles.padding[1] - 6]
+         };
++
++        styles[states.rtl ? "marginRight" : "marginLeft"] = 1;
++
++        return styles;
+       }
+     },
+ 
+@@ -307,9 +311,13 @@
+           qx.core.Environment.get("css.boxshadow");
+ 
+         var icon;
++				var rtl = "";
++
+         if (useCSS) {
++					rtl = states.rtl ? "-rtl" : "";
++
+           if (states.checked) {
+-            icon = "decoration/form/checked.png";
++            icon = "decoration/form/checked" + rtl + ".png";
+           } else if (states.undetermined) {
+             icon = "decoration/form/undetermined.png";
+           } else {
+@@ -325,6 +333,8 @@
+ 
+           // Checked
+           if (states.checked) {
++						rtl = states.rtl ? "-rtl" : "";
++
+             if (states.disabled) {
+               icon = "checkbox-checked";
+             } else if (states.focused) {
+@@ -364,7 +374,7 @@
+           icon = icon || "checkbox";
+ 
+           var invalid = states.invalid && !states.disabled ? "-invalid" : "";
+-          icon = "decoration/form/" + icon + invalid + ".png";
++          icon = "decoration/form/" + icon + invalid + rtl + ".png";
+         }
+ 
+         return {
+@@ -597,11 +607,14 @@
+     {
+       style : function(states)
+       {
+-        return {
+-          marginRight: 2,
++        var styles = {
+           padding: [2, 4, 1],
+           textColor: states.disabled ? "text-disabled" : "text-input"
+         };
++
++        styles[states.rtl ? "marginLeft" : "marginRight"] = 2;
++
++        return styles;
+       }
+     },
+ 
+@@ -706,7 +719,7 @@
+       style : function(states)
+       {
+         return {
+-          padding   : [1, 0, 1, 4],
++          padding   : states.rtl ? [1, 4, 1, 0] : [1, 0, 1, 4],
+           textColor : states.invalid ? "invalid" : "text-title",
+           font      : "bold"
+         };
+@@ -737,7 +750,7 @@
+       style : function(states)
+       {
+         return {
+-          padding   : [1, 0, 1, 4],
++          padding   : states.rtl ? [1, 4, 1, 0] : [1, 0, 1, 4],
+           textColor : states.invalid ? "invalid" : "text-title",
+           font      : "bold"
+         };
+@@ -754,7 +767,7 @@
+       style : function(states)
+       {
+         return {
+-          padding   : [1, 0, 1, 4],
++          padding   : states.rtl ? [1, 4, 1, 0] : [1, 0, 1, 4],
+           textColor : states.invalid ? "invalid" : "text-title",
+           font      : "bold"
+         };
+@@ -880,15 +893,16 @@
+ 
+       style : function(states)
+       {
++        var rtl = states.rtl;
+         var icon = "decoration/scrollbar/scrollbar-";
+         if (states.left) {
+-          icon += "left.png";
++          icon += rtl ? "right" : "left";
+         } else if (states.right) {
+-          icon += "right.png";
++          icon += rtl ? "left" : "right";
+         } else if (states.up) {
+-          icon += "up.png";
++          icon += "up";
+         } else {
+-          icon += "down.png";
++          icon += "down";
+         }
+ 
+         var useCSS = qx.core.Environment.get("css.gradients");
+@@ -897,8 +911,8 @@
+         {
+           var paddingLeft = states.left ? 3 : 4;
+           return {
+-            padding : useCSS ? [3, 0, 3, paddingLeft] : [2, 0, 2, paddingLeft],
+-            icon : icon,
++            padding : useCSS ? (rtl ? [3, paddingLeft, 3, 0] : [3, 0, 3, paddingLeft]) : (rtl ? [2, paddingLeft, 2, 0] : [2, 0, 2, paddingLeft]),
++            icon : icon + ".png",
+             width: 15,
+             height: 14
+           };
+@@ -908,7 +922,7 @@
+ 
+           return {
+             padding : useCSS ? 3 : [3, 2],
+-            icon : icon,
++            icon : icon + ".png",
+             width: 14,
+             height: 15,
+             margin: 0
+@@ -1071,12 +1085,11 @@
+ 
+       style : function(states)
+       {
++				var icon = states.vertical ? "down" : states.rtl ? "left" : "right";
+         return {
+           padding : 5,
+           center : true,
+-          icon : states.vertical ?
+-            "decoration/arrows/down.png" :
+-            "decoration/arrows/right.png"
++          icon : "decoration/arrows/" + icon + ".png" 
+         };
+       }
+     },
+@@ -1088,13 +1101,12 @@
+ 
+       style : function(states)
+       {
++				var icon = states.vertical ? "up" : states.rtl ? "right" : "left";
++
+         return {
+           padding : 5,
+           center : true,
+-          icon : states.vertical ?
+-            "decoration/arrows/up.png" :
+-            "decoration/arrows/left.png"
+-        };
++          icon : "decoration/arrows/" + icon + ".png"        };
+       }
+     },
+ 
+@@ -1123,12 +1135,14 @@
+ 
+       style : function(states)
+       {
++        var rtl = states.rtl;
++
+         var result =
+         {
+           marginBottom : states.barTop ? -1 : 0,
+           marginTop : states.barBottom ? -4 : 0,
+-          marginLeft : states.barRight ? -3 : 0,
+-          marginRight : states.barLeft ? -1 : 0,
++          marginLeft : states.barRight ? (rtl ? -1 : -3) : 0,
++          marginRight : states.barLeft ? (rtl ? -3 : -1) : 0,
+           paddingTop : 0,
+           paddingRight : 0,
+           paddingBottom : 0,
+@@ -1137,8 +1151,8 @@
+ 
+         if (states.barTop || states.barBottom)
+         {
+-          result.paddingLeft = 5;
+-          result.paddingRight = 7;
++          result.paddingLeft = rtl ? 7 : 5;
++          result.paddingRight = rtl ? 5 : 7;
+         }
+         else
+         {
+@@ -1206,14 +1220,16 @@
+       {
+         var useCSS = qx.core.Environment.get("css.gradients") &&
+           qx.core.Environment.get("css.borderradius");
++				var rtl = states.rtl;
++
+         return {
+           decorator : useCSS ? "tabview-pane-css" : "tabview-pane",
+           minHeight : 100,
+ 
+           marginBottom : states.barBottom ? -1 : 0,
+           marginTop : states.barTop ? -1 : 0,
+-          marginLeft : states.barLeft ? -1 : 0,
+-          marginRight : states.barRight ? -1 : 0
++          marginLeft : states.barLeft ? (rtl ? 0 : -1) : (rtl ? -1 : 0),
++          marginRight : states.barRight ? (rtl ? 0 : -1) : (rtl ? -1 : 0)
+         };
+       }
+     },
+@@ -1245,6 +1261,8 @@
+           qx.core.Environment.get("css.boxshadow") &&
+           qx.core.Environment.get("css.gradients");
+ 
++        var rtl = states.rtl;
++
+         if (states.checked)
+         {
+           if (states.barTop)
+@@ -1272,7 +1290,7 @@
+           }
+           else
+           {
+-            decorator = "tabview-page-button-left-active";
++            decorator = "tabview-page-button-" + (rtl ? "right" : "left") + "-active";
+             padding = useCSS ? [5, 10] : [ 6, 13 ];
+             marginTop = states.firstTab ? 0 : -5;
+             marginBottom = states.lastTab ? 0 : -5;
+@@ -1286,7 +1304,7 @@
+             padding = useCSS ? [3, 9] : [ 4, 10 ];
+             marginTop = 4;
+             marginLeft = states.firstTab ? 5 : 1;
+-            marginRight = 1;
++            marginRight = states.firstTab ? 5 : 1;
+           }
+           else if (states.barBottom)
+           {
+@@ -1294,12 +1312,12 @@
+             padding = useCSS ? [3, 9] : [ 4, 10 ];
+             marginBottom = 4;
+             marginLeft = states.firstTab ? 5 : 1;
+-            marginRight = 1;
++            marginRight = states.firstTab ? 5 : 1;
+             marginTop = 3;
+           }
+           else if (states.barRight)
+           {
+-            decorator = "tabview-page-button-right-inactive";
++            decorator = "tabview-page-button-" + (rtl ? "left" : "right") + "-inactive";
+             padding = useCSS ? [3, 9] : [ 4, 10 ];
+             marginRight = 5;
+             marginTop = states.firstTab ? 5 : 1;
+@@ -1308,7 +1326,7 @@
+           }
+           else
+           {
+-            decorator = "tabview-page-button-left-inactive";
++            decorator = "tabview-page-button-" + (rtl ? "right" : "left") + "-inactive";
+             padding = useCSS ? [3, 9] : [ 4, 10 ];
+             marginLeft = 5;
+             marginTop = states.firstTab ? 5 : 1;
+@@ -1327,8 +1345,8 @@
+           padding   : padding,
+           marginTop : marginTop,
+           marginBottom : marginBottom,
+-          marginLeft : marginLeft,
+-          marginRight : marginRight,
++          marginLeft : rtl ? marginRight : marginLeft,
++          marginRight : rtl ? marginLeft : marginRight,
+           textColor : states.disabled ? "text-disabled" :
+             states.checked ? "text-active" : "text-inactive"
+         };
+@@ -1564,9 +1582,7 @@
+ 
+       style : function(states)
+       {
+-        return {
+-          paddingRight : 5
+-        };
++        return (states.rtl ? {paddingLeft : 5} : {paddingRight : 5});
+       }
+     },
+ 
+@@ -1597,7 +1613,7 @@
+         }
+ 
+         return {
+-          padding : [0, 5, 0, 2],
++          padding : states.rtl ? [0, 2, 0, 5] : [0, 5, 0, 2],
+           source  : icon
+         };
+       }
+@@ -1696,11 +1712,14 @@
+     {
+       style : function(states)
+       {
+-        return {
++        var styles = {
+           icon : "decoration/tree/open.png",
+-          paddingLeft : 5,
+           paddingTop : 2
+         };
++
++        styles[states.rtl ? "paddingRight" : "paddingLeft"] = 5;
++
++        return styles;
+       }
+     },
+ 
+@@ -1708,11 +1727,14 @@
+     {
+       style : function(states)
+       {
+-        return {
++        var styles = {
+           icon : "decoration/tree/closed.png",
+-          paddingLeft : 5,
+           paddingTop : 2
+         };
++
++        styles[states.rtl ? "paddingRight" : "paddingLeft"] = 5;
++
++        return styles;
+       }
+     },
+ 
+@@ -1779,17 +1801,20 @@
+       {
+         var useCSS = qx.core.Environment.get("css.borderradius") &&
+           qx.core.Environment.get("css.boxshadow");
++
++        var rtl = states.rtl;
++
+         return {
+           textColor: "text-selected",
+           backgroundColor : undefined,
+           placeMethod: "widget",
+-          offset: [0, 0, 0, 14],
++          offset: rtl ? [0, 14, 0, 0] : [0, 0, 0, 14],
+           marginTop: -2,
+-          position: "right-top",
++          position: rtl ? "left-top" : "right-top",
+           showTimeout: 100,
+           hideTimeout: 10000,
+-          decorator: useCSS ? "tooltip-error-css" : "tooltip-error",
+-          shadow: "tooltip-error-arrow",
++          decorator: useCSS ? "tooltip-error-css" : (rtl ? "tooltip-error-rtl" : "tooltip-error"),
++          shadow: rtl ? "tooltip-error-arrow-rtl" : "tooltip-error-arrow",
+           font: "bold",
+           padding: useCSS ? 3 : undefined
+         };
+@@ -1828,7 +1853,7 @@
+           decorator : decorator,
+           shadow : shadow,
+           contentPadding : [ 10, 10, 10, 10 ],
+-          margin : [0, 5, 5, 0]
++          margin : states.rtl ? [0, 0, 5, 5] : [0, 5, 5, 0]
+ 
+         };
+       }
+@@ -1882,12 +1907,17 @@
+           decorator += "-css";
+         }
+ 
+-        return {
++				var rtl = states.rtl;
++
++        var styles = {
+           decorator    : decorator,
+           textColor    : states.active ? "window-caption-active-text" : "text-gray",
+-          minHeight    : 26,
+-          paddingRight : 2
++          minHeight    : 26
+         };
++
++        styles[rtl ? "paddingLeft" : "paddingRight"] = 2;
++
++        return styles;
+       }
+     },
+ 
+@@ -1896,7 +1926,7 @@
+       style : function(states)
+       {
+         return {
+-          margin : [ 5, 0, 3, 6 ]
++          margin : states.rtl ? [ 5, 6, 3, 0 ] : [ 5, 0, 3, 6 ]
+         };
+       }
+     },
+@@ -1905,11 +1935,13 @@
+     {
+       style : function(states)
+       {
++        var rtl = states.rtl;
++
+         return {
+           alignY      : "middle",
+           font        : "bold",
+-          marginLeft  : 6,
+-          marginRight : 12
++          marginLeft  : rtl ? 12 : 6,
++          marginRight : rtl ? 6 : 12
+         };
+       }
+     },
+@@ -1924,7 +1956,7 @@
+           icon : states.active ? states.hovered ? "decoration/window/minimize-active-hovered.png" :
+                                                   "decoration/window/minimize-active.png" :
+                                                   "decoration/window/minimize-inactive.png",
+-          margin : [ 4, 8, 2, 0 ]
++          margin : states.rtl ? [ 4, 0, 2, 8 ] : [ 4, 8, 2, 0 ]
+         };
+       }
+     },
+@@ -1935,11 +1967,14 @@
+ 
+       style : function(states)
+       {
++				var rtl = states.rtl;
++				var icon = "decoration/window/restore-";
++				icon += states.active ? states.hovered ? "active-hovered" : "active" : "inactive"
++				icon += rtl ? "-rtl" : "";
++
+         return {
+-          icon : states.active ? states.hovered ? "decoration/window/restore-active-hovered.png" :
+-                                                  "decoration/window/restore-active.png" :
+-                                                  "decoration/window/restore-inactive.png",
+-          margin : [ 5, 8, 2, 0 ]
++          icon :  icon + ".png",
++          margin : rtl ? [ 5, 0, 2, 8 ] : [ 5, 8, 2, 0 ]
+         };
+       }
+     },
+@@ -1954,7 +1989,7 @@
+           icon : states.active ? states.hovered ? "decoration/window/maximize-active-hovered.png" :
+                                                   "decoration/window/maximize-active.png" :
+                                                   "decoration/window/maximize-inactive.png",
+-          margin : [ 4, 8, 2, 0 ]
++          margin : states.rtl ? [ 4, 0, 2, 8 ] : [ 4, 8, 2, 0 ]
+         };
+       }
+     },
+@@ -1969,7 +2004,7 @@
+           icon : states.active ? states.hovered ? "decoration/window/close-active-hovered.png" :
+                                                   "decoration/window/close-active.png" :
+                                                   "decoration/window/close-inactive.png",
+-          margin : [ 4, 8, 2, 0 ]
++          margin : states.rtl ? [ 4, 0, 2, 8 ] : [ 4, 8, 2, 0 ]
+         };
+       }
+     },
+@@ -1981,6 +2016,7 @@
+         var useCSS = qx.core.Environment.get("css.borderradius") &&
+           qx.core.Environment.get("css.gradients") &&
+           qx.core.Environment.get("css.boxshadow");
++
+         return {
+           padding   : [ 2, 6 ],
+           decorator : useCSS ? "window-statusbar-css" : "window-statusbar",
+@@ -2125,10 +2161,13 @@
+ 
+       style : function(states)
+       {
+-        return {
+-          source : "decoration/arrows/down.png",
+-          paddingLeft : 5
++        var styles = {
++          source : "decoration/arrows/down.png"
+         };
++
++        styles[states.rtl ? "paddingRight" : "paddingLeft"] = 5;
++
++        return styles;
+       }
+     },
+ 
+@@ -2190,16 +2229,19 @@
+           shadow : undefined
+         };
+ 
++        var rtl = states.rtl;
++				var path = "decoration/arrows/";
++
+         if (states.lastYear) {
+-          result.icon = "decoration/arrows/rewind.png";
+-          result.marginRight = 1;
++	          result.icon = path + (rtl ? "forward" : "rewind") + ".png";
++						result[rtl ? "marginLeft" : "marginRight"] = 1;
+         } else if (states.lastMonth) {
+-          result.icon = "decoration/arrows/left.png";
++          result.icon = path + (rtl ? "right" : "left") + ".png";
+         } else if (states.nextYear) {
+-          result.icon = "decoration/arrows/forward.png";
+-          result.marginLeft = 1;
++	          result.icon = path + (rtl ? "rewind" : "forward") + ".png";
++						result[rtl ? "marginRight" : "marginLeft"] = 1;
+         } else if (states.nextMonth) {
+-          result.icon = "decoration/arrows/right.png";
++          result.icon = path + (rtl ? "left" : "right") + ".png";
+         }
+ 
+         return result;
+@@ -2398,7 +2440,7 @@
+ 
+         if (states.submenu)
+         {
+-          result.position = "right-top";
++          result.position = (states.rtl ? "left-top" : "right-top");
+           result.offset = [-2, -3];
+         }
+ 
+@@ -2513,11 +2555,14 @@
+ 
+       style : function(states)
+       {
+-        return {
++        var styles = {
+           alignY : "middle",
+-          marginLeft : 14,
+           padding : 1
+         };
++
++        styles[states.rtl ? "marginRight" : "marginLeft"] = 14;
++
++        return styles;
+       }
+     },
+ 
+@@ -2527,8 +2572,12 @@
+ 
+       style : function(states)
+       {
++				var source = "decoration/arrows/";
++				source += states.rtl ? "left" : "right";
++				source += states.selected ? "-invert.gif" : ".gif";
++
+         return {
+-          source : states.selected ? "decoration/arrows/right-invert.png" : "decoration/arrows/right.png",
++          source : source,
+           alignY : "middle"
+         };
+       }
+@@ -2541,10 +2590,12 @@
+ 
+       style : function(states)
+       {
++				var icon = "decoration/menu/checkbox";
++				icon += states.selected ? "-invert" : "";
++				icon += states.rtl ? "-rtl" : "";
++
+         return {
+-          icon : !states.checked ? undefined :
+-            states.selected ? "decoration/menu/checkbox-invert.gif" :
+-              "decoration/menu/checkbox.gif"
++          icon : !states.checked ? undefined : icon + ".gif"
+         };
+       }
+     },
+@@ -2744,13 +2795,16 @@
+     {
+       style : function(state)
+       {
+-        return {
++        var styles = {
+           height : 20,
+           padding: 4,
+-          marginLeft : 4,
+           decorator : "main",
+           allowGrowX : true
+         };
++
++        styles[state.rtl ? "marginRight" : "marginLeft"] = 4;
++
++        return styles;
+       }
+     },
+ 
+@@ -2758,13 +2812,16 @@
+     {
+       style : function(state)
+       {
+-        return {
++        var styles = {
+           height : 20,
+           padding: 4,
+-          marginRight : 4,
+           decorator : "main",
+           allowGrowX : true
+         };
++
++        styles[state.rtl ? "marginLeft" : "marginRight"] = 4;
++
++        return styles;
+       }
+     },
+ 
+@@ -2833,7 +2890,7 @@
+         return {
+           decorator : useCSS ? "table-scroller-header-css" : "table-scroller-header",
+           padding   : 3,
+-          icon      : "decoration/table/select-column-order.png"
++          icon 			:	"decoration/table/select-column-order" + (states.rtl ? "-rtl" : "") + ".png"
+         };
+       }
+     },
+@@ -2919,11 +2976,14 @@
+     {
+       style : function(states)
+       {
+-        return {
++        var styles = {
+           minWidth : 0,
+-          alignY : "middle",
+-          paddingRight : 5
++          alignY : "middle"
+         };
++
++        styles[states.rtl ? "paddingLeft" : "paddingRight"] = 5;
++
++        return styles;
+       }
+     },
+ 
+@@ -2933,7 +2993,7 @@
+       {
+         return {
+           alignY : "middle",
+-          alignX : "right"
++          alignX : states.rtl ? "left" : "right"
+         };
+       }
+     },
+@@ -2942,11 +3002,14 @@
+     {
+       style : function(states)
+       {
+-        return {
++        var styles = {
+           minWidth : 0,
+-          alignY : "middle",
+-          paddingRight : 5
++          alignY : "middle"
+         };
++
++        styles[states.rtl ? "paddingLeft" : "paddingRight"] = 5;
++
++        return styles;
+       }
+     },
+ 
+@@ -3020,12 +3083,15 @@
+       style : function(states)
+       {
+         var useCSS = qx.core.Environment.get("css.gradients");
+-        return {
++        var styles = {
+           minWidth : 40,
+           minHeight : 25,
+-          paddingLeft : 6,
+           decorator : useCSS ? "progressive-table-header-cell-css" : "progressive-table-header-cell"
+         };
++
++        styles[states.rtl ? "paddingRight" : "paddingLeft"] = 6;
++
++        return styles;
+       }
+     },
+ 
+@@ -3124,6 +3190,7 @@
+       style : function(states)
+       {
+         return {
++					// Arabic numbers come from Hindu numerals and therefore LTR, and needs right align.
+           textAlign : "right"
+         };
+       }
+Index: framework/source/class/qx/theme/Simple.js
+===================================================================
+--- framework/source/class/qx/theme/Simple.js	(revision 27592)
++++ framework/source/class/qx/theme/Simple.js	(working copy)
+@@ -30,5 +30,7 @@
+     font : qx.theme.simple.Font,
+     appearance : qx.theme.simple.Appearance,
+     icon : qx.theme.icon.Tango
+-  }
+-});
+\ No newline at end of file
++  },
++
++	directions : ["left-to-right", "right-to-left"]
++});
+Index: framework/source/class/qx/theme/simple/Decoration.js
+===================================================================
+--- framework/source/class/qx/theme/simple/Decoration.js	(revision 27592)
++++ framework/source/class/qx/theme/simple/Decoration.js	(working copy)
+@@ -268,6 +268,17 @@
+       }
+     },
+ 
++    "button-box-right-borderless-rtl" :
++    {
++      include : "button-box",
++
++      style :
++      {
++        radius : [3, 0, 0, 3],
++        width: [1, 0, 1, 1]
++      }
++    },
++
+     "button-box-pressed-right-borderless" :
+     {
+       include : "button-box-pressed",
+@@ -279,6 +290,17 @@
+       }
+     },
+ 
++    "button-box-pressed-right-borderless-rtl" :
++    {
++      include : "button-box-pressed",
++
++      style :
++      {
++        radius : [3, 0, 0, 3],
++        width: [1, 0, 1, 1]
++      }
++    },
++
+     "button-box-pressed-hovered-right-borderless" :
+     {
+       include : "button-box-pressed-hovered",
+@@ -290,6 +312,17 @@
+       }
+     },
+ 
++    "button-box-pressed-hovered-right-borderless-rtl" :
++    {
++      include : "button-box-pressed-hovered",
++
++      style :
++      {
++        radius : [3, 0, 0, 3],
++        width: [1, 0, 1, 1]
++      }
++    },
++
+     "button-box-hovered-right-borderless" :
+     {
+       include : "button-box-hovered",
+@@ -301,7 +334,18 @@
+       }
+     },
+ 
++    "button-box-hovered-right-borderless-rtl" :
++    {
++      include : "button-box-hovered",
+ 
++      style :
++      {
++        radius : [3, 0, 0, 3],
++        width: [1, 0, 1, 1]
++      }
++    },
++
++
+     /*
+     ---------------------------------------------------------------------------
+       BUTTON TOP RIGHT
+@@ -318,6 +362,17 @@
+       }
+     },
+ 
++    "button-box-top-right-rtl" :
++    {
++      include : "button-box",
++
++      style :
++      {
++        radius : [3, 0, 0, 0],
++        width: [1, 0, 1, 1]
++      }
++    },
++
+     "button-box-pressed-top-right" :
+     {
+       include : "button-box-pressed",
+@@ -329,6 +384,17 @@
+       }
+     },
+ 
++    "button-box-pressed-top-right-rtl" :
++    {
++      include : "button-box-pressed",
++
++      style :
++      {
++        radius : [3, 0, 0, 0],
++        width: [1, 0, 1, 1]
++      }
++    },
++
+     "button-box-pressed-hovered-top-right" :
+     {
+       include : "button-box-pressed-hovered",
+@@ -340,6 +406,17 @@
+       }
+     },
+ 
++    "button-box-pressed-hovered-top-right-rt" :
++    {
++      include : "button-box-pressed-hovered",
++
++      style :
++      {
++        radius : [3, 0, 0, 0],
++        width: [1, 0, 1, 1]
++      }
++    },
++
+     "button-box-hovered-top-right" :
+     {
+       include : "button-box-hovered",
+@@ -351,7 +428,18 @@
+       }
+     },
+ 
++    "button-box-hovered-top-right-rtl" :
++    {
++      include : "button-box-hovered",
+ 
++      style :
++      {
++        radius : [3, 0, 0, 0],
++        width: [1, 0, 1, 1]
++      }
++    },
++
++
+     /*
+     ---------------------------------------------------------------------------
+       BUTTON BOTOM RIGHT
+@@ -368,6 +456,17 @@
+       }
+     },
+ 
++    "button-box-bottom-right-rtl" :
++    {
++      include : "button-box",
++
++      style :
++      {
++        radius : [0, 0, 0, 3],
++        width : [0, 0, 1, 1]
++      }
++    },
++
+     "button-box-pressed-bottom-right" :
+     {
+       include : "button-box-pressed",
+@@ -379,6 +478,17 @@
+       }
+     },
+ 
++    "button-box-pressed-bottom-right-rtl" :
++    {
++      include : "button-box-pressed",
++
++      style :
++      {
++        radius : [0, 0, 0, 3],
++        width : [0, 0, 1, 1]
++      }
++    },
++
+     "button-box-pressed-hovered-bottom-right" :
+     {
+       include : "button-box-pressed-hovered",
+@@ -390,6 +500,17 @@
+       }
+     },
+ 
++    "button-box-pressed-hovered-bottom-right-rtl" :
++    {
++      include : "button-box-pressed-hovered",
++
++      style :
++      {
++        radius : [0, 0, 0, 3],
++        width : [0, 0, 1, 1]
++      }
++    },
++
+     "button-box-hovered-bottom-right" :
+     {
+       include : "button-box-hovered",
+@@ -401,7 +522,18 @@
+       }
+     },
+ 
++    "button-box-hovered-bottom-right-rtl" :
++    {
++      include : "button-box-hovered",
+ 
++      style :
++      {
++        radius : [0, 0, 0, 3],
++        width : [0, 0, 1, 1]
++      }
++    },
++
++
+     /*
+     ---------------------------------------------------------------------------
+       BUTTON BOTOM LEFT
+@@ -418,6 +550,17 @@
+       }
+     },
+ 
++    "button-box-bottom-left-rtl" :
++    {
++      include : "button-box",
++
++      style :
++      {
++        radius : [0, 0, 3, 0],
++        width : [0, 1, 1, 0]
++      }
++    },
++
+     "button-box-pressed-bottom-left" :
+     {
+       include : "button-box-pressed",
+@@ -429,6 +572,17 @@
+       }
+     },
+ 
++    "button-box-pressed-bottom-left-rtl" :
++    {
++      include : "button-box-pressed",
++
++      style :
++      {
++        radius : [0, 0, 3, 0],
++        width : [0, 1, 1, 0]
++      }
++    },
++
+     "button-box-pressed-hovered-bottom-left" :
+     {
+       include : "button-box-pressed-hovered",
+@@ -440,6 +594,17 @@
+       }
+     },
+ 
++    "button-box-pressed-hovered-bottom-left-rtl" :
++    {
++      include : "button-box-pressed-hovered",
++
++      style :
++      {
++        radius : [0, 0, 3, 0],
++        width : [0, 1, 1, 0]
++      }
++    },
++
+     "button-box-hovered-bottom-left" :
+     {
+       include : "button-box-hovered",
+@@ -451,7 +616,18 @@
+       }
+     },
+ 
++    "button-box-hovered-bottom-left-rtl" :
++    {
++      include : "button-box-hovered",
+ 
++      style :
++      {
++        radius : [0, 0, 3, 0],
++        width : [0, 1, 1, 0]
++      }
++    },
++
++
+     /*
+     ---------------------------------------------------------------------------
+       BUTTON TOP LEFT
+@@ -468,6 +644,17 @@
+       }
+     },
+ 
++    "button-box-top-left-rtl" :
++    {
++      include : "button-box",
++
++      style :
++      {
++        radius : [0, 3, 0, 0],
++        width : [1, 1, 0, 0]
++      }
++    },
++
+     "button-box-pressed-top-left" :
+     {
+       include : "button-box-pressed",
+@@ -479,6 +666,17 @@
+       }
+     },
+ 
++    "button-box-pressed-top-left-rtl" :
++    {
++      include : "button-box-pressed",
++
++      style :
++      {
++        radius : [0, 3, 0, 0],
++        width : [1, 1, 0, 0]
++      }
++    },
++
+     "button-box-pressed-hovered-top-left" :
+     {
+       include : "button-box-pressed-hovered",
+@@ -490,6 +688,17 @@
+       }
+     },
+ 
++    "button-box-pressed-hovered-top-left-rtl" :
++    {
++      include : "button-box-pressed-hovered",
++
++      style :
++      {
++        radius : [0, 3, 0, 0],
++        width : [1, 1, 0, 0]
++      }
++    },
++
+     "button-box-hovered-top-left" :
+     {
+       include : "button-box-hovered",
+@@ -501,7 +710,18 @@
+       }
+     },
+ 
++    "button-box-hovered-top-left-rtl" :
++    {
++      include : "button-box-hovered",
+ 
++      style :
++      {
++        radius : [0, 3, 0, 0],
++        width : [1, 1, 0, 0]
++      }
++    },
++
++
+     /*
+     ---------------------------------------------------------------------------
+       BUTTON MIDDLE
+@@ -518,6 +738,17 @@
+       }
+     },
+ 
++    "button-box-middle-rtl" :
++    {
++      include : "button-box",
++
++      style :
++      {
++        radius : 0,
++        width : [1, 1, 1, 0]
++      }
++    },
++
+     "button-box-pressed-middle" :
+     {
+       include : "button-box-pressed",
+@@ -529,6 +760,17 @@
+       }
+     },
+ 
++    "button-box-pressed-middle-rtl" :
++    {
++      include : "button-box-pressed",
++
++      style :
++      {
++        radius : 0,
++        width : [1, 1, 1, 0]
++      }
++    },
++
+     "button-box-pressed-hovered-middle" :
+     {
+       include : "button-box-pressed-hovered",
+@@ -540,6 +782,17 @@
+       }
+     },
+ 
++    "button-box-pressed-hovered-middle-rtl" :
++    {
++      include : "button-box-pressed-hovered",
++
++      style :
++      {
++        radius : 0,
++        width : [1, 1, 1, 0]
++      }
++    },
++
+     "button-box-hovered-middle" :
+     {
+       include : "button-box-hovered",
+@@ -551,7 +804,18 @@
+       }
+     },
+ 
++    "button-box-hovered-middle-rtl" :
++    {
++      include : "button-box-hovered",
+ 
++      style :
++      {
++        radius : 0,
++        width : [1, 1, 1, 0]
++      }
++    },
++
++
+     /*
+     ---------------------------------------------------------------------------
+       BUTTON LEFT
+@@ -568,6 +832,17 @@
+       }
+     },
+ 
++    "button-box-left-rtl" :
++    {
++      include : "button-box",
++
++      style :
++      {
++        radius : [3, 0, 0, 3],
++        width : [1, 1, 1, 0]
++      }
++    },
++
+     "button-box-pressed-left" :
+     {
+       include : "button-box-pressed",
+@@ -579,6 +854,17 @@
+       }
+     },
+ 
++    "button-box-pressed-left-rtl" :
++    {
++      include : "button-box-pressed",
++
++      style :
++      {
++        radius : [3, 0, 0, 3],
++        width : [1, 1, 1, 0]
++      }
++    },
++
+     "button-box-pressed-hovered-left" :
+     {
+       include : "button-box-pressed-hovered",
+@@ -590,6 +876,17 @@
+       }
+     },
+ 
++    "button-box-pressed-hovered-left-rtl" :
++    {
++      include : "button-box-pressed-hovered",
++
++      style :
++      {
++        radius : [3, 0, 0, 3],
++        width : [1, 1, 1, 0]
++      }
++    },
++
+     "button-box-hovered-left" :
+     {
+       include : "button-box-hovered",
+@@ -601,7 +898,18 @@
+       }
+     },
+ 
++    "button-box-hovered-left-rtl" :
++    {
++      include : "button-box-hovered",
+ 
++      style :
++      {
++        radius : [3, 0, 0, 3],
++        width : [1, 1, 1, 0]
++      }
++    },
++
++
+     /*
+     ---------------------------------------------------------------------------
+       SEPARATOR
+Index: framework/source/class/qx/theme/simple/Appearance.js
+===================================================================
+--- framework/source/class/qx/theme/simple/Appearance.js	(revision 27592)
++++ framework/source/class/qx/theme/simple/Appearance.js	(working copy)
+@@ -157,19 +157,20 @@
+       style : function(states)
+       {
+         var icon = "nodrop";
++        var rtl = states.rtl;
+ 
+         if (states.copy) {
+-          icon = "copy";
++          icon = "copy" + (rtl ? "-rtl" : "");
+         } else if (states.move) {
+           icon = "move";
+         } else if (states.alias) {
+-          icon = "alias";
++          icon = "alias" + (rtl ? "-rtl" : "");
+         }
+ 
+         return {
+           source : qx.theme.simple.Image.URLS["cursor-" + icon],
+-          position : "right-top",
+-          offset : [ 2, 16, 2, 6 ]
++          position : rtl ? "left-top" : "right-top",
++          offset : rtl ? [ 2, 6, 2, 16 ] : [ 2, 16, 2, 6 ]
+         };
+       }
+     },
+@@ -193,7 +194,7 @@
+       style : function(states)
+       {
+         return {
+-          icon : qx.theme.simple.Image.URLS["arrow-" + (states.vertical ? "down" : "right")]
++          icon : qx.theme.simple.Image.URLS["arrow-" + (states.vertical ? "down" : (states.rtl ? "left" : "right"))]
+         };
+       }
+     },
+@@ -206,7 +207,7 @@
+       style : function(states)
+       {
+         return {
+-          icon : qx.theme.simple.Image.URLS["arrow-" + (states.vertical ? "up" : "left")]
++          icon : qx.theme.simple.Image.URLS["arrow-" + (states.vertical ? "up" : (states.rtl ? "right" : "left"))]
+         };
+       }
+     },
+@@ -241,7 +242,7 @@
+         return {
+           decorator : "table-header-column-button",
+           padding : 3,
+-          icon : qx.theme.simple.Image.URLS["select-column-order"]
++          icon : qx.theme.simple.Image.URLS["select-column-order" + (states.rtl ? "-rtl" : "")]
+         };
+       }
+     },
+@@ -301,18 +302,25 @@
+ 
+       style : function(states)
+       {
+-        return {
+-          decorator : states.first ? "table-header-cell-first" : "table-header-cell",
++				var rtl = states.rtl;
++				var decorator = states.first ? "table-header-cell-first" : "table-header-cell";
++				decorator += rtl ? "-rtl" : "";
++
++        var styles = {
++          decorator : decorator,
+           minWidth: 13,
+           font : "bold",
+           paddingTop: 3,
+-          paddingLeft: 5,
+           cursor : "pointer",
+           sortIcon : states.sorted ?
+               (qx.theme.simple.Image.URLS["table-" +
+                  (states.sortedAscending ? "ascending" : "descending")
+               ]) : undefined
+-        }
++        };
++
++        styles[rtl ? "paddingRight" : "paddingLeft"] = 5;
++
++        return styles;
+       }
+     },
+ 
+@@ -321,9 +329,7 @@
+       include : "atom/icon",
+ 
+       style : function(states) {
+-        return {
+-          paddingRight : 5
+-        }
++        return (states.rtl ? {paddingLeft : 5} : {paddingRight : 5});
+       }
+     },
+ 
+@@ -331,11 +337,16 @@
+     {
+       style : function(states)
+       {
+-        return {
+-          alignY : "middle",
+-          alignX : "right",
+-          paddingRight : 5
+-        }
++        var rtl = states.rtl;
++
++        var styles = {
++          alignY : "middle"
++        };
++
++        styles["alignX"] = rtl ? "left" : "right";
++        styles[rtl ? "paddingLeft" : "paddingRight"] = 5;
++
++        return styles;
+       }
+     },
+ 
+@@ -447,7 +458,7 @@
+       style : function(states)
+       {
+         return {
+-          icon : qx.theme.simple.Image.URLS["treevirtual-minus-only"]
++          icon : qx.theme.simple.Image.URLS["treevirtual-minus-only" + (states.rtl ? "-rtl" : "")]
+         }
+       }
+     },
+@@ -457,7 +468,7 @@
+       style : function(states)
+       {
+         return {
+-          icon : qx.theme.simple.Image.URLS["treevirtual-plus-only"]
++          icon : qx.theme.simple.Image.URLS["treevirtual-plus-only" + (states.rtl ? "-rtl" : "")]
+         }
+       }
+     },
+@@ -467,7 +478,7 @@
+       style : function(states)
+       {
+         return {
+-          icon : qx.theme.simple.Image.URLS["treevirtual-minus-start"]
++          icon : qx.theme.simple.Image.URLS["treevirtual-minus-start" + (states.rtl ? "-rtl" : "")]
+         }
+       }
+     },
+@@ -477,7 +488,7 @@
+       style : function(states)
+       {
+         return {
+-          icon : qx.theme.simple.Image.URLS["treevirtual-plus-start"]
++          icon : qx.theme.simple.Image.URLS["treevirtual-plus-start" + (states.rtl ? "-rtl" : "")]
+         }
+       }
+     },
+@@ -487,7 +498,7 @@
+       style : function(states)
+       {
+         return {
+-          icon : qx.theme.simple.Image.URLS["treevirtual-minus-end"]
++          icon : qx.theme.simple.Image.URLS["treevirtual-minus-end" + (states.rtl ? "-rtl" : "")]
+         }
+       }
+     },
+@@ -497,7 +508,7 @@
+       style : function(states)
+       {
+         return {
+-          icon : qx.theme.simple.Image.URLS["treevirtual-plus-end"]
++          icon : qx.theme.simple.Image.URLS["treevirtual-plus-end" + (states.rtl ? "-rtl" : "")]
+         }
+       }
+     },
+@@ -507,7 +518,7 @@
+       style : function(states)
+       {
+         return {
+-          icon : qx.theme.simple.Image.URLS["treevirtual-minus-cross"]
++          icon : qx.theme.simple.Image.URLS["treevirtual-minus-cross" + (states.rtl ? "-rtl" : "")]
+         }
+       }
+     },
+@@ -517,7 +528,7 @@
+       style : function(states)
+       {
+         return {
+-          icon : qx.theme.simple.Image.URLS["treevirtual-plus-cross"]
++          icon : qx.theme.simple.Image.URLS["treevirtual-plus-cross" + (states.rtl ? "-rtl" : "")]
+         }
+       }
+     },
+@@ -528,7 +539,7 @@
+       style : function(states)
+       {
+         return {
+-          icon : qx.theme.simple.Image.URLS["treevirtual-end"]
++          icon : qx.theme.simple.Image.URLS["treevirtual-end" + (states.rtl ? "-rtl" : "")]
+         }
+       }
+     },
+@@ -538,7 +549,7 @@
+       style : function(states)
+       {
+         return {
+-          icon : qx.theme.simple.Image.URLS["treevirtual-cross"]
++          icon : qx.theme.simple.Image.URLS["treevirtual-cross" + (states.rtl ? "-rtl" : "")]
+         }
+       }
+     },
+@@ -629,7 +640,7 @@
+ 
+         if (states.submenu)
+         {
+-          result.position = "right-top";
++          result.position = (states.rtl ? "left-top" : "right-top");
+           result.offset = [-2, -3];
+         }
+ 
+@@ -745,11 +756,14 @@
+ 
+       style : function(states)
+       {
+-        return {
++        var styles = {
+           alignY : "middle",
+-          marginLeft : 14,
+           padding : 1
+         };
++
++        styles[states.rtl ? "marginRight" : "marginLeft"] = 14;
++
++        return styles;
+       }
+     },
+ 
+@@ -759,10 +773,10 @@
+ 
+       style : function(states)
+       {
++				var source = "arrow-" + (states.rtl ? "left" : "right") + (states.selected ? "-invert" : "");
++
+         return {
+-          source : qx.theme.simple.Image.URLS[
+-            "arrow-right" + (states.selected ? "-invert" : "")
+-          ],
++          source : qx.theme.simple.Image.URLS[source],
+           alignY : "middle"
+         };
+       }
+@@ -778,7 +792,7 @@
+         return {
+           icon : !states.checked ? undefined :
+             qx.theme.simple.Image.URLS[
+-              "menu-checkbox" + (states.selected ?  "-invert" : "")
++              "menu-checkbox" + (states.selected ?  "-invert" : "") + (states.rtl ? "-rtl" : "")
+             ]
+         }
+       }
+@@ -919,6 +933,7 @@
+       style : function(states)
+       {
+         return {
++					// Arabic numbers come from Hindu numerals and therefore LTR, and needs right align.
+           textAlign : "right"
+         }
+       }
+@@ -994,12 +1009,13 @@
+         styles.padding = 4;
+ 
+         var icon = "";
++				var rtl = states.rtl;
+         if (states.left) {
+-          icon = "left";
+-          styles.marginRight = 2;
++          icon = rtl ? "right" : "left";
++          styles[rtl ? "marginLeft" : "marginRight"] = 2;
+         } else if (states.right) {
+-          icon += "right";
+-          styles.marginLeft = 2;
++          icon += rtl ? "left" : "right";
++          styles[rtl ? "marginRight" : "marginLeft"] = 2;
+         } else if (states.up) {
+           icon += "up";
+           styles.marginBottom = 2;
+@@ -1156,7 +1172,7 @@
+ 
+         // Checked
+         if (states.checked) {
+-          icon = qx.theme.simple.Image.URLS["checkbox-checked"];
++          icon = qx.theme.simple.Image.URLS["checkbox-checked" + (states.rtl ? "-rtl" : "")];
+         // Undetermined
+         } else if (states.undetermined) {
+           icon = qx.theme.simple.Image.URLS["checkbox-undetermined"];
+@@ -1242,7 +1258,7 @@
+ 
+         return {
+           icon : qx.theme.simple.Image.URLS["arrow-up-small"],
+-          decorator : decorator,
++          decorator : decorator + (states.rtl ? "-rtl" : ""),
+           width: 17
+         }
+       }
+@@ -1267,7 +1283,7 @@
+ 
+         return {
+           icon : qx.theme.simple.Image.URLS["arrow-down-small"],
+-          decorator : decorator,
++          decorator : decorator + (states.rtl ? "-rtl" : ""),
+           width: 17
+         }
+       }
+@@ -1302,10 +1318,12 @@
+ 
+       style : function(states)
+       {
++        var rtl = states.rtl;
++
+         return {
+           source : qx.theme.simple.Image.URLS["arrow-down"],
+-          paddingRight : 4,
+-          paddingLeft : 5
++          paddingRight : rtl ? 5 : 4,
++          paddingLeft : rtl ? 4 : 5
+         };
+       }
+     },
+@@ -1326,20 +1344,20 @@
+ 
+       style : function(states)
+       {
+-        var decorator = "button-box-right-borderless";
++        var decorator = "button-box-right";
+ 
+         if (states.hovered && !states.pressed && !states.checked) {
+-          decorator = "button-box-hovered-right-borderless";
++          decorator = "button-box-hovered-right";
+         } else if (states.hovered && (states.pressed || states.checked)) {
+-          decorator = "button-box-pressed-hovered-right-borderless";
++          decorator = "button-box-pressed-hovered-right";
+         } else if (states.pressed || states.checked) {
+-          decorator = "button-box-pressed-right-borderless";
++          decorator = "button-box-pressed-right";
+         }
+ 
+         return {
+           icon : qx.theme.simple.Image.URLS["arrow-down"],
+           cursor : "pointer",
+-          decorator : decorator,
++          decorator : decorator + "-borderless" + (states.rtl ? "-rtl" : ""),
+           padding : [0, 5],
+           width: 19
+         };
+@@ -1548,22 +1566,20 @@
+ 
+       style : function(states)
+       {
+-        var decorator = "button-box";
++        var decorator = "button-box-left";
+ 
+         if (states.disabled) {
+-          decorator = "button-box";
++          decorator = "button-box-left";
+         } else if (states.hovered && !states.pressed && !states.checked) {
+-          decorator = "button-box-hovered";
++          decorator = "button-box-hovered-left";
+         } else if (states.hovered && (states.pressed || states.checked)) {
+-          decorator = "button-box-pressed-hovered";
++          decorator = "button-box-pressed-hovered-left";
+         } else if (states.pressed || states.checked) {
+-          decorator = "button-box-pressed";
++          decorator = "button-box-pressed-left";
+         }
+ 
+-        decorator += "-left";
+-
+         return {
+-          decorator : decorator,
++          decorator : decorator + (states.rtl ? "-rtl" : ""),
+           padding : [3, 8],
+           cursor : states.disabled ? undefined : "pointer"
+         };
+@@ -1574,20 +1590,18 @@
+ 
+       style : function(states)
+       {
+-        var decorator = "button-box";
++        var decorator = "button-box-right";
+ 
+         if (states.disabled) {
+-          decorator = "button-box";
++          decorator = "button-box-right";
+         } else if (states.hovered && !states.pressed && !states.checked) {
+-          decorator = "button-box-hovered";
++          decorator = "button-box-hovered-right";
+         } else if (states.hovered && (states.pressed || states.checked)) {
+-          decorator = "button-box-pressed-hovered";
++          decorator = "button-box-pressed-hovered-right";
+         } else if (states.pressed || states.checked) {
+-          decorator = "button-box-pressed";
++          decorator = "button-box-pressed-right";
+         }
+ 
+-        decorator += "-right";
+-
+         return {
+           icon : qx.theme.simple.Image.URLS["arrow-down"],
+           decorator : decorator,
+@@ -1796,9 +1810,7 @@
+     {
+       style : function(states)
+       {
+-        return {
+-          marginRight : 4
+-        };
++        return (states.rtl ? {marginLeft : 4} : {marginRight : 4});
+       }
+     },
+ 
+@@ -1806,12 +1818,15 @@
+     {
+       style : function(states)
+       {
+-        return {
++				var styles = {
+           cursor : "default",
+           font : "bold",
+-          marginRight : 20,
+           alignY: "middle"
+-        };
++				};
++
++        styles[states.rtl ? "marginLeft" : "marginRight"] = 20;
++
++        return styles;
+       }
+     },
+ 
+@@ -1836,7 +1851,7 @@
+       style : function(states)
+       {
+         return {
+-          icon : qx.theme.simple.Image.URLS["window-restore"],
++          icon : qx.theme.simple.Image.URLS["window-restore" + (states.rtl ? "-rtl" : "")],
+           padding : [ 1, 2 ],
+           cursor : states.disabled ? undefined : "pointer"
+         };
+@@ -1863,12 +1878,15 @@
+ 
+       style : function(states)
+       {
+-        return {
+-          marginLeft : 2,
++        var styles {
+           icon : qx.theme.simple.Image.URLS["window-close"],
+           padding : [ 1, 2 ],
+           cursor : states.disabled ? undefined : "pointer"
+         };
++
++        styles[states.rtl ? "marginRight" : "marginLeft"] = 2;
++
++        return styles;
+       }
+     },
+ 
+@@ -1937,13 +1955,13 @@
+         };
+ 
+         if (states.lastYear) {
+-          result.icon = qx.theme.simple.Image.URLS["arrow-rewind"];
++          result.icon = qx.theme.simple.Image.URLS["arrow-" + (states.rtl ? "forward" : "rewind")];
+         } else if (states.lastMonth) {
+-          result.icon = qx.theme.simple.Image.URLS["arrow-left"];
++          result.icon = qx.theme.simple.Image.URLS["arrow-" + (states.rtl ? "right" : "left")];
+         } else if (states.nextYear) {
+-          result.icon = qx.theme.simple.Image.URLS["arrow-forward"];
++          result.icon = qx.theme.simple.Image.URLS["arrow-" + (states.rtl ? "rewind" : "forward")];
+         } else if (states.nextMonth) {
+-          result.icon = qx.theme.simple.Image.URLS["arrow-right"];
++          result.icon = qx.theme.simple.Image.URLS["arrow-" + (states.rtl ? "left" : "right")];
+         }
+ 
+         return result;
+@@ -2005,11 +2023,14 @@
+     {
+       style : function(states)
+       {
++				var decorator = states.header ? "datechooser-week-header" : "datechooser-week";
++				decorator += states.rtl ? "-rtl" : "";
++
+         return {
+           textAlign : "center",
+           textColor : "background-selected-dark",
+           padding   : [ 2, 4 ],
+-          decorator : states.header ? "datechooser-week-header" : "datechooser-week"
++          decorator : decorator
+         };
+       }
+     },
+@@ -2081,7 +2102,7 @@
+       style : function(states)
+       {
+         return {
+-          decorator : "toolbar-separator",
++          decorator : "toolbar-separator" + (states.rtl ? "-rtl" : ""),
+           margin: [7, 0],
+           width: 4
+         };
+@@ -2108,9 +2129,9 @@
+ 
+         // set the right left and right decoratos
+         if (states.left) {
+-          decorator += "-left";
++          decorator += "-left" + (states.rtl ? "-rtl" : "");
+         } else if (states.right) {
+-          decorator += "-right";
++          decorator += "-right" + (states.rtl ? "-rtl" : "");
+         } else if (states.middle) {
+           decorator += "-middle";
+         }
+@@ -2150,12 +2171,15 @@
+ 
+       style : function(states)
+       {
+-        return {
++        var styles = {
+           source : qx.theme.simple.Image.URLS["arrow-down"],
+           cursor : "pointer",
+-          padding : [0, 5],
+-          marginLeft: 2
++          padding : [0, 5]
+         };
++
++        styles[states.rtl ? "marginRight" : "marginLeft"] = 2
++
++        return styles;
+       }
+     },
+ 
+@@ -2181,7 +2205,7 @@
+ 
+         // set the right left and right decoratos
+         if (states.left) {
+-          decorator += "-left";
++          decorator += "-left" + (states.rtl ? "-rtl" : "");
+         } else if (states.right) {
+           decorator += "-middle";
+         } else if (states.middle) {
+@@ -2219,7 +2243,7 @@
+         if (states.left) {
+           decorator += "-middle";
+         } else if (states.right) {
+-          decorator += "-right";
++          decorator += "-right" + (states.rtl ? "-rtl" : "");
+         } else if (states.middle) {
+           decorator += "-middle";
+         }
+@@ -2261,8 +2285,8 @@
+         return {
+           marginBottom : marginBottom,
+           marginTop : marginTop,
+-          marginLeft : marginLeft,
+-          marginRight : marginRight
++          marginLeft : states.rtl ? marginRight : marginLeft,
++          marginRight : states.rtl ? marginLeft : marginRight
+         };
+       }
+     },
+@@ -2285,30 +2309,32 @@
+           decorator = "button-box-pressed";
+         }
+ 
++        var rtl = states.rtl;
++
+         if (states.barTop)
+         {
+           return {
+             marginTop : 4,
+             marginBottom: 2,
+-            decorator : decorator + "-top-right"
++            decorator : decorator + "-top-right" + (rtl ? "-rtl" : "")
+           }
+         } else if (states.barBottom) {
+           return {
+             marginTop : 2,
+             marginBottom: 4,
+-            decorator : decorator + "-bottom-right"
++            decorator : decorator + "-bottom-right" + (rtl ? "-rtl" : "")
+           }
+         } else if (states.barLeft) {
+           return {
+-            marginLeft : 4,
+-            marginRight : 2,
+-            decorator : decorator + "-bottom-left"
++            marginLeft : rtl ? 2 : 4,
++            marginRight : rtl ? 4 : 2,
++            decorator : decorator + "-bottom-left" + (rtl ? "-rtl" : "")
+           }
+         } else {
+           return {
+-            marginLeft : 2,
+-            marginRight : 4,
+-            decorator : decorator + "-bottom-right"
++            marginLeft : rtl ? 4 : 2,
++            marginRight : rtl ? 2 : 4,
++            decorator : decorator + "-bottom-right" + (rtl ? "-rtl" : "")
+           }
+         }
+       }
+@@ -2331,29 +2357,31 @@
+           decorator = "button-box-pressed";
+         }
+ 
++        var rtl = states.rtl;
++
+         if (states.barTop) {
+           return {
+             marginTop : 4,
+             marginBottom: 2,
+-            decorator : decorator + "-top-left"
++            decorator : decorator + "-top-left" + (rtl ? "-rtl" : "")
+           }
+         } else if (states.barBottom) {
+           return {
+             marginTop : 2,
+             marginBottom: 4,
+-            decorator : decorator + "-bottom-left"
++            decorator : decorator + "-bottom-left" (rtl ? "-rtl" : "")
+           }
+         } else if (states.barLeft) {
+           return {
+-            marginLeft : 4,
+-            marginRight : 2,
+-            decorator : decorator + "-top-left"
++            marginLeft : rtl ? 2 : 4,
++            marginRight : rtl ? 4 : 2,
++            decorator : decorator + "-top-left" (rtl ? "-rtl" : "")
+           }
+         } else {
+           return {
+-            marginLeft : 2,
+-            marginRight : 4,
+-            decorator : decorator + "-top-right"
++            marginLeft : rtl ? 4 : 2,
++            marginRight : rtl ? 2 : 4,
++            decorator : decorator + "-top-right" + (rtl ? "-rtl" : "")
+           }
+         }
+       }
+@@ -2435,13 +2463,14 @@
+           decorator += "-last";
+         }
+ 
++				var rtl = states.rtl;
+         return {
+           zIndex : states.checked ? 10 : 5,
+           decorator : states.checked ? undefined : decorator,
+           backgroundColor : states.checked ? "background-selected" : "tabview-unselected",
+           textColor : states.disabled ? states.checked ? "tabview-label-active-disabled" : "text-disabled" : "white",
+-          padding : [ paddingTop, paddingRight, paddingBottom, paddingLeft ],
+-          margin : [ marginTop, marginRight, marginBottom, marginLeft ]
++          padding : [ paddingTop, (rtl ? paddingLeft : paddingRight), paddingBottom, (rtl ? paddingRight : paddingLeft) ],
++          margin : [ marginTop, (rtl ? marginLeft : marginRight), marginBottom, (rtl ? marginRight : marginLeft) ]
+         };
+       }
+     },
+@@ -2517,13 +2546,16 @@
+     {
+       style : function(state)
+       {
+-        return {
++        var styles = {
+           height : 20,
+           padding: 4,
+-          marginLeft : 4,
+           decorator : "main-dark",
+           allowGrowX : true
+-        }
++        };
++
++        styles[state.rtl ? "marginRight" : "marginLeft"] = 4;
++
++        return styles;
+       }
+     },
+ 
+@@ -2531,13 +2563,16 @@
+     {
+       style : function(state)
+       {
+-        return {
++        var styles = {
+           height : 20,
+           padding: 4,
+-          marginRight : 4,
+           decorator : "main-dark",
+           allowGrowX : true
+         }
++
++        styles[state.rtl ? "marginLeft" : "marginRight"] = 4;
++
++        return styles;
+       }
+     },
+ 
+Index: framework/source/class/qx/theme/simple/Image.js
+===================================================================
+--- framework/source/class/qx/theme/simple/Image.js	(revision 27592)
++++ framework/source/class/qx/theme/simple/Image.js	(working copy)
+@@ -39,20 +39,30 @@
+       "blank" : "qx/static/blank.gif",
+ 
+       // checkbox
++      "checkbox-undetermined" : "decoration/checkbox/undetermined.png",
++			// ltr
+       "checkbox-checked" : "decoration/checkbox/checked.png",
+-      "checkbox-undetermined" : "decoration/checkbox/undetermined.png",
++			// rtl
++      "checkbox-checked-rtl" : "decoration/checkbox/checked-rtl.png",
+ 
+       // window
+       "window-minimize" : "decoration/window/minimize.gif",
+       "window-maximize" : "decoration/window/maximize.gif",
++      "window-close" : "decoration/window/close.gif",
++			// ltr
+       "window-restore" : "decoration/window/restore.gif",
+-      "window-close" : "decoration/window/close.gif",
++			// rtl
++      "window-restore-rtl" : "decoration/window/restore-rtl.gif",
+ 
+       // cursor
++      "cursor-move" : "decoration/cursors/move.gif",
++      "cursor-nodrop" : "decoration/cursors/nodrop.gif",
++			// ltr
+       "cursor-copy" : "decoration/cursors/copy.gif",
+-      "cursor-move" : "decoration/cursors/move.gif",
+       "cursor-alias" : "decoration/cursors/alias.gif",
+-      "cursor-nodrop" : "decoration/cursors/nodrop.gif",
++			// rtl
++      "cursor-copy-rtl" : "decoration/cursors/copy-rtl.gif",
++      "cursor-alias-rtl" : "decoration/cursors/alias-rtl.gif",
+ 
+       // arrows
+       "arrow-right" : "decoration/arrows/right.gif",
+@@ -76,12 +86,16 @@
+       "tree-plus" : "decoration/tree/plus.gif",
+ 
+       // table
+-      "select-column-order" : "decoration/table/select-column-order.png",
+       "table-ascending" : "decoration/table/ascending.png",
+       "table-descending" : "decoration/table/descending.png",
++			// ltr
++      "select-column-order" : "decoration/table/select-column-order.png",
++			// rtl
++      "select-column-order-rtl" : "decoration/table/select-column-order-rtl.png",
+ 
+       // tree virtual
+       "treevirtual-line" : "decoration/treevirtual/line.gif",
++			// ltr
+       "treevirtual-minus-only" : "decoration/treevirtual/only_minus.gif",
+       "treevirtual-plus-only" : "decoration/treevirtual/only_plus.gif",
+       "treevirtual-minus-start" : "decoration/treevirtual/start_minus.gif",
+@@ -92,12 +106,27 @@
+       "treevirtual-plus-cross" : "decoration/treevirtual/cross_plus.gif",
+       "treevirtual-end" : "decoration/treevirtual/end.gif",
+       "treevirtual-cross" : "decoration/treevirtual/cross.gif",
++			// rtl
++      "treevirtual-minus-only-rtl" : "decoration/treevirtual/only_minus-rtl.gif",
++      "treevirtual-plus-only-rtl" : "decoration/treevirtual/only_plus-rtl.gif",
++      "treevirtual-minus-start-rtl" : "decoration/treevirtual/start_minus-rtl.gif",
++      "treevirtual-plus-start-rtl" : "decoration/treevirtual/start_plus-rtl.gif",
++      "treevirtual-minus-end-rtl" : "decoration/treevirtual/end_minus-rtl.gif",
++      "treevirtual-plus-end-rtl" : "decoration/treevirtual/end_plus-rtl.gif",
++      "treevirtual-minus-cross-rtl" : "decoration/treevirtual/cross_minus-rtl.gif",
++      "treevirtual-plus-cross-rtl" : "decoration/treevirtual/cross_plus-rtl.gif",
++      "treevirtual-end-rtl" : "decoration/treevirtual/end-rtl.gif",
++      "treevirtual-cross-rtl" : "decoration/treevirtual/cross-rtl.gif",
+ 
+       // menu
++      "menu-radiobutton-invert" : "decoration/menu/radiobutton-invert.gif",
++      "menu-radiobutton" : "decoration/menu/radiobutton.gif",
++			// ltr
+       "menu-checkbox" : "decoration/menu/checkbox.gif",
+       "menu-checkbox-invert" : "decoration/menu/checkbox-invert.gif",
+-      "menu-radiobutton-invert" : "decoration/menu/radiobutton-invert.gif",
+-      "menu-radiobutton" : "decoration/menu/radiobutton.gif",
++			// rtl
++      "menu-checkbox-rtl" : "decoration/menu/checkbox-rtl.gif",
++      "menu-checkbox-invert-rtl" : "decoration/menu/checkbox-invert-rtl.gif",
+ 
+       // tabview
+       "tabview-close" : "decoration/tabview/close.gif"
+Index: framework/source/class/qx/theme/manager/Meta.js
+===================================================================
+--- framework/source/class/qx/theme/manager/Meta.js	(revision 27592)
++++ framework/source/class/qx/theme/manager/Meta.js	(working copy)
+@@ -45,7 +45,16 @@
+       check : "Theme",
+       nullable : true,
+       apply : "_applyTheme"
+-    }
++    },
++
++		/**
++		 * The support for text direction of the theme.
++		 */
++		textDirectionSupported :
++		{
++      check : [ "left-to-right", "right-to-left" ],
++      nullable : true
++		}
+   },
+ 
+ 
+@@ -67,6 +76,7 @@
+       var font = null;
+       var icon = null;
+       var appearance = null;
++      var textDirectionSupported = null;
+ 
+       if (value)
+       {
+@@ -75,6 +85,7 @@
+         font = value.meta.font || null;
+         icon = value.meta.icon || null;
+         appearance = value.meta.appearance || null;
++        textDirectionSupported = value.meta.textDirection || null;
+       }
+ 
+       var colorMgr = qx.theme.manager.Color.getInstance();
+@@ -88,6 +99,8 @@
+       fontMgr.setTheme(font);
+       iconMgr.setTheme(icon);
+       appearanceMgr.setTheme(appearance);
++
++			this.setTextDirectionSupported(textDirectionSupported);
+     },
+ 
+ 
+Index: framework/source/class/qx/theme/Classic.js
+===================================================================
+--- framework/source/class/qx/theme/Classic.js	(revision 27592)
++++ framework/source/class/qx/theme/Classic.js	(working copy)
+@@ -32,5 +32,7 @@
+     font : qx.theme.classic.Font,
+     appearance : qx.theme.classic.Appearance,
+     icon : qx.theme.icon.Oxygen
+-  }
++  },
++
++	directions : ["left-to-right", "right-to-left"]
+ });
+Index: framework/source/class/qx/ui/control/ColorSelector.js
+===================================================================
+--- framework/source/class/qx/ui/control/ColorSelector.js	(revision 27592)
++++ framework/source/class/qx/ui/control/ColorSelector.js	(working copy)
+@@ -329,14 +329,16 @@
+ 
+           var colorField;
+           var colorPos;
+-
++          var presetTable = this.__presetTable;
++          var rtl = (qx.locale.Manager.getInstance().getDirection() == "right-to-left");
++ 
+           for (var i=0; i<2; i++)
+           {
+             for (var j=0; j<10; j++)
+             {
+-              colorPos = i * 10 + j;
++              colorPos = i * 10 + (rtl ? 9 - j : j);
+               colorField = this.getChildControl("colorbucket#" + colorPos);
+-              colorField.setBackgroundColor(this.__presetTable[colorPos]);
++              colorField.setBackgroundColor(presetTable[colorPos]);
+ 
+               control.add(colorField, {column: j, row: i});
+             }
+Index: framework/source/class/qx/ui/control/DateChooser.js
+===================================================================
+--- framework/source/class/qx/ui/control/DateChooser.js	(revision 27592)
++++ framework/source/class/qx/ui/control/DateChooser.js	(working copy)
+@@ -101,11 +101,6 @@
+     var shownDate = (date != null) ? date : new Date();
+     this.showMonth(shownDate.getMonth(), shownDate.getFullYear());
+ 
+-    // listen for locale changes
+-    if (qx.core.Environment.get("qx.dynlocale")) {
+-      qx.locale.Manager.getInstance().addListener("changeLocale", this._updateDatePane, this);
+-    }
+-
+     // register mouse up and down handler
+     this.addListener("mousedown", this._onMouseUpDown, this);
+     this.addListener("mouseup", this._onMouseUpDown, this);
+@@ -606,7 +601,25 @@
+       }
+     },
+ 
++    /**
++     * Locale change event handler
++     *
++     * @signature function(e)
++     * @param e {Event} the change event
++     */
++    _onChangeLocale : qx.core.Environment.select("qx.dynlocale",
++    {
++      "true" : function(e)
++      {
++        this.base(arguments);
+ 
++        this._updateDatePane(e);
++      },
++
++      "false" : null
++    }),
++
++
+     /**
+      * Shows a certain month.
+      *
+@@ -743,6 +756,9 @@
+       monthYearFormat.dispose();
+       weekDayFormat.dispose();
+       weekFormat.dispose();
++
++      var rtl = (qx.locale.Manager.getInstance().getDirection() == "right-to-left");
++      rtl ? this.addState("rtl") : this.removeState("rtl");
+     }
+   },
+ 
+@@ -757,10 +773,6 @@
+ 
+   destruct : function()
+   {
+-    if (qx.core.Environment.get("qx.dynlocale")) {
+-      qx.locale.Manager.getInstance().removeListener("changeLocale", this._updateDatePane, this);
+-    }
+-
+     this.__weekdayLabelArr = this.__dayLabelArr = this.__weekLabelArr = null;
+   }
+ });
+Index: framework/source/class/qx/ui/control/ColorPopup.js
+===================================================================
+--- framework/source/class/qx/ui/control/ColorPopup.js	(revision 27592)
++++ framework/source/class/qx/ui/control/ColorPopup.js	(working copy)
+@@ -220,6 +220,11 @@
+         this.__boxes[tableId] = box;
+         this.add(box);
+ 
++        if(qx.locale.Manager.getInstance().getDirection() == "right-to-left")
++        {
++          table.values.concat().reverse();
++        }
++
+         for (var i=0; i<this.__fieldNumber; i++)
+         {
+           field = this.getChildControl("field#" + (j++));
+@@ -248,7 +253,8 @@
+       this.__colorSelector = new qx.ui.control.ColorSelector;
+       win.add(this.__colorSelector);
+ 
+-      var buttonBar = new qx.ui.container.Composite(new qx.ui.layout.HBox(8, "right"));
++      var rtl = (qx.locale.Manager.getInstance().getDirection() == "right-to-left");
++      var buttonBar = new qx.ui.container.Composite(new qx.ui.layout.HBox(8, rtl ? "left" : "right"));
+       win.add(buttonBar);
+ 
+       var btnCancel = this._createChildControl("colorselector-cancelbutton");
+@@ -502,4 +508,4 @@
+     this._disposeObjects("__colorSelectorWindow", "__colorSelector");
+     this._tables = this.__boxes = null;
+   }
+-});
+\ No newline at end of file
++});
+Index: framework/source/class/qx/ui/basic/Label.js
+===================================================================
+--- framework/source/class/qx/ui/basic/Label.js	(revision 27592)
++++ framework/source/class/qx/ui/basic/Label.js	(working copy)
+@@ -79,10 +79,6 @@
+     if (value != null) {
+       this.setValue(value);
+     }
+-
+-    if (qx.core.Environment.get("qx.dynlocale")) {
+-      qx.locale.Manager.getInstance().addListener("changeLocale", this._onChangeLocale, this);
+-    }
+   },
+ 
+ 
+@@ -164,14 +160,35 @@
+     /** Control the text alignment */
+     textAlign :
+     {
+-      check : ["left", "center", "right", "justify"],
++      check : ["left", "center", "right", "justify", "top-bottom", "bottom-top"],
+       nullable : true,
++      init :  "left",
+       themeable : true,
+       apply : "_applyTextAlign",
+       event : "changeTextAlign"
+     },
+ 
++    /** Control the text direction */
++    textDirection :
++    {
++      check : ["rtl", "ltr", "ttb", "btt"],
++      nullable : true,
++      init : "ltr",
++      themeable : true,
++      apply : "_applyTextDirection",
++      event : "changeTextDirection"
++    },
+ 
++    /** Control the text rotation */
++    textOrientation :
++    {
++      check : "Integer",
++      nullable : true,
++      themeable : true,
++      apply : "_applyTextRotation",
++      event : "changeTextRotation"
++    },
++
+     // overridden
+     appearance :
+     {
+@@ -303,7 +320,112 @@
+       this.getContentElement().setStyle("textAlign", value);
+     },
+ 
++    _applyTextDirection : function(value, old)
++    {
++      switch(value)
++      {
++        case "ltr":
++          break;
+ 
++        case "rtl":
++          break;
++
++        case "ttb":
++          break;
++
++        case "btt":
++          break;
++      }
++
++/*
++        var oldValue = this.getValue();
++
++        // Do nothing if string already contains a break tag
++        if(oldValue.indexOf("<br />") == -1 && oldValue.indexOf("<br/>" == -1)
++        {
++          var newValue;
++
++          var direction = value == tb ? 1 : -1;
++
++          for(var i = 0, l = oldValue.length; Math.abs(i) < l; i + direction)
++          {
++            newValue += oldValue.charAt(Math.abs(i)) + "<br />";
++          }
++
++          this.setRich(true);
++          this.setValue(newVaue);
++        }
++*/
++   },
++
++    /*
++     * -khtml-transform: rotate(-90deg); // For Lunix
++     * Chrome the same as moz
++     */
++    _applyTextRotation : qx.core.Environment.select("engine.name",
++    {
++      "mshtml" : function(value, old)
++      {
++        /* IE6,IE7 */
++        this.getContentElement().setStyle("filter", 'progid:DXImageTransform.Microsoft.BasicImage(rotation='+ value +')');
++        /* IE8 */
++        this.getContentElement().setStyle("-ms-filter", '"progid:DXImageTransform.Microsoft.BasicImage(rotation=' + value +')"');
++      },
++      /* Saf3.1+, Chrome */
++      "webkit" : function(value, old)
++      {
++        this.getContentElement().setStyle("-webkit-transform-origin", "bottom left");  
++        this.getContentElement().setStyle("-webkit-transform", "rotate(" + value +"deg)");
++      },
++      /* Opera 10.5 */
++      "opera" : function(value, old)
++      {
++        this.getContentElement().setStyle("-o-transform-origin", "bottom left");  
++        this.getContentElement().setStyle("-o-transform", "rotate(" + value +"deg)");
++      },
++      /* FF3.5+ */
++      "default" : function(value, old)
++      {
++        this.getContentElement().setStyle("-moz-transform-origin", "bottom left"); 
++        this.getContentElement().setStyle("-moz-transform", "rotate(" + value +"deg)");
++      }
++    }),
++
++    /*
++     * IE could use
++     *
++     * filter: 
++     *
++     * but rotates only in 90 degrees increments:
++     *
++     * 0 Default. Content is not rotated.
++     * 1 Content is rotated 90 degrees.
++     * 2 Content is rotated 180 degrees.
++     * 3 Content is rotated 270 degrees.
++     *
++     * Instead using transform all degrees can be used:
++     *
++     * <DIV ID="oDiv" STYLE="position:absolute; filter:progid:DXImageTransform.Microsoft.Matrix(sizingMethod='auto expand')" onfilterchange="fnSpin(this)" >
++     *
++     * Only for IE, because 
++     * oObj input requires that a matrix filter be applied. 
++     * deg  input defines the requested angle of rotation.
++     */
++/*
++     setRotation : function(oObj, deg)
++     {
++       var deg2radians = Math.PI * 2 / 360;
++
++       var rad = deg * deg2radians;
++       costheta = Math.cos(rad);
++       sintheta = Math.sin(rad);
++
++       oObj.filters.item(0).M11 = costheta;
++       oObj.filters.item(0).M12 = -sintheta;
++       oObj.filters.item(0).M21 = sintheta;
++       oObj.filters.item(0).M22 = costheta;
++    },
++*/
+     // overridden
+     _applyTextColor : function(value, old)
+     {
+@@ -464,12 +586,18 @@
+     {
+       "true" : function(e)
+       {
++        this.base(arguments);
++
+         var content = this.getValue();
+         if (content && content.translate) {
+           this.setValue(content.translate());
+         }
+-      },
+ 
++       var rtl = this.hasState("rtl");
++       this.setTextAlign(rtl ? "right" : "left");
++       this.setTextDirection(rtl ? "rtl" : "ltr");
++     },
++
+       "false" : null
+     }),
+ 
+@@ -514,10 +642,6 @@
+ 
+   destruct : function()
+   {
+-    if (qx.core.Environment.get("qx.dynlocale")) {
+-      qx.locale.Manager.getInstance().removeListener("changeLocale", this._onChangeLocale, this);
+-    }
+-
+     // remove the binding
+     if (this.__buddyEnabledBinding != null) {
+       var buddy = this.getBuddy();
+Index: framework/source/class/qx/ui/table/Table.js
+===================================================================
+--- framework/source/class/qx/ui/table/Table.js	(revision 27592)
++++ framework/source/class/qx/ui/table/Table.js	(working copy)
+@@ -204,11 +204,6 @@
+     this.__focusedCol = null;
+     this.__focusedRow = null;
+ 
+-    // add an event listener which updates the table content on locale change
+-    if (qx.core.Environment.get("qx.dynlocale")) {
+-      qx.locale.Manager.getInstance().addListener("changeLocale", this._onChangeLocale, this);
+-    }
+-
+     this.initStatusBarVisible();
+ 
+     // If the table model has an init() method...
+@@ -1224,6 +1219,8 @@
+      */
+     _onChangeLocale : function(evt)
+     {
++      this.base(arguments);
++
+       this.updateContent();
+       this._updateStatusBar();
+     },
+@@ -2235,11 +2232,6 @@
+ 
+   destruct : function()
+   {
+-    // remove the event listener which handled the locale change
+-    if (qx.core.Environment.get("qx.dynlocale")) {
+-      qx.locale.Manager.getInstance().removeListener("changeLocale", this._onChangeLocale, this);
+-    }
+-
+     // we allocated these objects on init so we have to clean them up.
+     var selectionModel = this.getSelectionModel();
+     if (selectionModel) {
+Index: framework/source/class/qx/ui/decoration/Double.js
+===================================================================
+--- framework/source/class/qx/ui/decoration/Double.js	(revision 27592)
++++ framework/source/class/qx/ui/decoration/Double.js	(working copy)
+@@ -158,7 +158,9 @@
+         element.firstChild.style.height = innerHeight + "px";
+       }
+ 
+-      element.style.left =
++      var rtl = (qx.locale.Manager.getInstance().getDirection() == "right-to-left");
++
++      element.style[rtl ? "right" : "left"] =
+         (insets.left -
+         this.getWidthLeft() -
+         this.getInnerWidthLeft()) + "px";
+Index: framework/source/class/qx/ui/decoration/Single.js
+===================================================================
+--- framework/source/class/qx/ui/decoration/Single.js	(revision 27592)
++++ framework/source/class/qx/ui/decoration/Single.js	(working copy)
+@@ -106,7 +106,9 @@
+       element.style.width = pos.width + "px";
+       element.style.height = pos.height + "px";
+ 
+-      element.style.left = parseInt(element.style.left) + pos.left + "px";
++      var rtl = (qx.locale.Manager.getInstance().getDirection() == "right-to-left") ? "right" : "left";
++      
++      element.style[rtl] = parseInt(element.style[rtl]) + pos.left + "px";
+       element.style.top = parseInt(element.style.top) + pos.top + "px";
+     },
+ 
+Index: framework/source/class/qx/ui/decoration/MDoubleBorder.js
+===================================================================
+--- framework/source/class/qx/ui/decoration/MDoubleBorder.js	(revision 27592)
++++ framework/source/class/qx/ui/decoration/MDoubleBorder.js	(working copy)
+@@ -144,6 +144,7 @@
+      */
+     __styleDoubleBorder : function(styles)
+     {
++      var rtl = (qx.locale.Manager.getInstance().getDirection() == "right-to-left");
+       var Color = qx.theme.manager.Color.getInstance();
+ 
+       // Inner styles
+@@ -159,7 +160,7 @@
+ 
+       var width = this.getInnerWidthRight();
+       if (width > 0) {
+-        styles["border-right"] = width + "px " + this.getStyleRight() + " " + Color.resolve(this.getInnerColorRight());
++        styles[rtl ? "border-left" : "border-right"] = width + "px " + this.getStyleRight() + " " + Color.resolve(this.getInnerColorRight());
+       }
+ 
+       var width = this.getInnerWidthBottom();
+@@ -169,7 +170,7 @@
+ 
+       var width = this.getInnerWidthLeft();
+       if (width > 0) {
+-        styles["border-left"] = width + "px " + this.getStyleLeft() + " " + Color.resolve(this.getInnerColorLeft());
++        styles[rtl ? "border-right" : "border-left"] = width + "px " + this.getStyleLeft() + " " + Color.resolve(this.getInnerColorLeft());
+       }
+ 
+       if (qx.core.Environment.get("qx.debug"))
+@@ -190,6 +191,7 @@
+      * @return {String} The generated decorator HTML.
+      */
+     __generateMarkupDoubleBorder : function(styles) {
++      var rtl = (qx.locale.Manager.getInstance().getDirection() == "right-to-left");
+       var innerHtml = this._generateBackgroundMarkup(styles);
+       var Color = qx.theme.manager.Color.getInstance();
+ 
+@@ -220,7 +222,7 @@
+ 
+       var width = this.getWidthRight();
+       if (width > 0) {
+-        styles["border-right"] = width + "px " + this.getStyleRight() + " " + Color.resolve(this.getColorRight());
++        styles[rtl ? "border-left" : "border-right"] = width + "px " + this.getStyleRight() + " " + Color.resolve(this.getColorRight());
+       }
+ 
+       var width = this.getWidthBottom();
+@@ -230,7 +232,7 @@
+ 
+       var width = this.getWidthLeft();
+       if (width > 0) {
+-        styles["border-left"] = width + "px " + this.getStyleLeft() + " " + Color.resolve(this.getColorLeft());
++        styles[rtl ? "border-right" : "border-left"] = width + "px " + this.getStyleLeft() + " " + Color.resolve(this.getColorLeft());
+       }
+ 
+       if (qx.core.Environment.get("qx.debug"))
+@@ -244,7 +246,7 @@
+       // final default styles
+       styles["position"] = "absolute";
+       styles["top"] = 0;
+-      styles["left"] = 0;
++      styles[rtl ? "right" : "left"] = 0;
+ 
+       // Store
+       return this.__ownMarkup = this._generateBackgroundMarkup(styles, innerHtml);
+@@ -280,7 +282,7 @@
+         this.getInnerWidthTop();
+ 
+       return {
+-        left: left,
++        left : left,
+         top: top,
+         width: width,
+         height: height,
+@@ -297,12 +299,17 @@
+     */
+     __getDefaultInsetsForDoubleBorder : function()
+     {
+-      return {
++      var rtl = (qx.locale.Manager.getInstance().getDirection() == "right-to-left");
++
++      var insets = {
+         top : this.getWidthTop() + this.getInnerWidthTop(),
+-        right : this.getWidthRight() + this.getInnerWidthRight(),
+-        bottom : this.getWidthBottom() + this.getInnerWidthBottom(),
+-        left : this.getWidthLeft() + this.getInnerWidthLeft()
++        bottom : this.getWidthBottom() + this.getInnerWidthBottom()
+       };
++
++      insets[rtl ? "left" : "right"] = this.getWidthRight() + this.getInnerWidthRight();
++      insets[rtl ? "right" : "left"] = this.getWidthLeft() + this.getInnerWidthLeft();
++
++      return insets;
+     }
+   }
+ });
+Index: framework/source/class/qx/ui/decoration/MBackgroundColor.js
+===================================================================
+--- framework/source/class/qx/ui/decoration/MBackgroundColor.js	(revision 27592)
++++ framework/source/class/qx/ui/decoration/MBackgroundColor.js	(working copy)
+@@ -69,12 +69,18 @@
+       var insets = this.getInsets();
+       width -= insets.left + insets.right;
+       height -= insets.top + insets.bottom;
+-      return {
+-        left : insets.left,
++
++      var rtl = (qx.locale.Manager.getInstance().getDirection() == "right-to-left");
++
++      var styles = {
+         top : insets.top,
+         width : width,
+         height : height
+       };
++
++      styles[rtl ? "right" : "left"] = insets.left;
++
++      return styles;
+     },
+ 
+ 
+Index: framework/source/class/qx/ui/decoration/MSingleBorder.js
+===================================================================
+--- framework/source/class/qx/ui/decoration/MSingleBorder.js	(revision 27592)
++++ framework/source/class/qx/ui/decoration/MSingleBorder.js	(working copy)
+@@ -210,6 +210,7 @@
+      * @param styles {Map} A map to add the styles.
+      */
+     _styleBorder : function(styles) {
++      var rtl = (qx.locale.Manager.getInstance().getDirection() == "right-to-left");
+       var Color = qx.theme.manager.Color.getInstance();
+ 
+       // Add borders
+@@ -220,7 +221,7 @@
+ 
+       var width = this.getWidthRight();
+       if (width > 0) {
+-        styles["border-right"] = width + "px " + this.getStyleRight() + " " + (Color.resolve(this.getColorRight()) || "");
++        styles[rtl ? "border-left" : "border-right"] = width + "px " + this.getStyleRight() + " " + (Color.resolve(this.getColorRight()) || "");
+       }
+ 
+       var width = this.getWidthBottom();
+@@ -230,7 +231,7 @@
+ 
+       var width = this.getWidthLeft();
+       if (width > 0) {
+-        styles["border-left"] = width + "px " + this.getStyleLeft() + " " + (Color.resolve(this.getColorLeft()) || "");
++        styles[rtl ? "border-right" : "border-left"] = width + "px " + this.getStyleLeft() + " " + (Color.resolve(this.getColorLeft()) || "");
+       }
+ 
+       // Check if valid
+@@ -244,7 +245,7 @@
+       // Add basic styles
+       styles.position = "absolute";
+       styles.top = 0;
+-      styles.left = 0;
++      styles[rtl ? "right" : "left"] = 0;
+     },
+ 
+ 
+@@ -291,12 +292,17 @@
+      */
+     _getDefaultInsetsForBorder : function()
+     {
+-      return {
++      var rtl = (qx.locale.Manager.getInstance().getDirection() == "right-to-left");
++
++      var styles = {
+         top : this.getWidthTop(),
+-        right : this.getWidthRight(),
+-        bottom : this.getWidthBottom(),
+-        left : this.getWidthLeft()
++        bottom : this.getWidthBottom()
+       };
++
++      styles[rtl ? "left" : "right"] = this.getWidthRight();
++      styles[rtl ? "right" : "left"] = this.getWidthLeft();
++
++      return styles;
+     },
+ 
+ 
+Index: framework/source/class/qx/ui/core/Widget.js
+===================================================================
+--- framework/source/class/qx/ui/core/Widget.js	(revision 27592)
++++ framework/source/class/qx/ui/core/Widget.js	(working copy)
+@@ -84,6 +84,9 @@
+     this.initSelectable();
+     this.initNativeContextMenu();
+ 
++    if (qx.core.Environment.get("qx.dynlocale")) {
++      qx.locale.Manager.getInstance().addListener("changeLocale", this._onChangeLocale, this);
++    }
+   },
+ 
+ 
+@@ -1039,7 +1042,22 @@
+       return false;
+     },
+ 
++    /**
++     * Locale change event handler
++     *
++     * @signature function(e)
++     * @param e {Event} the change event
++     */
++    _onChangeLocale : qx.core.Environment.select("qx.dynlocale",
++    {
++      "true" : function(e)
++      {
++        (qx.locale.Manager.getInstance().getDirection() == "right-to-left") ? this.addState("rtl") : this.removeState("rtl");
++      },
+ 
++      "false" : null
++    }),
++
+     // overridden
+     renderLayout : function(left, top, width, height)
+     {
+@@ -4051,6 +4069,8 @@
+             this.__toolTipTextListenerId
+           );
+         }
++
++        qx.locale.Manager.getInstance().removeListener("changeLocale", this._onChangeLocale, this);
+       }
+ 
+       // Remove widget pointer from DOM
+@@ -4112,4 +4132,4 @@
+       "__protectorElement"
+     );
+   }
+-});
+\ No newline at end of file
++});
+Index: framework/source/class/qx/ui/splitpane/HLayout.js
+===================================================================
+--- framework/source/class/qx/ui/splitpane/HLayout.js	(revision 27592)
++++ framework/source/class/qx/ui/splitpane/HLayout.js	(working copy)
+@@ -71,10 +71,11 @@
+       var length = children.length;
+       var child, type;
+       var begin, splitter, slider, end;
++      var rtl = (qx.locale.Manager.getInstance().getDirection() == "right-to-left");
+ 
+       for (var i=0; i<length; i++)
+       {
+-        child = children[i];
++        child = children[rtl ? length - i - 1 : i];
+         type = child.getLayoutProperties().type;
+ 
+         if (type === "splitter") {
+Index: framework/source/class/qx/ui/splitpane/Blocker.js
+===================================================================
+--- framework/source/class/qx/ui/splitpane/Blocker.js	(revision 27592)
++++ framework/source/class/qx/ui/splitpane/Blocker.js	(working copy)
+@@ -78,7 +78,7 @@
+ 
+     // property apply
+     _applyOrientation : function(value, old) {
+-      if (value == "horizontal") {
++       if (value == "horizontal") {
+         this.setStyle("height", "100%");
+         this.setStyle("cursor", "col-resize");
+         this.setStyle("top", null);
+@@ -139,4 +139,4 @@
+       this.setStyle("top", top + "px");
+     }
+   }
+-});
+\ No newline at end of file
++});
+Index: framework/source/class/qx/ui/splitpane/Pane.js
+===================================================================
+--- framework/source/class/qx/ui/splitpane/Pane.js	(revision 27592)
++++ framework/source/class/qx/ui/splitpane/Pane.js	(working copy)
+@@ -298,11 +298,12 @@
+         } else if (splitterBounds) {
+           width = splitterBounds.width;
+         }
+-        var left = bounds && bounds.left;
+ 
++         var left = bounds && bounds["left"];
++
+         if (width) {
+           if (isNaN(left)) {
+-            left = qx.bom.element.Location.getPosition(splitterElem).left;
++            left = qx.bom.element.Location.getPosition(splitterElem)["left"];
+           }
+           this.__blocker.setWidth(offset, width);
+           this.__blocker.setLeft(offset, left);
+Index: framework/source/class/qx/ui/toolbar/Part.js
+===================================================================
+--- framework/source/class/qx/ui/toolbar/Part.js	(revision 27592)
++++ framework/source/class/qx/ui/toolbar/Part.js	(working copy)
+@@ -162,26 +162,28 @@
+     __onSyncAppearance : function() {
+       // check every child
+       var children = this.getChildrenContainer().getChildren();
++      var rtl = (qx.locale.Manager.getInstance().getDirection() == "right-to-left");
++ 
+       for (var i = 0; i < children.length; i++) {
+         // if its the first child
+         if (i == 0 && i != children.length - 1) {
+-          children[i].addState("left");
+-          children[i].removeState("right");
++          children[i].addState(rtl ? "right" : "left");
++          children[i].removeState(rtl ? "left" : "right");
+           children[i].removeState("middle");
+         // if its the last child
+         } else if (i == children.length - 1 && i != 0) {
+-          children[i].addState("right");
+-          children[i].removeState("left");
++          children[i].addState(rtl ? "left" : "right");
++          children[i].removeState(rtl ? "right" : "left");
+           children[i].removeState("middle");
+         // if there is only one child
+         } else if (i == 0 && i == children.length - 1) {
+-          children[i].removeState("left");
++          children[i].removeState(rtl ? "right" : "left");
+           children[i].removeState("middle");
+-          children[i].removeState("right");
++          children[i].removeState(rtl ? "left" : "right");
+         } else {
+           children[i].addState("middle");
+-          children[i].removeState("right");
+-          children[i].removeState("left");
++          children[i].removeState(rtl ? "left" : "right");
++          children[i].removeState(rtl ? "right" : "left");
+         }
+       };
+     },
+Index: framework/source/class/qx/ui/form/MForm.js
+===================================================================
+--- framework/source/class/qx/ui/form/MForm.js	(revision 27592)
++++ framework/source/class/qx/ui/form/MForm.js	(working copy)
+@@ -94,6 +94,8 @@
+     {
+       "true" : function(e)
+       {
++        this._onChangeLocale(e);
++
+         // invalid message
+         var invalidMessage = this.getInvalidMessage();
+         if (invalidMessage && invalidMessage.translate) {
+Index: framework/source/class/qx/ui/form/renderer/AbstractRenderer.js
+===================================================================
+--- framework/source/class/qx/ui/form/renderer/AbstractRenderer.js	(revision 27592)
++++ framework/source/class/qx/ui/form/renderer/AbstractRenderer.js	(working copy)
+@@ -41,9 +41,6 @@
+ 
+     // translation support
+     if (qx.core.Environment.get("qx.dynlocale")) {
+-      qx.locale.Manager.getInstance().addListener(
+-        "changeLocale", this._onChangeLocale, this
+-      );
+       this._names = [];
+     }
+ 
+@@ -92,6 +89,8 @@
+     _onChangeLocale : qx.core.Environment.select("qx.dynlocale",
+     {
+       "true" : function(e) {
++        this.base(arguments);
++
+         for (var i = 0; i < this._names.length; i++) {
+           var entry = this._names[i];
+           if (entry.name && entry.name.translate) {
+@@ -149,9 +148,6 @@
+ 
+   destruct : function()
+   {
+-    if (qx.core.Environment.get("qx.dynlocale")) {
+-      qx.locale.Manager.getInstance().removeListener("changeLocale", this._onChangeLocale, this);
+-    }
+     this._names = null;
+ 
+     // remove the visibility bindings
+@@ -160,4 +156,4 @@
+       entry.item.removeBinding(entry.id);
+     };
+   }
+-});
+\ No newline at end of file
++});
+Index: framework/source/class/qx/ui/form/renderer/Double.js
+===================================================================
+--- framework/source/class/qx/ui/form/renderer/Double.js	(revision 27592)
++++ framework/source/class/qx/ui/form/renderer/Double.js	(working copy)
+@@ -27,12 +27,14 @@
+ 
+   construct : function(form)
+   {
++    var rtl = this.hasState("rtl");
++
+     var layout = new qx.ui.layout.Grid();
+     layout.setSpacing(6);
+-    layout.setColumnAlign(0, "left", "top");
+-    layout.setColumnAlign(1, "left", "top");
+-    layout.setColumnAlign(2, "left", "top");
+-    layout.setColumnAlign(3, "left", "top");
++    layout.setColumnAlign(0, rtl ? "right" : "left", "top");
++    layout.setColumnAlign(1, rtl ? "right" : "left", "top");
++    layout.setColumnAlign(2, rtl ? "right" : "left", "top");
++    layout.setColumnAlign(3, rtl ? "right" : "left", "top");
+     this._setLayout(layout);
+ 
+     this.base(arguments, form);
+@@ -100,7 +102,7 @@
+         this._buttonRow = new qx.ui.container.Composite();
+         this._buttonRow.setMarginTop(5);
+         var hbox = new qx.ui.layout.HBox();
+-        hbox.setAlignX("right");
++        hbox.setAlignX(this.hasState("rtl") ? "left" : "right");
+         hbox.setSpacing(5);
+         this._buttonRow.setLayout(hbox);
+         // add the button row
+Index: framework/source/class/qx/ui/form/renderer/Single.js
+===================================================================
+--- framework/source/class/qx/ui/form/renderer/Single.js	(revision 27592)
++++ framework/source/class/qx/ui/form/renderer/Single.js	(working copy)
+@@ -30,7 +30,7 @@
+     var layout = new qx.ui.layout.Grid();
+     layout.setSpacing(6);
+     layout.setColumnFlex(0, 1);
+-    layout.setColumnAlign(0, "right", "top");
++    layout.setColumnAlign(0, this.hasState("rtl") ? "left" : "right", "top");
+     this._setLayout(layout);
+ 
+     this.base(arguments, form);
+@@ -93,7 +93,7 @@
+         this._buttonRow = new qx.ui.container.Composite();
+         this._buttonRow.setMarginTop(5);
+         var hbox = new qx.ui.layout.HBox();
+-        hbox.setAlignX("right");
++        hbox.setAlignX(this.hasState("rtl") ? "left" : "right");
+         hbox.setSpacing(5);
+         this._buttonRow.setLayout(hbox);
+         // add the button row
+@@ -144,7 +144,7 @@
+       if (this._row != 0) {
+         header.setMarginTop(10);
+       }
+-      header.setAlignX("left");
++      header.setAlignX(this.hasState("rtl") ? "right" : "left");
+       return header;
+     }
+   },
+Index: framework/source/class/qx/ui/form/AbstractField.js
+===================================================================
+--- framework/source/class/qx/ui/form/AbstractField.js	(revision 27592)
++++ framework/source/class/qx/ui/form/AbstractField.js	(working copy)
+@@ -72,13 +72,6 @@
+       // assign the placeholder text after the appearance has been applied
+       this.addListener("syncAppearance", this._syncPlaceholder, this);
+     }
+-
+-    // translation support
+-    if (qx.core.Environment.get("qx.dynlocale")) {
+-      qx.locale.Manager.getInstance().addListener(
+-        "changeLocale", this._onChangeLocale, this
+-      );
+-    }
+   },
+ 
+ 
+@@ -282,11 +275,15 @@
+       // we don't need to update positions on native placeholders
+       if (updateInsets && this.__useQxPlaceholder)
+       {
++        var styles = {
++          "top": insets.top + pixel
++        };
++
+         // render the placeholder
+-        this.__getPlaceholderElement().setStyles({
+-          "left": insets.left + pixel,
+-          "top": insets.top + pixel
+-        });
++        var rtl = (qx.locale.Manager.getInstance().getDirection() == "right-to-left") ? "right" : "left";
++        styles[rtl] = insets[rtl] + pixel;
++
++        this.__getPlaceholderElement().setStyles(styles);
+       }
+ 
+       if (inner)
+@@ -305,7 +302,6 @@
+         });
+ 
+         this._renderContentElement(innerHeight, input);
+-
+       }
+     },
+ 
+@@ -821,12 +817,17 @@
+         // create the placeholder
+         this.__placeholder = new qx.html.Label();
+         var colorManager = qx.theme.manager.Color.getInstance();
+-        this.__placeholder.setStyles({
++
++        var styles = {
+           "visibility" : "hidden",
+           "zIndex" : 6,
+           "position" : "absolute",
+           "color" : colorManager.resolve("text-placeholder")
+-        });
++        };
++
++        styles["textAlign"] = (qx.locale.Manager.getInstance().getDirection() == "right-to-left") ? "right" : "left";
++
++        this.__placeholder.setStyles(styles);
+         this.getContainerElement().add(this.__placeholder);
+       }
+       return this.__placeholder;
+@@ -843,10 +844,14 @@
+     {
+       "true" : function(e)
+       {
++        this.base(arguments);
++
+         var content = this.getPlaceholder();
+         if (content && content.translate) {
+           this.setPlaceholder(content.translate());
+         }
++
++//        this.getContentElement().setStyle("direction", rtl ? "rtl" : "ltr");
+       },
+ 
+       "false" : null
+@@ -919,10 +924,6 @@
+   {
+     this.__placeholder = this.__font = null;
+ 
+-    if (qx.core.Environment.get("qx.dynlocale")) {
+-      qx.locale.Manager.getInstance().removeListener("changeLocale", this._onChangeLocale, this);
+-    }
+-
+     if (this.__font && this.__webfontListenerId) {
+       this.__font.removeListenerById(this.__webfontListenerId);
+     }
+Index: framework/source/class/qx/ui/form/AbstractSelectBox.js
+===================================================================
+--- framework/source/class/qx/ui/form/AbstractSelectBox.js	(revision 27592)
++++ framework/source/class/qx/ui/form/AbstractSelectBox.js	(working copy)
+@@ -115,6 +115,17 @@
+         return this._defaultFormat(item);
+       },
+       nullable : true
++    },
++
++    /**
++     * Alignment of the text
++     */
++    textAlign :
++    {
++      check : [ "left", "center", "right" ],
++      nullable : true,
++      themeable : true,
++      apply : "_applyTextAlign"
+     }
+   },
+ 
+@@ -178,7 +189,12 @@
+     },
+ 
+ 
++    // property apply
++    _applyTextAlign : function(value, old) {
++      this.getContentElement().setStyle("textAlign", value);
++    },
+ 
++
+     /*
+     ---------------------------------------------------------------------------
+       PUBLIC METHODS
+Index: framework/source/class/qx/ui/form/Spinner.js
+===================================================================
+--- framework/source/class/qx/ui/form/Spinner.js	(revision 27592)
++++ framework/source/class/qx/ui/form/Spinner.js	(working copy)
+@@ -96,10 +96,6 @@
+     this.addListener("keyup", this._onKeyUp, this);
+     this.addListener("mousewheel", this._onMouseWheel, this);
+ 
+-    if (qx.core.Environment.get("qx.dynlocale")) {
+-      qx.locale.Manager.getInstance().addListener("changeLocale", this._onChangeLocale, this);
+-    }
+-
+     // CREATE CONTROLS
+     this._createChildControl("textfield");
+     this._createChildControl("upbutton");
+@@ -277,7 +273,7 @@
+           control.addState("inner");
+           control.setFocusable(false);
+           control.addListener("execute", this._countDown, this);
+-          this._add(control, {column:1, row: 1});
++          this._add(control, {column: 1, row: 1});
+           break;
+       }
+ 
+@@ -715,6 +711,8 @@
+ 
+     _onChangeLocale : function(ev)
+     {
++      this.base(arguments);
++
+       if (this.getNumberFormat() !== null) {
+         this.setNumberFormat(this.getNumberFormat());
+         var textfield = this.getChildControl("textfield");
+@@ -808,13 +806,5 @@
+     gotoValue : function(value) {
+       return this.setValue(Math.min(this.getMaximum(), Math.max(this.getMinimum(), value)));
+     }
+-  },
+-
+-
+-  destruct : function()
+-  {
+-    if (qx.core.Environment.get("qx.dynlocale")) {
+-      qx.locale.Manager.getInstance().removeListener("changeLocale", this._onChangeLocale, this);
+-    }
+   }
+ });
+Index: framework/source/class/qx/ui/form/Slider.js
+===================================================================
+--- framework/source/class/qx/ui/form/Slider.js	(revision 27592)
++++ framework/source/class/qx/ui/form/Slider.js	(working copy)
+@@ -339,9 +339,10 @@
+      */
+     _onKeyPress : function(e)
+     {
++      var rtl = (qx.locale.Manager.getInstance().getDirection() == "right-to-left");
+       var isHorizontal = this.getOrientation() === "horizontal";
+-      var backward = isHorizontal ? "Left" : "Up";
+-      var forward = isHorizontal ? "Right" : "Down";
++      var backward = isHorizontal ? (rtl ? "Right" : "Left") : "Up";
++      var forward = isHorizontal ? (rtl ? "Left" : "Right") : "Down";
+ 
+       switch(e.getKeyIdentifier())
+       {
+@@ -392,12 +393,13 @@
+         return;
+       }
+ 
++      var rtl = (qx.locale.Manager.getInstance().getDirection() == "right-to-left");
+       var isHorizontal = this.__isHorizontal;
+       var knob = this.getChildControl("knob");
+ 
+-      var locationProperty = isHorizontal ? "left" : "top";
++      var locationProperty = isHorizontal ? (rtl ? "right" : "left") : "top";
+ 
+-      var cursorLocation = isHorizontal ? e.getDocumentLeft() : e.getDocumentTop();
++      var cursorLocation = isHorizontal ? (rtl ? e.getDocumentRight() : e.getDocumentLeft()) : e.getDocumentTop();
+       var sliderLocation = this.__sliderLocation = qx.bom.element.Location.get(this.getContentElement().getDomElement())[locationProperty];
+       var knobLocation = this.__knobLocation = qx.bom.element.Location.get(knob.getContainerElement().getDomElement())[locationProperty];
+ 
+@@ -488,10 +490,11 @@
+           var deltaSlider;
+           var deltaPosition;
+           var positionSlider;
+-
++          var rtl = (qx.locale.Manager.getInstance().getDirection() == "right-to-left");
++ 
+           if (this.__isHorizontal)
+           {
+-            deltaSlider = e.getDocumentLeft() - (this._valueToPosition(this.getValue()) + this.__sliderLocation);
++            deltaSlider = (rtl ? e.getDocumentRight() : e.getDocumentLeft()) - (this._valueToPosition(this.getValue()) + this.__sliderLocation);
+ 
+             positionSlider = qx.bom.element.Location.get(this.getContentElement().getDomElement())["top"];
+             deltaPosition = e.getDocumentTop() - (positionSlider + this.getChildControl("knob").getBounds().top);
+@@ -500,8 +503,8 @@
+           {
+             deltaSlider = e.getDocumentTop() - (this._valueToPosition(this.getValue()) + this.__sliderLocation);
+ 
+-            positionSlider = qx.bom.element.Location.get(this.getContentElement().getDomElement())["left"];
+-            deltaPosition = e.getDocumentLeft() - (positionSlider + this.getChildControl("knob").getBounds().left);
++            positionSlider = qx.bom.element.Location.get(this.getContentElement().getDomElement())[rtl ? "right" : "left"];
++            deltaPosition = (rtl ? e.getDocumentRight() : e.getDocumentLeft()) - (positionSlider + this.getChildControl("knob").getBounds()[rtl ? "right" : "left"]);
+           }
+ 
+           if (deltaPosition < 0 || deltaPosition > this.__knobSize ||
+@@ -545,8 +548,10 @@
+     {
+       if (this.__dragMode)
+       {
++        var rtl = (qx.locale.Manager.getInstance().getDirection() == "right-to-left");
++ 
+         var dragStop = this.__isHorizontal ?
+-          e.getDocumentLeft() : e.getDocumentTop();
++          (rtl ? e.getDocumentRight() : e.getDocumentLeft()) : e.getDocumentTop();
+         var position = dragStop - this.__dragOffset;
+ 
+         this.slideTo(this._positionToValue(position));
+@@ -780,10 +785,12 @@
+      */
+     _setKnobPosition : function(position)
+     {
++      var rtl = (qx.locale.Manager.getInstance().getDirection() == "right-to-left");
++
+       // Use DOM Element
+       var container = this.getChildControl("knob").getContainerElement();
+       if (this.__isHorizontal) {
+-        container.setStyle("left", position+"px", true);
++        container.setStyle(rtl ? "right" : "left", position+"px", true);
+       } else {
+         container.setStyle("top", position+"px", true);
+       }
+@@ -794,7 +801,7 @@
+ 
+       /*
+       if (this.__isHorizontal) {
+-        this.getChildControl("knob").setLayoutProperties({left:position});
++        this.getChildControl("knob").setLayoutProperties(rtl ? {right:position} : {left:position});
+       } else {
+         this.getChildControl("knob").setLayoutProperties({top:position});
+       }
+@@ -963,7 +970,9 @@
+         this.addState("horizontal");
+         knob.addState("horizontal");
+ 
+-        knob.setLayoutProperties({top:0, right:null, bottom:0});
++        var rtl = (qx.locale.Manager.getInstance().getDirection() == "right-to-left");
++ 
++        knob.setLayoutProperties(rtl ? {top:0, left:null, bottom:0} : {top:0, right:null, bottom:0});
+       }
+       else
+       {
+Index: framework/source/class/qx/ui/menu/ButtonLayout.js
+===================================================================
+--- framework/source/class/qx/ui/menu/ButtonLayout.js	(revision 27592)
++++ framework/source/class/qx/ui/menu/ButtonLayout.js	(working copy)
+@@ -76,22 +76,26 @@
+       }
+ 
+ 
++      var reversed = (qx.locale.Manager.getInstance().getDirection() == "right-to-left");
++
+       var left=0, top=0;
+       var Util = qx.ui.layout.Util;
+ 
+       for (var i=0, l=columns.length; i<l; i++)
+       {
+-        child = columnChildren[i];
++        var newCol = reversed ? l - i - 1: i;
+ 
++        child = columnChildren[newCol];
++
+         if (child)
+         {
+           var hint = child.getSizeHint();
+           var top = Util.computeVerticalAlignOffset(child.getAlignY()||"middle", hint.height, availHeight, 0, 0);
+-          var offsetLeft = Util.computeHorizontalAlignOffset(child.getAlignX()||"left", hint.width, columns[i], child.getMarginLeft(), child.getMarginRight());
++          var offsetLeft = Util.computeHorizontalAlignOffset(child.getAlignX()||(reversed ? "right" : "left"), hint.width, columns[newCol], reversed ? child.getMarginRight() : child.getMarginLeft(), reversed ? child.getMarginLeft() : child.getMarginRight());
+           child.renderLayout(left + offsetLeft, top, hint.width, hint.height);
+         }
+ 
+-        left += columns[i] + spacing;
++        left += columns[newCol] + spacing;
+       }
+     },
+ 
+Index: framework/source/class/qx/ui/menu/AbstractButton.js
+===================================================================
+--- framework/source/class/qx/ui/menu/AbstractButton.js	(revision 27592)
++++ framework/source/class/qx/ui/menu/AbstractButton.js	(working copy)
+@@ -244,17 +244,6 @@
+         return;
+       }
+ 
+-      if (qx.core.Environment.get("qx.dynlocale"))
+-      {
+-        var oldCommand = e.getOldData();
+-        if (!oldCommand) {
+-          qx.locale.Manager.getInstance().addListener("changeLocale", this._onChangeLocale, this);
+-        }
+-        if (!command) {
+-          qx.locale.Manager.getInstance().removeListener("changeLocale", this._onChangeLocale, this);
+-        }
+-      }
+-
+       var cmdString = command != null ? command.toString() : "";
+       this.getChildControl("shortcut").setValue(cmdString);
+     },
+@@ -266,6 +255,8 @@
+     _onChangeLocale : qx.core.Environment.select("qx.dynlocale",
+     {
+       "true" : function(e) {
++        this.base(arguments);
++
+         var command = this.getCommand();
+         if (command != null) {
+           this.getChildControl("shortcut").setValue(command.toString());
+@@ -342,10 +333,6 @@
+         this.getMenu().destroy();
+       }
+     }
+-
+-    if (qx.core.Environment.get("qx.dynlocale")) {
+-      qx.locale.Manager.getInstance().removeListener("changeLocale", this._onChangeLocale, this);
+-    }
+   }
+ });
+ 
+Index: framework/source/class/qx/ui/layout/Grid.js
+===================================================================
+--- framework/source/class/qx/ui/layout/Grid.js	(revision 27592)
++++ framework/source/class/qx/ui/layout/Grid.js	(working copy)
+@@ -1304,6 +1304,8 @@
+         rowHeights[row] = prefHeights[row].height + offset;
+       }
+ 
++      var rtl = (qx.locale.Manager.getInstance().getDirection() == "right-to-left");
++
+       // do the layout
+       var left = 0;
+       for (var col=0; col<=maxColIndex; col++)
+@@ -1312,7 +1314,8 @@
+ 
+         for (var row=0; row<=maxRowIndex; row++)
+         {
+-          var widget = this.__grid[row][col];
++          var newCol = (rtl ? maxColIndex - col : col);
++          var widget = this.__grid[row][newCol];
+ 
+           // ignore empty cells
+           if (!widget)
+@@ -1325,7 +1328,7 @@
+ 
+           // ignore cells, which have cell spanning but are not the origin
+           // of the widget
+-          if(widgetProps.row !== row || widgetProps.column !== col)
++          if(widgetProps.row !== row || widgetProps.column !== newCol)
+           {
+             top += rowHeights[row] + vSpacing;
+             continue;
+@@ -1334,7 +1337,7 @@
+           // compute sizes width including cell spanning
+           var spanWidth = hSpacing * (widgetProps.colSpan - 1);
+           for (var i=0; i<widgetProps.colSpan; i++) {
+-            spanWidth += colWidths[col+i];
++            spanWidth += colWidths[newCol+i];
+           }
+ 
+           var spanHeight = vSpacing * (widgetProps.rowSpan - 1);
+@@ -1351,7 +1354,7 @@
+           var cellWidth = Math.max(cellHint.minWidth, Math.min(spanWidth-marginLeft-marginRight, cellHint.maxWidth));
+           var cellHeight = Math.max(cellHint.minHeight, Math.min(spanHeight-marginTop-marginBottom, cellHint.maxHeight));
+ 
+-          var cellAlign = this.getCellAlign(row, col);
++          var cellAlign = this.getCellAlign(row, newCol);
+           var cellLeft = left + Util.computeHorizontalAlignOffset(cellAlign.hAlign, cellWidth, spanWidth, marginLeft, marginRight);
+           var cellTop = top + Util.computeVerticalAlignOffset(cellAlign.vAlign, cellHeight, spanHeight, marginTop, marginBottom);
+ 
+@@ -1365,7 +1368,7 @@
+           top += rowHeights[row] + vSpacing;
+         }
+ 
+-        left += colWidths[col] + hSpacing;
++        left += colWidths[newCol] + hSpacing;
+       }
+     },
+ 
+Index: framework/source/class/qx/ui/layout/Flow.js
+===================================================================
+--- framework/source/class/qx/ui/layout/Flow.js	(revision 27592)
++++ framework/source/class/qx/ui/layout/Flow.js	(working copy)
+@@ -243,7 +243,9 @@
+     {
+       var children = this._getLayoutChildren();
+ 
+-      if (this.getReversed()) {
++      var reversed = this.getReversed();
++
++      if (reversed) {
+         children = children.concat().reverse();
+       }
+ 
+@@ -275,16 +277,18 @@
+       var util = qx.ui.layout.Util;
+ 
+       var left = 0;
+-      if (this.getAlignX() != "left") {
++      var rtl = (qx.locale.Manager.getInstance().getDirection() == "right-to-left");
++
++      if (this.getAlignX() != (rtl ? "right" : "left")) {
+         left = availWidth - line.width;
+         if (this.getAlignX() == "center") {
+           left = Math.round(left / 2);
+         }
+       }
+ 
+-      for (var i=0; i<line.children.length; i++)
++      for (var i=0, l=line.children.length; i<l; i++)
+       {
+-        var child = line.children[i];
++        var child = line.children[rtl ? l - i - 1 : i];
+         var size = child.getSizeHint();
+         var marginTop = child.getMarginTop();
+         var marginBottom = child.getMarginBottom();
+Index: framework/source/class/qx/ui/layout/Canvas.js
+===================================================================
+--- framework/source/class/qx/ui/layout/Canvas.js	(revision 27592)
++++ framework/source/class/qx/ui/layout/Canvas.js	(working copy)
+@@ -146,14 +146,17 @@
+     renderLayout : function(availWidth, availHeight)
+     {
+       var children = this._getLayoutChildren();
++      var length = children.length;
+ 
+       var child, size, props;
+       var left, top, right, bottom, width, height;
+       var marginTop, marginRight, marginBottom, marginLeft;
+ 
+-      for (var i=0, l=children.length; i<l; i++)
++      var rtl = (qx.locale.Manager.getInstance().getDirection() == "right-to-left");
++
++      for (var i=0; i<length; i+=1)
+       {
+-        child = children[i];
++        child = children[rtl ? length - i - 1 : i];
+         size = child.getSizeHint();
+         props = child.getLayoutProperties();
+ 
+@@ -168,7 +171,6 @@
+         // **************************************
+         //   Processing location
+         // **************************************
+-
+         left = props.left != null ? props.left : props.edge;
+         if (qx.lang.Type.isString(left)) {
+           left = Math.round(parseFloat(left) * availWidth / 100);
+@@ -208,7 +210,7 @@
+           }
+ 
+           // Add margin
+-          left += marginLeft;
++          left = (rtl ? availWidth - width - left - marginLeft : left + marginLeft);
+         }
+         else
+         {
+@@ -232,11 +234,11 @@
+           }
+ 
+           if (right != null) {
+-            left = availWidth - width - right - marginRight - marginLeft;
++            left = rtl ? right + marginRight : availWidth - width - right - marginRight - marginLeft;
+           } else if (left == null) {
+-            left = marginLeft;
++            left = rtl ? availWidth - width - marginLeft : marginLeft;
+           } else {
+-            left += marginLeft;
++            left = rtl ? availWidth - width - left - marginLeft : left + marginLeft;
+           }
+         }
+ 
+Index: framework/source/class/qx/ui/layout/LineSizeIterator.js
+===================================================================
+--- framework/source/class/qx/ui/layout/LineSizeIterator.js	(revision 27592)
++++ framework/source/class/qx/ui/layout/LineSizeIterator.js	(working copy)
+@@ -138,4 +138,4 @@
+       return this.__hasMoreLines;
+     }
+   }
+-})
+\ No newline at end of file
++})
+Index: framework/source/class/qx/ui/layout/Util.js
+===================================================================
+--- framework/source/class/qx/ui/layout/Util.js	(revision 27592)
++++ framework/source/class/qx/ui/layout/Util.js	(working copy)
+@@ -295,15 +295,25 @@
+ 
+       if (collapse)
+       {
++        var rtl = (qx.locale.Manager.getInstance().getDirection() == "right-to-left");
++        var l = children.length;
++
+         // Add first child
+-        gaps += children[0].getMarginLeft();
++        gaps = gaps + (rtl ? children[l-1].getMarginRight() : children[0].getMarginLeft());
+ 
+-        for (var i=1, l=children.length; i<l; i+=1) {
+-          gaps += this.collapseMargins(spacing, children[i-1].getMarginRight(), children[i].getMarginLeft());
++        for (var i=1; i<l; i+=1) {
++          if(rtl)
++          {
++            gaps += this.collapseMargins(spacing, children[l-i].getMarginLeft(), children[l-i-1].getMarginRight());
++          }
++          else
++          {
++            gaps += this.collapseMargins(spacing, children[i-1].getMarginRight(), children[i].getMarginLeft());
++          }
+         }
+ 
+         // Add last child
+-        gaps += children[l-1].getMarginRight();
++        gaps = gaps + (rtl ? children[0].getMarginLeft() : children[l-1].getMarginRight());
+       }
+       else
+       {
+Index: framework/source/class/qx/ui/layout/VBox.js
+===================================================================
+--- framework/source/class/qx/ui/layout/VBox.js	(revision 27592)
++++ framework/source/class/qx/ui/layout/VBox.js	(working copy)
+@@ -395,6 +395,7 @@
+ 
+       // Layouting children
+       var hint, left, width, height, marginBottom, marginLeft, marginRight;
++      var rtl = (qx.locale.Manager.getInstance().getDirection() == "right-to-left");
+ 
+       // Pre configure separators
+       this._clearSeparators();
+@@ -413,14 +414,16 @@
+         height = heights[i];
+         hint = child.getSizeHint();
+ 
+-        marginLeft = child.getMarginLeft();
+-        marginRight = child.getMarginRight();
++        marginLeft = (rtl ? child.getMarginRight() : child.getMarginLeft());
++        marginRight = (rtl ? child.getMarginLeft() : child.getMarginRight());
+ 
+         // Find usable width
+         width = Math.max(hint.minWidth, Math.min(availWidth-marginLeft-marginRight, hint.maxWidth));
+ 
+         // Respect horizontal alignment
+-        left = util.computeHorizontalAlignOffset(child.getAlignX()||this.getAlignX(), width, availWidth, marginLeft, marginRight);
++        var alignX = child.getAlignX()||this.getAlignX();
++        var newAlign = (rtl ? ((alignX == "left") ? "right" : (alignX == "right" ? "left" : alignX)) : alignX);
++        left = util.computeHorizontalAlignOffset(newAlign, width, availWidth, marginLeft, marginRight);
+ 
+         // Add collapsed margin
+         if (i > 0)
+@@ -432,13 +435,16 @@
+             top += marginBottom + spacing;
+ 
+             // then render the separator at this position
+-            this._renderSeparator(separator, {
++            var styles = {
+               top : top,
+-              left : 0,
+               height : separatorHeight,
+               width : availWidth
+-            });
++            };
+ 
++            styles[rtl ? "right" : "left"] = 0;
++
++            this._renderSeparator(separator, styles);
++
+             // and finally add the size of the separator, the spacing (again) and the top margin
+             top += separatorHeight + spacing + child.getMarginTop();
+           }
+Index: framework/source/class/qx/ui/layout/Atom.js
+===================================================================
+--- framework/source/class/qx/ui/layout/Atom.js	(revision 27592)
++++ framework/source/class/qx/ui/layout/Atom.js	(working copy)
+@@ -129,9 +129,10 @@
+       var child, hint;
+       var gap = this.getGap();
+       var center = this.getCenter();
++      var rtl = (qx.locale.Manager.getInstance().getDirection() == "right-to-left");
+ 
+       // reverse ordering
+-      if (iconPosition === "bottom" || iconPosition === "right")
++      if (iconPosition === "bottom" || (rtl ? iconPosition === "left" : iconPosition === "right"))
+       {
+         var start = length-1;
+         var end = -1;
+@@ -231,6 +232,7 @@
+           left = Math.round(remainingWidth / 2);
+         } else {
+           left = 0;
++//          left = (rtl ? remainingWidth - width : 0);
+         }
+ 
+         for (var i=start; i!=end; i+=increment)
+@@ -247,9 +249,9 @@
+           }
+ 
+           var align = "middle";
+-          if(iconPosition == "top-left"){
++          if(iconPosition == (rtl ? "top-right" : "top-left")){
+             align = "top";
+-          } else if (iconPosition == "bottom-left") {
++          } else if (iconPosition == (rtl ? "bottom-right" : "bottom-left")) {
+             align = "bottom";
+           }
+           top = Util.computeVerticalAlignOffset(align, hint.height, availHeight);
+Index: framework/source/class/qx/ui/layout/HBox.js
+===================================================================
+--- framework/source/class/qx/ui/layout/HBox.js	(revision 27592)
++++ framework/source/class/qx/ui/layout/HBox.js	(working copy)
+@@ -379,21 +379,23 @@
+ 
+ 
+       // Start with left coordinate
+-      var left = children[0].getMarginLeft();
++      var rtl = (qx.locale.Manager.getInstance().getDirection() == "right-to-left");
++      var left = (rtl ? children[length - 1].getMarginRight() : children[0].getMarginLeft());
+ 
+       // Alignment support
+-      if (allocatedWidth < availWidth && this.getAlignX() != "left")
++      var alignX = this.getAlignX();
++      if (allocatedWidth < availWidth && (rtl ? alignX != "right" : alignX != "left"))
+       {
+-        left = availWidth - allocatedWidth;
++	left = availWidth - allocatedWidth;
+ 
+-        if (this.getAlignX() === "center") {
++        if (alignX === "center") {
+           left = Math.round(left / 2);
+         }
+       }
+ 
+ 
+       // Layouting children
+-      var hint, top, height, width, marginRight, marginTop, marginBottom;
++      var hint, top, height, width, margin, marginLeft, marginRight, marginTop, marginBottom;
+       var spacing = this.getSpacing();
+ 
+       // Pre configure separators
+@@ -407,14 +409,17 @@
+       }
+ 
+       // Render children and separators
+-      for (i=0; i<length; i+=1)
++      for (var i=0; i<length; i++)
+       {
+-        child = children[i];
+-        width = widths[i];
++        var ii = (rtl ? length - i - 1 : i);
++        child = children[ii];
++        width = widths[ii];
+         hint = child.getSizeHint();
+ 
+         marginTop = child.getMarginTop();
+         marginBottom = child.getMarginBottom();
++        marginRight = child.getMarginRight();
++        marginLeft = child.getMarginLeft();
+ 
+         // Find usable height
+         height = Math.max(hint.minHeight, Math.min(availHeight-marginTop-marginBottom, hint.maxHeight));
+@@ -423,13 +428,13 @@
+         top = util.computeVerticalAlignOffset(child.getAlignY()||this.getAlignY(), height, availHeight, marginTop, marginBottom);
+ 
+         // Add collapsed margin
+-        if (i > 0)
++        if (rtl ? ii < (length - 1) : ii > 0)
+         {
+           // Whether a separator has been configured
+           if (separator)
+           {
+             // add margin of last child and spacing
+-            left += marginRight + spacing;
++            left += margin + spacing;
+ 
+             // then render the separator at this position
+             this._renderSeparator(separator, {
+@@ -440,12 +445,12 @@
+             });
+ 
+             // and finally add the size of the separator, the spacing (again) and the left margin
+-            left += separatorWidth + spacing + child.getMarginLeft();
++            left += separatorWidth + spacing + (rtl ? marginRight : marginLeft);
+           }
+           else
+           {
+             // Support margin collapsing when no separator is defined
+-            left += util.collapseMargins(spacing, marginRight, child.getMarginLeft());
++            left += util.collapseMargins(spacing, margin, (rtl ? marginRight : marginLeft));
+           }
+         }
+ 
+@@ -456,7 +461,7 @@
+         left += width;
+ 
+         // Remember right margin (for collapsing)
+-        marginRight = child.getMarginRight();
++        margin = (rtl ? marginLeft : marginRight);
+       }
+     },
+ 
+Index: framework/source/class/qx/ui/layout/Basic.js
+===================================================================
+--- framework/source/class/qx/ui/layout/Basic.js	(revision 27592)
++++ framework/source/class/qx/ui/layout/Basic.js	(working copy)
+@@ -97,10 +97,13 @@
+     renderLayout : function(availWidth, availHeight)
+     {
+       var children = this._getLayoutChildren();
++      var length = children.length;
+       var child, size, props, left, top;
+ 
++      var rtl = (qx.locale.Manager.getInstance().getDirection() == "right-to-left");
++
+       // Render children
+-      for (var i=0, l=children.length; i<l; i++)
++      for (var i=0; i<length; i+=1)
+       {
+         child = children[i];
+         size = child.getSizeHint();
+@@ -109,6 +112,10 @@
+         left = (props.left || 0) + child.getMarginLeft();
+         top = (props.top || 0) + child.getMarginTop();
+ 
++        if (rtl) {
++          left = availWidth - size.width - left - child.getMarginRight();
++        }
++
+         child.renderLayout(left, top, size.width, size.height);
+       }
+     },
+@@ -122,6 +129,7 @@
+       var neededWidth=0, neededHeight=0;
+       var localWidth, localHeight;
+ 
++      var rtl = (qx.locale.Manager.getInstance().getDirection() == "right-to-left");
+ 
+       // Iterate over children
+       for (var i=0, l=children.length; i<l; i++)
+@@ -130,7 +138,7 @@
+         size = child.getSizeHint();
+         props = child.getLayoutProperties();
+ 
+-        localWidth = size.width + (props.left || 0) + child.getMarginLeft() + child.getMarginRight();
++        localWidth = size.width + (props[rtl ? "right" : "left"] || 0) + child.getMarginLeft() + child.getMarginRight();
+         localHeight = size.height + (props.top || 0) + child.getMarginTop() + child.getMarginBottom();
+ 
+         if (localWidth > neededWidth) {
+Index: framework/source/class/qx/ui/layout/Abstract.js
+===================================================================
+--- framework/source/class/qx/ui/layout/Abstract.js	(revision 27592)
++++ framework/source/class/qx/ui/layout/Abstract.js	(working copy)
+@@ -30,6 +30,12 @@
+   type : "abstract",
+   extend : qx.core.Object,
+ 
++  construct : function()
++  {
++    if (qx.core.Environment.get("qx.dynlocale")) {
++      qx.locale.Manager.getInstance().addListener("changeLocale", this._applyLayoutChange, this);
++    }
++  },
+ 
+   /*
+   *****************************************************************************
+@@ -257,6 +263,10 @@
+   */
+ 
+   destruct : function() {
++    if (qx.core.Environment.get("qx.dynlocale")) {
++      qx.locale.Manager.getInstance().removeListener("changeLocale", this._applyLayoutChange, this);
++    }
++
+     this.__widget = this.__sizeHint = null;
+   }
+ });
+Index: framework/source/class/qx/Theme.js
+===================================================================
+--- framework/source/class/qx/Theme.js	(revision 27592)
++++ framework/source/class/qx/Theme.js	(working copy)
+@@ -323,7 +323,8 @@
+         "appearances" : "object", // Map
+         "meta"        : "object", // Map
+         "include"     : "object", // Array
+-        "patch"       : "object"  // Array
++        "patch"       : "object", // Array
++        "directions"  : "object"  // Array
+       },
+ 
+       "default" : null
