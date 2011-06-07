@@ -1,0 +1,4683 @@
+# 
+msgid ""
+msgstr ""
+"Project-Id-Version: 1.0\n"
+"Report-Msgid-Bugs-To: you@your.org\n"
+"POT-Creation-Date: 2011-04-01 14:31+0100\n"
+"PO-Revision-Date: 2011-04-01 14:31+0100\n"
+"Last-Translator: you <you@your.org>\n"
+"Language-Team: Team <yourteam@your.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: demobrowser/DemoBrowser.js:126
+msgid "Filter..."
+msgstr "مرشح..."
+
+#: demobrowser/DemoBrowser.js:204
+msgid "Info"
+msgstr "معلومات"
+
+#: demobrowser/DemoBrowser.js:388
+msgid "Could not open the Playground."
+msgstr "لا يمكن فتح الملعب."
+
+#: demobrowser/DemoBrowser.js:446
+msgid "Demo has been disposed."
+msgstr "وقد تم التخلص تجريبي."
+
+#: demobrowser/DemoBrowser.js:450
+msgid "Unable to access application."
+msgstr "قادر على الوصول إلى التطبيق."
+
+#: demobrowser/DemoBrowser.js:474
+msgid "Run"
+msgstr "تشغيل"
+
+#: demobrowser/DemoBrowser.js:476
+msgid "Run the selected demo(s)"
+msgstr "تشغيل تجريبي مختارة (ق)"
+
+#: demobrowser/DemoBrowser.js:480
+msgid "Stop"
+msgstr "وقف"
+
+#: demobrowser/DemoBrowser.js:483
+msgid "Stop playback after current demo"
+msgstr "بعد إيقاف تشغيل التجريبي الحالي"
+
+#: demobrowser/DemoBrowser.js:496
+msgid "Run previous demo"
+msgstr "تشغيل تجريبي السابقة"
+
+#: demobrowser/DemoBrowser.js:503
+msgid "Run next demo"
+msgstr "تشغيل تجريبي المقبل"
+
+#: demobrowser/DemoBrowser.js:518
+msgid "Own Window"
+msgstr "نافذة الخاصة"
+
+#: demobrowser/DemoBrowser.js:520
+msgid "Open demo in new window"
+msgstr "فتح عرض في نافذة جديدة"
+
+#: demobrowser/DemoBrowser.js:526
+msgid "To Playground"
+msgstr "على ملعب"
+
+#: demobrowser/DemoBrowser.js:528
+msgid "Open demo in the playground"
+msgstr "فتح عرض في الملعب"
+
+#: demobrowser/DemoBrowser.js:544
+msgid "API Viewer"
+msgstr "المعهد عارض"
+
+#: demobrowser/DemoBrowser.js:547
+msgid "Open the qooxdoo API Viewer"
+msgstr "فتح المعهد qooxdoo عارض"
+
+#: demobrowser/DemoBrowser.js:552
+msgid "Manual"
+msgstr "دليل"
+
+#: demobrowser/DemoBrowser.js:555
+msgid "Open the qooxdoo Manual"
+msgstr "فتح المختصر qooxdoo"
+
+#: demobrowser/DemoBrowser.js:580
+msgid "Available locales"
+msgstr "متاح لغات"
+
+#: demobrowser/DemoBrowser.js:621
+msgid "Modern Theme"
+msgstr "الحديث الموضوع"
+
+#: demobrowser/DemoBrowser.js:622
+msgid "Classic Theme"
+msgstr "كلاسيك الموضوع"
+
+#: demobrowser/DemoBrowser.js:623
+msgid "Simple Theme"
+msgstr "الموضوع بسيط"
+
+#: demobrowser/DemoBrowser.js:637
+msgid "Theme"
+msgstr "موضوع"
+
+#: demobrowser/DemoBrowser.js:652
+msgid "Object Summary"
+msgstr "كائن ملخص"
+
+#: demobrowser/DemoBrowser.js:658
+msgid "Dispose Demo"
+msgstr "التصرف تجريبي"
+
+#: demobrowser/DemoBrowser.js:667
+msgid "Hide/Show Tests Demos"
+msgstr "إخفاء / إظهار الاختبارات ديموس"
+
+#: demobrowser/DemoBrowser.js:673
+msgid "Debug"
+msgstr "التصحيح"
+
+#: demobrowser/DemoBrowser.js:703
+msgid "Log File"
+msgstr "ملف السجل"
+
+#: demobrowser/DemoBrowser.js:704
+msgid "Display log file"
+msgstr "عرض ملف السجل"
+
+#: demobrowser/DemoBrowser.js:972
+msgid "Demo Link"
+msgstr "عرض وصله"
+
+#: demobrowser/DemoBrowser.js:993
+msgid "Get Demo Link"
+msgstr "الحصول على رابط تجريبي"
+
+#: demobrowser/Readme.js:94
+msgid "Readme"
+msgstr ""
+
+#: demobrowser/demo/animation/Login.js:93
+msgid "Login"
+msgstr ""
+
+#: demobrowser/demo/animation/Save_Dialog.js:93
+msgid "close"
+msgstr ""
+
+#: demobrowser/demo/animation/Save_Dialog.js:109
+msgid ""
+"Lorem ipsum dolor sit amet, consectetuer sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.\n"
+"\n"
+"Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.\n"
+"\n"
+"Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi"
+msgstr ""
+
+#: demobrowser/demo/animation/Save_Dialog.js:148
+msgid "<b "font-size:12pt;">Do you want to save the changes you made in the doc "Untitled"?</b>"
+msgstr ""
+
+#: demobrowser/demo/animation/Save_Dialog.js:149
+msgid "Your changes will be lost if you don't save them."
+msgstr ""
+
+#: demobrowser/demo/animation/Save_Dialog.js:158
+msgid "Don't save"
+msgstr ""
+
+#: demobrowser/demo/animation/Save_Dialog.js:160
+msgid "Save..."
+msgstr ""
+
+#: demobrowser/demo/animation/Scroll.js:68
+msgid "Scroll Up"
+msgstr ""
+
+#: demobrowser/demo/animation/Scroll.js:69
+msgid "Scroll Down"
+msgstr ""
+
+#: demobrowser/demo/animation/Scroll.js:71
+msgid "Scroll Left"
+msgstr ""
+
+#: demobrowser/demo/animation/Scroll.js:72
+msgid "Scroll Right"
+msgstr ""
+
+#: demobrowser/demo/animation/Scroll.js:74
+msgid "Scroll to 40, 100"
+msgstr ""
+
+#: demobrowser/demo/animation/Showcase.js:54
+#: demobrowser/demo/animation/Showcase.js:60
+msgid "Base effects"
+msgstr ""
+
+#: demobrowser/demo/animation/Showcase.js:55
+#: demobrowser/demo/animation/Showcase.js:61
+msgid "Attention effects"
+msgstr ""
+
+#: demobrowser/demo/animation/Showcase.js:56
+#: demobrowser/demo/animation/Showcase.js:62
+msgid "Vanish effects"
+msgstr ""
+
+#: demobrowser/demo/animation/Showcase.js:74
+msgid "Toggle Opacity"
+msgstr ""
+
+#: demobrowser/demo/animation/Showcase.js:75
+msgid "Toggle Size"
+msgstr ""
+
+#: demobrowser/demo/animation/Showcase.js:76
+msgid "Toggle Position"
+msgstr ""
+
+#: demobrowser/demo/animation/Showcase.js:77
+msgid "Toggle Background"
+msgstr ""
+
+#: demobrowser/demo/animation/Showcase.js:93
+msgid "Shake"
+msgstr ""
+
+#: demobrowser/demo/animation/Showcase.js:94
+msgid "ColorFlow"
+msgstr ""
+
+#: demobrowser/demo/animation/Showcase.js:95
+msgid "Pulsate"
+msgstr ""
+
+#: demobrowser/demo/animation/Showcase.js:109
+msgid "Puff"
+msgstr ""
+
+#: demobrowser/demo/animation/Showcase.js:110
+#: demobrowser/demo/animation/Showcase.js:355
+#: demobrowser/demo/animation/Showcase.js:362
+msgid "Drop out"
+msgstr ""
+
+#: demobrowser/demo/animation/Showcase.js:111
+msgid "Switch Off"
+msgstr ""
+
+#: demobrowser/demo/animation/Showcase.js:112
+msgid "Shrink"
+msgstr ""
+
+#: demobrowser/demo/animation/Showcase.js:113
+#: demobrowser/demo/animation/Showcase.js:383
+#: demobrowser/demo/animation/Showcase.js:390
+msgid "Fold in"
+msgstr ""
+
+#: demobrowser/demo/animation/Showcase.js:357
+msgid "Drop in"
+msgstr ""
+
+#: demobrowser/demo/animation/Showcase.js:385
+msgid "Fold out"
+msgstr ""
+
+#: demobrowser/demo/animation/Transition_Color.js:45
+msgid "sinodial transition will accelerate sinusoidal."
+msgstr ""
+
+#: demobrowser/demo/animation/Transition_Color.js:49
+msgid "Alternates rapidly between start end target. Looks only nice on color effects."
+msgstr ""
+
+#: demobrowser/demo/animation/Transition_Color.js:50
+msgid "Alternates between start and end. Looks only nice on color effects."
+msgstr ""
+
+#: demobrowser/demo/animation/Transition_Position.js:36
+#: demobrowser/demo/animation/Transition_Color.js:36
+msgid "<span style="color:white;">Welcome to <br><b style="color:#F3FFB3;">qooxdoo</b> animations!</span>"
+msgstr ""
+
+#: demobrowser/demo/animation/Transition_Position.js:42
+#: demobrowser/demo/animation/Transition_Color.js:42
+msgid "Linear is the default transition for many effects."
+msgstr ""
+
+#: demobrowser/demo/animation/Transition_Position.js:43
+#: demobrowser/demo/animation/Transition_Color.js:43
+msgid "EaseInQuad will accelerate exponentially."
+msgstr ""
+
+#: demobrowser/demo/animation/Transition_Position.js:44
+#: demobrowser/demo/animation/Transition_Color.js:44
+msgid "EaseOutQuad will slow down exponentially."
+msgstr ""
+
+#: demobrowser/demo/animation/Transition_Position.js:45
+msgid "Sinodial transition will accelerate sinusoidal."
+msgstr ""
+
+#: demobrowser/demo/animation/Transition_Position.js:46
+#: demobrowser/demo/animation/Transition_Color.js:46
+msgid "Reverse behaves like linear, but in the opposite direction."
+msgstr ""
+
+#: demobrowser/demo/animation/Transition_Position.js:47
+#: demobrowser/demo/animation/Transition_Color.js:47
+msgid "Wobble will bounce the element forwards and backwards."
+msgstr ""
+
+#: demobrowser/demo/animation/Transition_Position.js:48
+#: demobrowser/demo/animation/Transition_Color.js:48
+msgid "Spring will overshoot the target and then move back."
+msgstr ""
+
+#: demobrowser/demo/animation/Transition_Position.js:53
+#: demobrowser/demo/animation/Transition_Color.js:55
+msgid "Show it!"
+msgstr ""
+
+#: demobrowser/demo/animation/Transition_Position.js:55
+#: demobrowser/demo/animation/Transition_Color.js:57
+#: demobrowser/demo/widget/DateChooser.js:97
+msgid "Description"
+msgstr ""
+
+#: demobrowser/demo/animation/Transition_Position.js:56
+#: demobrowser/demo/animation/Transition_Color.js:58
+msgid "Duration"
+msgstr ""
+
+#: demobrowser/demo/animation/Tree_Highlight.js:92
+msgid "Junk #"
+msgstr ""
+
+#: demobrowser/demo/animation/Tree_Highlight.js:95
+msgid "Data 123213234325345234523453453245"
+msgstr ""
+
+#: demobrowser/demo/animation/Tree_Highlight.js:113
+msgid "New tree item name: "
+msgstr ""
+
+#: demobrowser/demo/animation/Tree_Highlight.js:116
+#: demobrowser/demo/test/Table_CellRenderer.js:270
+#: demobrowser/demo/test/Table_CellRenderer.js:299
+msgid "Hello"
+msgstr ""
+
+#: demobrowser/demo/animation/Tree_Highlight.js:121
+msgid "Add folder"
+msgstr ""
+
+#: demobrowser/demo/animation/Tree_Highlight.js:125
+msgid "Add file"
+msgstr ""
+
+#: demobrowser/demo/animation/Tree_Highlight.js:129
+msgid "Add after"
+msgstr ""
+
+#: demobrowser/demo/animation/Tree_Highlight.js:133
+msgid "Add before"
+msgstr ""
+
+#: demobrowser/demo/animation/Tree_Highlight.js:137
+msgid "Add at begin"
+msgstr ""
+
+#: demobrowser/demo/animation/Tree_Highlight.js:144
+msgid "Remove tree item"
+msgstr ""
+
+#: demobrowser/demo/animation/Tree_Highlight.js:148
+msgid "Remove all children"
+msgstr ""
+
+#: demobrowser/demo/animation/Tree_Highlight.js:155
+msgid "Move to parent"
+msgstr ""
+
+#: demobrowser/demo/animation/Tree_Highlight.js:161
+msgid "Show open button:"
+msgstr ""
+
+#: demobrowser/demo/animation/Tree_Highlight.js:163
+msgid "always"
+msgstr ""
+
+#: demobrowser/demo/animation/Tree_Highlight.js:164
+msgid "never"
+msgstr ""
+
+#: demobrowser/demo/animation/Tree_Highlight.js:165
+msgid "auto"
+msgstr ""
+
+#: demobrowser/demo/animation/Tree_Highlight.js:187
+msgid "Reset tree"
+msgstr ""
+
+#: demobrowser/demo/bom/Audio.js:49
+msgid "It seems that your browser doesn't support HTML5 audio"
+msgstr ""
+
+#: demobrowser/demo/bom/Blocker.js:30
+msgid "Block Document for 5s"
+msgstr ""
+
+#: demobrowser/demo/bom/Blocker.js:51
+msgid "Block Element for 5s"
+msgstr ""
+
+#: demobrowser/demo/bom/Cookie.js:51
+msgid "Restore"
+msgstr ""
+
+#: demobrowser/demo/bom/Cookie.js:59
+#: demobrowser/demo/showcase/Localization.js:148
+msgid "Delete"
+msgstr ""
+
+#: demobrowser/demo/bom/Dimension.js:38
+msgid ": Box="
+msgstr ""
+
+#: demobrowser/demo/bom/Dimension.js:38
+msgid "; Content="
+msgstr ""
+
+#: demobrowser/demo/bom/Dimension.js:38
+msgid "Block "
+msgstr ""
+
+#: demobrowser/demo/bom/Environment.js:36
+msgid "<h2>Synchronous checks</h2>"
+msgstr ""
+
+#: demobrowser/demo/bom/Environment.js:64
+msgid "<tr><td colspan='2'><h2>Asynchronous checks</h2></td></tr>"
+msgstr ""
+
+#: demobrowser/demo/bom/Geolocation.js:30
+msgid "Finding Your Location..."
+msgstr ""
+
+#: demobrowser/demo/bom/Geolocation.js:36
+msgid "Geolocation Not Supported"
+msgstr ""
+
+#: demobrowser/demo/bom/Geolocation.js:50
+msgid "Permission Denied"
+msgstr ""
+
+#: demobrowser/demo/bom/Geolocation.js:50
+msgid "Position Unavailable"
+msgstr ""
+
+#: demobrowser/demo/bom/Geolocation.js:50
+msgid "Timeout"
+msgstr ""
+
+#: demobrowser/demo/bom/Geolocation.js:53
+msgid "Failed: %1"
+msgstr ""
+
+#: demobrowser/demo/bom/HtmlArea.js:71
+msgid "<h1>HtmlArea low-level widget</h1><p>This low-level widget can be used separately at traditional web pages / single-page applications.<br/> It is the foundation for the UI widget component.</p><p style='margin-bottom:10px'><b>No UI-level code</b> is included in this demo.You can play around with this widget by hitting the buttons at the toolbar.</p>"
+msgstr ""
+
+#: demobrowser/demo/bom/HtmlArea.js:189
+msgid "Link: "
+msgstr ""
+
+#: demobrowser/demo/bom/HtmlArea.js:222
+msgid "Change font family"
+msgstr ""
+
+#: demobrowser/demo/bom/HtmlArea.js:283
+msgid "Change font size"
+msgstr ""
+
+#: demobrowser/demo/bom/Iframe.js:31
+msgid "testFrame"
+msgstr ""
+
+#: demobrowser/demo/bom/Label.js:31 demobrowser/demo/bom/Label.js:36
+msgid "Quite a long label text"
+msgstr ""
+
+#: demobrowser/demo/bom/Label.js:41 demobrowser/demo/bom/Label.js:46
+#: demobrowser/demo/bom/Label.js:49
+msgid "This is <b>bold</b> text"
+msgstr ""
+
+#: demobrowser/demo/bom/Video.js:53
+msgid "It seems that your browser doesn't support HTML5 video"
+msgstr ""
+
+#: demobrowser/demo/bom/Video.js:59 demobrowser/demo/bom/Audio.js:55
+msgid "Play/Pause"
+msgstr ""
+
+#: demobrowser/demo/bom/Video.js:68
+msgid "Native Controls"
+msgstr ""
+
+#: demobrowser/demo/bom/Video.js:77 demobrowser/demo/bom/Audio.js:64
+msgid "Mute"
+msgstr ""
+
+#: demobrowser/demo/bom/Video.js:86 demobrowser/demo/bom/Audio.js:73
+msgid "Loop"
+msgstr ""
+
+#: demobrowser/demo/bom/Video.js:95 demobrowser/demo/bom/Audio.js:82
+msgid "0:00"
+msgstr ""
+
+#: demobrowser/demo/bom/WebStorage.js:39
+msgid "key"
+msgstr ""
+
+#: demobrowser/demo/bom/WebStorage.js:40
+msgid "value"
+msgstr ""
+
+#: demobrowser/demo/bom/WebStorage.js:43
+msgid "Clear"
+msgstr ""
+
+#: demobrowser/demo/bom/WebStorage.js:44
+#: demobrowser/demo/treevirtual/TreeVirtual_Multiple_Columns.js:112
+msgid "Remove"
+msgstr ""
+
+#: demobrowser/demo/bom/Window.js:48
+msgid "Open Native Window"
+msgstr ""
+
+#: demobrowser/demo/bom/Window.js:65
+msgid "Window closed?"
+msgstr ""
+
+#: demobrowser/demo/bom/Window.js:75
+msgid "Open Native Modal Window"
+msgstr ""
+
+#: demobrowser/demo/bom/Window.js:91
+msgid "Modal Window closed?"
+msgstr ""
+
+#: demobrowser/demo/bom/Window.js:101
+msgid "Open Faked Native Modal Window"
+msgstr ""
+
+#: demobrowser/demo/data/ExtendedList.js:43
+msgid "angel"
+msgstr ""
+
+#: demobrowser/demo/data/ExtendedList.js:43
+msgid "embarrassed"
+msgstr ""
+
+#: demobrowser/demo/data/ExtendedList.js:43
+msgid "kiss"
+msgstr ""
+
+#: demobrowser/demo/data/ExtendedList.js:43
+msgid "plain"
+msgstr ""
+
+#: demobrowser/demo/data/ExtendedList.js:43
+msgid "sad"
+msgstr ""
+
+#: demobrowser/demo/data/ExtendedList.js:43
+msgid "surprise"
+msgstr ""
+
+#: demobrowser/demo/data/ExtendedList.js:90
+#: demobrowser/demo/data/ListControllerWithObjects.js:119
+#: demobrowser/demo/virtual/ExtendedList.js:82
+msgid "Online <> Offline"
+msgstr ""
+
+#: demobrowser/demo/data/ExtendedList.js:126
+#: demobrowser/demo/virtual/ExtendedList.js:111
+msgid "<b>Displaying Checkboxes in a list</b><br/>This list display a set of persons in a list as checkbox. Every person does have a name as label and an online status as checkbox."
+msgstr ""
+
+#: demobrowser/demo/data/ExtendedTree.js:75
+msgid "all boring black"
+msgstr ""
+
+#: demobrowser/demo/data/ExtendedTree.js:104
+msgid "<b>A tree configures with bindItem</b><br/>The tree has bound its label to the name of the modeln and its textColor to some random colors."
+msgstr ""
+
+#: demobrowser/demo/data/Finder.js:40
+msgid "Finder"
+msgstr ""
+
+#: demobrowser/demo/data/Flickr.js:46
+msgid "qooxdoo"
+msgstr ""
+
+#: demobrowser/demo/data/Flickr.js:63
+msgid "loading"
+msgstr ""
+
+#: demobrowser/demo/data/Form.js:48 demobrowser/demo/ui/MultiPageForm.js:41
+msgid "Name:"
+msgstr ""
+
+#: demobrowser/demo/data/Form.js:55
+msgid "Gender:"
+msgstr ""
+
+#: demobrowser/demo/data/Form.js:59
+msgid "-please select-"
+msgstr ""
+
+#: demobrowser/demo/data/Form.js:61
+#: demobrowser/demo/widget/RadioButtonGroup.js:45
+#: demobrowser/demo/data/FormAndListController.js:40
+#: demobrowser/demo/ui/FormRenderer.js:56
+msgid "male"
+msgstr ""
+
+#: demobrowser/demo/data/Form.js:63
+#: demobrowser/demo/widget/RadioButtonGroup.js:45
+#: demobrowser/demo/data/FormAndListController.js:41
+#: demobrowser/demo/ui/FormRenderer.js:57
+msgid "female"
+msgstr ""
+
+#: demobrowser/demo/data/Form.js:68
+msgid "Ok:"
+msgstr ""
+
+#: demobrowser/demo/data/Form.js:144
+msgid "You are sending: %1"
+msgstr ""
+
+#: demobrowser/demo/data/FormAndListController.js:42
+msgid "dont know!"
+msgstr ""
+
+#: demobrowser/demo/data/FormAndListController.js:43
+msgid "Alien"
+msgstr ""
+
+#: demobrowser/demo/data/FormAndListController.js:53
+msgid "Firstname"
+msgstr ""
+
+#: demobrowser/demo/data/FormAndListController.js:57
+msgid "Lastname"
+msgstr ""
+
+#: demobrowser/demo/data/FormAndListController.js:67
+#: demobrowser/demo/ui/FormRenderer.js:58
+#: demobrowser/demo/ui/FormRendererDouble.js:58
+msgid "Gender"
+msgstr ""
+
+#: demobrowser/demo/data/FormAndListController.js:77
+msgid "Show model data in the log"
+msgstr ""
+
+#: demobrowser/demo/data/FormController.js:38
+#: demobrowser/demo/test/UIDeclaration.js:47
+msgid "Simple Form"
+msgstr ""
+
+#: demobrowser/demo/data/FormController.js:49
+#: demobrowser/demo/showcase/Dialog.js:57
+#: demobrowser/demo/test/UIDeclaration.js:51
+msgid "First Name"
+msgstr ""
+
+#: demobrowser/demo/data/FormController.js:50
+#: demobrowser/demo/showcase/Dialog.js:57
+#: demobrowser/demo/test/UIDeclaration.js:63
+msgid "Last Name"
+msgstr ""
+
+#: demobrowser/demo/data/FormController.js:51
+#: demobrowser/demo/test/UIDeclaration.js:71
+#: demobrowser/demo/widget/Tree_Columns.js:88
+msgid "Company"
+msgstr ""
+
+#: demobrowser/demo/data/FormController.js:52
+#: demobrowser/demo/ui/FormRendererCustom.js:57
+#: demobrowser/demo/test/UIDeclaration.js:79
+#: demobrowser/demo/table/Table_Cell_Editor.js:106
+msgid "Email"
+msgstr ""
+
+#: demobrowser/demo/data/FormController.js:53
+#: demobrowser/demo/progressive/ProgressiveTable_Mouseover.js:46
+#: demobrowser/demo/test/UIDeclaration.js:87
+#: demobrowser/demo/progressive/ProgressiveTable.js:57
+msgid "Date"
+msgstr ""
+
+#: demobrowser/demo/data/FormController.js:59
+#: demobrowser/demo/animation/Save_Dialog.js:159
+#: demobrowser/demo/widget/HtmlArea.js:184
+#: demobrowser/demo/showcase/Dialog.js:119
+#: demobrowser/demo/test/UIDeclaration.js:109
+msgid "Cancel"
+msgstr ""
+
+#: demobrowser/demo/data/FormController.js:77
+msgid "You are saving: %1"
+msgstr ""
+
+#: demobrowser/demo/data/JsonToList.js:60
+#: demobrowser/demo/data/JsonToTree.js:54
+#: demobrowser/demo/data/NamesList.js:58
+msgid "Loading..."
+msgstr ""
+
+#: demobrowser/demo/data/JsonToList.js:80
+msgid "<b>List bound to data in a json file</b><br/>Loading the json file <a href='%1' target='_blank'>list.json</a> and bind the items to the list widget. The icons  will be created by a converter which converts the type to an icon url."
+msgstr ""
+
+#: demobrowser/demo/data/JsonToTree.js:79
+msgid "<b>Tree bound to data in a json file</b><br/>Loading the json file <a href='%1' target='_blank'>tree.json</a> and bind the items to the tree widget."
+msgstr ""
+
+#: demobrowser/demo/data/ListController.js:37
+#: demobrowser/demo/test/SelectBox_EdgeCases.js:85
+#: demobrowser/demo/virtual/Tree_Columns.js:91
+#: demobrowser/demo/virtual/SelectBox.js:70
+#: demobrowser/demo/virtual/SelectBox.js:216
+#: demobrowser/demo/data/ExtendedTree.js:41
+#: demobrowser/demo/data/Tree_Columns.js:90
+#: demobrowser/demo/virtual/ComboBox.js:220
+#: demobrowser/demo/widget/SelectBox.js:59 demobrowser/demo/widget/Menu.js:616
+#: demobrowser/demo/widget/Tree_Columns.js:106
+#: demobrowser/demo/virtual/Tree_Dynamic.js:104
+#: demobrowser/demo/ui/DragDrop.js:71 demobrowser/demo/ui/DragDrop.js:221
+#: demobrowser/demo/test/Opacity.js:74 demobrowser/demo/test/Opacity.js:81
+#: demobrowser/demo/test/Opacity.js:130 demobrowser/demo/ui/FormInvalids.js:89
+msgid "Item %1"
+msgstr ""
+
+#: demobrowser/demo/data/ListController.js:78
+#: demobrowser/demo/data/ListControllerWithFilter.js:83
+#: demobrowser/demo/data/ListControllerWith3Widgets.js:64
+#: demobrowser/demo/virtual/ListWithFilter.js:70
+msgid "Add an item"
+msgstr ""
+
+#: demobrowser/demo/data/ListController.js:85
+#: demobrowser/demo/data/ListControllerWithFilter.js:90
+#: demobrowser/demo/data/ListControllerWith3Widgets.js:71
+#: demobrowser/demo/virtual/ListWithFilter.js:78
+msgid "Remove an item"
+msgstr ""
+
+#: demobrowser/demo/data/ListController.js:92
+#: demobrowser/demo/data/ListControllerWithFilter.js:97
+#: demobrowser/demo/data/ListControllerWith3Widgets.js:78
+#: demobrowser/demo/data/ExtendedTree.js:84
+#: demobrowser/demo/data/TreeController.js:104
+#: demobrowser/demo/data/ExtendedList.js:99
+#: demobrowser/demo/virtual/ListWithFilter.js:86
+#: demobrowser/demo/data/ListControllerWithObjects.js:128
+#: demobrowser/demo/virtual/ExtendedList.js:91
+msgid "Write data to log"
+msgstr ""
+
+#: demobrowser/demo/data/ListController.js:119
+msgid "<b>Multi selection List</b><br/>Bound to the same data and share the selection."
+msgstr ""
+
+#: demobrowser/demo/data/ListController.js:129
+msgid "<b>Selection List</b><br/>Bound to the selection of the list to the left."
+msgstr ""
+
+#: demobrowser/demo/data/ListController.js:139
+msgid "<b>Selection Label</b><br/>Bound to the selection of the list to the left."
+msgstr ""
+
+#: demobrowser/demo/data/ListControllerWith3Widgets.js:104
+msgid "<b>List</b><br/>"
+msgstr ""
+
+#: demobrowser/demo/data/ListControllerWith3Widgets.js:111
+msgid "<b>SelectBox</b>"
+msgstr ""
+
+#: demobrowser/demo/data/ListControllerWith3Widgets.js:118
+msgid "<b>ComboBox</b><br/>"
+msgstr ""
+
+#: demobrowser/demo/data/ListControllerWith3Widgets.js:126
+msgid "All 3 widgets share the same data model. The List and the SelectBox also share the same selection."
+msgstr ""
+
+#: demobrowser/demo/data/ListControllerWithFilter.js:62
+#: demobrowser/demo/virtual/ListWithFilter.js:52
+msgid "init"
+msgstr ""
+
+#: demobrowser/demo/data/ListControllerWithFilter.js:67
+#: demobrowser/demo/virtual/ListWithFilter.js:57
+msgid "Show only even numbers."
+msgstr ""
+
+#: demobrowser/demo/data/ListControllerWithFilter.js:69
+#: demobrowser/demo/virtual/ListWithFilter.js:59
+msgid "Show only odd numbers."
+msgstr ""
+
+#: demobrowser/demo/data/ListControllerWithFilter.js:71
+#: demobrowser/demo/virtual/ListWithFilter.js:61
+msgid "Show all numbers."
+msgstr ""
+
+#: demobrowser/demo/data/ListControllerWithFilter.js:107
+#: demobrowser/demo/virtual/ListWithFilter.js:96
+msgid "Odd / Even filter"
+msgstr ""
+
+#: demobrowser/demo/data/ListControllerWithFilter.js:114
+#: demobrowser/demo/virtual/ListWithFilter.js:104
+msgid "Remove filter"
+msgstr ""
+
+#: demobrowser/demo/data/ListControllerWithFilter.js:121
+#: demobrowser/demo/virtual/ListWithFilter.js:112
+msgid "Reverse order"
+msgstr ""
+
+#: demobrowser/demo/data/ListControllerWithFilter.js:148
+#: demobrowser/demo/virtual/ListWithFilter.js:129
+msgid "<b>Filtered List</b><br/>List showing numbered items, bound to a data array."
+msgstr ""
+
+#: demobrowser/demo/data/ListControllerWithObjects.js:108
+msgid "Make all happy"
+msgstr ""
+
+#: demobrowser/demo/data/ListControllerWithObjects.js:155
+msgid "<b>Displaying objects in a list</b><br/>This list display a set of persons in a list. Every person does have a name and an emotion, which is displayed with the help of  a converter by the icon. The font color shows the online status."
+msgstr ""
+
+#: demobrowser/demo/data/ModelDebugging.js:73
+msgid "<b>Debugging models</b><br/>Every model created by the data stores consists only of qooxdoo objects with properties. To see the properties, you can use the debugModel function in qx.dev.Debug."
+msgstr ""
+
+#: demobrowser/demo/data/NamesList.js:78
+msgid "<b>List bound to data in a json file</b><br/>Loading the json file <a href='%1' target='_blank'>persons.json</a> and bind the items to the list widget. In the converter for the label, the names will be set to both, the first and last name."
+msgstr ""
+
+#: demobrowser/demo/data/OwnCodeInModel.js:79
+msgid "Sort By Type"
+msgstr ""
+
+#: demobrowser/demo/data/OwnCodeInModel.js:88
+msgid "Sort By Name"
+msgstr ""
+
+#: demobrowser/demo/data/OwnCodeInModel.js:106
+msgid "<b>Adding own code to the model</b><br/>Using the delegation to bring two sort function to the root model class of this demo. The buttons just calling those sort functions."
+msgstr ""
+
+#: demobrowser/demo/data/SearchAsYouType.js:84
+msgid "<b>Search As You Type List</b><br/>Type a name and the list will show only the matching results (case-sensitive)."
+msgstr ""
+
+#: demobrowser/demo/data/SelectBox.js:52
+msgid "The selection is: "
+msgstr ""
+
+#: demobrowser/demo/data/SelectBox.js:71
+msgid "Set Selection to 'C'"
+msgstr ""
+
+#: demobrowser/demo/data/SelectBox.js:88
+msgid "<b>Synchronized Selection</b><br/>Bound to the same data and share the selection. The label is also bound to the selection."
+msgstr ""
+
+#: demobrowser/demo/data/SelectBox.js:98
+msgid "<b>Change Selection</b><br/>Type in the textfield or set the selection with the button."
+msgstr ""
+
+#: demobrowser/demo/data/SingleValueBinding.js:38
+msgid "Event binding"
+msgstr ""
+
+#: demobrowser/demo/data/SingleValueBinding.js:40
+#: demobrowser/demo/data/SingleValueBinding.js:44
+msgid "Change me..."
+msgstr ""
+
+#: demobrowser/demo/data/SingleValueBinding.js:55
+msgid "With default conversion"
+msgstr ""
+
+#: demobrowser/demo/data/SingleValueBinding.js:73
+msgid "With own conversion"
+msgstr ""
+
+#: demobrowser/demo/data/SingleValueBinding.js:84
+msgid "Lower than 50!"
+msgstr ""
+
+#: demobrowser/demo/data/SingleValueBinding.js:86
+msgid "Bigger than 50!"
+msgstr ""
+
+#: demobrowser/demo/data/SingleValueBinding.js:99
+msgid "Array binding"
+msgstr ""
+
+#: demobrowser/demo/data/SingleValueBinding.js:109
+msgid "Reverse"
+msgstr ""
+
+#: demobrowser/demo/data/SingleValueBinding.js:116
+msgid "Toggle child"
+msgstr ""
+
+#: demobrowser/demo/data/SingleValueBinding.js:127
+msgid "First:"
+msgstr ""
+
+#: demobrowser/demo/data/SingleValueBinding.js:128
+msgid "Last:"
+msgstr ""
+
+#: demobrowser/demo/data/SingleValueBinding.js:144
+msgid "With validation"
+msgstr ""
+
+#: demobrowser/demo/data/SingleValueBinding.js:160
+msgid "No number!"
+msgstr ""
+
+#: demobrowser/demo/data/SingleValueBinding.js:183
+msgid "<b>Description</b><br/>Binding an data event, containing the change of the textfield to the label."
+msgstr ""
+
+#: demobrowser/demo/data/SingleValueBinding.js:194
+msgid "<b>Description</b><br/>Binding a number value (slider value) to a labels string (content). The default conversion will handle the type conversion."
+msgstr ""
+
+#: demobrowser/demo/data/SingleValueBinding.js:205
+msgid "<b>Description</b><br/>Binding a slider value to a labels text but conversion the number with a self written converter to a string only saying it its  above or below 50."
+msgstr ""
+
+#: demobrowser/demo/data/SingleValueBinding.js:217
+msgid "<b>Description</b><br/>Binding of node elements containing a node as child and an array of names.<br/>The reverse button reverses the current selected child names array.<br/>Toggle child will change the child of the root node from a node containing ['Homer', 'Marge'] as names to a node containing ['Bart', 'Lisa'] as names."
+msgstr ""
+
+#: demobrowser/demo/data/SingleValueBinding.js:231
+msgid "<b>Description</b><br/>Binding the textfield to a property with a validation. The validator in the object only accepts numbers. On a validation fail, a red  border will surround the textfield."
+msgstr ""
+
+#: demobrowser/demo/data/TreeController.js:76
+msgid "Add an item to root"
+msgstr ""
+
+#: demobrowser/demo/data/TreeController.js:86
+msgid "Remove an item from root"
+msgstr ""
+
+#: demobrowser/demo/data/TreeController.js:93
+msgid "Change the label binding"
+msgstr ""
+
+#: demobrowser/demo/data/TreeController.js:128
+msgid "This tree is bound to a set of randomly generated nodes. Every node does have a name and a name2 property, containing 'Item i' and 'Thing i'."
+msgstr ""
+
+#: demobrowser/demo/data/TreeController.js:140
+msgid "<b>Selected Items</b><br/>A list containing the selected items of the tree."
+msgstr ""
+
+#: demobrowser/demo/layout/Canvas_MinMaxSizes.js:46
+msgid "maxHeight=300"
+msgstr ""
+
+#: demobrowser/demo/layout/Canvas_MinMaxSizes.js:65
+msgid "minWidth=400"
+msgstr ""
+
+#: demobrowser/demo/layout/Flow.js:58
+msgid "Flow Layout"
+msgstr "تدفق تخطيط"
+
+#: demobrowser/demo/layout/Flow.js:74
+msgid "item #%1"
+msgstr "%1# البند رقم"
+
+#: demobrowser/demo/layout/Flow.js:92
+msgid "Flow Layout with line breaks"
+msgstr "تدفق تخطيط مع فواصل الأسطر"
+
+#: demobrowser/demo/layout/Flow.js:102
+msgid "1. First Button"
+msgstr "أول زر .1"
+
+#: demobrowser/demo/layout/Flow.js:105
+msgid "2. Second longer Button..."
+msgstr "...الثاني زر أطول .2"
+
+#: demobrowser/demo/layout/Flow.js:110
+msgid "3rd really, really, really long Button"
+msgstr "حقا، حقا ، حقا زر طويلة3"
+
+#: demobrowser/demo/layout/Flow.js:114
+msgid "Number 4"
+msgstr "عدد 4"
+
+#: demobrowser/demo/layout/Flow.js:119
+msgid "20px Margins around the great big 5th button!"
+msgstr "px20 هوامش حول الزر الكبير 5 الكبيرة!"
+
+#: demobrowser/demo/layout/Flow.js:124
+msgid "Number 6"
+msgstr "عدد 6"
+
+#: demobrowser/demo/layout/Flow.js:129
+msgid "7th a wide, short button"
+msgstr "مجموعة واسعة 7، زر قصيرة"
+
+#: demobrowser/demo/mobile/Fingers.js:98
+msgid "<b>Use your fingers to move the dots</b>"
+msgstr ""
+
+#: demobrowser/demo/mobile/ScaleImage.js:82
+#: demobrowser/demo/mobile/PingPong.js:91
+#: demobrowser/demo/mobile/Fingers.js:84
+msgid "<b>This demo is supposed to be run in a WebKit-based browser on a touch-enabled device.</b>"
+msgstr ""
+
+#: demobrowser/demo/progressive/ProgressiveLoader.js:228
+msgid "row %1, col %2"
+msgstr ""
+
+#: demobrowser/demo/progressive/ProgressiveTable.js:69
+msgid "<span style='color:red;'>Last item is intentionally inserted at the top to show how it's done</span>"
+msgstr ""
+
+#: demobrowser/demo/progressive/ProgressiveTable_Conditional.js:32
+#: demobrowser/demo/table/Table_Conditional.js:50
+msgid "Number 1"
+msgstr ""
+
+#: demobrowser/demo/progressive/ProgressiveTable_Conditional.js:32
+#: demobrowser/demo/table/Table_Conditional.js:50
+msgid "Number 2"
+msgstr ""
+
+#: demobrowser/demo/progressive/ProgressiveTable_Html.js:29
+msgid "Html"
+msgstr ""
+
+#: demobrowser/demo/progressive/ProgressiveTable_Html.js:29
+msgid "Literal"
+msgstr ""
+
+#: demobrowser/demo/progressive/ProgressiveTable_Mouseover.js:46
+#: demobrowser/demo/progressive/ProgressiveTable.js:57
+msgid "Number"
+msgstr ""
+
+#: demobrowser/demo/progressive/ProgressiveTable_Mouseover.js:46
+#: demobrowser/demo/table/RemoteTableModel.js:32
+#: demobrowser/demo/progressive/ProgressiveTable_Boolean.js:37
+#: demobrowser/demo/progressive/ProgressiveTable.js:57
+msgid "Id"
+msgstr ""
+
+#: demobrowser/demo/progressive/ProgressiveTable_Mouseover.js:59
+msgid "Move your mouse over the Date field"
+msgstr ""
+
+#: demobrowser/demo/progressive/ProgressiveTable_VarRowHeight.js:145
+msgid "Note variable row heights in this table."
+msgstr ""
+
+#: demobrowser/demo/progressive/ProgressiveTable_VarRowHeight.js:154
+msgid "I am small."
+msgstr ""
+
+#: demobrowser/demo/progressive/ProgressiveTable_VarRowHeight.js:155
+msgid "I am tall."
+msgstr ""
+
+#: demobrowser/demo/progressive/ProgressiveTable_VarRowHeight.js:156
+msgid "This, too, is small."
+msgstr ""
+
+#: demobrowser/demo/progressive/ProgressiveTable_VarRowHeight.js:157
+msgid "This, too, is tall."
+msgstr ""
+
+#: demobrowser/demo/progressive/ProgressiveTable_VarRowHeight.js:158
+msgid "No attributes specified."
+msgstr ""
+
+#: demobrowser/demo/root/Inline_Window.js:38
+msgid "Add window"
+msgstr ""
+
+#: demobrowser/demo/root/Inline_Window.js:41
+#: demobrowser/demo/widget/Desktop.js:59
+msgid "Window #%1"
+msgstr ""
+
+#: demobrowser/demo/root/Inline_Window.js:50
+#: demobrowser/demo/root/Inline_Window.js:65
+msgid "Add modal window"
+msgstr ""
+
+#: demobrowser/demo/root/Inline_Window.js:59
+msgid "Modal Window #%1"
+msgstr ""
+
+#: demobrowser/demo/showcase/Browser.js:49
+msgid "Web Browser"
+msgstr ""
+
+#: demobrowser/demo/showcase/Browser.js:83
+#: demobrowser/demo/showcase/Browser.js:84
+msgid "This feature is currently not supported."
+msgstr ""
+
+#: demobrowser/demo/showcase/Calculator.js:185
+#: demobrowser/demo/widget/MenuBar.js:308 demobrowser/demo/widget/Menu.js:516
+msgid "C"
+msgstr ""
+
+#: demobrowser/demo/showcase/Calculator.js:191
+msgid "CE"
+msgstr ""
+
+#: demobrowser/demo/showcase/Calculator.js:197
+msgid "Del"
+msgstr ""
+
+#: demobrowser/demo/showcase/Calculator.js:938
+msgid "You can't divide by 0!"
+msgstr ""
+
+#: demobrowser/demo/showcase/Dialog.js:50
+msgid "Page"
+msgstr ""
+
+#: demobrowser/demo/showcase/Dialog.js:57
+msgid "City"
+msgstr ""
+
+#: demobrowser/demo/showcase/Dialog.js:65
+msgid "New York"
+msgstr ""
+
+#: demobrowser/demo/showcase/Dialog.js:65
+msgid "USA"
+msgstr ""
+
+#: demobrowser/demo/showcase/Dialog.js:78
+msgid "Sex"
+msgstr ""
+
+#: demobrowser/demo/showcase/Dialog.js:95
+msgid "Hobbies"
+msgstr ""
+
+#: demobrowser/demo/showcase/Dialog.js:99
+msgid "Reading"
+msgstr ""
+
+#: demobrowser/demo/showcase/Dialog.js:100
+msgid "Swimming"
+msgstr ""
+
+#: demobrowser/demo/showcase/Localization.js:69
+msgid "Form Elements"
+msgstr ""
+
+#: demobrowser/demo/showcase/Localization.js:81
+msgid "Choose a locale:"
+msgstr ""
+
+#: demobrowser/demo/showcase/Localization.js:107
+msgid "Localized ComboBox:"
+msgstr ""
+
+#: demobrowser/demo/showcase/Localization.js:119
+msgid "A date:"
+msgstr ""
+
+#: demobrowser/demo/showcase/Localization.js:149
+msgid "Select All"
+msgstr ""
+
+#: demobrowser/demo/showcase/Localization.js:152
+msgid "Search Again"
+msgstr ""
+
+#: demobrowser/demo/showcase/Localization.js:154
+msgid "Command Menu (keyboard shortcuts)"
+msgstr ""
+
+#: demobrowser/demo/showcase/Localization.js:162
+msgid "Open Color Popup"
+msgstr ""
+
+#: demobrowser/demo/showcase/Localization.js:181
+msgid "Colors"
+msgstr ""
+
+#: demobrowser/demo/showcase/Localization.js:194
+msgid "Locale Information"
+msgstr ""
+
+#: demobrowser/demo/showcase/Localization.js:202
+msgid "Locale information"
+msgstr ""
+
+#: demobrowser/demo/showcase/Localization.js:232
+msgid "Locale:"
+msgstr ""
+
+#: demobrowser/demo/showcase/Localization.js:235
+msgid "Territory code:"
+msgstr ""
+
+#: demobrowser/demo/showcase/Localization.js:238
+msgid "Date format short:"
+msgstr ""
+
+#: demobrowser/demo/showcase/Localization.js:240
+msgid "Date short:"
+msgstr ""
+
+#: demobrowser/demo/showcase/Localization.js:243
+msgid "Date format medium:"
+msgstr ""
+
+#: demobrowser/demo/showcase/Localization.js:245
+msgid "Date medium:"
+msgstr ""
+
+#: demobrowser/demo/showcase/Localization.js:248
+msgid "Date format long:"
+msgstr ""
+
+#: demobrowser/demo/showcase/Localization.js:250
+msgid "Date long:"
+msgstr ""
+
+#: demobrowser/demo/showcase/Localization.js:253
+msgid "Date format full:"
+msgstr ""
+
+#: demobrowser/demo/showcase/Localization.js:255
+msgid "Date full:"
+msgstr ""
+
+#: demobrowser/demo/showcase/Localization.js:258
+msgid "Time format short:"
+msgstr ""
+
+#: demobrowser/demo/showcase/Localization.js:260
+msgid "Time short:"
+msgstr ""
+
+#: demobrowser/demo/showcase/Localization.js:263
+msgid "Time format long:"
+msgstr ""
+
+#: demobrowser/demo/showcase/Localization.js:265
+msgid "Time long:"
+msgstr ""
+
+#: demobrowser/demo/showcase/Localization.js:268
+msgid "Week start:"
+msgstr ""
+
+#: demobrowser/demo/showcase/Localization.js:271
+msgid "Format of %1:"
+msgstr ""
+
+#: demobrowser/demo/showcase/Maps.js:45
+msgid "Yahoo Maps"
+msgstr ""
+
+#: demobrowser/demo/showcase/Maps.js:49
+msgid "Google Maps"
+msgstr ""
+
+#: demobrowser/demo/showcase/Translation.js:60
+msgid "<b>Locale and language:</b>"
+msgstr ""
+
+#: demobrowser/demo/showcase/Translation.js:65
+msgid "Choose Locale:"
+msgstr ""
+
+#: demobrowser/demo/showcase/Translation.js:98
+msgid "Locale"
+msgstr ""
+
+#: demobrowser/demo/showcase/Translation.js:101
+msgid "Territory"
+msgstr ""
+
+#: demobrowser/demo/showcase/Translation.js:104
+msgid "Language"
+msgstr ""
+
+#: demobrowser/demo/showcase/Translation.js:115
+msgid "Locale: %1"
+msgstr ""
+
+#: demobrowser/demo/showcase/Translation.js:116
+msgid "Territory: %1"
+msgstr ""
+
+#: demobrowser/demo/showcase/Translation.js:117
+msgid "Language: %1"
+msgstr ""
+
+#: demobrowser/demo/showcase/Translation.js:119
+#: demobrowser/demo/showcase/Translation.js:227
+msgid "Add translation<br>at runtime for: <b>%1</b>"
+msgstr ""
+
+#: demobrowser/demo/showcase/Translation.js:125
+#: demobrowser/demo/showcase/Translation.js:153
+#: demobrowser/demo/showcase/Translation.js:157 demobrowser/demo/ui/Font.js:31
+msgid "Hello World"
+msgstr ""
+
+#: demobrowser/demo/showcase/Translation.js:126
+msgid "Simple Translate: this.tr('Hello World')"
+msgstr ""
+
+#: demobrowser/demo/showcase/Translation.js:128
+#: demobrowser/demo/showcase/Translation.js:180
+#: demobrowser/demo/showcase/Translation.js:184
+msgid "I have an apple"
+msgid_plural "I have %1 apples"
+msgstr[0] ""
+msgstr[1] ""
+
+#: demobrowser/demo/showcase/Translation.js:129
+msgid "Singular/Plural Translate: this.trn('I have an apple', I have %1 apples, %1, applesNumber"
+msgstr ""
+
+#. The mammal fox that is.
+#: demobrowser/demo/showcase/Translation.js:130
+#: demobrowser/demo/showcase/Translation.js:198
+#: demobrowser/demo/showcase/Translation.js:202
+msgid "The quick brown fox"
+msgstr ""
+
+#: demobrowser/demo/showcase/Translation.js:131
+msgid "with .po comment: this.trc('The mammal fox that is.', 'The quick brown fox')"
+msgstr ""
+
+#: demobrowser/demo/showcase/Translation.js:132
+#: demobrowser/demo/showcase/Translation.js:210
+#: demobrowser/demo/showcase/Translation.js:215
+#: demobrowser/demo/virtual/SettingsList.js:45
+msgid "Orange"
+msgstr ""
+
+#: demobrowser/demo/showcase/Translation.js:133
+msgid "Mark the string 'Orange' for later translation so we do not forget it: this.marktr('Orange')"
+msgstr ""
+
+#: demobrowser/demo/showcase/Translation.js:140
+msgid "<b>Static translation [found in .po files]. Hover the labels below to see more info.</b>"
+msgstr ""
+
+#: demobrowser/demo/showcase/Translation.js:145
+msgid "<i>MessageId</i>"
+msgstr ""
+
+#: demobrowser/demo/showcase/Translation.js:149
+msgid "<i>Translated Text</i>"
+msgstr ""
+
+#: demobrowser/demo/showcase/Translation.js:160
+msgid "Simple messageId translation"
+msgstr ""
+
+#: demobrowser/demo/showcase/Translation.js:164
+msgid "Number of apples:"
+msgstr ""
+
+#: demobrowser/demo/showcase/Translation.js:175
+msgid "Number of apples"
+msgstr ""
+
+#: demobrowser/demo/showcase/Translation.js:188
+msgid "Singular/Plural Translate<br>Choose a number from the select box<br>to see plural translation"
+msgstr ""
+
+#: demobrowser/demo/showcase/Translation.js:206
+msgid "A comment: 'The mammal fox that is.'<br>is added in the .po file"
+msgstr ""
+
+#: demobrowser/demo/showcase/Translation.js:218
+msgid "Mark the string 'Orange' for later<br>translation so we do not forget it"
+msgstr ""
+
+#: demobrowser/demo/showcase/Translation.js:222
+msgid "<b>Dynamic translation. This is added at runtime.</b>"
+msgstr ""
+
+#: demobrowser/demo/showcase/Translation.js:232
+#: demobrowser/demo/showcase/Translation.js:254
+msgid "MessageId"
+msgstr ""
+
+#: demobrowser/demo/showcase/Translation.js:236
+msgid "Translation"
+msgstr ""
+
+#: demobrowser/demo/showcase/Translation.js:239
+msgid "Add Translation"
+msgstr ""
+
+#: demobrowser/demo/showcase/Translation.js:247
+msgid "%1 has been added for messageId: %2  for locale: %3"
+msgstr ""
+
+#: demobrowser/demo/showcase/Translation.js:250
+msgid "MessageId:"
+msgstr ""
+
+#: demobrowser/demo/showcase/Translation.js:257
+msgid "show Translation"
+msgstr ""
+
+#: demobrowser/demo/showcase/Translation.js:266
+msgid "click 'Show Translation' button to translate<br>the messageId in the current selected locale"
+msgstr ""
+
+#: demobrowser/demo/showcase/Translation.js:271
+msgid "Add new Locale<br> at runtime"
+msgstr ""
+
+#: demobrowser/demo/showcase/Translation.js:276
+msgid "Locale Name (ex: en_QX)"
+msgstr ""
+
+#: demobrowser/demo/showcase/Translation.js:279
+msgid "Add new Locale"
+msgstr ""
+
+#: demobrowser/demo/showcase/Translation.js:287
+msgid "new Locale must not be empty string"
+msgstr ""
+
+#: demobrowser/demo/showcase/Translation.js:293
+msgid "%1 already exists"
+msgstr ""
+
+#: demobrowser/demo/showcase/Translation.js:298
+msgid "%1 has been added"
+msgstr ""
+
+#: demobrowser/demo/table/MUtil.js:101
+msgid "Column #%1"
+msgstr ""
+
+#: demobrowser/demo/table/MUtil.js:113 demobrowser/demo/table/Table_Huge.js:45
+msgid "Cell %1x%2"
+msgstr ""
+
+#: demobrowser/demo/table/RemoteTableModel.js:32
+msgid "Text"
+msgstr ""
+
+#: demobrowser/demo/table/RemoteTableModel.js:130
+msgid "Hello %1 Generated on:%2"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Cell_Editor.js:34
+msgid "Property editor table"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Cell_Editor.js:52
+msgid "User Name"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Cell_Editor.js:53
+msgid "jdoe"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Cell_Editor.js:59
+msgid "secret"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Cell_Editor.js:67
+msgid "Role"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Cell_Editor.js:68
+msgid "editable combobox"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Cell_Editor.js:81
+msgid "Status"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Cell_Editor.js:82
+msgid "0"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Cell_Editor.js:87
+msgid "Inactive"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Cell_Editor.js:92
+msgid "Active"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Cell_Editor.js:97
+msgid "Waiting"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Cell_Editor.js:107
+msgid "enter valid email"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Cell_Editor.js:114
+msgid "Telephone"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Cell_Editor.js:115
+msgid "enter valid telephone number"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Cell_Editor.js:118
+msgid "Use only numbers!"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Cell_Editor.js:123
+msgid "Website"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Cell_Editor.js:124
+msgid "enter website"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Cell_Editor.js:138
+msgid "Newsletter"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Cell_Editor.js:243
+msgid "You did not enter a valid email address"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Cell_Editor.js:273
+msgid "You need to supply a value here"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Cell_Editor.js:292
+#: demobrowser/demo/table/Table_Cell_Editor.js:293
+msgid "Property"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Cell_Editor.js:294
+msgid "Doubleclick on cell to edit value"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Conditional.js:42
+msgid "Table using conditional cell renderer"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Conditional.js:50
+msgid "Image"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Context_Menu.js:54
+#: demobrowser/demo/table/Table_Drag_And_Drop.js:45
+#: demobrowser/demo/table/Table.js:45
+#: demobrowser/demo/table/Table_Events.js:42
+#: demobrowser/demo/table/Table_Huge.js:31
+msgid "Table"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Context_Menu.js:67
+msgid "Default ctx menu #1"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Context_Menu.js:68
+msgid "Default ctx menu #2"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Context_Menu.js:69
+msgid "Disabled ctx menu"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Context_Menu.js:70
+msgid "Context-menu selectable"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Context_Menu.js:128
+#: demobrowser/demo/test/ScrollContainer_EdgeCaseWidth.js:88
+#: demobrowser/demo/test/ScrollContainer_EdgeCaseHeight.js:88
+#: demobrowser/demo/widget/Button.js:80
+msgid "On"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Context_Menu.js:128
+#: demobrowser/demo/test/ScrollContainer_EdgeCaseWidth.js:89
+#: demobrowser/demo/test/ScrollContainer_EdgeCaseHeight.js:89
+#: demobrowser/demo/widget/Button.js:81
+msgid "Off"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Context_Menu.js:181
+#: demobrowser/demo/table/Table.js:93
+msgid "Change row with ID 10"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Context_Menu.js:238
+#: demobrowser/demo/table/Table.js:150
+msgid "Change ID sort method"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Context_Menu.js:241
+#: demobrowser/demo/table/Table.js:153
+msgid "Demonstrate use of alternate sorting algorithm."
+msgstr ""
+
+#: demobrowser/demo/table/Table_Events.js:50
+msgid "Event log"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Events.js:63
+msgid "Column"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Events.js:63
+msgid "Row"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Events.js:142
+msgid "Capture events"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Filtered_Model.js:40
+msgid "Table with data filtering"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Filtered_Model.js:56
+msgid "<b>HTML-Test <i>%1</i></b>"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Filtered_Model.js:71
+msgid ", additional Status."
+msgstr ""
+
+#: demobrowser/demo/table/Table_Filtered_Model.js:88
+msgid "Hide True"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Filtered_Model.js:94
+msgid ", additional Status. True Values are hidden."
+msgstr ""
+
+#: demobrowser/demo/table/Table_Filtered_Model.js:97
+msgid "Hide False"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Filtered_Model.js:103
+msgid ", additional Status. False Values are hidden."
+msgstr ""
+
+#: demobrowser/demo/table/Table_Filtered_Model.js:106
+msgid "Hide 1k-5k"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Filtered_Model.js:112
+msgid ", additional Status. 1k - 5k Values are hidden."
+msgstr ""
+
+#: demobrowser/demo/table/Table_Filtered_Model.js:115
+msgid "Show All"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Filtered_Model.js:120
+msgid ", additional Status. All Values are shown."
+msgstr ""
+
+#: demobrowser/demo/table/Table_Huge.js:62
+msgid "Column %1"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Meta_Columns.js:31
+msgid "Table with meta columns"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Remote_Model.js:61
+msgid "Reload"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Resize_Columns.js:37
+msgid "Table with automatic column sizes"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Resize_Columns.js:48
+#: demobrowser/demo/table/Table_Meta_Columns.js:39
+msgid "Boolean test"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Resize_Columns.js:101
+#: demobrowser/demo/table/Table_Context_Menu.js:191
+#: demobrowser/demo/table/Table.js:103
+msgid "Add 10 rows"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Resize_Columns.js:109
+msgid "Remove 10 rows"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Resize_Columns.js:123
+#: demobrowser/demo/table/Table_Context_Menu.js:224
+#: demobrowser/demo/table/Table.js:136
+msgid "Keep first row"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Resize_Columns.js:127
+#: demobrowser/demo/table/Table_Context_Menu.js:228
+#: demobrowser/demo/table/Table.js:140
+msgid "Whether the the first visible row should be rendered completely when scrolling."
+msgstr ""
+
+#: demobrowser/demo/table/Table_Selection.js:53
+#: demobrowser/demo/table/Table_Drag_And_Drop.js:53
+#: demobrowser/demo/table/Table.js:56
+#: demobrowser/demo/table/Table_Events.js:82
+#: demobrowser/demo/test/Opacity.js:162
+#: demobrowser/demo/progressive/ProgressiveTable_Boolean.js:37
+msgid "Boolean"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Selection.js:117
+msgid "Add 5 rows"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Selection.js:125
+#: demobrowser/demo/table/Table_Context_Menu.js:199
+#: demobrowser/demo/table/Table.js:111
+msgid "Remove 5 rows"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Selection.js:137
+msgid "Reset Selection"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Selection.js:143
+msgid "Reset Cell Focus"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Selection.js:149
+msgid "Hide Cell Focus"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Selection.js:155
+#: demobrowser/demo/table/Table_Context_Menu.js:207
+#: demobrowser/demo/table/Table.js:119
+msgid "Show selection"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Selection.js:162
+#: demobrowser/demo/table/Table_Context_Menu.js:214
+#: demobrowser/demo/table/Table.js:126
+msgid "Selected rows:<br>%1"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Window_Editor.js:40
+msgid "Table with window cell editor"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Window_Editor.js:51
+#: demobrowser/demo/table/Table_Filtered_Model.js:48
+#: demobrowser/demo/table/Table_Filtered_Model.js:92
+#: demobrowser/demo/table/Table_Filtered_Model.js:101
+msgid "A boolean"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Window_Editor.js:51
+#: demobrowser/demo/table/Table_Selection.js:53
+#: demobrowser/demo/progressive/ProgressiveTable_Conditional.js:32
+#: demobrowser/demo/table/Table_Resize_Columns.js:48
+#: demobrowser/demo/table/Table_Conditional.js:50
+#: demobrowser/demo/table/Table_Drag_And_Drop.js:53
+#: demobrowser/demo/table/Table.js:56
+#: demobrowser/demo/table/Table_Meta_Columns.js:39
+#: demobrowser/demo/table/Table_Events.js:82
+#: demobrowser/demo/test/Opacity.js:162
+#: demobrowser/demo/table/Table_Filtered_Model.js:48
+msgid "ID"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Window_Editor.js:51
+#: demobrowser/demo/table/Table_Selection.js:53
+#: demobrowser/demo/table/Table_Resize_Columns.js:48
+#: demobrowser/demo/table/Table_Drag_And_Drop.js:53
+#: demobrowser/demo/table/Table.js:56
+#: demobrowser/demo/table/Table_Meta_Columns.js:39
+#: demobrowser/demo/table/Table_Events.js:82
+#: demobrowser/demo/test/Opacity.js:162
+#: demobrowser/demo/table/Table_Filtered_Model.js:48
+#: demobrowser/demo/table/Table_Filtered_Model.js:110
+msgid "A number"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Window_Editor.js:51
+#: demobrowser/demo/table/Table_Selection.js:53
+#: demobrowser/demo/table/Table_Selection.js:75
+#: demobrowser/demo/table/Table_Resize_Columns.js:48
+#: demobrowser/demo/table/Table_Drag_And_Drop.js:53
+#: demobrowser/demo/table/Table_Drag_And_Drop.js:70
+#: demobrowser/demo/table/Table.js:56 demobrowser/demo/table/Table.js:79
+#: demobrowser/demo/table/Table_Meta_Columns.js:39
+#: demobrowser/demo/table/Table_Events.js:82
+#: demobrowser/demo/test/Opacity.js:162 demobrowser/demo/test/Opacity.js:183
+#: demobrowser/demo/table/Table_Filtered_Model.js:48
+msgid "A date"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Window_Editor.js:125
+msgid "Cell Editor"
+msgstr ""
+
+#: demobrowser/demo/table/Table_Window_Editor.js:159
+msgid "Enter"
+msgstr ""
+
+#: demobrowser/demo/test/ChildrenHandling.js:41
+msgid "Horizontal box layout:"
+msgstr ""
+
+#: demobrowser/demo/test/ChildrenHandling.js:58
+msgid "Grid layout:"
+msgstr ""
+
+#: demobrowser/demo/test/ChildrenHandling.js:89
+#: demobrowser/demo/test/ChildrenHandling.js:105
+msgid "Remove %1"
+msgstr ""
+
+#: demobrowser/demo/test/ChildrenHandling.js:99
+msgid "Add %1"
+msgstr ""
+
+#: demobrowser/demo/test/Decorator_Box.js:39
+msgid "HBox/VBox Decorator Demo"
+msgstr ""
+
+#: demobrowser/demo/test/Destructor.js:87
+msgid "Label: %1"
+msgstr ""
+
+#: demobrowser/demo/test/Destructor.js:102
+msgid "Window: "
+msgstr ""
+
+#: demobrowser/demo/test/Opacity.js:93 demobrowser/demo/test/Opacity.js:99
+#: demobrowser/demo/test/Opacity.js:105 demobrowser/demo/ui/FormInvalids.js:74
+#: demobrowser/demo/ui/FormInvalids.js:78
+#: demobrowser/demo/ui/FormInvalids.js:82
+msgid "I am a box"
+msgstr ""
+
+#: demobrowser/demo/test/Opacity.js:96 demobrowser/demo/test/Opacity.js:102
+#: demobrowser/demo/test/Opacity.js:108
+msgid "I am a label"
+msgstr ""
+
+#: demobrowser/demo/test/Opacity.js:111
+msgid "Button"
+msgstr ""
+
+#: demobrowser/demo/test/Opacity.js:115 demobrowser/demo/widget/Button.js:68
+msgid "Toggle Button"
+msgstr ""
+
+#: demobrowser/demo/test/Opacity.js:119
+msgid "Repeat Button"
+msgstr ""
+
+#: demobrowser/demo/test/Opacity.js:123
+msgid "Hover Button"
+msgstr ""
+
+#: demobrowser/demo/test/Opacity.js:143
+#: demobrowser/demo/ui/FormInvalids.js:102
+msgid "RadioGroup 1"
+msgstr ""
+
+#: demobrowser/demo/test/Opacity.js:146
+#: demobrowser/demo/ui/FormInvalids.js:105
+msgid "RadioGroup 2"
+msgstr ""
+
+#: demobrowser/demo/test/Opacity.js:156
+#: demobrowser/demo/ui/FormInvalids.js:117
+msgid "File 1"
+msgstr ""
+
+#: demobrowser/demo/test/Opacity.js:157
+#: demobrowser/demo/ui/FormInvalids.js:118
+msgid "File 2"
+msgstr ""
+
+#: demobrowser/demo/test/Opacity.js:158
+#: demobrowser/demo/ui/FormInvalids.js:119
+msgid "File 3"
+msgstr ""
+
+#: demobrowser/demo/test/Opacity.js:192
+msgid "Is AlphaImageLoader enabled: %1"
+msgstr ""
+
+#: demobrowser/demo/test/Opacity.js:195
+msgid "Apply opacity on root"
+msgstr ""
+
+#: demobrowser/demo/test/Opacity.js:205
+msgid "Apply opacity on container"
+msgstr ""
+
+#: demobrowser/demo/test/ScrollContainer_EdgeCaseWidth.js:48
+#: demobrowser/demo/test/ScrollContainer_EdgeCaseHeight.js:48
+msgid "Toggle pane"
+msgstr ""
+
+#: demobrowser/demo/test/ScrollContainer_EdgeCaseWidth.js:58
+#: demobrowser/demo/test/ScrollContainer_EdgeCaseHeight.js:58
+msgid "Toggle content"
+msgstr ""
+
+#: demobrowser/demo/test/ScrollContainer_EdgeCaseWidth.js:87
+#: demobrowser/demo/test/ScrollContainer_EdgeCaseHeight.js:87
+msgid "Auto"
+msgstr ""
+
+#: demobrowser/demo/test/ScrollContainer_EdgeCaseWidth.js:111
+#: demobrowser/demo/test/ScrollContainer_ResizeMatch.js:58
+#: demobrowser/demo/test/ScrollContainer_EdgeCaseHeight.js:111
+msgid "Content size: 300x300"
+msgstr ""
+
+#: demobrowser/demo/test/ScrollContainer_ResizeMatch.js:43
+#: demobrowser/demo/widget/SlideBar.js:59
+#: demobrowser/demo/ui/ScrollContainer.js:40
+msgid "Toggle size"
+msgstr ""
+
+#: demobrowser/demo/test/SelectBox_EdgeCases.js:48
+msgid "Long list"
+msgstr ""
+
+#: demobrowser/demo/test/SelectBox_EdgeCases.js:61
+msgid "Fonts"
+msgstr ""
+
+#: demobrowser/demo/test/SelectBox_EdgeCases.js:70
+msgid "Font %1"
+msgstr ""
+
+#: demobrowser/demo/test/SelectBox_EdgeCases.js:79
+msgid "Long button, short text"
+msgstr ""
+
+#: demobrowser/demo/test/Table_CellEditor.js:66
+msgid "Get value"
+msgstr ""
+
+#: demobrowser/demo/test/Table_CellEditor.js:72
+msgid "Add/Remove editor"
+msgstr ""
+
+#: demobrowser/demo/test/Table_CellEditor.js:106
+#: demobrowser/demo/test/Table_CellEditor.js:113
+#: demobrowser/demo/test/Table_CellEditor.js:125
+#: demobrowser/demo/test/Table_CellEditor.js:132
+msgid "cat"
+msgstr ""
+
+#: demobrowser/demo/test/Table_CellEditor.js:106
+msgid "rat"
+msgstr ""
+
+#: demobrowser/demo/test/Table_CellEditor.js:112
+#: demobrowser/demo/test/Table_CellEditor.js:131
+msgid "dog"
+msgstr ""
+
+#: demobrowser/demo/test/Table_CellEditor.js:114
+#: demobrowser/demo/test/Table_CellEditor.js:133
+msgid "mouse"
+msgstr ""
+
+#: demobrowser/demo/test/Table_CellEditor.js:144
+#: demobrowser/demo/test/Table_CellEditor.js:155
+#: demobrowser/demo/test/Table_CellEditor.js:166
+#: demobrowser/demo/virtual/Cells.js:93 demobrowser/demo/virtual/Cells.js:161
+#: demobrowser/demo/test/Table_CellRenderer.js:427
+msgid "Juhu"
+msgstr ""
+
+#: demobrowser/demo/test/Table_CellRenderer.js:271
+#: demobrowser/demo/test/Table_CellRenderer.js:300
+msgid "World"
+msgstr ""
+
+#: demobrowser/demo/test/Table_CellRenderer.js:328
+msgid "<b>bold</b>"
+msgstr ""
+
+#: demobrowser/demo/test/Table_CellRenderer.js:329
+msgid "<i>italic</i>"
+msgstr ""
+
+#: demobrowser/demo/test/Table_CellRenderer.js:330
+msgid "multi<br>line"
+msgstr ""
+
+#: demobrowser/demo/test/Table_Header.js:54
+#: demobrowser/demo/test/Table_Header.js:66
+msgid "Show move feedback"
+msgstr ""
+
+#: demobrowser/demo/test/Table_Header.js:61
+msgid "Hide move feedback"
+msgstr ""
+
+#: demobrowser/demo/test/Table_Header.js:71
+msgid "Complete update"
+msgstr ""
+
+#: demobrowser/demo/test/Table_HeaderRenderer.js:58
+#: demobrowser/demo/test/Table_HeaderRenderer.js:83
+msgid "tool tip"
+msgstr ""
+
+#: demobrowser/demo/test/TimerManager.js:86
+msgid "Start timers"
+msgstr ""
+
+#: demobrowser/demo/test/Touch.js:160
+msgid "Type: %1"
+msgstr ""
+
+#: demobrowser/demo/test/Touch.js:162
+msgid "Is Multi-Touch: %1"
+msgstr ""
+
+#: demobrowser/demo/test/Touch.js:163
+msgid "All Touches: %1"
+msgstr ""
+
+#: demobrowser/demo/test/Touch.js:164
+msgid "Target Touches: %1"
+msgstr ""
+
+#: demobrowser/demo/test/Touch.js:165
+msgid "Changed Target Touches: %1"
+msgstr ""
+
+#: demobrowser/demo/test/Touch.js:167
+msgid "Document: Left = %1 / Top = %2"
+msgstr ""
+
+#: demobrowser/demo/test/Touch.js:168
+msgid "Screen: Left = %1 / Top = %2"
+msgstr ""
+
+#: demobrowser/demo/test/Touch.js:169
+msgid "Viewport: Left = %1 / Top = %2"
+msgstr ""
+
+#: demobrowser/demo/test/Touch.js:170
+msgid "Identifier: %1"
+msgstr ""
+
+#: demobrowser/demo/test/Touch.js:184
+msgid "Are all touch targets div %1:%2"
+msgstr ""
+
+#: demobrowser/demo/test/Validation.js:52
+msgid "<b>Initial property values</b><br>name:%1<br>age:%2<br>gender:%3<br><br><b>Setting the name to 'Hans'</b><br>"
+msgstr ""
+
+#: demobrowser/demo/test/Validation.js:131
+msgid "<b>Description</b><br/>The demo creates an internal class containing three properties:<br/>- name: Name is validated to a minimum length of two.<br/>- age: Age is validated to be a number.<br/>- gender: Gender is validated to be either male or female."
+msgstr ""
+
+#: demobrowser/demo/test/Virtual_List.js:45 demobrowser/demo/widget/List.js:49
+#: demobrowser/demo/virtual/List.js:69
+msgid "Configurable"
+msgstr ""
+
+#: demobrowser/demo/test/Virtual_List.js:57
+msgid "Item No %1icon/%2/places/folder.png"
+msgstr ""
+
+#: demobrowser/demo/test/Virtual_List.js:80
+#: demobrowser/demo/virtual/Selection.js:120
+#: demobrowser/demo/widget/List.js:82
+#: demobrowser/demo/treevirtual/TreeVirtual_Selections.js:86
+#: demobrowser/demo/virtual/List.js:146
+msgid "Single Selection"
+msgstr ""
+
+#: demobrowser/demo/test/Virtual_List.js:81
+#: demobrowser/demo/virtual/Selection.js:124
+#: demobrowser/demo/widget/List.js:83 demobrowser/demo/virtual/List.js:147
+msgid "Multi Selection"
+msgstr ""
+
+#: demobrowser/demo/test/Virtual_List.js:82
+#: demobrowser/demo/virtual/Selection.js:129
+#: demobrowser/demo/widget/List.js:84 demobrowser/demo/virtual/List.js:148
+msgid "Additive Selection"
+msgstr ""
+
+#: demobrowser/demo/test/Virtual_List.js:83
+#: demobrowser/demo/virtual/Selection.js:133
+#: demobrowser/demo/widget/List.js:85 demobrowser/demo/virtual/List.js:149
+msgid "One Selection"
+msgstr ""
+
+#: demobrowser/demo/test/Virtual_List.js:124
+#: demobrowser/demo/virtual/Selection.js:163
+#: demobrowser/demo/widget/List.js:124 demobrowser/demo/widget/Tree.js:178
+#: demobrowser/demo/virtual/List.js:173
+msgid "Enable drag selection"
+msgstr ""
+
+#: demobrowser/demo/test/Virtual_List.js:125
+#: demobrowser/demo/virtual/Selection.js:179
+#: demobrowser/demo/widget/List.js:125 demobrowser/demo/virtual/List.js:174
+msgid "Enable quick selection"
+msgstr ""
+
+#: demobrowser/demo/test/Virtual_List.js:180
+#: demobrowser/demo/widget/List.js:180 demobrowser/demo/virtual/List.js:197
+msgid "One as selection mode"
+msgstr ""
+
+#: demobrowser/demo/test/Virtual_List.js:189
+#: demobrowser/demo/widget/List.js:61 demobrowser/demo/widget/List.js:189
+#: demobrowser/demo/virtual/List.js:79 demobrowser/demo/virtual/List.js:206
+msgid "Item No %1"
+msgstr ""
+
+#: demobrowser/demo/test/Virtual_List.js:207
+#: demobrowser/demo/widget/List.js:206 demobrowser/demo/virtual/List.js:230
+msgid "Additive selection"
+msgstr ""
+
+#: demobrowser/demo/test/Virtual_ListBinding.js:54
+msgid "Affe %1"
+msgstr ""
+
+#: demobrowser/demo/treevirtual/TreeVirtual.js:68
+msgid "Spam Message #"
+msgstr ""
+
+#: demobrowser/demo/treevirtual/TreeVirtual_Events.js:25
+#: demobrowser/demo/animation/Tree_Highlight.js:40
+#: demobrowser/demo/treevirtual/TreeVirtual.js:26
+#: demobrowser/demo/treevirtual/TreeVirtual_Multiple_Columns.js:28
+#: demobrowser/demo/treevirtual/TreeVirtual_Filter.js:26
+msgid "Tree"
+msgstr ""
+
+#: demobrowser/demo/treevirtual/TreeVirtual_Events.js:35
+#: demobrowser/demo/widget/Desktop.js:40
+#: demobrowser/demo/virtual/Tree_Columns.js:59
+#: demobrowser/demo/animation/Tree_Highlight.js:68
+#: demobrowser/demo/treevirtual/TreeVirtual.js:44
+#: demobrowser/demo/data/Tree_Columns.js:58
+#: demobrowser/demo/treevirtual/TreeVirtual_Selections.js:42
+#: demobrowser/demo/widget/Tree.js:64
+#: demobrowser/demo/treevirtual/TreeVirtual_Multiple_Columns.js:49
+#: demobrowser/demo/widget/Tree_Columns.js:58
+#: demobrowser/demo/treevirtual/TreeVirtual_Filter.js:47
+#: demobrowser/demo/widget/SplitPane.js:179
+msgid "Desktop"
+msgstr ""
+
+#: demobrowser/demo/treevirtual/TreeVirtual_Events.js:38
+#: demobrowser/demo/virtual/Tree_Columns.js:61
+#: demobrowser/demo/animation/Tree_Highlight.js:72
+#: demobrowser/demo/treevirtual/TreeVirtual.js:49
+#: demobrowser/demo/data/Tree_Columns.js:60
+#: demobrowser/demo/treevirtual/TreeVirtual_Selections.js:46
+#: demobrowser/demo/widget/Tree.js:69
+#: demobrowser/demo/treevirtual/TreeVirtual_Multiple_Columns.js:57
+#: demobrowser/demo/widget/Tree_Columns.js:61
+#: demobrowser/demo/widget/SplitPane.js:183
+msgid "Files"
+msgstr ""
+
+#: demobrowser/demo/treevirtual/TreeVirtual_Events.js:40
+#: demobrowser/demo/virtual/Tree_Columns.js:63
+#: demobrowser/demo/animation/Tree_Highlight.js:73
+#: demobrowser/demo/treevirtual/TreeVirtual.js:51
+#: demobrowser/demo/data/Tree_Columns.js:62
+#: demobrowser/demo/treevirtual/TreeVirtual_Selections.js:48
+#: demobrowser/demo/widget/Tree.js:70
+#: demobrowser/demo/treevirtual/TreeVirtual_Multiple_Columns.js:59
+#: demobrowser/demo/widget/Tree_Columns.js:62
+#: demobrowser/demo/treevirtual/TreeVirtual_Filter.js:52
+#: demobrowser/demo/widget/SplitPane.js:184
+msgid "Workspace"
+msgstr ""
+
+#: demobrowser/demo/treevirtual/TreeVirtual_Events.js:41
+#: demobrowser/demo/virtual/Tree_Columns.js:65
+#: demobrowser/demo/animation/Tree_Highlight.js:79
+#: demobrowser/demo/treevirtual/TreeVirtual.js:52
+#: demobrowser/demo/data/Tree_Columns.js:64
+#: demobrowser/demo/treevirtual/TreeVirtual_Selections.js:49
+#: demobrowser/demo/widget/Tree.js:76
+#: demobrowser/demo/treevirtual/TreeVirtual_Multiple_Columns.js:60
+#: demobrowser/demo/widget/Tree_Columns.js:68
+#: demobrowser/demo/treevirtual/TreeVirtual_Filter.js:53
+#: demobrowser/demo/widget/SplitPane.js:189
+msgid "Windows (C:)"
+msgstr ""
+
+#: demobrowser/demo/treevirtual/TreeVirtual_Events.js:42
+#: demobrowser/demo/virtual/Tree_Columns.js:66
+#: demobrowser/demo/animation/Tree_Highlight.js:80
+#: demobrowser/demo/treevirtual/TreeVirtual.js:53
+#: demobrowser/demo/data/Tree_Columns.js:65
+#: demobrowser/demo/treevirtual/TreeVirtual_Selections.js:51
+#: demobrowser/demo/widget/Tree.js:77
+#: demobrowser/demo/treevirtual/TreeVirtual_Multiple_Columns.js:63
+#: demobrowser/demo/widget/Tree_Columns.js:69
+#: demobrowser/demo/treevirtual/TreeVirtual_Filter.js:56
+#: demobrowser/demo/widget/SplitPane.js:190
+msgid "Documents (D:)"
+msgstr ""
+
+#: demobrowser/demo/treevirtual/TreeVirtual_Events.js:44
+#: demobrowser/demo/virtual/Tree_Columns.js:69
+#: demobrowser/demo/animation/Tree_Highlight.js:74
+#: demobrowser/demo/treevirtual/TreeVirtual.js:55
+#: demobrowser/demo/data/Tree_Columns.js:68
+#: demobrowser/demo/treevirtual/TreeVirtual_Selections.js:54
+#: demobrowser/demo/widget/Tree.js:71
+#: demobrowser/demo/treevirtual/TreeVirtual_Multiple_Columns.js:67
+#: demobrowser/demo/widget/Tree_Columns.js:63
+#: demobrowser/demo/treevirtual/TreeVirtual_Filter.js:60
+#: demobrowser/demo/widget/SplitPane.js:185
+msgid "Network"
+msgstr ""
+
+#: demobrowser/demo/treevirtual/TreeVirtual_Events.js:45
+#: demobrowser/demo/treevirtual/TreeVirtual_Events.js:56
+#: demobrowser/demo/virtual/Tree_Columns.js:70
+#: demobrowser/demo/virtual/Tree_Columns.js:78
+#: demobrowser/demo/animation/Tree_Highlight.js:75
+#: demobrowser/demo/animation/Tree_Highlight.js:89
+#: demobrowser/demo/treevirtual/TreeVirtual.js:57
+#: demobrowser/demo/treevirtual/TreeVirtual.js:72
+#: demobrowser/demo/data/Tree_Columns.js:69
+#: demobrowser/demo/data/Tree_Columns.js:77
+#: demobrowser/demo/treevirtual/TreeVirtual_Selections.js:55
+#: demobrowser/demo/treevirtual/TreeVirtual_Selections.js:66
+#: demobrowser/demo/widget/Tree.js:72 demobrowser/demo/widget/Tree.js:86
+#: demobrowser/demo/treevirtual/TreeVirtual_Multiple_Columns.js:69
+#: demobrowser/demo/treevirtual/TreeVirtual_Multiple_Columns.js:82
+#: demobrowser/demo/widget/Tree_Columns.js:64
+#: demobrowser/demo/widget/Tree_Columns.js:75
+#: demobrowser/demo/treevirtual/TreeVirtual_Filter.js:62
+#: demobrowser/demo/treevirtual/TreeVirtual_Filter.js:74
+#: demobrowser/demo/widget/SplitPane.js:186
+#: demobrowser/demo/widget/SplitPane.js:199
+msgid "Trash"
+msgstr ""
+
+#: demobrowser/demo/treevirtual/TreeVirtual_Events.js:47
+#: demobrowser/demo/virtual/Tree_Columns.js:74
+#: demobrowser/demo/animation/Tree_Highlight.js:85
+#: demobrowser/demo/treevirtual/TreeVirtual.js:61
+#: demobrowser/demo/data/Tree_Columns.js:73
+#: demobrowser/demo/treevirtual/TreeVirtual_Selections.js:57
+#: demobrowser/demo/widget/Tree.js:82
+#: demobrowser/demo/treevirtual/TreeVirtual_Multiple_Columns.js:72
+#: demobrowser/demo/widget/Tree_Columns.js:72
+#: demobrowser/demo/treevirtual/TreeVirtual_Filter.js:64
+#: demobrowser/demo/widget/SplitPane.js:195
+msgid "Inbox"
+msgstr ""
+
+#: demobrowser/demo/treevirtual/TreeVirtual_Events.js:49
+#: demobrowser/demo/virtual/Tree_Columns.js:84
+#: demobrowser/demo/treevirtual/TreeVirtual.js:64
+#: demobrowser/demo/data/Tree_Columns.js:83
+#: demobrowser/demo/treevirtual/TreeVirtual_Selections.js:59
+#: demobrowser/demo/treevirtual/TreeVirtual_Multiple_Columns.js:74
+#: demobrowser/demo/widget/Tree_Columns.js:109
+#: demobrowser/demo/treevirtual/TreeVirtual_Filter.js:66
+msgid "Spam"
+msgstr ""
+
+#: demobrowser/demo/treevirtual/TreeVirtual_Events.js:52
+#: demobrowser/demo/treevirtual/TreeVirtual_Selections.js:62
+#: demobrowser/demo/treevirtual/TreeVirtual_Multiple_Columns.js:78
+#: demobrowser/demo/treevirtual/TreeVirtual_Filter.js:70
+msgid "Spam Message #%1"
+msgstr ""
+
+#: demobrowser/demo/treevirtual/TreeVirtual_Events.js:55
+#: demobrowser/demo/virtual/Tree_Columns.js:77
+#: demobrowser/demo/animation/Tree_Highlight.js:88
+#: demobrowser/demo/treevirtual/TreeVirtual.js:71
+#: demobrowser/demo/data/Tree_Columns.js:76
+#: demobrowser/demo/treevirtual/TreeVirtual_Selections.js:65
+#: demobrowser/demo/widget/Tree.js:85
+#: demobrowser/demo/treevirtual/TreeVirtual_Multiple_Columns.js:81
+#: demobrowser/demo/widget/Tree_Columns.js:74
+#: demobrowser/demo/treevirtual/TreeVirtual_Filter.js:73
+#: demobrowser/demo/widget/SplitPane.js:198
+msgid "Sent"
+msgstr ""
+
+#: demobrowser/demo/treevirtual/TreeVirtual_Events.js:57
+#: demobrowser/demo/virtual/Tree_Columns.js:79
+#: demobrowser/demo/treevirtual/TreeVirtual.js:73
+#: demobrowser/demo/data/Tree_Columns.js:78
+#: demobrowser/demo/treevirtual/TreeVirtual_Selections.js:67
+#: demobrowser/demo/widget/Tree.js:92
+#: demobrowser/demo/treevirtual/TreeVirtual_Multiple_Columns.js:83
+#: demobrowser/demo/widget/Tree_Columns.js:76
+#: demobrowser/demo/treevirtual/TreeVirtual_Filter.js:75
+#: demobrowser/demo/widget/SplitPane.js:205
+msgid "Data"
+msgstr ""
+
+#: demobrowser/demo/treevirtual/TreeVirtual_Events.js:58
+#: demobrowser/demo/virtual/Tree_Columns.js:80
+#: demobrowser/demo/animation/Tree_Highlight.js:96
+#: demobrowser/demo/treevirtual/TreeVirtual.js:74
+#: demobrowser/demo/widget/MenuBar.js:113
+#: demobrowser/demo/data/Tree_Columns.js:79
+#: demobrowser/demo/treevirtual/TreeVirtual_Selections.js:68
+#: demobrowser/demo/widget/Tree.js:93 demobrowser/demo/widget/Menu.js:274
+#: demobrowser/demo/treevirtual/TreeVirtual_Multiple_Columns.js:84
+#: demobrowser/demo/widget/Tree_Columns.js:77
+#: demobrowser/demo/treevirtual/TreeVirtual_Filter.js:76
+#: demobrowser/demo/widget/SplitPane.js:206
+msgid "Edit"
+msgstr ""
+
+#: demobrowser/demo/treevirtual/TreeVirtual_Filter.js:78
+msgid "Filter"
+msgstr ""
+
+#: demobrowser/demo/treevirtual/TreeVirtual_Multiple_Columns.js:29
+#: demobrowser/demo/treevirtual/TreeVirtual_Filter.js:27
+msgid "Permissions"
+msgstr ""
+
+#: demobrowser/demo/treevirtual/TreeVirtual_Multiple_Columns.js:30
+#: demobrowser/demo/treevirtual/TreeVirtual_Filter.js:28
+msgid "Last Accessed"
+msgstr ""
+
+#: demobrowser/demo/treevirtual/TreeVirtual_Multiple_Columns.js:61
+#: demobrowser/demo/treevirtual/TreeVirtual_Multiple_Columns.js:64
+#: demobrowser/demo/treevirtual/TreeVirtual_Filter.js:54
+#: demobrowser/demo/treevirtual/TreeVirtual_Filter.js:57
+msgid "-rwxr-xr-x"
+msgstr ""
+
+#: demobrowser/demo/treevirtual/TreeVirtual_Multiple_Columns.js:62
+#: demobrowser/demo/treevirtual/TreeVirtual_Multiple_Columns.js:65
+#: demobrowser/demo/treevirtual/TreeVirtual_Filter.js:55
+#: demobrowser/demo/treevirtual/TreeVirtual_Filter.js:58
+msgid "2007-01-30 22:54:03"
+msgstr ""
+
+#: demobrowser/demo/treevirtual/TreeVirtual_Multiple_Columns.js:93
+msgid "Current Selection: "
+msgstr ""
+
+#: demobrowser/demo/treevirtual/TreeVirtual_Multiple_Columns.js:127
+msgid "Use tree lines if theme supports them?"
+msgstr ""
+
+#: demobrowser/demo/treevirtual/TreeVirtual_Multiple_Columns.js:136
+msgid "Exclude first-level tree lines?"
+msgstr ""
+
+#: demobrowser/demo/treevirtual/TreeVirtual_Multiple_Columns.js:145
+msgid "Always show open/close symbol?"
+msgstr ""
+
+#: demobrowser/demo/treevirtual/TreeVirtual_Multiple_Columns.js:154
+msgid "Remove open/close if found empty?"
+msgstr ""
+
+#: demobrowser/demo/treevirtual/TreeVirtual_Multiple_Columns.js:168
+msgid "Open/close click selects row?"
+msgstr ""
+
+#: demobrowser/demo/treevirtual/TreeVirtual_Multiple_Columns.js:177
+msgid "Disable the tree?"
+msgstr ""
+
+#: demobrowser/demo/treevirtual/TreeVirtual_Multiple_Columns.js:186
+msgid "Show column visibilty menu"
+msgstr ""
+
+#: demobrowser/demo/treevirtual/TreeVirtual_Selections.js:78
+msgid "Selection Mode: "
+msgstr ""
+
+#: demobrowser/demo/treevirtual/TreeVirtual_Selections.js:84
+msgid "No Selection"
+msgstr ""
+
+#: demobrowser/demo/treevirtual/TreeVirtual_Selections.js:88
+msgid "Single Interval Selection"
+msgstr ""
+
+#: demobrowser/demo/treevirtual/TreeVirtual_Selections.js:90
+msgid "Multiple Interval Selection"
+msgstr ""
+
+#: demobrowser/demo/ui/AutoSizeTextArea.js:42
+msgid "Regular"
+msgstr ""
+
+#: demobrowser/demo/ui/AutoSizeTextArea.js:52
+msgid "Auto-Size"
+msgstr ""
+
+#: demobrowser/demo/ui/AutoSizeTextArea.js:63
+msgid "Non-default minimal line height"
+msgstr ""
+
+#: demobrowser/demo/ui/AutoSizeTextArea.js:67
+msgid "qooxdoo is…"
+msgstr ""
+
+#: demobrowser/demo/ui/AutoSizeTextArea.js:78
+msgid "Minimal height"
+msgstr ""
+
+#: demobrowser/demo/ui/AutoSizeTextArea.js:90
+msgid "Maximal height"
+msgstr ""
+
+#: demobrowser/demo/ui/AutoSizeTextArea.js:103
+msgid "Wrap handling"
+msgstr ""
+
+#: demobrowser/demo/ui/AutoSizeTextArea.js:125
+msgid "qooxdoo is a comprehensive and innovative framework for creating rich internet applications (RIAs)."
+msgstr ""
+
+#: demobrowser/demo/ui/Command.js:42
+#: demobrowser/demo/data/FormController.js:56
+#: demobrowser/demo/table/Table_Window_Editor.js:152
+#: demobrowser/demo/bom/WebStorage.js:42
+#: demobrowser/demo/widget/MenuBar.js:136
+#: demobrowser/demo/test/UIDeclaration.js:101
+#: demobrowser/demo/widget/Menu.js:255 demobrowser/demo/widget/Menu.js:344
+msgid "Save"
+msgstr ""
+
+#: demobrowser/demo/ui/Command.js:44
+msgid "Save the current file."
+msgstr ""
+
+#: demobrowser/demo/ui/Command.js:50
+msgid "Editor"
+msgstr ""
+
+#: demobrowser/demo/ui/Command.js:61 demobrowser/demo/widget/MenuBar.js:112
+#: demobrowser/demo/widget/Menu.js:273
+msgid "File"
+msgstr ""
+
+#: demobrowser/demo/ui/Command.js:96
+msgid ""
+"You can see three buttons in this window:\n"
+"  Button in the menu\n"
+"  Button in the toolbar\n"
+"  Button in the content at the bottom\n"
+"Each of the buttons is configured using the same command and have the same execute listener."
+msgstr ""
+
+#: demobrowser/demo/ui/DragDrop.js:62
+msgid "Source"
+msgstr ""
+
+#: demobrowser/demo/ui/DragDrop.js:74
+msgid "Enable drag"
+msgstr ""
+
+#: demobrowser/demo/ui/DragDrop.js:147
+msgid "Simple Target"
+msgstr ""
+
+#: demobrowser/demo/ui/DragDrop.js:182
+msgid "TextArea Target"
+msgstr ""
+
+#: demobrowser/demo/ui/DragDrop.js:211
+msgid "Reorderable"
+msgstr ""
+
+#: demobrowser/demo/ui/FiniteStateMachine.js:63
+msgid "This is a simple example of using a finite state machine, in which virtual mice solve a maze. <p>Each mouse is quite dumb, having in its arsenal of knowledge only these characteristics: it knows only how to travel in a single direction (the direction in which it was instantiated); when it arrives at a new cell, it looks left and right and creates a clone of itself to go each available direction; upon hitting a wall, it dies.<p>The initial mouse is a bit special, in that it looks for the possibility to clone a mouse to travel in the direction behind it, as well as to its left and right.<p>Each mouse is driven by (and in fact, in this example, is a subclass of) a finite state machine.  The FSM has five states: FadingIn, CellArrival (look for cloning opportunities), Moving, FadingOut, and Zombie (about to dispose).<p><u>The finite state diagram is below the maze.</u>"
+msgstr ""
+
+#: demobrowser/demo/ui/Font.js:39
+msgid "Serif, 16px"
+msgstr ""
+
+#: demobrowser/demo/ui/Font.js:42
+msgid "Serif, 24px"
+msgstr ""
+
+#: demobrowser/demo/ui/Font.js:45
+msgid "Sans Serif, 16px"
+msgstr ""
+
+#: demobrowser/demo/ui/Font.js:48
+msgid "Sans Serif, 24px"
+msgstr ""
+
+#: demobrowser/demo/ui/Font.js:51
+msgid "Sans Serif, 24px bold"
+msgstr ""
+
+#: demobrowser/demo/ui/FormInvalids.js:125
+msgid "invalid"
+msgstr ""
+
+#: demobrowser/demo/ui/FormInvalids.js:130
+msgid "Invalid (%1)"
+msgstr ""
+
+#: demobrowser/demo/ui/FormInvalids.js:135
+msgid "disabled"
+msgstr ""
+
+#: demobrowser/demo/ui/FormInvalids.js:144
+msgid "disable tooltips"
+msgstr ""
+
+#: demobrowser/demo/ui/FormInvalids.js:162
+msgid "<b>Validation</b><br/>Press the button to invalidate all shown widgets. Try the invalid focus and tooltip."
+msgstr ""
+
+#: demobrowser/demo/ui/FormRenderer.js:47
+#: demobrowser/demo/ui/FormRendererDouble.js:47
+msgid "Save?"
+msgstr ""
+
+#: demobrowser/demo/ui/FormRenderer.js:53
+#: demobrowser/demo/ui/FormRendererDouble.js:53
+msgid "Age"
+msgstr ""
+
+#: demobrowser/demo/ui/FormRendererCustom.js:41
+#: demobrowser/demo/ui/FormRendererPlaceholder.js:36
+#: demobrowser/demo/data/Form.js:39 demobrowser/demo/ui/FormRenderer.js:36
+#: demobrowser/demo/ui/FormRendererDouble.js:36
+msgid "Registration"
+msgstr ""
+
+#: demobrowser/demo/ui/FormRendererCustom.js:46
+#: demobrowser/demo/ui/FormRendererPlaceholder.js:41
+#: demobrowser/demo/animation/Transition_Position.js:54
+#: demobrowser/demo/animation/Transition_Color.js:56
+#: demobrowser/demo/test/Table_HeaderRenderer.js:62
+#: demobrowser/demo/test/Table_HeaderRenderer.js:88
+#: demobrowser/demo/ui/FormRenderer.js:41
+#: demobrowser/demo/animation/Login.js:68
+#: demobrowser/demo/table/Table_Events.js:63
+#: demobrowser/demo/ui/FormRendererDouble.js:41
+msgid "Name"
+msgstr ""
+
+#: demobrowser/demo/ui/FormRendererCustom.js:50
+#: demobrowser/demo/ui/FormRendererPlaceholder.js:45
+#: demobrowser/demo/ui/FormRenderer.js:45
+#: demobrowser/demo/animation/Login.js:69
+#: demobrowser/demo/table/Table_Cell_Editor.js:58
+#: demobrowser/demo/ui/FormRendererDouble.js:45
+msgid "Password"
+msgstr ""
+
+#: demobrowser/demo/ui/FormRendererCustom.js:53
+msgid "Contact"
+msgstr ""
+
+#: demobrowser/demo/ui/FormRendererCustom.js:58
+msgid "abc@def.gh"
+msgstr ""
+
+#: demobrowser/demo/ui/FormRendererCustom.js:61
+msgid "Phone"
+msgstr ""
+
+#: demobrowser/demo/ui/FormRendererCustom.js:62
+msgid "+01 234 56789"
+msgstr ""
+
+#: demobrowser/demo/ui/FormRendererCustom.js:66
+#: demobrowser/demo/ui/FormRendererPlaceholder.js:48
+#: demobrowser/demo/ui/FormRenderer.js:50
+#: demobrowser/demo/ui/FormRendererDouble.js:50
+msgid "Personal Information"
+msgstr ""
+
+#: demobrowser/demo/ui/FormRendererCustom.js:69
+#: demobrowser/demo/ui/FormRendererPlaceholder.js:51
+#: demobrowser/demo/showcase/Dialog.js:57
+#: demobrowser/demo/ui/FormRenderer.js:54
+#: demobrowser/demo/ui/FormRendererDouble.js:54
+msgid "Country"
+msgstr ""
+
+#: demobrowser/demo/ui/FormRendererCustom.js:71
+#: demobrowser/demo/ui/FormRendererPlaceholder.js:52
+#: demobrowser/demo/ui/FormRenderer.js:59
+#: demobrowser/demo/ui/FormRendererDouble.js:59
+msgid "Bio"
+msgstr ""
+
+#: demobrowser/demo/ui/FormRendererCustom.js:72
+msgid "Please tell us some details about you..."
+msgstr ""
+
+#: demobrowser/demo/ui/FormRendererCustom.js:76
+#: demobrowser/demo/ui/FormRendererPlaceholder.js:55
+#: demobrowser/demo/data/Form.js:75 demobrowser/demo/ui/FormValidator.js:112
+#: demobrowser/demo/ui/FormRenderer.js:62
+#: demobrowser/demo/ui/FormRendererDouble.js:62
+msgid "Send"
+msgstr ""
+
+#: demobrowser/demo/ui/FormRendererCustom.js:79
+#: demobrowser/demo/ui/FormRendererPlaceholder.js:58
+#: demobrowser/demo/ui/FormRenderer.js:65
+#: demobrowser/demo/ui/FormRendererDouble.js:65
+msgid "send..."
+msgstr ""
+
+#: demobrowser/demo/ui/FormRendererCustom.js:85
+#: demobrowser/demo/ui/FormRendererPlaceholder.js:64
+#: demobrowser/demo/widget/DateField.js:95
+#: demobrowser/demo/ui/FormRenderer.js:71
+#: demobrowser/demo/ui/FormRendererDouble.js:71
+msgid "Reset"
+msgstr ""
+
+#: demobrowser/demo/ui/FormRendererDouble.js:56
+msgid "Male"
+msgstr ""
+
+#: demobrowser/demo/ui/FormRendererDouble.js:57
+msgid "Female"
+msgstr ""
+
+#: demobrowser/demo/ui/FormValidator.js:36
+msgid "username"
+msgstr ""
+
+#: demobrowser/demo/ui/FormValidator.js:43
+msgid "email address"
+msgstr ""
+
+#: demobrowser/demo/ui/FormValidator.js:49
+#: demobrowser/demo/ui/FormValidator.js:54
+msgid "password"
+msgstr ""
+
+#: demobrowser/demo/ui/FormValidator.js:59
+msgid "Accept"
+msgstr ""
+
+#: demobrowser/demo/ui/FormValidator.js:70
+msgid "Please enter a password at with least 3 characters."
+msgstr ""
+
+#: demobrowser/demo/ui/FormValidator.js:81
+msgid "Server said no!"
+msgstr ""
+
+#: demobrowser/demo/ui/FormValidator.js:103
+msgid "Passwords must be equal."
+msgstr ""
+
+#: demobrowser/demo/ui/FormValidator.js:117
+msgid "Validating..."
+msgstr ""
+
+#: demobrowser/demo/ui/FormValidator.js:130
+msgid "You can send..."
+msgstr ""
+
+#: demobrowser/demo/ui/FormValidator.js:150
+msgid "<b>Client side form validation</b><br/>All fields are required. Some by a custom validator, some by a predefined validator and some by the required flag."
+msgstr ""
+
+#: demobrowser/demo/ui/HeightForWidth.js:43
+msgid "Screenshots #1 and #2 show that the label can be reduced in size to 102 pixels horizontally or to 55 pixels vertically, so long as there is enough space in the other direction. Screenshot #3 shows what happens when the label is squeezed down to its minimum height and minimum width."
+msgstr ""
+
+#: demobrowser/demo/ui/HeightForWidth.js:57
+msgid "Every widget's QSizePolicy contains a boolean height-for-width flag that indicates whether or not the widget is able to trade width for height and height for width. The layout will call the virtual function QWidget::heightForWidth() as necessary to determine the desired height for a height-for-width widget with a given width."
+msgstr ""
+
+#: demobrowser/demo/ui/Label_Reflow.js:57
+msgid "Toggle first paragraph"
+msgstr ""
+
+#: demobrowser/demo/ui/Label_Reflow.js:70
+#: demobrowser/demo/ui/Label_Reflow.js:107
+msgid "qooxdoo is a comprehensive and innovative Ajax application framework. Leveraging object-oriented JavaScript allows developers to build impressive cross-browser applications. No HTML, CSS nor DOM knowledge is needed."
+msgstr ""
+
+#: demobrowser/demo/ui/Label_Reflow.js:72
+msgid "<b>qooxdoo is cool.</b>"
+msgstr ""
+
+#: demobrowser/demo/ui/Label_Reflow.js:77
+msgid "Resize Pane"
+msgstr ""
+
+#: demobrowser/demo/ui/Label_Reflow.js:113
+msgid "It includes a platform-independent development tool chain, a state-of-the-art GUI toolkit and an advanced client-server communication layer. It is Open Source under an LGPL/EPL dual license."
+msgstr ""
+
+#: demobrowser/demo/ui/Label_Reflow.js:119
+msgid "qooxdoo (pronounced [’ku:ksdu:]) is a comprehensive and innovative Ajax application framework. Leveraging object-oriented JavaScript allows developers to build impressive cross-browser applications. No HTML, CSS nor DOM knowledge is needed. qooxdoo includes a platform-independent development tool chain, a state-of-the-art GUI toolkit and an advanced client-server communication layer. It is Open Source under an LGPL/EPL dual license."
+msgstr ""
+
+#: demobrowser/demo/ui/MultiPageForm.js:48
+msgid "Password:"
+msgstr ""
+
+#: demobrowser/demo/ui/MultiPageForm.js:55
+msgid "next"
+msgstr ""
+
+#: demobrowser/demo/ui/MultiPageForm.js:66
+msgid "Email:"
+msgstr ""
+
+#: demobrowser/demo/ui/MultiPageForm.js:72
+msgid "Birthdate:"
+msgstr ""
+
+#: demobrowser/demo/ui/MultiPageForm.js:79
+msgid "back"
+msgstr ""
+
+#: demobrowser/demo/ui/MultiPageForm.js:84
+msgid "submit"
+msgstr ""
+
+#: demobrowser/demo/ui/NativeContextMenu.js:44
+msgid "Native context menu allowed"
+msgstr ""
+
+#: demobrowser/demo/ui/NativeContextMenu.js:48
+#: demobrowser/demo/ui/NativeContextMenu.js:69
+msgid "plain label"
+msgstr ""
+
+#: demobrowser/demo/ui/NativeContextMenu.js:53
+#: demobrowser/demo/ui/NativeContextMenu.js:73
+msgid "<b>rich</b> label"
+msgstr ""
+
+#: demobrowser/demo/ui/NativeContextMenu.js:59
+#: demobrowser/demo/ui/NativeContextMenu.js:78
+msgid "text field"
+msgstr ""
+
+#: demobrowser/demo/ui/NativeContextMenu.js:65
+msgid "No native context menu"
+msgstr ""
+
+#: demobrowser/demo/ui/Opacity.js:60
+msgid "To, hi. Cogo plane res, at. Mucro ligo Erigo vos orca tui Loco Trellum, ac. Procedo nec luo Hic in Potens. Qua, qua crur Auctor, se. Aveho Tertius, eo. Eia Acerbus orexis, at. Ars, to. Vae atrer Exitus Nam, si. Per fuga Desumo laus, ut. Quin ita suavis Digladio non, ne me pax altor bona res hoc species, vis Quod funis vis fio Carceres labo ius Notabilis Ac sto via orbus Viriliter at res etiam Lepor vis emo pluma iuro, in edo sis sem qua, ex nec nam boatus inaestimabilis mica, peto for infelix ut Ico lex Nequaquam litigo fas alces In lavo vir haec, levis eia ait, Sileo Rapio Plaga quod praestantia Hoc dux Peraeque qui erro puto Prevenire consilium latro Vorax ora sordesco ilico non sed foveo cotidie subterfugio vix leviter tu iento Pergo mire iocus mica, iuro Amo compello jus irrepo Damno se quod, qui aro Attero duo lex humo quis lucrosus. Recolitus, mel, vae me occido,, rudimentum, lugo per paene pars ne in os en Tutamen congruus. Iam vae pono eo iugum demens, nos Tribuo Pristinus In ausus sto facis seu vasallus nous Oriens ustilo aperte illae Crus pulverulentus, typus igitur Subversio. Ventosus infinitas pax sis fas intellectus Perpetuus compaciscor Consortio, ars per abeo se Incursus nam sal prevarication praetermissio. Ne per artificialiter ingens sanctimonialis tergum, sed Parentela hic Fragilis expello eia per Fastidium illi penetralis Supparum eia ago capio genero in ter deficio aliusmodi. Vel Gaudium reddo interventus pecus tam pala Consulo sui voveo ut ego Opulentia, in occumbo sui Ruo macula. Senex, cum Species sed abhinc nego neo Marcieniensis dictator convenienter aut hoc pars ars iussu laxamentum. Agalmate declaro qua emo Malus cito eia for luxuria Renuntio populus ira Canto en vox Aro mei per. Effluo eo Os cura illum per comprovincialis Recipio trux donec Operam lemiscus servus. Vices diluculo Recedo algeo sto fama pilo per crystallinus hoc per His. Arx limus orior fessus Dimidium curatio Demergo, humo pro Hi. Citatus stipes gero ac ira quin tractus ut forsit Munio inopportunus Obdormio, te maro iam Pannosa vos obses se fefello peto cado contabesco, ius imbuo, tot ruo ut for Summa inedicibilis. Prosum Arcus, dux dis Peto sui pro quid ars obviam Valde nec pennatus, pia Culpo Te defero emo se nos Retribuo trans res, sis suo oro quia hac verecundus, pro Infusco debello Eduro fuga quo Ico Procedo se mora Ico.... progressus, fio huius dux pusio Illum. Vis cui urbs premo praedicatio Remuneror ymo iam vota qui Genitalis os instruo Uter res Texo mora opus alo Liceo prosapia, epos esca Et hos era fabre Abeo te edo Decet feritas, Metuo puteus, decorus. Hac abico nox promptu Expando cura extundo mulco his qui ceno exsequor, faveo Differo. cassis ne Fere, tam turba erro cogo res dominica Vos mens fundo nam quatenus, sapor amitto commoneo Declaro quies niger Sensim sisto Exsto indifferenter. Do iam Maiestas, nam intentio haud"
+msgstr ""
+
+#: demobrowser/demo/ui/Placement.js:59
+msgid "Content"
+msgstr ""
+
+#: demobrowser/demo/ui/Placement.js:98
+msgid "DOM align control"
+msgstr ""
+
+#: demobrowser/demo/ui/Placement.js:102
+msgid "DOM Popup"
+msgstr ""
+
+#: demobrowser/demo/ui/Placement.js:115
+msgid "Open DOM-Popup"
+msgstr ""
+
+#: demobrowser/demo/ui/WebFonts.js:113
+msgid "The quick brown fox jumps over the lazy dog"
+msgstr ""
+
+#: demobrowser/demo/ui/WebFonts.js:114
+msgid "Lorem ipsum dolor sit amet, consectetuer adipiscing elit.Nam lectus justo, porttitor ac, ullamcorper ac, cursus in, ante. Duis mi ante,sodales in, auctor vel, vehicula eget, sapien. Proin iaculis dui vitae leo. Integer blandit tempus leo. Morbi turpis. Suspendisse turpis. Nulla eget leo.Cras interdum sollicitudin ante. Sed placerat scelerisque magna. Vestibulum rutrum nibh a eros. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus."
+msgstr ""
+
+#: demobrowser/demo/ui/WebFonts.js:129
+msgid "Select Font"
+msgstr ""
+
+#: demobrowser/demo/util/PropertyEditor.js:58
+msgid "Widget Properties"
+msgstr ""
+
+#: demobrowser/demo/util/PropertyEditor.js:95
+msgid "Selected Widget"
+msgstr ""
+
+#: demobrowser/demo/util/PropertyGroup.js:54
+msgid "null"
+msgstr ""
+
+#: demobrowser/demo/virtual/CellSpan.js:52
+msgid "HTML Cells"
+msgstr ""
+
+#: demobrowser/demo/virtual/CellSpan.js:63
+msgid "Widget Cells"
+msgstr ""
+
+#: demobrowser/demo/virtual/Cells.js:93 demobrowser/demo/virtual/Cells.js:161
+msgid "<b>HTML</b>"
+msgstr ""
+
+#: demobrowser/demo/virtual/Cells.js:180
+msgid "This is a feed reader!"
+msgstr ""
+
+#: demobrowser/demo/virtual/Cells.js:184
+msgid "foobar!"
+msgstr ""
+
+#: demobrowser/demo/virtual/ComboBox.js:204
+msgid "Sorted and filtered model"
+msgstr ""
+
+#: demobrowser/demo/virtual/Gallery.js:49
+msgid "Gallery (widgets)"
+msgstr ""
+
+#: demobrowser/demo/virtual/Gallery.js:52
+msgid "Gallery (HTML - divs)"
+msgstr ""
+
+#: demobrowser/demo/virtual/GroupedList.js:64
+msgid "<b>Grouped List</b><br/>Loads the json file <a href='json/persons.json' target='_blank'>persons.json</a> and binds the created model to all list widgets. The first list shows only the row data and uses a converter for the label that concatenates the first and last name. The second list sorts the items by last name and groups the items by the first letter of the last name. The third list sorts the items by first name and groups it by the 'group' model property. The third list is configured  to use a customized group item for rendering."
+msgstr ""
+
+#: demobrowser/demo/virtual/GroupedList.js:97
+msgid "Raw List:"
+msgstr ""
+
+#: demobrowser/demo/virtual/GroupedList.js:120
+msgid "Grouped by last name:"
+msgstr ""
+
+#: demobrowser/demo/virtual/GroupedList.js:164
+msgid "Grouped by group:"
+msgstr ""
+
+#: demobrowser/demo/virtual/Pane_Row.js:51
+#: demobrowser/demo/virtual/Pane_Column.js:51
+msgid "Even/Odd Colors"
+msgstr ""
+
+#: demobrowser/demo/virtual/Pane_Row.js:61
+#: demobrowser/demo/virtual/Pane_Column.js:61
+msgid "Custom Colors"
+msgstr ""
+
+#: demobrowser/demo/virtual/Pane_Row.js:75
+#: demobrowser/demo/virtual/Pane_Column.js:75
+msgid "Even/Odd & Custom Colors"
+msgstr ""
+
+#: demobrowser/demo/virtual/SelectBox.js:65
+#: demobrowser/demo/widget/Spinner.js:31
+#: demobrowser/demo/widget/SelectBox.js:54
+msgid "Simple"
+msgstr ""
+
+#: demobrowser/demo/virtual/SelectBox.js:93
+#: demobrowser/demo/widget/SelectBox.js:82
+msgid "Long text"
+msgstr ""
+
+#: demobrowser/demo/virtual/SelectBox.js:98
+#: demobrowser/demo/widget/SelectBox.js:87
+msgid "Random Value %1"
+msgstr ""
+
+#: demobrowser/demo/virtual/SelectBox.js:160
+#: demobrowser/demo/widget/SelectBox.js:126
+msgid "Empty Item"
+msgstr ""
+
+#: demobrowser/demo/virtual/SelectBox.js:167
+#: demobrowser/demo/widget/SelectBox.js:132
+msgid "Option %1"
+msgstr ""
+
+#: demobrowser/demo/virtual/SelectBox.js:181
+msgid "Sorted"
+msgstr ""
+
+#: demobrowser/demo/virtual/SelectBox.js:187
+msgid "Item "
+msgstr ""
+
+#: demobrowser/demo/virtual/SelectBox.js:210
+msgid "Filtered"
+msgstr ""
+
+#: demobrowser/demo/virtual/SelectBox.js:239
+msgid "Grouped with Persons"
+msgstr ""
+
+#: demobrowser/demo/virtual/SelectBox.js:246
+#: demobrowser/demo/virtual/GroupedList.js:108
+#: demobrowser/demo/virtual/GroupedList.js:131
+#: demobrowser/demo/virtual/GroupedList.js:175
+msgid "no model..."
+msgstr ""
+
+#: demobrowser/demo/virtual/Selection.js:63
+msgid "Row Selection"
+msgstr ""
+
+#: demobrowser/demo/virtual/Selection.js:74
+msgid "Column Selection"
+msgstr ""
+
+#: demobrowser/demo/virtual/Selection.js:85
+msgid "Cell Rectangle Selection"
+msgstr ""
+
+#: demobrowser/demo/virtual/Selection.js:96
+msgid "Cell Line Selection"
+msgstr ""
+
+#: demobrowser/demo/virtual/Selection.js:115
+msgid "Selection Mode"
+msgstr ""
+
+#: demobrowser/demo/virtual/Selection.js:158
+#: demobrowser/demo/widget/Menu.js:172
+msgid "Options"
+msgstr ""
+
+#: demobrowser/demo/virtual/SettingsList.js:45
+msgid "Apple"
+msgstr ""
+
+#: demobrowser/demo/virtual/SettingsList.js:45
+msgid "Carrot"
+msgstr ""
+
+#: demobrowser/demo/virtual/SettingsList.js:45
+msgid "Potato"
+msgstr ""
+
+#: demobrowser/demo/virtual/SettingsList.js:64
+msgid "Fruits"
+msgstr ""
+
+#: demobrowser/demo/virtual/SettingsList.js:65
+msgid "Vegetables"
+msgstr ""
+
+#: demobrowser/demo/virtual/Tree.js:63
+#: demobrowser/demo/animation/Tree_Highlight.js:108
+#: demobrowser/demo/treevirtual/TreeVirtual_Selections.js:72
+#: demobrowser/demo/widget/Tree.js:105
+#: demobrowser/demo/treevirtual/TreeVirtual_Multiple_Columns.js:88
+msgid "Control"
+msgstr ""
+
+#: demobrowser/demo/virtual/Tree.js:69 demobrowser/demo/widget/Tree.js:111
+msgid "Selection: "
+msgstr ""
+
+#: demobrowser/demo/virtual/Tree.js:90 demobrowser/demo/widget/Tree.js:140
+msgid "Open mode:"
+msgstr ""
+
+#: demobrowser/demo/virtual/Tree.js:115 demobrowser/demo/widget/Tree.js:194
+msgid "Root node:"
+msgstr ""
+
+#: demobrowser/demo/virtual/Tree.js:117 demobrowser/demo/widget/Tree.js:196
+msgid "Hide Root Node"
+msgstr ""
+
+#: demobrowser/demo/virtual/Tree.js:124
+msgid "Show top level open/close icons"
+msgstr ""
+
+#: demobrowser/demo/virtual/Tree.js:133
+msgid "Tree:"
+msgstr ""
+
+#: demobrowser/demo/virtual/Tree.js:135
+msgid "Show Leafs"
+msgstr ""
+
+#: demobrowser/demo/virtual/Tree.js:145
+msgid "Update Model"
+msgstr ""
+
+#: demobrowser/demo/virtual/Tree.js:152
+msgid "File #%1"
+msgstr ""
+
+#: demobrowser/demo/virtual/Tree.js:159 demobrowser/demo/widget/Tree.js:250
+msgid "Toggle Height"
+msgstr ""
+
+#: demobrowser/demo/virtual/Tree_Columns.js:56
+#: demobrowser/demo/animation/Tree_Highlight.js:64
+#: demobrowser/demo/data/Tree_Columns.js:55
+#: demobrowser/demo/widget/Tree_Columns.js:53
+#: demobrowser/demo/virtual/Tree_Dynamic.js:41
+msgid "Root"
+msgstr ""
+
+#: demobrowser/demo/virtual/Tree_Columns.js:76
+#: demobrowser/demo/animation/Tree_Highlight.js:87
+#: demobrowser/demo/data/Tree_Columns.js:75 demobrowser/demo/widget/Tree.js:84
+#: demobrowser/demo/widget/Tree_Columns.js:73
+#: demobrowser/demo/widget/SplitPane.js:197
+msgid "Presets"
+msgstr ""
+
+#: demobrowser/demo/virtual/Tree_Columns.js:81
+#: demobrowser/demo/data/Tree_Columns.js:80
+#: demobrowser/demo/widget/Tree_Columns.js:86
+msgid "Lists"
+msgstr ""
+
+#: demobrowser/demo/virtual/Tree_Columns.js:82
+#: demobrowser/demo/data/Tree_Columns.js:81
+#: demobrowser/demo/widget/Tree_Columns.js:97
+msgid "Personal"
+msgstr ""
+
+#: demobrowser/demo/virtual/Tree_Columns.js:83
+#: demobrowser/demo/data/Tree_Columns.js:82
+#: demobrowser/demo/widget/Tree_Columns.js:104
+msgid "Big"
+msgstr ""
+
+#: demobrowser/demo/virtual/Tree_Dynamic.js:113
+msgid "Loading"
+msgstr ""
+
+#: demobrowser/demo/widget/Atom.js:51
+msgid "Icon Left"
+msgstr ""
+
+#: demobrowser/demo/widget/Atom.js:59
+msgid "Icon Top"
+msgstr ""
+
+#: demobrowser/demo/widget/Atom.js:67
+msgid "Icon Right"
+msgstr ""
+
+#: demobrowser/demo/widget/Atom.js:75
+msgid "Icon Bottom"
+msgstr ""
+
+#: demobrowser/demo/widget/Atom.js:91
+msgid "Atom Without Label"
+msgstr ""
+
+#: demobrowser/demo/widget/Atom.js:99
+msgid "Atom Without Icon"
+msgstr ""
+
+#: demobrowser/demo/widget/Atom.js:116 demobrowser/demo/widget/Atom.js:124
+#: demobrowser/demo/widget/Atom.js:132
+msgid "Atom With Long Label"
+msgstr ""
+
+#: demobrowser/demo/widget/Atom.js:148 demobrowser/demo/widget/Atom.js:157
+msgid "Wider Atom"
+msgstr ""
+
+#: demobrowser/demo/widget/Atom.js:167
+msgid "Higher Atom"
+msgstr ""
+
+#: demobrowser/demo/widget/Button.js:57
+msgid "Button A"
+msgstr ""
+
+#: demobrowser/demo/widget/Button.js:60
+msgid "Button B"
+msgstr ""
+
+#: demobrowser/demo/widget/Button.js:114
+msgid "Hover"
+msgstr ""
+
+#: demobrowser/demo/widget/Canvas.js:30
+msgid "Resize the windows to see the effect."
+msgstr ""
+
+#: demobrowser/demo/widget/Canvas.js:33
+msgid "Window containing a Canvas - static coordinates"
+msgstr ""
+
+#: demobrowser/demo/widget/Canvas.js:42
+msgid "Canvas is not supported by this browser!"
+msgstr ""
+
+#: demobrowser/demo/widget/Canvas.js:63
+msgid "Window containing a Canvas - synced coordinates"
+msgstr ""
+
+#: demobrowser/demo/widget/Canvas.js:72
+msgid "Canvas is not support by this browser!"
+msgstr ""
+
+#: demobrowser/demo/widget/CheckBox.js:30
+msgid "What do you need for the beach?"
+msgstr ""
+
+#: demobrowser/demo/widget/CheckBox.js:45
+msgid "Sun Oil"
+msgstr ""
+
+#: demobrowser/demo/widget/CheckBox.js:46
+msgid "Towel"
+msgstr ""
+
+#: demobrowser/demo/widget/CheckBox.js:47
+msgid "Beer"
+msgstr ""
+
+#: demobrowser/demo/widget/CheckBox.js:48
+msgid "Bathing togs"
+msgstr ""
+
+#: demobrowser/demo/widget/CheckBox.js:58
+#: demobrowser/demo/widget/HtmlArea.js:176
+#: demobrowser/demo/showcase/Dialog.js:115
+#: demobrowser/demo/table/TableDemo.js:126 demobrowser/InfoWindow.js:95
+msgid "OK"
+msgstr ""
+
+#: demobrowser/demo/widget/CheckBox.js:88
+msgid "You need these things for the beach: %1"
+msgstr ""
+
+#: demobrowser/demo/widget/CheckBox.js:92
+msgid "Are you sure you need nothing for the beach?"
+msgstr ""
+
+#: demobrowser/demo/widget/ColorPopup.js:40
+#: demobrowser/demo/ui/Placement.js:82
+msgid "Open Popup"
+msgstr ""
+
+#: demobrowser/demo/widget/ColorPopup.js:47
+msgid "Selected Color"
+msgstr ""
+
+#: demobrowser/demo/widget/ColorSelector.js:43
+msgid "<b>value:</b>"
+msgstr ""
+
+#: demobrowser/demo/widget/ComboBox.js:59
+#: demobrowser/demo/widget/DateField.js:39
+#: demobrowser/demo/virtual/ComboBox.js:56
+msgid "Default"
+msgstr ""
+
+#: demobrowser/demo/widget/ComboBox.js:74
+msgid "2^ %1 = %2"
+msgstr ""
+
+#: demobrowser/demo/widget/ComboBox.js:102
+#: demobrowser/demo/virtual/SelectBox.js:123
+#: demobrowser/demo/virtual/ComboBox.js:101
+#: demobrowser/demo/widget/SelectBox.js:101
+msgid "With icons"
+msgstr ""
+
+#: demobrowser/demo/widget/ComboBox.js:117
+msgid "%1's Icon"
+msgstr ""
+
+#: demobrowser/demo/widget/ComboBox.js:139
+#: demobrowser/demo/virtual/ComboBox.js:145
+msgid "With HTML (rich) text"
+msgstr ""
+
+#: demobrowser/demo/widget/ComboBox.js:151
+msgid "... &gt; (as literal HTML entity)"
+msgstr ""
+
+#: demobrowser/demo/widget/ComboBox.js:152
+msgid "... &gt; (as Richtext)"
+msgstr ""
+
+#: demobrowser/demo/widget/ComboBox.js:153
+msgid "<b>Bold Text</b>"
+msgstr ""
+
+#: demobrowser/demo/widget/ComboBox.js:154
+msgid "<u>Underlined Text</u>"
+msgstr ""
+
+#: demobrowser/demo/widget/ComboBox.js:155
+msgid "<i>Italic Text</i>"
+msgstr ""
+
+#: demobrowser/demo/widget/ComboBox.js:156
+msgid "HTML entities: &laquo; &lt; &amp; &gt; &raquo;"
+msgstr ""
+
+#: demobrowser/demo/widget/ComboBox.js:186
+msgid "Wide, long list"
+msgstr ""
+
+#: demobrowser/demo/widget/ComboBox.js:202
+msgid "%1's Item"
+msgstr ""
+
+#: demobrowser/demo/widget/DateChooser.js:60
+msgid "select a date"
+msgstr ""
+
+#: demobrowser/demo/widget/DateChooser.js:65
+msgid "Change: %1"
+msgstr ""
+
+#: demobrowser/demo/widget/DateChooser.js:71
+msgid "Execute: %1"
+msgstr ""
+
+#: demobrowser/demo/widget/DateChooser.js:75
+#: demobrowser/demo/widget/DateField.js:88
+msgid "Set current date"
+msgstr ""
+
+#: demobrowser/demo/widget/DateChooser.js:83
+msgid "Show January 1981"
+msgstr ""
+
+#: demobrowser/demo/widget/DateChooser.js:90
+msgid "Remove the selection"
+msgstr ""
+
+#: demobrowser/demo/widget/DateChooser.js:100
+msgid "- Use the cursors keys to move the selection."
+msgstr ""
+
+#: demobrowser/demo/widget/DateChooser.js:101
+msgid "- Page-keys / shift + page-keys switch months/years."
+msgstr ""
+
+#: demobrowser/demo/widget/DateChooser.js:102
+msgid "- Double-click or enter/space-key will fire an execute event."
+msgstr ""
+
+#: demobrowser/demo/widget/DateChooser.js:103
+msgid "- Escape will remove the selection."
+msgstr ""
+
+#: demobrowser/demo/widget/DateField.js:49
+msgid "With date formater"
+msgstr ""
+
+#: demobrowser/demo/widget/DateField.js:55
+#: demobrowser/demo/widget/DateField.js:61
+msgid "MM-yyyy"
+msgstr ""
+
+#: demobrowser/demo/widget/DateField.js:56
+#: demobrowser/demo/widget/DateField.js:68
+msgid "MM/dd/yyyy"
+msgstr ""
+
+#: demobrowser/demo/widget/DateField.js:57
+#: demobrowser/demo/widget/DateField.js:75
+msgid "dd.MM.yyyy"
+msgstr ""
+
+#: demobrowser/demo/widget/DateField.js:84
+msgid "Set data"
+msgstr ""
+
+#: demobrowser/demo/widget/DateField.js:105
+msgid "Get data"
+msgstr ""
+
+#: demobrowser/demo/widget/DateField.js:112
+msgid "Get date"
+msgstr ""
+
+#: demobrowser/demo/widget/Flash.js:45
+msgid "Simple demo with FlashVars"
+msgstr ""
+
+#: demobrowser/demo/widget/Flash.js:50
+msgid "Two way communication (ActionScript <-> JavaScript)"
+msgstr ""
+
+#: demobrowser/demo/widget/Flash.js:61
+msgid "Flash Player Version"
+msgstr ""
+
+#: demobrowser/demo/widget/Flash.js:92 demobrowser/demo/bom/Flash.js:49
+msgid "this is passed in via FlashVars"
+msgstr ""
+
+#: demobrowser/demo/widget/Flash.js:103
+msgid "Show Flash Player version"
+msgstr ""
+
+#: demobrowser/demo/widget/Flash.js:146
+msgid "<b>qooxdoo:</b>"
+msgstr ""
+
+#: demobrowser/demo/widget/Flash.js:149
+msgid "Message from Flash:"
+msgstr ""
+
+#: demobrowser/demo/widget/Flash.js:150
+msgid "No message."
+msgstr ""
+
+#: demobrowser/demo/widget/Flash.js:154
+msgid "Message to Flash:"
+msgstr ""
+
+#: demobrowser/demo/widget/Flash.js:155
+msgid "qooxdoo is the best!"
+msgstr ""
+
+#: demobrowser/demo/widget/Flash.js:162
+msgid "Send to Flash"
+msgstr ""
+
+#: demobrowser/demo/widget/Flash.js:179
+msgid "Flash:"
+msgstr ""
+
+#: demobrowser/demo/widget/Flash.js:206
+msgid ""
+"Couldn't connect to Flash Player! Please make sure that:\n"
+"1) no pop-up or advertising blocker is activated.\n"
+"2) this html page is not loaded from the file system, but a webserver."
+msgstr ""
+
+#: demobrowser/demo/widget/GroupBox.js:50
+msgid "Code Assist"
+msgstr ""
+
+#: demobrowser/demo/widget/GroupBox.js:54
+msgid "Show debugging content"
+msgstr ""
+
+#: demobrowser/demo/widget/GroupBox.js:55
+msgid "Enable code completion"
+msgstr ""
+
+#: demobrowser/demo/widget/GroupBox.js:56
+msgid "Show debugging console"
+msgstr ""
+
+#: demobrowser/demo/widget/GroupBox.js:62
+msgid "Expert Settings"
+msgstr ""
+
+#: demobrowser/demo/widget/GroupBox.js:67
+#: demobrowser/demo/widget/GroupBox.js:94
+msgid "Option #1"
+msgstr ""
+
+#: demobrowser/demo/widget/GroupBox.js:80
+msgid "Default Settings"
+msgstr ""
+
+#: demobrowser/demo/widget/GroupBox.js:84
+msgid "Custom Settings"
+msgstr ""
+
+#: demobrowser/demo/widget/GroupBox.js:88
+msgid "Advanced Settings"
+msgstr ""
+
+#: demobrowser/demo/widget/HtmlArea.js:57
+msgid "<h1>HtmlArea UI-level widget</h1><p>This UI-level widget can be used at RIA (Rich Internet Applications) and inline applications.<br/>The UI widget does use the low-level component internally so code-duplication is avoided.<br/>As an application developer you can <b>use the same API.</b></p><p>You can play around with this widget by hitting the buttons at the toolbar.</p>"
+msgstr ""
+
+#: demobrowser/demo/widget/HtmlArea.js:67 demobrowser/demo/bom/HtmlArea.js:95
+msgid "<h1>About</h1><p>qooxdoo (pronounced [ku:ksdu:]) is a comprehensive and innovative Ajax application framework. Leveraging object-oriented JavaScript allows developers to build impressive cross-browser applications. No <acronym title="HyperText Markup Language">HTML</acronym>, <acronym title="Cascading Style Sheets">CSS</acronym> nor <acronym title="Document Object Model">DOM</acronym> knowledge is needed. qooxdoo includes a platform-independent development tool chain, a state-of-the-art <acronym title="Graphical User Interface">GUI</acronym> toolkit and an advanced client-server communication layer. It is Open Source under an <acronym title="GNU Lesser General Public License">LGPL</acronym>/<acronym title="Eclipse Public License">EPL</acronym> dual <a href="http://qooxdoo.org/license" class="wikilink1" title="license">license</a>.</p>"
+msgstr ""
+
+#: demobrowser/demo/widget/HtmlArea.js:103
+#: demobrowser/demo/bom/HtmlArea.js:130
+msgid "Color (Hex): "
+msgstr ""
+
+#: demobrowser/demo/widget/HtmlArea.js:115
+#: demobrowser/demo/bom/HtmlArea.js:141
+msgid "BgColor (Hex): "
+msgstr ""
+
+#: demobrowser/demo/widget/HtmlArea.js:129
+#: demobrowser/demo/widget/HtmlArea.js:130
+msgid "qooxdoo logo"
+msgstr ""
+
+#: demobrowser/demo/widget/HtmlArea.js:145
+msgid "First Row, First cell"
+msgstr ""
+
+#: demobrowser/demo/widget/HtmlArea.js:146
+msgid "First Row, Second cell"
+msgstr ""
+
+#: demobrowser/demo/widget/HtmlArea.js:149
+msgid "Second Row, First cell"
+msgstr ""
+
+#: demobrowser/demo/widget/HtmlArea.js:150
+msgid "Second Row, Second cell"
+msgstr ""
+
+#: demobrowser/demo/widget/HtmlArea.js:165
+msgid "Insert Hyperlink"
+msgstr ""
+
+#: demobrowser/demo/widget/HtmlArea.js:207
+#: demobrowser/demo/bom/HtmlArea.js:200
+msgid "HTML Code:"
+msgstr ""
+
+#: demobrowser/demo/widget/HtmlArea.js:227
+msgid "Change Font Family"
+msgstr ""
+
+#: demobrowser/demo/widget/HtmlArea.js:270
+msgid "Change Font Size"
+msgstr ""
+
+#: demobrowser/demo/widget/HtmlArea.js:309
+#: demobrowser/demo/bom/HtmlArea.js:335
+msgid "Format Bold"
+msgstr ""
+
+#: demobrowser/demo/widget/HtmlArea.js:310
+#: demobrowser/demo/bom/HtmlArea.js:336
+msgid "Format Italic"
+msgstr ""
+
+#: demobrowser/demo/widget/HtmlArea.js:311
+#: demobrowser/demo/bom/HtmlArea.js:337
+msgid "Format Underline"
+msgstr ""
+
+#: demobrowser/demo/widget/HtmlArea.js:312
+#: demobrowser/demo/bom/HtmlArea.js:338
+msgid "Format Strikethrough"
+msgstr ""
+
+#: demobrowser/demo/widget/HtmlArea.js:313
+#: demobrowser/demo/bom/HtmlArea.js:339
+msgid "Remove Format"
+msgstr ""
+
+#: demobrowser/demo/widget/HtmlArea.js:317
+#: demobrowser/demo/bom/HtmlArea.js:343
+msgid "Align Left"
+msgstr ""
+
+#: demobrowser/demo/widget/HtmlArea.js:318
+#: demobrowser/demo/bom/HtmlArea.js:344
+msgid "Align Center"
+msgstr ""
+
+#: demobrowser/demo/widget/HtmlArea.js:319
+#: demobrowser/demo/bom/HtmlArea.js:345
+msgid "Align Right"
+msgstr ""
+
+#: demobrowser/demo/widget/HtmlArea.js:320
+#: demobrowser/demo/bom/HtmlArea.js:346
+msgid "Align Justify"
+msgstr ""
+
+#: demobrowser/demo/widget/HtmlArea.js:326
+#: demobrowser/demo/bom/HtmlArea.js:352
+msgid "Set Text Color"
+msgstr ""
+
+#: demobrowser/demo/widget/HtmlArea.js:327
+#: demobrowser/demo/bom/HtmlArea.js:353
+msgid "Set Text Background Color"
+msgstr ""
+
+#: demobrowser/demo/widget/HtmlArea.js:331
+#: demobrowser/demo/bom/HtmlArea.js:357
+msgid "Indent More"
+msgstr ""
+
+#: demobrowser/demo/widget/HtmlArea.js:332
+#: demobrowser/demo/bom/HtmlArea.js:358
+msgid "Indent Less"
+msgstr ""
+
+#: demobrowser/demo/widget/HtmlArea.js:337
+#: demobrowser/demo/bom/HtmlArea.js:363
+msgid "Insert Image"
+msgstr ""
+
+#: demobrowser/demo/widget/HtmlArea.js:338
+#: demobrowser/demo/bom/HtmlArea.js:364
+msgid "Insert Table"
+msgstr ""
+
+#: demobrowser/demo/widget/HtmlArea.js:339
+#: demobrowser/demo/bom/HtmlArea.js:365
+msgid "Insert Link"
+msgstr ""
+
+#: demobrowser/demo/widget/HtmlArea.js:340
+#: demobrowser/demo/bom/HtmlArea.js:366
+msgid "Insert HTML Code"
+msgstr ""
+
+#: demobrowser/demo/widget/HtmlArea.js:341
+#: demobrowser/demo/bom/HtmlArea.js:367
+msgid "Insert Horizontal Ruler"
+msgstr ""
+
+#: demobrowser/demo/widget/HtmlArea.js:345
+#: demobrowser/demo/bom/HtmlArea.js:371
+msgid "Insert Ordered List"
+msgstr ""
+
+#: demobrowser/demo/widget/HtmlArea.js:346
+#: demobrowser/demo/bom/HtmlArea.js:372
+msgid "Inserted Unordered List"
+msgstr ""
+
+#: demobrowser/demo/widget/HtmlArea.js:350
+#: demobrowser/demo/bom/HtmlArea.js:376
+msgid "Undo Last Change"
+msgstr ""
+
+#: demobrowser/demo/widget/HtmlArea.js:351
+#: demobrowser/demo/bom/HtmlArea.js:377
+msgid "Redo Last Undo Step"
+msgstr ""
+
+#: demobrowser/demo/widget/HtmlEmbed.js:45
+msgid "<div style='background-color: white; text-align: center;'><i style='color: red;'><b>H</b></i><b>T</b><u>M</u><i>L</i> Text</div>"
+msgstr ""
+
+#: demobrowser/demo/widget/HtmlEmbed.js:60
+msgid "Text with set font (bold)!"
+msgstr ""
+
+#: demobrowser/demo/widget/HtmlEmbed.js:69
+msgid "Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla f"
+msgstr ""
+
+#: demobrowser/demo/widget/Iframe.js:66
+msgid "W3C"
+msgstr ""
+
+#: demobrowser/demo/widget/Iframe.js:68
+msgid "local"
+msgstr ""
+
+#: demobrowser/demo/widget/Image.js:76 demobrowser/demo/widget/TextField.js:84
+msgid "Toggle enabled"
+msgstr ""
+
+#: demobrowser/demo/widget/Label.js:36
+msgid "text label"
+msgstr ""
+
+#: demobrowser/demo/widget/Label.js:41
+msgid "configure text label"
+msgstr ""
+
+#: demobrowser/demo/widget/Label.js:43
+msgid "rich label"
+msgstr ""
+
+#: demobrowser/demo/widget/Label.js:48
+msgid "configure rich label"
+msgstr ""
+
+#: demobrowser/demo/widget/Label.js:50
+msgid "My First Long Label Cutted"
+msgstr ""
+
+#: demobrowser/demo/widget/Label.js:57
+msgid "A long label text with auto-wrapping. This also may contain <b style='color:red'>rich HTML</b> markup."
+msgstr ""
+
+#: demobrowser/demo/widget/Label.js:64
+msgid "Big Long Label"
+msgstr ""
+
+#: demobrowser/demo/widget/Label.js:70
+msgid "Big Long Label Cutted"
+msgstr ""
+
+#: demobrowser/demo/widget/List.js:101 demobrowser/demo/virtual/List.js:161
+msgid "Show Label"
+msgstr ""
+
+#: demobrowser/demo/widget/List.js:102 demobrowser/demo/virtual/List.js:162
+msgid "Show Icon"
+msgstr ""
+
+#: demobrowser/demo/widget/List.js:103 demobrowser/demo/virtual/List.js:163
+msgid "Show Both"
+msgstr ""
+
+#: demobrowser/demo/widget/List.js:240
+msgid "Horizontal, Icons only"
+msgstr ""
+
+#: demobrowser/demo/widget/Menu.js:74
+msgid "Folder %1"
+msgstr ""
+
+#: demobrowser/demo/widget/Menu.js:76
+msgid "move to"
+msgstr ""
+
+#: demobrowser/demo/widget/Menu.js:81
+msgid "command %1"
+msgstr ""
+
+#: demobrowser/demo/widget/Menu.js:141
+msgid "Option 1"
+msgstr ""
+
+#: demobrowser/demo/widget/Menu.js:142
+msgid "Option 2"
+msgstr ""
+
+#: demobrowser/demo/widget/Menu.js:143
+msgid "Option 3"
+msgstr ""
+
+#: demobrowser/demo/widget/Menu.js:147
+msgid "Action 1"
+msgstr ""
+
+#: demobrowser/demo/widget/Menu.js:148
+msgid "Action 2"
+msgstr ""
+
+#: demobrowser/demo/widget/Menu.js:149
+msgid "Action 3"
+msgstr ""
+
+#: demobrowser/demo/widget/Menu.js:173
+msgid "Actions"
+msgstr ""
+
+#: demobrowser/demo/widget/Menu.js:201
+msgid "Menu Button"
+msgstr ""
+
+#: demobrowser/demo/widget/Menu.js:211
+msgid "Website 1"
+msgstr ""
+
+#: demobrowser/demo/widget/Menu.js:212
+msgid "Website 2"
+msgstr ""
+
+#: demobrowser/demo/widget/Menu.js:213
+msgid "Website 3"
+msgstr ""
+
+#: demobrowser/demo/widget/Menu.js:226
+msgid "Split Button"
+msgstr ""
+
+#: demobrowser/demo/widget/Menu.js:250
+msgid "Back"
+msgstr ""
+
+#: demobrowser/demo/widget/Menu.js:303
+msgid "Line 313"
+msgstr ""
+
+#: demobrowser/demo/widget/Menu.js:304
+msgid "Line 1039"
+msgstr ""
+
+#: demobrowser/demo/widget/Menu.js:305
+msgid "Line 12"
+msgstr ""
+
+#: demobrowser/demo/widget/Menu.js:306
+msgid "Line 26"
+msgstr ""
+
+#: demobrowser/demo/widget/Menu.js:325
+msgid "Line 431"
+msgstr ""
+
+#: demobrowser/demo/widget/Menu.js:326
+msgid "Line 30"
+msgstr ""
+
+#: demobrowser/demo/widget/MenuBar.js:50
+msgid "Enabled"
+msgstr ""
+
+#: demobrowser/demo/widget/MenuBar.js:114 demobrowser/demo/widget/Menu.js:275
+#: demobrowser/demo/showcase/Localization.js:151
+msgid "Search"
+msgstr ""
+
+#: demobrowser/demo/widget/MenuBar.js:115 demobrowser/demo/widget/Menu.js:276
+msgid "View"
+msgstr ""
+
+#: demobrowser/demo/widget/MenuBar.js:116 demobrowser/demo/widget/Menu.js:277
+msgid "Format"
+msgstr ""
+
+#: demobrowser/demo/widget/MenuBar.js:134 demobrowser/demo/widget/Menu.js:254
+#: demobrowser/demo/widget/Menu.js:342
+msgid "Open"
+msgstr ""
+
+#: demobrowser/demo/widget/MenuBar.js:135 demobrowser/demo/widget/Menu.js:343
+msgid "Close"
+msgstr ""
+
+#: demobrowser/demo/widget/MenuBar.js:137 demobrowser/demo/widget/Menu.js:345
+msgid "Save as..."
+msgstr ""
+
+#: demobrowser/demo/widget/MenuBar.js:138 demobrowser/demo/widget/Menu.js:175
+#: demobrowser/demo/widget/Menu.js:346
+msgid "Print"
+msgstr ""
+
+#: demobrowser/demo/widget/MenuBar.js:139 demobrowser/demo/widget/Menu.js:347
+msgid "Exit"
+msgstr ""
+
+#: demobrowser/demo/widget/MenuBar.js:164 demobrowser/demo/widget/Menu.js:165
+#: demobrowser/demo/widget/Menu.js:372
+#: demobrowser/demo/showcase/Localization.js:142
+msgid "Undo"
+msgstr ""
+
+#: demobrowser/demo/widget/MenuBar.js:165 demobrowser/demo/widget/Menu.js:166
+#: demobrowser/demo/widget/Menu.js:373
+#: demobrowser/demo/showcase/Localization.js:143
+msgid "Redo"
+msgstr ""
+
+#: demobrowser/demo/widget/MenuBar.js:190 demobrowser/demo/widget/Menu.js:398
+msgid "Search..."
+msgstr ""
+
+#: demobrowser/demo/widget/MenuBar.js:191 demobrowser/demo/widget/Menu.js:399
+msgid "Search next..."
+msgstr ""
+
+#: demobrowser/demo/widget/MenuBar.js:192 demobrowser/demo/widget/Menu.js:400
+msgid "Search previous..."
+msgstr ""
+
+#: demobrowser/demo/widget/MenuBar.js:193 demobrowser/demo/widget/Menu.js:401
+msgid "Replace"
+msgstr ""
+
+#: demobrowser/demo/widget/MenuBar.js:194 demobrowser/demo/widget/Menu.js:402
+msgid "Search in files"
+msgstr ""
+
+#: demobrowser/demo/widget/MenuBar.js:195 demobrowser/demo/widget/Menu.js:403
+msgid "Replace in files"
+msgstr ""
+
+#: demobrowser/demo/widget/MenuBar.js:221 demobrowser/demo/widget/Menu.js:429
+msgid "Panes"
+msgstr ""
+
+#: demobrowser/demo/widget/MenuBar.js:222 demobrowser/demo/widget/Menu.js:430
+msgid "Syntax"
+msgstr ""
+
+#: demobrowser/demo/widget/MenuBar.js:223 demobrowser/demo/widget/Menu.js:431
+msgid "Show ruler"
+msgstr ""
+
+#: demobrowser/demo/widget/MenuBar.js:224 demobrowser/demo/widget/Menu.js:432
+msgid "Show line numbers"
+msgstr ""
+
+#: demobrowser/demo/widget/MenuBar.js:225 demobrowser/demo/widget/Menu.js:433
+msgid "ASCII table"
+msgstr ""
+
+#: demobrowser/demo/widget/MenuBar.js:246 demobrowser/demo/widget/Menu.js:454
+msgid "Show tabs"
+msgstr ""
+
+#: demobrowser/demo/widget/MenuBar.js:247 demobrowser/demo/widget/Menu.js:455
+msgid "Show status bar"
+msgstr ""
+
+#: demobrowser/demo/widget/MenuBar.js:249 demobrowser/demo/widget/Menu.js:457
+msgid "Show tree"
+msgstr ""
+
+#: demobrowser/demo/widget/MenuBar.js:250 demobrowser/demo/widget/Menu.js:458
+msgid "Show macros"
+msgstr ""
+
+#: demobrowser/demo/widget/MenuBar.js:251 demobrowser/demo/widget/Menu.js:459
+msgid "Show tags"
+msgstr ""
+
+#: demobrowser/demo/widget/MenuBar.js:252 demobrowser/demo/widget/Menu.js:460
+msgid "Show console"
+msgstr ""
+
+#: demobrowser/demo/widget/MenuBar.js:280 demobrowser/demo/widget/Menu.js:488
+#: demobrowser/demo/table/Table_Filtered_Model.js:48
+msgid "HTML"
+msgstr ""
+
+#: demobrowser/demo/widget/MenuBar.js:281 demobrowser/demo/widget/Menu.js:489
+msgid "XML"
+msgstr ""
+
+#: demobrowser/demo/widget/MenuBar.js:282 demobrowser/demo/widget/Menu.js:490
+msgid "JavaScript"
+msgstr ""
+
+#: demobrowser/demo/widget/MenuBar.js:283 demobrowser/demo/widget/Menu.js:491
+msgid "C Dialect"
+msgstr ""
+
+#: demobrowser/demo/widget/MenuBar.js:284 demobrowser/demo/widget/Menu.js:492
+msgid "Perl"
+msgstr ""
+
+#: demobrowser/demo/widget/MenuBar.js:285 demobrowser/demo/widget/Menu.js:493
+msgid "Python"
+msgstr ""
+
+#: demobrowser/demo/widget/MenuBar.js:309 demobrowser/demo/widget/Menu.js:517
+msgid "C Sharp"
+msgstr ""
+
+#: demobrowser/demo/widget/MenuBar.js:310 demobrowser/demo/widget/Menu.js:518
+msgid "Objective C"
+msgstr ""
+
+#: demobrowser/demo/widget/MenuBar.js:311 demobrowser/demo/widget/Menu.js:519
+msgid "C Plus Plus"
+msgstr ""
+
+#: demobrowser/demo/widget/MenuBar.js:325 demobrowser/demo/widget/Menu.js:533
+msgid "Paragraph"
+msgstr ""
+
+#: demobrowser/demo/widget/MenuBar.js:326 demobrowser/demo/widget/Menu.js:534
+msgid "Tabs to spaces"
+msgstr ""
+
+#: demobrowser/demo/widget/MenuBar.js:327 demobrowser/demo/widget/Menu.js:535
+msgid "Spaces to tabs"
+msgstr ""
+
+#: demobrowser/demo/widget/MenuBar.js:328 demobrowser/demo/widget/Menu.js:536
+msgid "Uppercase"
+msgstr ""
+
+#: demobrowser/demo/widget/MenuBar.js:329 demobrowser/demo/widget/Menu.js:537
+msgid "Lowercase"
+msgstr ""
+
+#: demobrowser/demo/widget/MenuBar.js:330 demobrowser/demo/widget/Menu.js:538
+msgid "Capitals"
+msgstr ""
+
+#: demobrowser/demo/widget/MenuBar.js:331 demobrowser/demo/widget/Menu.js:539
+msgid "OEM to ANSI"
+msgstr ""
+
+#: demobrowser/demo/widget/MenuBar.js:332 demobrowser/demo/widget/Menu.js:540
+msgid "ANSI to OEM"
+msgstr ""
+
+#: demobrowser/demo/widget/MenuBar.js:360 demobrowser/demo/widget/Menu.js:568
+msgid "Left aligned"
+msgstr ""
+
+#: demobrowser/demo/widget/MenuBar.js:361 demobrowser/demo/widget/Menu.js:569
+msgid "Right aligned"
+msgstr ""
+
+#: demobrowser/demo/widget/MenuBar.js:362 demobrowser/demo/widget/Menu.js:570
+msgid "Centered"
+msgstr ""
+
+#: demobrowser/demo/widget/MenuBar.js:363 demobrowser/demo/widget/Menu.js:571
+msgid "Justified"
+msgstr ""
+
+#: demobrowser/demo/widget/MenuBar.js:382 demobrowser/demo/widget/Menu.js:590
+msgid "Topics"
+msgstr ""
+
+#: demobrowser/demo/widget/MenuBar.js:383 demobrowser/demo/widget/Menu.js:591
+msgid "Quickstart"
+msgstr ""
+
+#: demobrowser/demo/widget/MenuBar.js:384 demobrowser/demo/widget/Menu.js:592
+msgid "Online Forum"
+msgstr ""
+
+#: demobrowser/demo/widget/MenuBar.js:385 demobrowser/demo/widget/Menu.js:593
+msgid "Info..."
+msgstr ""
+
+#: demobrowser/demo/widget/Popup.js:52
+msgid "Open Popup #1"
+msgstr ""
+
+#: demobrowser/demo/widget/Popup.js:61 demobrowser/demo/widget/Popup.js:84
+msgid "Hello World #1"
+msgstr ""
+
+#: demobrowser/demo/widget/Popup.js:75
+msgid "Open Popup #2"
+msgstr ""
+
+#: demobrowser/demo/widget/ProgressBar.js:45
+msgid "Completed: 0 (0%)"
+msgstr ""
+
+#: demobrowser/demo/widget/ProgressBar.js:54
+msgid "Completed: %1 (%2%)"
+msgstr ""
+
+#: demobrowser/demo/widget/RadioButton.js:30
+msgid "What is your favorite color?"
+msgstr ""
+
+#: demobrowser/demo/widget/RadioButton.js:47
+msgid "Yellow"
+msgstr ""
+
+#: demobrowser/demo/widget/RadioButton.js:72
+msgid "Your favorite color is: %1"
+msgstr ""
+
+#: demobrowser/demo/widget/RadioButtonGroup.js:31
+msgid "<strong>Vertical:</strong>"
+msgstr ""
+
+#: demobrowser/demo/widget/RadioButtonGroup.js:36
+#: demobrowser/demo/widget/RadioButton.js:45
+msgid "Red"
+msgstr ""
+
+#: demobrowser/demo/widget/RadioButtonGroup.js:36
+#: demobrowser/demo/widget/RadioButton.js:46
+msgid "Green"
+msgstr ""
+
+#: demobrowser/demo/widget/RadioButtonGroup.js:36
+#: demobrowser/demo/widget/RadioButton.js:48
+msgid "Blue"
+msgstr ""
+
+#: demobrowser/demo/widget/RadioButtonGroup.js:40
+msgid "<strong>Horizontal:</strong>"
+msgstr ""
+
+#: demobrowser/demo/widget/RadioButtonGroup.js:49
+msgid "<strong>Grid:</strong>"
+msgstr ""
+
+#: demobrowser/demo/widget/Resizer.js:52
+msgid "Option number %1"
+msgstr ""
+
+#: demobrowser/demo/widget/Resizer.js:66
+msgid ""
+"Resize me\n"
+"I'm resizable"
+msgstr ""
+
+#: demobrowser/demo/widget/ScrollBar.js:37
+msgid "Value: "
+msgstr ""
+
+#: demobrowser/demo/widget/ScrollBar.js:59
+msgid "Value: %1"
+msgstr ""
+
+#: demobrowser/demo/widget/Slider.js:185
+msgid "Min: %1"
+msgstr ""
+
+#: demobrowser/demo/widget/Slider.js:186
+msgid "Max: %1"
+msgstr ""
+
+#: demobrowser/demo/widget/Spinner.js:45
+msgid "Not Editable"
+msgstr ""
+
+#: demobrowser/demo/widget/Spinner.js:55
+#: demobrowser/demo/ui/AutoSizeTextArea.js:110
+msgid "Wrap"
+msgstr ""
+
+#: demobrowser/demo/widget/Spinner.js:66
+msgid "Stepped"
+msgstr ""
+
+#: demobrowser/demo/widget/Spinner.js:76
+msgid "Disabled"
+msgstr ""
+
+#: demobrowser/demo/widget/Spinner.js:94
+msgid "Number format"
+msgstr ""
+
+#: demobrowser/demo/widget/SplitPane.js:62
+msgid "Toggle Splitpane Orientation"
+msgstr ""
+
+#: demobrowser/demo/widget/SplitPane.js:69
+msgid "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+msgstr ""
+
+#: demobrowser/demo/widget/SplitPane.js:95
+msgid "Show first pane"
+msgstr ""
+
+#: demobrowser/demo/widget/SplitPane.js:96
+msgid "Show second pane"
+msgstr ""
+
+#: demobrowser/demo/widget/SplitPane.js:97
+msgid "Show both panes"
+msgstr ""
+
+#: demobrowser/demo/widget/SplitPane.js:128
+msgid "Offset (%1):"
+msgstr ""
+
+#: demobrowser/demo/widget/StackContainer.js:52
+#: demobrowser/demo/widget/StackContainer.js:87 demobrowser/DemoBrowser.js:494
+msgid "Previous"
+msgstr "السابقة"
+
+#: demobrowser/demo/widget/StackContainer.js:53
+#: demobrowser/demo/widget/StackContainer.js:88 demobrowser/DemoBrowser.js:501
+#: demobrowser/demo/widget/Menu.js:251
+msgid "Next"
+msgstr "القادم"
+
+#: demobrowser/demo/widget/TabView.js:63
+msgid "Layout"
+msgstr ""
+
+#: demobrowser/demo/widget/TabView.js:65
+msgid "Layout-Settings"
+msgstr ""
+
+#: demobrowser/demo/widget/TabView.js:71
+#: demobrowser/demo/showcase/Dialog.js:57
+msgid "Notes"
+msgstr ""
+
+#: demobrowser/demo/widget/TabView.js:73
+msgid "Notes..."
+msgstr ""
+
+#: demobrowser/demo/widget/TabView.js:78
+#: demobrowser/demo/showcase/Calculator.js:80
+msgid "Calculator"
+msgstr ""
+
+#: demobrowser/demo/widget/TabView.js:80
+msgid "Calculator..."
+msgstr ""
+
+#: demobrowser/demo/widget/TabView.js:85 demobrowser/demo/widget/ToolBar.js:98
+#: demobrowser/demo/widget/MenuBar.js:117 demobrowser/demo/widget/Menu.js:292
+msgid "Help"
+msgstr ""
+
+#: demobrowser/demo/widget/TabView.js:87
+msgid "Help..."
+msgstr ""
+
+#: demobrowser/demo/widget/TabView.js:102
+#: demobrowser/demo/widget/TabView.js:105
+#: demobrowser/demo/widget/TabView.js:120
+#: demobrowser/demo/widget/TabView.js:123
+#: demobrowser/demo/widget/TabView.js:168
+msgid "Page #%1"
+msgstr ""
+
+#: demobrowser/demo/widget/TabView.js:132
+msgid "Bar Position"
+msgstr ""
+
+#: demobrowser/demo/widget/TabView.js:134
+msgid "top"
+msgstr ""
+
+#: demobrowser/demo/widget/TabView.js:135
+msgid "bottom"
+msgstr ""
+
+#: demobrowser/demo/widget/TabView.js:136
+msgid "left"
+msgstr ""
+
+#: demobrowser/demo/widget/TabView.js:137
+msgid "right"
+msgstr ""
+
+#: demobrowser/demo/widget/TabView.js:156
+msgid "Add new page"
+msgstr ""
+
+#: demobrowser/demo/widget/TabView.js:157
+msgid "Remove first page"
+msgstr ""
+
+#: demobrowser/demo/widget/TabView.js:158
+msgid "Remove last page"
+msgstr ""
+
+#: demobrowser/demo/widget/TextField.js:39
+msgid "max15"
+msgstr ""
+
+#: demobrowser/demo/widget/TextField.js:48
+msgid "Web 2.0"
+msgstr ""
+
+#: demobrowser/demo/widget/TextField.js:54
+msgid "read only"
+msgstr ""
+
+#: demobrowser/demo/widget/TextField.js:59
+msgid ""
+"text\n"
+"area"
+msgstr ""
+
+#: demobrowser/demo/widget/TextField.js:62
+msgid ""
+"text\n"
+"area\n"
+"nowrap"
+msgstr ""
+
+#: demobrowser/demo/widget/TextField.js:66
+msgid ""
+"text\n"
+"area\n"
+"monospace"
+msgstr ""
+
+#: demobrowser/demo/widget/TextField.js:77
+msgid "Toggle live update"
+msgstr ""
+
+#: demobrowser/demo/widget/TextField.js:95
+msgid "Use the following buttons to interact with the <b>first textfield</b> widget."
+msgstr ""
+
+#: demobrowser/demo/widget/TextField.js:101
+msgid "Send content"
+msgstr ""
+
+#: demobrowser/demo/widget/TextField.js:108
+msgid "Send selection"
+msgstr ""
+
+#: demobrowser/demo/widget/TextField.js:116
+msgid "Send start of selection"
+msgstr ""
+
+#: demobrowser/demo/widget/TextField.js:124
+msgid "Send end of selection"
+msgstr ""
+
+#: demobrowser/demo/widget/ToolBar.js:59
+#: demobrowser/demo/widget/ToolBar.js:111
+#: demobrowser/demo/widget/MenuBar.js:133 demobrowser/demo/widget/Menu.js:253
+#: demobrowser/demo/widget/Menu.js:341
+msgid "New"
+msgstr ""
+
+#: demobrowser/demo/widget/ToolBar.js:60
+#: demobrowser/demo/widget/ToolBar.js:113
+#: demobrowser/demo/widget/MenuBar.js:167 demobrowser/demo/widget/Menu.js:169
+#: demobrowser/demo/widget/Menu.js:375 demobrowser/demo/widget/Menu.js:627
+#: demobrowser/demo/table/Table_Events.js:168
+#: demobrowser/demo/showcase/Localization.js:112
+#: demobrowser/demo/showcase/Localization.js:146
+msgid "Copy"
+msgstr ""
+
+#: demobrowser/demo/widget/ToolBar.js:61
+#: demobrowser/demo/widget/ToolBar.js:114
+#: demobrowser/demo/widget/MenuBar.js:166 demobrowser/demo/widget/Menu.js:168
+#: demobrowser/demo/widget/Menu.js:374 demobrowser/demo/widget/Menu.js:626
+#: demobrowser/demo/table/Table_Events.js:167
+#: demobrowser/demo/showcase/Localization.js:110
+#: demobrowser/demo/showcase/Localization.js:145
+msgid "Cut"
+msgstr ""
+
+#: demobrowser/demo/widget/ToolBar.js:62
+#: demobrowser/demo/widget/ToolBar.js:115
+#: demobrowser/demo/widget/MenuBar.js:168 demobrowser/demo/widget/Menu.js:170
+#: demobrowser/demo/widget/Menu.js:376 demobrowser/demo/widget/Menu.js:628
+#: demobrowser/demo/table/Table_Events.js:169
+#: demobrowser/demo/showcase/Localization.js:111
+#: demobrowser/demo/showcase/Localization.js:147
+msgid "Paste"
+msgstr ""
+
+#: demobrowser/demo/widget/ToolBar.js:72
+msgid "Toggle"
+msgstr ""
+
+#: demobrowser/demo/widget/ToolBar.js:78
+#: demobrowser/demo/widget/ToolBar.js:123
+msgid "Left"
+msgstr ""
+
+#: demobrowser/demo/widget/ToolBar.js:79
+#: demobrowser/demo/widget/ToolBar.js:124
+msgid "Center"
+msgstr ""
+
+#: demobrowser/demo/widget/ToolBar.js:80
+#: demobrowser/demo/widget/ToolBar.js:125
+msgid "Right"
+msgstr ""
+
+#: demobrowser/demo/widget/ToolBar.js:93
+msgid "More..."
+msgstr ""
+
+#: demobrowser/demo/widget/ToolBar.js:175
+msgid "22px"
+msgstr ""
+
+#: demobrowser/demo/widget/ToolBar.js:177
+msgid "32px"
+msgstr ""
+
+#: demobrowser/demo/widget/ToolBar.js:178
+msgid "48px"
+msgstr ""
+
+#: demobrowser/demo/widget/ToolBar.js:185
+msgid "Icon Size:"
+msgstr ""
+
+#: demobrowser/demo/widget/ToolBar.js:216
+msgid "Label and Icon"
+msgstr ""
+
+#: demobrowser/demo/widget/ToolBar.js:218
+msgid "Icon only"
+msgstr ""
+
+#: demobrowser/demo/widget/ToolBar.js:219
+msgid "Label only"
+msgstr ""
+
+#: demobrowser/demo/widget/ToolBar.js:226
+msgid "Show:"
+msgstr ""
+
+#: demobrowser/demo/widget/ToolBar.js:245
+msgid "on"
+msgstr ""
+
+#: demobrowser/demo/widget/ToolBar.js:248
+msgid "Overflow handling:"
+msgstr ""
+
+#: demobrowser/demo/widget/Tooltip.js:73
+msgid "Shared ToolTip"
+msgstr ""
+
+#: demobrowser/demo/widget/Tooltip.js:76
+msgid "Shared tool tip of button #"
+msgstr ""
+
+#: demobrowser/demo/widget/Tooltip.js:85
+msgid "Button #1 (Shared ToolTip)"
+msgstr ""
+
+#: demobrowser/demo/widget/Tooltip.js:89
+msgid "Button #2 (Shared ToolTip)"
+msgstr ""
+
+#: demobrowser/demo/widget/Tooltip.js:97
+msgid "Icon only ToolTip"
+msgstr ""
+
+#: demobrowser/demo/widget/Tooltip.js:106
+msgid "ToolTip with icon and label"
+msgstr ""
+
+#: demobrowser/demo/widget/Tooltip.js:108
+msgid "Hello World #3"
+msgstr ""
+
+#: demobrowser/demo/widget/Tooltip.js:118
+msgid "Such a great tooltip with a (show) timeout of 50ms."
+msgstr ""
+
+#: demobrowser/demo/widget/Tooltip.js:123
+msgid "Short timeout ToolTip"
+msgstr ""
+
+#: demobrowser/demo/widget/Tooltip.js:132
+msgid "A long label text with auto-wrapping. This also may contain <b style='color:red'>rich HTML</b> markup and with a (show) timeout of 50ms."
+msgstr ""
+
+#: demobrowser/demo/widget/Tooltip.js:141
+msgid "ToolTip with icon and rich text"
+msgstr ""
+
+#: demobrowser/demo/widget/Tooltip.js:148
+msgid "Button with ToolTipText"
+msgstr ""
+
+#: demobrowser/demo/widget/Tooltip.js:149
+#: demobrowser/demo/widget/Tooltip.js:165
+msgid "Tooltip text"
+msgstr ""
+
+#: demobrowser/demo/widget/Tooltip.js:156
+msgid "Button with ToolTipIcon"
+msgstr ""
+
+#: demobrowser/demo/widget/Tooltip.js:164
+msgid "Button with ToolTipText and ToolTipIcon"
+msgstr ""
+
+#: demobrowser/demo/widget/Tree.js:60 demobrowser/demo/test/Opacity.js:153
+#: demobrowser/demo/ui/FormInvalids.js:114
+msgid "root"
+msgstr ""
+
+#: demobrowser/demo/widget/Tree.js:89 demobrowser/demo/widget/SplitPane.js:202
+msgid "Junk #%1"
+msgstr ""
+
+#: demobrowser/demo/widget/Tree.js:127
+msgid "%1 items"
+msgstr ""
+
+#: demobrowser/demo/widget/Tree.js:167
+msgid "Enable multi selection"
+msgstr ""
+
+#: demobrowser/demo/widget/Tree.js:206
+msgid "Show root open button"
+msgstr ""
+
+#: demobrowser/demo/widget/Tree.js:217
+msgid "Show Items"
+msgstr ""
+
+#: demobrowser/demo/widget/Tree.js:226
+msgid "Show Open Items"
+msgstr ""
+
+#: demobrowser/demo/widget/Tree.js:235
+msgid "Show Selected Items"
+msgstr ""
+
+#: demobrowser/demo/widget/Tree_Columns.js:78
+msgid "Chat"
+msgstr ""
+
+#: demobrowser/demo/widget/Tree_Columns.js:79
+msgid "Pustefix"
+msgstr ""
+
+#: demobrowser/demo/widget/Tree_Columns.js:80
+msgid "TINC"
+msgstr ""
+
+#: demobrowser/demo/widget/Tree_Columns.js:81
+msgid "Announce"
+msgstr ""
+
+#: demobrowser/demo/widget/Tree_Columns.js:82
+msgid "Devel"
+msgstr ""
+
+#: demobrowser/demo/widget/Tree_Columns.js:87
+msgid "Relations"
+msgstr ""
+
+#: demobrowser/demo/widget/Tree_Columns.js:89
+msgid "Questions"
+msgstr ""
+
+#: demobrowser/demo/widget/Tree_Columns.js:90
+msgid "Internal"
+msgstr ""
+
+#: demobrowser/demo/widget/Tree_Columns.js:91
+msgid "Products"
+msgstr ""
+
+#: demobrowser/demo/widget/Tree_Columns.js:92
+msgid "Press"
+msgstr ""
+
+#: demobrowser/demo/widget/Tree_Columns.js:93
+msgid "Development"
+msgstr ""
+
+#: demobrowser/demo/widget/Tree_Columns.js:94
+msgid "Competition"
+msgstr ""
+
+#: demobrowser/demo/widget/Tree_Columns.js:98
+msgid "Bugs"
+msgstr ""
+
+#: demobrowser/demo/widget/Tree_Columns.js:99
+msgid "Family"
+msgstr ""
+
+#: demobrowser/demo/widget/Tree_Columns.js:100
+msgid "Projects"
+msgstr ""
+
+#: demobrowser/demo/widget/Tree_Columns.js:101
+msgid "Holiday"
+msgstr ""
+
+#: demobrowser/demo/widget/Tree_Columns.js:150
+msgid "%1 kb"
+msgstr ""
+
+#: demobrowser/demo/widget/Tree_Columns.js:154
+msgid "May %1 2005"
+msgstr ""
+
+#: demobrowser/demo/widget/Tree_Columns.js:158
+msgid "-rw-r--r--"
+msgstr ""
+
+#: demobrowser/demo/widget/Window.js:55
+#: demobrowser/demo/test/UIDeclaration.js:133
+msgid "First Window"
+msgstr ""
+
+#: demobrowser/demo/widget/Window.js:58
+#: demobrowser/demo/test/UIDeclaration.js:132
+msgid "Demo loaded"
+msgstr ""
+
+#: demobrowser/demo/widget/Window.js:73
+#: demobrowser/demo/test/UIDeclaration.js:155
+msgid "Welcome to your first own Window.<br/>Have fun!"
+msgstr ""
+
+#: demobrowser/demo/widget/Window.js:81
+#: demobrowser/demo/test/UIDeclaration.js:166
+msgid "Page 1"
+msgstr ""
+
+#: demobrowser/demo/widget/Window.js:84
+#: demobrowser/demo/test/UIDeclaration.js:179
+msgid "Page 2"
+msgstr ""
+
+#: demobrowser/demo/widget/Window.js:87
+#: demobrowser/demo/test/UIDeclaration.js:184
+msgid "Page 3"
+msgstr ""
+
+#: demobrowser/demo/widget/Window.js:94
+msgid "Second Window"
+msgstr ""
+
+#: demobrowser/demo/widget/Window.js:96
+msgid "Application is ready"
+msgstr ""
+
+#: demobrowser/demo/widget/Window.js:100
+msgid "The second window"
+msgstr ""
+
+#: demobrowser/demo/widget/Window.js:110
+msgid "Basics"
+msgstr ""
+
+#: demobrowser/demo/widget/Window.js:116
+msgid "Show Close"
+msgstr ""
+
+#: demobrowser/demo/widget/Window.js:123
+msgid "Show Maximize"
+msgstr ""
+
+#: demobrowser/demo/widget/Window.js:130
+msgid "Show Minimize"
+msgstr ""
+
+#: demobrowser/demo/widget/Window.js:139
+msgid "Allow Close"
+msgstr ""
+
+#: demobrowser/demo/widget/Window.js:146
+msgid "Allow Maximize"
+msgstr ""
+
+#: demobrowser/demo/widget/Window.js:153
+msgid "Allow Minimize"
+msgstr ""
+
+#: demobrowser/demo/widget/Window.js:162
+msgid "Show Statusbar"
+msgstr ""
+
+#: demobrowser/demo/widget/Window.js:171
+msgid "Resizable"
+msgstr ""
+
+#: demobrowser/demo/widget/Window.js:175
+msgid "Use resize frame"
+msgstr ""
+
+#: demobrowser/demo/widget/Window.js:186
+msgid "Resizable %1"
+msgstr ""
+
+#: demobrowser/demo/widget/Window.js:193
+msgid "Moveable"
+msgstr ""
+
+#: demobrowser/demo/widget/Window.js:197
+msgid "Movable"
+msgstr ""
+
+#: demobrowser/demo/widget/Window.js:204
+msgid "Use move frame"
+msgstr ""
+
+#: demobrowser/demo/widget/Window.js:214
+msgid "Third Window"
+msgstr ""
+
+#: demobrowser/demo/widget/Window.js:224
+msgid "Open Modal Dialog 1"
+msgstr ""
+
+#: demobrowser/demo/widget/Window.js:232
+msgid "First Modal Dialog"
+msgstr ""
+
+#: demobrowser/demo/widget/Window.js:240
+msgid "Open Modal Dialog 2"
+msgstr ""
+
+#: demobrowser/demo/widget/Window.js:244
+msgid "Modal"
+msgstr ""
+
+#: demobrowser/demo/widget/Window.js:258
+msgid "Second Modal Dialog"
+msgstr ""
+
+#: demobrowser/demo/widget/Window.js:265
+msgid "Do you want to fly to Berlin?"
+msgstr ""
+
+#: demobrowser/demo/widget/Window.js:272
+msgid "Yes"
+msgstr ""
+
+#: demobrowser/demo/widget/Window.js:278
+msgid "No"
+msgstr ""
+
+#: demobrowser/demo/widget/Window.js:280
+msgid "Sorry, please click 'Yes'!"
+msgstr ""
+
+#~ msgid "<b>List bound to data in a json file</b><br/>Loading the json file <a href='"
+#~ msgstr ""
+
+#~ msgid "<b>Tree bound to data in a json file</b><br/>Loading the json file <a href='"
+#~ msgstr ""
+
+#~ msgid "Calculate"
+#~ msgstr ""
+
+#~ msgid "Calculate Fibonacci Numbers in a web worker. Enter a number and click the Calculate button."
+#~ msgstr ""
+
+#~ msgid "Clear log"
+#~ msgstr "مسح السجل"
