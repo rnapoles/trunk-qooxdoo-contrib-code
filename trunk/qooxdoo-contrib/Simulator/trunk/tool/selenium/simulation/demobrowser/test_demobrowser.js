@@ -38,7 +38,6 @@ var getSampleCategory = selWin + '.' + qxAppInst + '.tree.getSelection()[0].getP
 var getSampleLabel = selWin + '.' + qxAppInst + '.tree.getSelection()[0].getLabel()'; // get sample name
 var getNextSampleCategory = selWin + '.' + qxAppInst + '.tree.getNextNodeOf(' + selWin + '.' + qxAppInst + '.tree.getSelection()[0]).getParent().getLabel()';
 var getNextSampleLabel = selWin + '.' + qxAppInst + '.tree.getNextNodeOf(' + selWin + '.' + qxAppInst + '.tree.getSelection()[0]).getLabel()';
-var qxLog = selWin + '.' + qxAppInst + '.f2.getContentElement().getDomElement().innerHTML'; // content of log iframe
 var shutdownSample = selWin + '.' + qxAppInst + '._infosplit.getChildren()[0].getWindow().qx.core.ObjectRegistry.shutdown()';
 mySim.currentSample = "current";
 mySim.lastSample = "last";
@@ -234,9 +233,10 @@ simulation.Simulation.prototype.sampleRunner = function(script)
     Packages.java.lang.Thread.sleep(2000);
   }
 
+  this.openLog();
   print(category + " - " + currentSample + ": Processing log");
 
-  var sampleLog = this.getEval(qxLog, "Getting log for sample " + category + " - " + currentSample);  
+  var sampleLog = this.getEval(this.qxLog, "Getting log for sample " + category + " - " + currentSample);
 
   //this.log('Last loaded demo: ' + category + ' - ' + currentSample, "debug");
   
@@ -460,6 +460,28 @@ simulation.Simulation.prototype.runTest = function()
 
 };
 
+
+simulation.Simulation.prototype.openLog = function()
+{
+  if (!this.__logOpened) {
+    this.qxClick("qxhv=*/qx.ui.toolbar.ToolBar/*/[@label=Log File]");
+    Packages.java.lang.Thread.sleep(2000);
+    var logEmbed = "qxhv=[@classname=demobrowser.DemoBrowser]/qx.ui.splitpane.Pane/qx.ui.splitpane.Pane/qx.ui.container.Stack/[@classname=log.LogView]/qx.ui.embed.Html";
+    var isNewLog = false;
+    try {
+      isNewLog = this.__sel.isElementPresent(logEmbed);
+    }
+    catch(ex) {}
+    if (isNewLog) {
+      this.qxLog = "selenium.page().findElement(\"" + logEmbed + "\").innerHTML";
+    }
+    else {
+      this.qxLog = selWin + '.' + qxAppInst + '.f2.getContentElement().getDomElement().innerHTML'; // content of log iframe
+    }
+    
+    this.__logOpened = true;
+  }
+};
 
 // - Main --------------------------------------------------------------------
 
