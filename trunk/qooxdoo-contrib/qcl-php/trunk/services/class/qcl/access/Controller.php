@@ -365,13 +365,18 @@ class qcl_access_Controller
   }
 
   /**
-   * Gets the session id from the server data.
-   * @return string|null The session id, if it can be retrieved by the server data. Null if
-   * no valid session id can be determined from the server data
+   * Gets the session id from the request, either from the server data part of the
+   * json-rpc request (deprecated), or as stored in a cookie.
+   * @return string|null The session id, if it can be retrieved, otherwise null.
+   * @todo rename to getSessionIdFromRequest
    */
   public function getSessionIdFromServerData()
   {
-    return qcl_server_Request::getInstance()->getServerData("sessionId");
+    return either(
+      qcl_server_Request::getInstance()->getServerData("sessionId"),
+      $_COOKIE['sessionId'],
+      null
+    );
   }
 
   //-------------------------------------------------------------
@@ -588,7 +593,7 @@ class qcl_access_Controller
     $sessionId = $this->getSessionId();
 
     $this->log("Logging out: user '$username' user #$userId, session #$sessionId.",QCL_LOG_ACCESS );
-
+    
     /*
      * delete user data if anonymous guest
      */
@@ -596,6 +601,8 @@ class qcl_access_Controller
     {
       $activeUser->delete();
     }
+    
+        
 
     /*
      * unset active user
