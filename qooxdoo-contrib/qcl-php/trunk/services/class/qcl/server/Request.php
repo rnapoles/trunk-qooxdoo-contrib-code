@@ -99,9 +99,11 @@ class qcl_server_Request
   }
 
   /**
-   *
+   * Get discreet data from the client to the server that is not part of the rpc
+   * request data. 
    * @param $key
-   * @return unknown_type
+   * @return mixed
+   * @todo Move to cookie transport
    */
   public function getServerData( $key = null )
   {

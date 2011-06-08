@@ -339,9 +339,20 @@ class qcl_server_JsonRpcServer
    * By default, wrap it in a result map and encode it in json.
    * @param mixded $output
    * @return string
+   * @todo rework this
    */
   public function formatOutput( $data )
   {
+    /*
+     * if requested, skip all jsonrpc-wrapping and output
+     * raw data
+     * @todo document
+     */
+    if( $_REQUEST['qcl_output_format'] == "raw" )
+    {
+      return $this->json->encode( $data );
+    }
+    
     /*
      * response object
      */
