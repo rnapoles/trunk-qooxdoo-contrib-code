@@ -183,7 +183,7 @@ class qcl_access_SessionController
     return $sessionId;
   }
 
- /**
+ 	/**
    * Authenticates with data in the server data, either by a given session id or
    * by a username - password combination.
    * @return string|null The session id, if it can be retrieved by the server data. Null if
@@ -191,8 +191,6 @@ class qcl_access_SessionController
    */
   public function getSessionIdFromServerData()
   {
-
-
     /*
      * if we have a session id in the server data, return it
      */
@@ -236,24 +234,26 @@ class qcl_access_SessionController
     {
       /*
        * create a child session if we already have one
-       */
+       * NOTE: This has been disabled, since behavior is buggy
+       * @todo Create child session only when explicitly requested
+       *
       if ( $this->sessionExists( $this->getSessionId() ) )
       {
         $this->createChildSession( $this->getSessionId() );
         $this->log(sprintf(
           "Creating child session id from PHP session: '%s'", $this->getSessionId()
         ), QCL_LOG_ACCESS );
-      }
+      }*/
       
       /*
        * otherwise, simply use the PHP session that is already established
        */
-      else 
-      {
+      //else 
+      //{
         $this->log(sprintf(
           "Getting session id from PHP session: '%s'", $this->getSessionId()
         ), QCL_LOG_ACCESS );
-      }
+      //}
     }
 
     /*
@@ -278,10 +278,14 @@ class qcl_access_SessionController
 
     /*
      * unregister the current session
-     * and cleanup session data
      */
     $this->unregisterSession();
     //$this->cleanup();
+    
+		/*
+     * mark user as offline if no more sessions exist
+     */
+    $this->checkOnlineStatus( $this->getActiveUser()->id() );
 
     /*
      * logout
@@ -404,6 +408,11 @@ class qcl_access_SessionController
     try
     {
       $this->getUserModel()->load( $activeUserId );
+      
+      /*
+       * mark user as online
+       */
+      $this->getUserModel()->set("online",true);
     }
     catch ( qcl_data_model_RecordNotFoundException $e )
     {
@@ -412,6 +421,27 @@ class qcl_access_SessionController
     return $activeUserId;
   }
 
+  /**
+   * Checks if any session exists that are connected to the user id. 
+   * If not, set the user's online status to false
+   * @param integer $userId
+   * @return boolean
+   * @throws qcl_data_model_RecordNotFoundException if invalid user id is given
+   */
+  public function checkOnlineStatus( $userId )
+  {
+    $userModel = $this->getUserModel()->load( $userId );
+    try
+    {
+      $this->getSessionModel()->findLinked($userModel);
+      return true;
+    }
+    catch(qcl_data_model_RecordNotFoundException $e)
+    {
+       $userModel->set("online", false)->save();
+       return false;
+    }
+  }
 
   /**
    * Returns a new session id that depends on a parent session and

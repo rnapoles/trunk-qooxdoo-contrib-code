@@ -79,6 +79,12 @@ class qcl_access_model_User
       'sqltype'   => "int(1) NOT NULL DEFAULT 0",
       'nullable'  => false,
       'init'      => false
+    ),
+    'online'		=> array(
+      'check'     => "boolean",
+      'sqltype'   => "int(1) NOT NULL DEFAULT 0",
+      'nullable'  => false,
+      'init'      => false
     )
   );
 
@@ -292,6 +298,17 @@ class qcl_access_model_User
       $this->warn( $e->getMessage() );
     }
     return $id;
+  }
+
+  /**
+   * Returns the value of the "online" property. This doesn't guarantee that the 
+   * value actually reflects the user's online status - it is the role of the access 
+   * controller to set/unset it. 
+   * @return boolean
+   */
+  function isOnline()
+  {
+    return $this->get("online");
   }
 
   /**
@@ -557,8 +574,9 @@ class qcl_access_model_User
   }
   
   /**
-   * Overridden.
+   * Overridden. Checks if user is anonymous and inactive, and deletes user if so.
    * @see qcl_data_model_AbstractActiveRecord::checkExpiration()
+   * @todo Unhardcode expiration time
    */
   protected function checkExpiration()
   {

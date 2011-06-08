@@ -157,7 +157,14 @@ class qcl_access_Service
      * create (new) valid user session
      */
     $accessController->createUserSessionByUserId( $userId );
-
+    
+    /*
+     * Save the IP of the user in the session to allow to check for 
+     * session hijacking within PHP code that does not have access
+     * to the QCL session management
+     */
+    $_SESSION['qcl_remote_ip'] = $_SERVER["REMOTE_ADDR"];
+    
     /*
      * response data
      */
@@ -485,7 +492,7 @@ class qcl_access_Service
   /**
    * Service method to terminate a session (remove session and user data).
    * Useful for example when browser window is closed.
-   * @return qcl_data_Result
+   * @return null
    */
   public function method_terminate()
   {
@@ -493,6 +500,12 @@ class qcl_access_Service
     return null;
   }
 
+  /**
+   * Creates a SSHA hash from a password
+   * 
+   * @param string $password
+   * @return string hash	
+   */
   public function makeSshaPassword($password)
   {
     mt_srand((double)microtime()*1000000);
@@ -503,6 +516,12 @@ class qcl_access_Service
     return $hash;
   }
 
+  /**
+   * Validates a SSHA hash
+   * @param string $password
+   * @param string $hash
+   * @return boolean
+   */
   public function validateSshaPassword($password, $hash)
   {
     $hash = base64_decode(substr($hash, 6));
@@ -512,6 +531,7 @@ class qcl_access_Service
     return (strcmp($original_hash, $new_hash) == 0);
   }
 
+  
   function ssha_encode($text)
   {
     mt_srand((double)microtime()*1000000);
