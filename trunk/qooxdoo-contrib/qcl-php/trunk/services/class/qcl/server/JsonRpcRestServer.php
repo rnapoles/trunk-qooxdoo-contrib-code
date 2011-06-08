@@ -56,11 +56,13 @@ class qcl_server_JsonRpcRestServer
     $input = new stdClass();
     $input->service = $_REQUEST['service'];
     $input->method  = $_REQUEST['method'];
-    $input->params  = json_decode(
-      '["'.
-         implode('","', explode(",", $_REQUEST['params'] ) ) .
-      '"]'
-    );
+    $params = $_REQUEST['params'];
+    if ( $params[0] != "[" )
+    {
+      // backwards compatibility: previously it wasn't necessary to pass a true json array
+      $params = '["'. implode('","', explode(",", $_REQUEST['params'] ) ) . '"]';
+    }
+    $input->params  = json_decode($params);
     $server_data = array_diff_key(
       $_REQUEST, array( "service"=>"","method"=>"","params"=>"" )
     );
