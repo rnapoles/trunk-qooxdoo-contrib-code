@@ -66,7 +66,7 @@ class qcl_data_controller_Controller
 
   /**
    * Shorthand getter for access controller
-   * @return qcl_access_Controller
+   * @return qcl_access_SessionController
    */
   public function getAccessController()
   {
