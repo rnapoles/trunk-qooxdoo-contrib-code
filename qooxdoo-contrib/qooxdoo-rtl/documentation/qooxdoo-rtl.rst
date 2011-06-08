@@ -1,4 +1,5 @@
-====== RTL languages for qooxdoo ======
+====== qooxdoo-rtl ======
+===== RTL language support for qooxdoo =====
 
 <note>
 This information refers to releases from 1.4.x. It will be developed following the trunk. The first locked tag will be qooxdoo version 1.5
@@ -18,24 +19,27 @@ As RTL languages were not supported by qooxdoo, this contribution was developed.
 
 To support an RTL language the following changes are necessary:
 
-  * **Extracting of cldr data**: The extraction of cldr data of the defined locales is done at generation time.
+  * **Extracting cldr data**: The extraction of cldr data of the defined locales is done at generation time.
   * **Detecting RTL language**: The detection of a chosen language to be an RTL language is done at runtime by integrating it into the qx.locale.Manager class and test it by:
-                        <code javascript>
-                          (qx.locale.Manager.getInstance().getDirection() == "right-to-left")
-                        </code>
-  The other way is that the UI after testing if it is an RTL language the state of ´´rtl´´ is added or removed:
-                        <code javascript>
-                          (qx.locale.Manager.getInstance().getDirection() == "right-to-left") ? this.addState("rtl") : this.removeState("rtl");
-                        </code>
-  The state is used in the theme handling routines.
+<code javascript>
+(qx.locale.Manager.getInstance().getDirection() == "right-to-left")
+</code>
+
+The other way is that the UI after testing if it is an RTL language the state of ´´rtl´´ is added or removed:
+<code javascript>
+(qx.locale.Manager.getInstance().getDirection() == "right-to-left") ? this.addState("rtl") : this.removeState("rtl");
+</code>
+
+The state is used in the theme handling routines.
+
   * **Text direction**: Text direction from ´´left-to-right´´ to ´´right-to-left´´. This is done by changing the dir attribute of the content element:
-                        <code javascript>
-                          this.getContentElement().setStyle("direction", rtl ? "rtl" : "ltr");
-                        </code>
+<code javascript>
+this.getContentElement().setStyle("direction", rtl ? "rtl" : "ltr");
+</code>
   * **Text alignment**: Text alignment from ´´left´´ to ´´right´´. This is done by setting the attribute of a widget:
-                        <code javascript>
-                          widget.setTextAlign("<left | right>");
-                        </code>
+<code javascript>
+widget.setTextAlign("<left | right>");
+</code>
   * **Mirrored layout**: Reversing layout is necessary as all text is read from right to left. Reversing is done by changing the layout classes to automatically detect for rtl languages. The reverse function is not affected, i.e. you can reverse an rtl language UI too. Reverse is not the same mirror a UI.
   * **Theme handling**: By using the state ´´rtl´´ the the theme handling routines can detect an rtl language and change necessary decorations and attributes for a mirrored UI.
   * **Icons**: Appropriate icons are mirrored horizontally. Pure images are kept as they are.
@@ -50,21 +54,21 @@ In the qooxdoo-rtl we have made all UI classes including the layout classes trig
 
 There is a base function of the qx.ui.core.Widget class needed to be called by overriding functions:
 
-  <code javascript>
-    _onChangeLocale : qx.core.Environment.select("qx.dynlocale",
-    {
-      "true" : function(e)
-      {
-        this.base(arguments);
+<code javascript>
+_onChangeLocale : qx.core.Environment.select("qx.dynlocale",
+{
+  "true" : function(e)
+  {
+    this.base(arguments);
 
-        ...custom code...
-      },
+    ...custom code...
+  },
 
-      "false" : null
-    }),
-  </code>
+  "false" : null
+}),
+</code>
 
-else the state ´´rtl´´ will not be set or removed.
+else the state ´´rtl´´ will not be added or removed.
 
 ===== The Demo Browser =====
 
