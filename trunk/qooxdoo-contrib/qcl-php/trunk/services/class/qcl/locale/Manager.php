@@ -70,7 +70,10 @@ class qcl_locale_Manager extends qcl_core_Object
     {
 
       $path = bindtextdomain( $appId, $i18nAppPath );
-      bind_textdomain_codeset( $appId, 'UTF-8');
+      if( function_exists("bind_textdomain_codeset") ) // PHP on Mac Bug
+      {
+        bind_textdomain_codeset( $appId, 'UTF-8');
+      }
       textdomain($appId);
       if ( $this->hasLog() ) $this->log( "textdomain path for '$appId': '$path'", QCL_LOG_LOCALE );
 
@@ -78,7 +81,10 @@ class qcl_locale_Manager extends qcl_core_Object
        * bind qcl textdomain
        */
       $path = bindtextdomain( "qcl", dirname(__FILE__) );
-      bind_textdomain_codeset( "qcl", 'UTF-8');
+      if( function_exists("bind_textdomain_codeset") ) // PHP on Mac Bug
+      {
+        bind_textdomain_codeset( "qcl", 'UTF-8');
+      }
       if ( $this->hasLog() ) $this->log( "qcl textdomain path: '$path'", QCL_LOG_LOCALE );
 
       /*
@@ -96,7 +102,7 @@ class qcl_locale_Manager extends qcl_core_Object
 	}
 
 	/**
-	 * function to return singleton instance
+	 * Return singleton instance of this class
 	 * @return qcl_locale_Manager
 	 */
   public static function getInstance()
