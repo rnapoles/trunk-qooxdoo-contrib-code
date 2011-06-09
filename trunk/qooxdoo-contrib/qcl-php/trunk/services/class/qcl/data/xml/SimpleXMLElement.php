@@ -230,7 +230,7 @@ class qcl_data_xml_SimpleXMLElement
       }
       else
       {
-        $xml = parent::asXML();
+        return parent::asXML();
       }
     }
   }
