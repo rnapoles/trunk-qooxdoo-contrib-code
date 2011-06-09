@@ -174,7 +174,7 @@ class qcl_data_db_Query
    * Valid operators for where queries
    */
   public $operators= array(
-    "like","is","is not","=",">","<",">=","<=","!=","in","not in", "not like"
+    "like","is","is not","=",">","<",">=","<=","!=","in","not in", "not like", "between"
   );
 
   //-------------------------------------------------------------
@@ -879,6 +879,7 @@ class qcl_data_db_Query
         {
           $operator = $value[0];
           $this->checkOperator( $operator );
+          $oldValue = $value;
           $value    = $value[1];
         }
         else
@@ -888,19 +889,33 @@ class qcl_data_db_Query
 
         switch(strtoupper($operator)) {
             case 'IN':
-                if(is_array($value)) {
-                    $data = array();
-                    foreach($value as $tmp) {
-                        if(is_numeric($tmp)) {
-                            $data[] = $tmp;
-                        } else {
-                            $data[] = '"' . $tmp . '"';
-                        }
-                    }
-                    $value = implode(', ', $data);
+                if(! is_array($value)) 
+                {
+                  // Passing a string is no longer allowed (sql injection hazard)
+                  throw new InvalidArgumentException(
+                  	"The IN operator can only be used with arrays"
+                  );
                 }
-                $sql[] = $column . ' IN(' . $value . ')';
+                $data = array();
+                foreach($value as $tmp) 
+                {
+                  if(is_numeric($tmp)) {
+                      $data[] = $tmp;
+                  } else {
+                      $data[] = '"' . $tmp . '"';
+                  }
+                }
+                $value = implode(', ', $data);
+                $sql[] = $column . ' IN(' . $value . ')'; 
                 break;
+                
+            case "BETWEEN":
+              $param1 = ":$property" . "_1";
+              $param2 = ":$property" . "_2";
+              $this->parameters[$param1] = $oldValue[1];
+              $this->parameters[$param2] = $oldValue[2];
+              $sql[] = $column . " BETWEEN $param1 AND $param2";
+              break;
 
             default:
                 $this->parameters[$param] = $value;
