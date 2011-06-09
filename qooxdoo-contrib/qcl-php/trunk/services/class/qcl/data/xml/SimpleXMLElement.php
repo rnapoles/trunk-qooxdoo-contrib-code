@@ -206,7 +206,7 @@ class qcl_data_xml_SimpleXMLElement
    * parameter is specified, it returns true if the file was written
    * successfully and false otherwise.
    */
-  public function asXML ($filename = null, $pretty )
+  public function asXML ($filename = null, $pretty=false )
   {
     if ( $pretty )
     {
