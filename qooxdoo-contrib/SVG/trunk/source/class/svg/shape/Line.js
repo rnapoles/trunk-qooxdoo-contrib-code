@@ -26,9 +26,9 @@ qx.Class.define("svg.shape.Line",
 {
   extend : svg.core.Element,
   
-  include : [ svg.paint.MFillProperties,
-              svg.paint.MStrokeProperties,
+  include : [ svg.paint.MStrokeProperties,
               svg.coords.MTransform,
+              svg.core.dom.MLocatable,
               svg.paint.MMarkerProperties ],
 
   construct : function() {

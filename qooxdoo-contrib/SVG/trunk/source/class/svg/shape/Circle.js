@@ -27,7 +27,8 @@ qx.Class.define("svg.shape.Circle",
   
   include : [ svg.paint.MFillProperties,
               svg.paint.MStrokeProperties,
-              svg.coords.MTransform ],
+              svg.coords.MTransform,
+              svg.core.dom.MLocatable ],
 
   construct : function() {
     this.base(arguments, "circle");

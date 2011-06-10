@@ -28,6 +28,7 @@ qx.Class.define("svg.shape.Polyline",
   include : [ svg.paint.MFillProperties,
               svg.paint.MStrokeProperties,
               svg.coords.MTransform,
+              svg.core.dom.MLocatable,
               svg.paint.MMarkerProperties ],
 
   construct : function() {
