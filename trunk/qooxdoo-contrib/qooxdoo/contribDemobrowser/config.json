@@ -52,7 +52,11 @@
       "library" :
       [
         {
-          "manifest" : "../trunk/application/demobrowser/Manifest.json"
+          "manifest" : "${QOOXDOO_PATH}/application/demobrowser/Manifest.json"
+        },
+        
+        {
+          "manifest"   : "${QOOXDOO_PATH}/component/library/log/Manifest.json"
         }
       ]
     },
