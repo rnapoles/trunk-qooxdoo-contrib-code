@@ -35,9 +35,35 @@
 qx.Class.define("svg.struct.Group",
 {
   extend : svg.core.Element,
-  include : [ svg.core.dom.MLocatable ],
+  include : [ svg.core.dom.MLocatable,
+              svg.paint.MFillProperties,
+              svg.paint.MStrokeProperties,
+              svg.coords.MTransform ],
 
   construct : function() {
     this.base(arguments, "g");
+  },
+  
+  properties :
+  {
+    display : {
+      nullable : true,
+      init     : null,
+      check    : ["inline", "none", "inherit"],
+      apply    : "__applyDisplay",
+      event    : "changeDisplay"
+    }
+  },
+  
+  members :
+  {
+    //applies display
+    __applyDisplay : function(value, old) {
+      if (null == value) {
+        this.removeAttribute("display");
+      } else {
+        this.setAttribute("display", value);
+      }
+    }
   }
 });
