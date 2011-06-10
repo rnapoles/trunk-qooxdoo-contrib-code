@@ -18,10 +18,10 @@
  * 
  * More info:
  * <ul>
- *   <li>http://www.w3.org/TR/SVG/text.html#TextElement</li>
+ *   <li>http://www.w3.org/TR/SVG/text.html#TSpanElement</li>
  * </ul>
  */
-qx.Class.define("svg.text.Text", {
+qx.Class.define("svg.text.Tspan", {
   
   extend: svg.core.Element,
   
@@ -33,7 +33,7 @@ qx.Class.define("svg.text.Text", {
               svg.text.MTextDecoration ],
   
   construct : function() {
-    this.base(arguments, "text");
+    this.base(arguments, "tspan");
   },
   
   properties :
