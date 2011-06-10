@@ -133,7 +133,7 @@ qx.Class.define("svg.coords.transform.Transformation",
      * @return {SVGMatrix}
      */
     toMatrix : function() {
-      if (!this.___cachedMatrix) {
+      if (!this.__cachedMatrix) {
         this.__asMatrix = this._composeMatrix();
         this.__cachedMatrix = true;
       }
@@ -148,7 +148,7 @@ qx.Class.define("svg.coords.transform.Transformation",
      */
     toMatrixString : function() {
       
-      if (!this.___cachedMatrixString) {
+      if (!this.__cachedMatrixString) {
         var mx = this.toMatrix();
         this.__asMatrixString = "matrix("+ mx.a+","+mx.b+","+mx.c+","+mx.d+","+mx.e+","+mx.f+")";
         this.__cachedMatrixString = true;
