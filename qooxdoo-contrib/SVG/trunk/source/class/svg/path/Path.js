@@ -26,7 +26,9 @@ qx.Class.define("svg.path.Path",
   include : [ svg.paint.MFillProperties,
               svg.paint.MStrokeProperties,
               svg.paint.MMarkerProperties,
-              svg.path.dom.MPathElement],
+              svg.coords.MTransform,
+              svg.path.dom.MPathElement
+            ],
 
   construct : function() {
     this.base(arguments, "path");
@@ -82,14 +84,14 @@ qx.Class.define("svg.path.Path",
       }
       else if (value instanceof svg.path.PathData) {
         this.setAttribute("d", value.toString());
-        value.addListener("change", this.__changeListener, this);
+        value.addListener("change", this.__pdataChangeListener, this);
       }
       else {
         this.setAttribute("d", value);
       }
 
       if (old instanceof svg.path.PathData) {
-        old.removeListener("change", this.__changeListener, this);
+        old.removeListener("change", this.__pdataChangeListener, this);
       }
     },
 
@@ -108,7 +110,7 @@ qx.Class.define("svg.path.Path",
      * @param ev {qx.event.Data}
      *   data event fired by PathData
      */
-    __changeListener: function(ev) {
+    __pdataChangeListener: function(ev) {
       this.__applyPathData(ev.getData(), ev.getOldData());
     }
 
