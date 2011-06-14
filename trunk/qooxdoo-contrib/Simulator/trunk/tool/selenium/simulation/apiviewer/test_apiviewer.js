@@ -34,6 +34,10 @@ simulation.Simulation.prototype.runTest = function()
   var setLocale = "qx.locale.Manager.getInstance().setLocale('en')";  
   this.runScript(setLocale, "Setting application locale to EN");
   
+  if (this.getConfigSetting("autPath").indexOf("~press") > 0) {
+    this.checkUrlParameter();
+  }
+  
   // Add a function that finds span tags with the given content
   var getSpanByContent = function(content) {
     var found = false;
@@ -89,7 +93,6 @@ simulation.Simulation.prototype.runTest = function()
       this.log("Link opened successfully", "info");
     }
   }
-  
 };
 
 simulation.Simulation.prototype.checkSearch = function()
@@ -158,6 +161,19 @@ simulation.Simulation.prototype.checkView = function(newMethodName, buttonLabel)
     this.log(buttonLabel + " checked: OK", "info");
   }
   this.qxClick('qxh=app:viewer/qx.ui.toolbar.ToolBar/child[2]/[@label="' + buttonLabel + '"]', "", "Clicking " + buttonLabel);
+};
+
+simulation.Simulation.prototype.checkUrlParameter = function()
+{
+  try {
+    var bla = String(this.__sel.getText('//tr[@class="marked"]/td[@class="text"]/div[@_itemname="press"]'));
+    this.log("URI parameter handling checked: OK", "info");
+    print("WELP " + bla);
+  }
+  catch(ex) {
+    this.log("Expected element not found after opening with URL parameter " + urlParam);
+  }
+  
 };
 
 // - Main --------------------------------------------------------------------
