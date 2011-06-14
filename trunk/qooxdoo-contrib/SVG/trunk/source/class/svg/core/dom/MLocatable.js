@@ -138,7 +138,7 @@ qx.Mixin.define("svg.core.dom.MLocatable", {
       if ((qx.core.Environment.get("qx.debug"))) {
         svg.core.Assert.assertElementInDocTree(this);
       }
-      return this.getDomElement().getTransformToElement();
+      return this.getDomElement().getTransformToElement(element.getDomElement());
     }
   }
   
