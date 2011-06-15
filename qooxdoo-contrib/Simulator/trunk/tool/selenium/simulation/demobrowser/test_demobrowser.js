@@ -330,8 +330,52 @@ simulation.Simulation.prototype.addErrorHandlerToDemo = function()
   this.addGlobalErrorHandler(selWin + '.' + qxAppInst + "._iframe.getWindow()");
 };
 
+simulation.Simulation.prototype.checkUrlParameter = function()
+{
+  var match = /#(.*?)~(.*?)\.html/.exec(this.getConfigSetting("autPath"));
+  if (!match) {
+    return;
+  }
+  
+  this.waitForDemoApp();
+  
+  var categoryName = match[1];
+  var demoName = match[2];
+  
+  try {
+    var treeCategory = this.__sel.getEval(getSampleCategory);
+    var treeDemo = this.__sel.getEval(getSampleLabel);
+  }
+  catch(ex) {
+    this.log("checkUrlParameter: Unable to check tree selection: " + ex.message, "error");
+    return;
+  }
+  
+  if (treeCategory != categoryName || treeDemo != demoName) {
+    this.log("checkUrlParameter: Wrong tree selection: Expected " + categoryName + "." + demoName + " but found " + treeCategory + "." + treeDemo, "error");
+    return;
+  }
+  
+  try {
+    var demoApplication = this.__sel.getEval(this.demoQxApp + ".classname");
+  }
+  catch(ex) {
+    this.log("checkUrlParameter: Unable to check demo class name: " + ex.message, "error");
+    return;
+  }
+  var expectedDemoClass = "demobrowser.demo." + categoryName + "." + demoName;
+  if (demoApplication != expectedDemoClass) {
+    this.log("checkUrlParameter: Wrong demo active: Expected " + expectedDemoClass + " but found " + demoApplication, "error");
+    return;
+  }
+  
+  this.log("checkUrlParameter: Demo loaded OK", "info");
+};
+
 simulation.Simulation.prototype.runTest = function()
 {
+  this.checkUrlParameter();
+  
   print("Starting sample playback");
 
   var ignore = [];
