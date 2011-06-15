@@ -36,15 +36,42 @@ simulation.Simulation.prototype.runTest = function()
   var setLocale = "qx.locale.Manager.getInstance().setLocale('en')";  
   this.runScript(setLocale, "Setting application locale to EN");
   
+  this.checkUrlParameter();
+  
   // Log any errors caught during showcase startup
   this.logGlobalErrors();
   this.clearGlobalErrorStore();
   
   var tabNames = this.getTabNames();
-  print("TAB NAMES " + tabNames);
   for (var i=0,l=tabNames.length; i<l; i++) {
     this.testTab(tabNames[i]);
   }
+};
+
+simulation.Simulation.prototype.checkUrlParameter = function()
+{
+  var match = /\?qx\.theme=(.*)/.exec(this.getConfigSetting("autPath"));
+  if (!match) {
+    return;
+  }
+  
+  var selectedTheme = match[1];
+  var environmentTheme = "";
+  var themeGetter = selWin + ".qx.core.Environment.get(\"qx.theme\")";
+  try {
+    environmentTheme = this.__sel.getEval(themeGetter); 
+  }
+  catch(ex) {
+    this.log("checkUrlParameter: Unable to query theme environment setting!", "error");
+    return;
+  }
+  
+  if (environmentTheme != selectedTheme) {
+    this.log("checkUrlParameter: Expected theme " + selectedTheme + " but core.environment says " + environmentTheme, "error");
+    return;
+  }
+  
+  this.log("checkUrlParameter: Theme setting from URL applied correctly", "info");
 };
 
 simulation.Simulation.prototype.getTabNames = function()
