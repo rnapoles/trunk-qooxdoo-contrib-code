@@ -168,7 +168,6 @@ simulation.Simulation.prototype.checkUrlParameter = function()
   try {
     var bla = String(this.__sel.getText('//tr[@class="marked"]/td[@class="text"]/div[@_itemname="press"]'));
     this.log("URI parameter handling checked: OK", "info");
-    print("WELP " + bla);
   }
   catch(ex) {
     this.log("Expected element not found after opening with URL parameter " + urlParam);
