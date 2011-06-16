@@ -112,6 +112,8 @@ var getDemosByCategory = function(category)
 
 simulation.Simulation.prototype.waitForDemoApp = function()
 {
+  this.__sel.waitForCondition(qxAppInst, 20000);
+  this.__sel.waitForCondition(this.demoFrame, 20000);
   this.__sel.waitForCondition(this.demoWin, 20000);
   this.__sel.waitForCondition(this.demoQx, 20000);
   this.__sel.waitForCondition(this.demoQxApp, 20000);
