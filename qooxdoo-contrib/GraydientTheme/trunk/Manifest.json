@@ -1,0 +1,34 @@
+{
+  "info" : 
+  {
+    "name" : "GraydientTheme",
+
+    "summary" : "GraydientTheme Contribution",
+    "description" : "Additional theme.",
+    
+    "homepage" : "http://contrib.qooxdoo.org/project/GraydientTheme",
+
+    "license" : "LGPL/EPL",
+    "authors" : 
+    [
+      {
+        "name" : "Norbert Schröder (scro34)",
+        "email" : " schroeder AT scro34 DOT de"
+      }
+    ],
+
+    "version" : "trunk",
+    "qooxdoo-versions": ["1.4", "1.4.1"]
+  },
+  
+  "provides" : 
+  {
+    "namespace"   : "graydienttheme",
+    "encoding"    : "utf-8",
+    "class"       : "source/class",
+    "resource"    : "source/resource",
+    "translation" : "source/translation",
+    "type"        : "theme"
+  }
+}
+
