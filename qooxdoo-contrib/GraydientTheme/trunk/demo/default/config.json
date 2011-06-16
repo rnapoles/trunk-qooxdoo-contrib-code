@@ -37,7 +37,7 @@
   "let" :
   {
     "APPLICATION"  : "graydienttheme.demo",
-    "QOOXDOO_PATH" : "../../../../qooxdoo/1.4",
+    "QOOXDOO_PATH" : "../../../../qooxdoo/1.4.1",
     "QXTHEME"      : "graydienttheme.GraydientTheme",
     "API_EXCLUDE"  : ["qx.test.*", "${APPLICATION}.theme.*", "${APPLICATION}.test.*"],
     "LOCALES"      : [ "en" ],
