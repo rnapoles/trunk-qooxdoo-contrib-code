@@ -93,7 +93,7 @@ qx.Class.define("svg.coords.transform.Transformation",
      * matrixes. In such cases, the transformation needs the createMatrix() method
      * of the svg element.
      * 
-     * @param svg {svg.struct.Svg | null}
+     * @param svgElem {svg.struct.Svg | null}
      *   Svg element
      */
     setSvg : function(svgElem) {
