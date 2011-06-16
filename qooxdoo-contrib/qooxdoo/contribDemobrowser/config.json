@@ -56,7 +56,7 @@
         },
         
         {
-          "manifest"   : "${QOOXDOO_PATH}/component/library/log/Manifest.json"
+          "manifest"   : "${QOOXDOO_PATH}/component/library/logpane/Manifest.json"
         }
       ]
     },
