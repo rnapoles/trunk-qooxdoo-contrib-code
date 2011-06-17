@@ -62,7 +62,7 @@ extend : qx.core.Object
 	 */
 	,dispatch : function(method, args) {
 		// First, check that arguments is an array or is null
-		if(!qx.lang.Type.isArray(args) & typeof(args) != 'undefined' && args != null) {
+		if(!qx.lang.Type.isArray(args) && typeof(args) != 'undefined' && args != null) {
 			this.error("Invalid type passed for BackgroundServiceImpl::dispatch's argument array");
 			throw "Invalid type passed for BackgroundServiceImpl::dispatch's argument array";
 			return;
@@ -72,14 +72,17 @@ extend : qx.core.Object
 			var methodFunction = this.__functions[method];
 			// Call it if this is a function
 			if(qx.lang.Type.isFunction(methodFunction)) {
-				var returns = methodFunction.apply(this, args);
+				if(typeof(args) == 'undefined' || args == null)
+					var returns = methodFunction.call(this);
+				else
+					var returns = methodFunction.apply(this, args);
 				return returns;
 			} else {
 				throw "Invalid endpoint registered for method name " + method;
 			}
 		} catch (err) {
 			this.error("Invalid endpoint registered for method name " + method + " or other error:\n" + err);
-			throw "BackgroundServiceImpl caught: " + err;
+//			throw "BackgroundServiceImpl caught: " + err;
 		}
 	}
 	
