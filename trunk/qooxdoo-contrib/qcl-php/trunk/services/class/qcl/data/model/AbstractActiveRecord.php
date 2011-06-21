@@ -1042,9 +1042,9 @@ class qcl_data_model_AbstractActiveRecord
     }
 
     /*
-     * save changed data
+     * reload data in case there were side effects
      */
-    $this->_data = $newData;
+    $this->load($newData['id']);
 
     return $success;
   }
