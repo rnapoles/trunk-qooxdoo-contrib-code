@@ -17,47 +17,68 @@
  */
 
 qcl_import("qcl_application_Application");
+qcl_import("qcl_server_JsonRpcRestServer");
 
 /**
- * Upload server. Expects an uploaded file and the request parameter
- * 'sessionId' and 'application', the latter being the application id.
- * An additional parameter 'replace', if set to true, will cause the
- * upload server to overwrite existing files.
+ * Uploads a one or more files to the system temporary folder.
+ * Authentication an be done in two different ways:
+ * 1) The calling client provides a valid session id in the URL
+ *    ("?sessionId=a8dab9das...") or in the request parameter 'sessionId'.
+ * 2) If this is not provided, the server responds by presenting a http
+ *    authentication request.
+ *    
+ * You also need to provide a 'application' parameter to let the server know
+ * for which application the upload should be processed. 
+ * 
+ * If you want to call a json-rpc method after the upload, add "service",
+ * "method", "params" as parameters. The given method will be called with  
+ * the given parameters as in the qcl_server_JsonRpcRestServer class,
+ * with the difference that the paths to the uploaded files and the file names 
+ * are added at the end of the request parameters (or added as only parameters 
+ * if no other parameters are given). The "application" parameter is not 
+ * neccessary with an accompanying rpc call. 
+ * 
+ * Otherwise, the script returns a HTML string as response. If successful, 
+ * the response is a SPAN element with the qcl_file attribute containing
+ * the path to the uploaded file. Otherwise, it is a SPAN element
+ * with an attribute 'qcl_error' set to true, and containing the error
+ * message.
  */
 class qcl_server_Upload
-  extends qcl_core_Object
+  extends qcl_server_JsonRpcRestServer
 {
 
+   private $rpcRequest=false;
+   
+   private $filePaths = array();
+   
+   private $fileNames = array();
+   
 
   /**
-   * Uploads a single file to the system temporary folder.
-   * Authentication an be done in two different ways:
-   * 1) The calling client provides a valid session id in the URL
-   *    ("?sessionId=a8dab9das...") or in the request parameter 'sessionId'.
-   * 2) If this is not provided, the server responds by presenting a http
-   *    authentication request.
-   * You also need to provide a 'application' parameter, and optionally
-   * can overwrite existing files with the 'replace' paramenter
-   *
-   * The script returns a HTML string as response. If successful, the
-   * response is a SPAN element with the qcl_file attribute containing
-   * the path to the uploaded file. Otherwise, it is a SPAN element
-   * with an attribute 'qcl_error' set to true, and containing the error
-   * message.
+   * @override
    */
   public function start()
   {
     $this->log("Starting upload ...",QCL_LOG_REQUEST);
+    
+    /*
+     * is there a connected RPC request?
+     */
+    if ( isset( $_REQUEST['method'] ) )
+    {
+      $this->rpcRequest = true;
+    }    
 
     /*
      * check if upload directory is writeable
      */
     if ( ! is_writable( QCL_UPLOAD_PATH ) )
     {
-      $this->warn( sprintf(
+      $this->logError( sprintf(
         "Upload path '%s' is not writeable."
       ) );
-      $this->abort("Error on Server.");
+      $this->abort("Upload path is not writable");
     }
 
     /*
@@ -70,7 +91,7 @@ class qcl_server_Upload
     $application = $this->getApplication();
     $accessController = $application->getAccessController();
     $sessionId = $_REQUEST['sessionId'];
-
+    
     try
     {
       $userId = $accessController->getUserIdFromSession( $sessionId );
@@ -110,81 +131,113 @@ class qcl_server_Upload
       "Upload authorized for " . $userModel->username() .
       "(Session #" . $sessionId . ").", QCL_LOG_REQUEST
     );
+    
+    
+    /*
+     * maximal file upload
+     */
+    $maxSize = min( array(
+       QCL_UPLOAD_MAXFILESIZE * 1024, 
+       qcl_parse_filesize( ini_get("upload_max_filesize" ) )
+    ) );
 
     /*
      * handle all received files
      */
     foreach ( $_FILES as $fieldName => $file )
     {
-      /*
-       * check file size
-       */
-      if ( $file['size'] > QCL_UPLOAD_MAXFILESIZE * 1024)
-      {
-         $this->abort( "File '$fieldName' exceeds maximum filesize: " . QCL_UPLOAD_MAXFILESIZE . " kByte.");
-      }
-
-      /*
-       * get file info
-       */
-      $tmp_name  = $file['tmp_name'];
-      $file_name = $file['name'];
-
-      /*
-       * check file name for validity
-       */
-      if ( strstr($file_name, ".." ) )
-      {
-        $this->abort( "Illegal filename." );
-      }
-
-      /*
-       * target path
-       */
-      $tgt_path  = QCL_UPLOAD_PATH . "/{$sessionId}_{$file_name}";
-      //$this->debug( "Moving uploaded file to $tgt_path ..." );
-
-      /*
-       * check if file exists
-       */
-      if ( file_exists ( $tgt_path) )
-      {
-        if ( isset( $_REQUEST['replace'] ) and $_REQUEST['replace'] )
+       for( $i=0; $i<count( $file['name'] ); $i++ )
+       {
+         
+        /*
+         * check file size
+         */
+        if ( $file['size'][$i] > $maxSize )
         {
-          $this->log( "Replacing existing file '$tgt_path'.",QCL_LOG_REQUEST );
-          unlink ( $tgt_path );
+           $this->abort( sprintf( "File '%s' (%s) exceeds maximum filesize of %s", 
+             $file['name'][$i], 
+             qcl_format_filesize( $file['size'][$i] ),
+             qcl_format_filesize( $maxSize )
+           ) );
         }
+        elseif ( $file['size'][$i] == 0 )
+        {
+          $this->abort( sprintf( "Problem with file '%s' (probably exceeds maximum filesize of %s)", 
+             $file['name'][$i], 
+             qcl_format_filesize( $maxSize )
+           ) );
+        }
+        
+        /*
+         * get file info
+         */
+        $tmp_name  = $file['tmp_name'][$i];
+        $file_name = $file['name'][$i];
+  
+        /*
+         * check file name for validity
+         */
+        if ( strstr($file_name, ".." ) )
+        {
+          $this->abort( "Illegal filename." );
+        }
+        
+        /*
+         * strip illegal characters from file name
+         */
+  
+        /*
+         * target path
+         */
+        $hash = md5( $sessionId . $file_name . microtime_float() );
+        $tgt_path  = QCL_UPLOAD_PATH . "/$hash";
+        $this->log( "Moving uploaded file to '$tgt_path' ..." );
+  
+        /*
+         * check if file exists and delete it 
+         */
+        if ( file_exists ( $tgt_path) )
+        {
+           unlink ( $tgt_path );
+        }
+  
+        /*
+         * move temporary file to target location and check for errors
+         */
+        if ( ! move_uploaded_file( $tmp_name, $tgt_path ) or
+             ! file_exists( $tgt_path ) )
+        {
+          $this->log( "Problem saving the file to '$tgt_path'.", QCL_LOG_REQUEST );
+          $this->echoWarning( "Problem saving file '$file_name'." );
+        }
+  
+        /*
+         * report upload succes
+         */
         else
         {
-          $this->log( "File '$tgt_path' exists. Not uploading",QCL_LOG_REQUEST );
-          $this->abort( "File '$file_name' exists." );
+          $this->echoReply( "<span qcl_file='$tgt_path'>Upload of '$file_name' successful.</span>" );
+          $this->log("Uploaded file to '$tgt_path'", QCL_LOG_REQUEST);
+          $this->fileNames[] = $file_name;
+          $this->filePaths[] = $tgt_path;
         }
       }
-
-      /*
-       * move temporary file to target location and check for errors
-       */
-      if ( ! move_uploaded_file( $tmp_name, $tgt_path ) or
-           ! file_exists( $tgt_path ) )
-      {
-        $this->log( "Problem saving the file to '$tgt_path'.", QCL_LOG_REQUEST );
-        $this->echoWarning( "Problem saving file '$file_name'." );
-      }
-
-      /*
-       * report upload succes
-       */
-      else
-      {
-        $this->echoReply( "<span qcl_file='$tgt_path'>Upload of '$file_name' successful.</span>" );
-        $this->log("Uploaded file to '$tgt_path'", QCL_LOG_REQUEST);
-      }
     }
-
-    /*
-     * end of script
-     */
-    exit;
+    
+    if( $this->rpcRequest )
+    {
+      /*
+       * start REST json-rpc server
+       */
+      parent::start();
+    }
+    else 
+    {
+      /*
+       * end of script
+       */
+      exit;
+    }
   }
 
  /**
@@ -193,6 +246,20 @@ class qcl_server_Upload
    */
   public function getApplication()
   {
+    /*
+     * if this is an upload with rpc request, we can use the
+     * parent class' method.
+     */
+    if( $this->rpcRequest )
+    {
+      $request = qcl_server_Request::getInstance();
+      $request->service = $_REQUEST['service'];
+      return parent::getApplication();
+    }
+    
+    /*
+     * otherwise, we need a hint from the request data
+     */
     if ( ! isset( $_REQUEST['application'] ) )
     {
       $this->abort("Missing paramenter 'application'");
@@ -230,38 +297,64 @@ class qcl_server_Upload
 
     return $app;
   }
+  
+  /**
+   * overridden to add the file path and file name to the requst parameters
+   */
+  function getInput()
+  {
+    $input = parent::getInput();
+    $input->params[] = $this->filePaths;
+    $input->params[] = $this->fileNames;
+    return $input;
+  }
+  
+  
 
   /**
-   * Echo a HTML reply
+   * Echo a HTML reply, ignored if jsonrpc request
    * @param $msg
    * @return void
    */
   public function echoReply ( $msg )
   {
-    echo $msg;
+    if( ! $this->rpcRequest )
+    {
+      echo $msg;
+    }
   }
 
   /**
-   * Echo a HTML warning
+   * Echo a HTML warning, if json-rpc request, throw error
    * @param $msg
    * @return unknown_type
    */
   public function echoWarning ( $msg )
   {
-   echo "<span qcl_error='true'>$msg</span>";
+    if( $this->rpcRequest )
+    {
+      $error = new JsonRpcError($msg);
+      $error->sendAndExit();
+      exit;
+    }
+    else
+    {
+      echo "<span qcl_error='true'>$msg</span>";
+    }
+    
   }
 
   /**
-   * Echo a HTML warning and exit
+   * Echo a HTML warning and exit. throws error if json-rpc request
    * @param $msg
    * @return unknown_type
    */
   public function abort ( $msg )
   {
+    $this->logError( $msg );
     $this->echoWarning( $msg );
-    $this->warn( $msg );
     exit;
-  }
+  } 
 
 }
 ?>
