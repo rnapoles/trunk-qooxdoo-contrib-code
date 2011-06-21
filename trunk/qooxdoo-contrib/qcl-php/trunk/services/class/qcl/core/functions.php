@@ -480,6 +480,74 @@ function qcl_assert_valid_email( $email )
 }
 
 /**
+ * from http://buildinternet.com/2010/05/how-to-automatically-linkify-text-with-php-regular-expressions/
+ * @param $text
+ */
+function qcl_linkify($text)
+{
+  $text= preg_replace("/(^|[\n ])([\w]*?)((ht|f)tp(s)?:\/\/[\w]+[^ \,\"\n\r\t<]*)/is", "$1$2<a href=\"$3\" target=\"_blank\">$3</a>", $text);
+  $text= preg_replace("/(^|[\n ])([\w]*?)((www|ftp)\.[^ \,\"\t\n\r<]*)/is", "$1$2<a href=\"http://$3\" target=\"_blank\">$3</a>", $text);
+  $text= preg_replace("/(^|[\n ])([a-z0-9&\-_\.]+?)@([\w\-]+\.([\w\-\.]+)+)/i", "$1<a href=\"mailto:$2@$3\">$2@$3</a>", $text);
+  return($text);
+}	
+
+/**
+ * Returns the content type according to the file extension
+ * FIXME add missing mimetypes
+ */
+function qcl_get_content_type( $file )
+{
+  $file_extension = strtolower(substr(strrchr($file,"."),1));
+  switch( $file_extension )
+  {
+    case "pdf": $ctype="application/pdf"; break;
+    case "txt": $ctype="text/plain"; break;
+    case "exe": throw new InvalidArgumentException("Executables are not allowed");
+    case "zip": $ctype="application/zip"; break;
+    case "doc": $ctype="application/msword"; break;
+    case "xls": $ctype="application/vnd.ms-excel"; break;
+    case "ppt": $ctype="application/vnd.ms-powerpoint"; break;
+    case "gif": $ctype="image/gif"; break;
+    case "png": $ctype="image/png"; break;
+    case "jpg": $ctype="image/jpg"; break;
+    default: $ctype="application/octet-stream";
+  }
+  return $ctype;
+}
+
+
+function qcl_format_filesize ($dsize) 
+{
+  if (strlen($dsize) <= 9 && strlen($dsize) >= 7) {
+    $dsize = number_format($dsize / 1048576,1);
+    return "$dsize MB";
+  } elseif (strlen($dsize) >= 10) {
+    $dsize = number_format($dsize / 1073741824,1);
+    return "$dsize GB";
+  } else {
+    $dsize = number_format($dsize / 1024,1);
+    return "$dsize KB";
+  }
+}
+
+function qcl_parse_filesize($val)
+{
+    $val = preg_replace( "/[^0-9KMGkmg]/", '', $val);
+    $last = strtolower($val{strlen($val)-1});
+    switch($last) {
+        case 'g':
+            $val *= 1024;
+            //pass through...
+        case 'm':
+            $val *= 1024;
+        case 'k':
+            $val *= 1024;
+    }
+
+    return $val;
+}
+
+/**
  * Returns the first non-null argument.
  * Avoids if statements such as if($a) $c=$a; else $c=$b;
  *
@@ -699,9 +767,9 @@ function xmlentities($string)
 function html2utf8( $str )
 {
   return strip_tags(
-  html_entity_decode_utf8(
-  str_replace( array("<br/>","<br />","<br>","<p>"), "\n", $str )
-  )
+    html_entity_decode_utf8(
+      str_replace( array("<br/>","<br />","<br>","<p>"), "\n", $str )
+    )
   );
 }
 
