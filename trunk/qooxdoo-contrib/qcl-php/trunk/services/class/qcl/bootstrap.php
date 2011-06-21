@@ -89,6 +89,12 @@ require_once "qcl/core/functions.php";
 require_once "services/server/error/JsonRpcError.php";
 
 /*
+ * FirePHP
+ * @todo make optional through config.php
+ */
+require_once 'qcl/lib/firephp/fb.php';
+
+/*
  * core packages
  */
 qcl_import("qcl_log_Logger");
