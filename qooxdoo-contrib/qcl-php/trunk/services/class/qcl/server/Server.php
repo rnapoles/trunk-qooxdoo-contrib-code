@@ -89,7 +89,6 @@ class qcl_server_Server
     {
       qcl_import( "qcl_server_JsonRpcRestServer" );
       $serverObj = new qcl_server_JsonRpcRestServer();
-      $serverObj->setServicePaths( $servicePaths );
     }
 
     /*
@@ -99,7 +98,6 @@ class qcl_server_Server
     {
       qcl_import( "qcl_server_JsonRpcTestServer" );
       $serverObj = new qcl_server_JsonRpcTestServer( $testData );
-      $serverObj->setServicePaths( $servicePaths );
     }
 
     /*
@@ -109,12 +107,12 @@ class qcl_server_Server
     {
       qcl_import( "qcl_server_JsonRpcServer" );
       $serverObj = new qcl_server_JsonRpcServer();
-      $serverObj->setServicePaths( $servicePaths );
     }
 
     /*
      * save and start server
      */
+    $serverObj->setServicePaths( $servicePaths );
     $this->serverInstance = $serverObj;
     $serverObj->start();
   }

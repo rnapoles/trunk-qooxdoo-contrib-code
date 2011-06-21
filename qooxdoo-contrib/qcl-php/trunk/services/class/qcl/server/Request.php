@@ -61,7 +61,7 @@ class qcl_server_Request
   {
     return qcl_getInstance( __CLASS__ );
   }
-
+  
   /**
    * Returns the service request id
    * @return int

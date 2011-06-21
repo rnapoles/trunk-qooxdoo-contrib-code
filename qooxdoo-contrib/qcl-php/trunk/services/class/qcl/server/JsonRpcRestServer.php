@@ -51,18 +51,36 @@ class qcl_server_JsonRpcRestServer
     }
 
     /*
-     * get data
+     * service and method
      */
     $input = new stdClass();
     $input->service = $_REQUEST['service'];
     $input->method  = $_REQUEST['method'];
+    
+    /*
+     * json-rpc parameters
+     */
     $params = $_REQUEST['params'];
-    if ( $params[0] != "[" )
+    
+    if( $params == "[]" or ! $params )
     {
-      // backwards compatibility: previously it wasn't necessary to pass a true json array
-      $params = '["'. implode('","', explode(",", $_REQUEST['params'] ) ) . '"]';
+       $input->params = array();
     }
-    $input->params  = json_decode($params);
+    else
+    {
+      if ( $params[0] != "[" )
+      {
+        // backwards compatibility: previously it wasn't necessary to pass a true json array
+        $params = '["'. implode('","', explode(",", $_REQUEST['params'] ) ) . '"]';
+      }
+      
+      // @todo not sure why sometimes the quotes in the json string are escaped
+      $input->params  = either( json_decode( $params ), json_decode( stripslashes( $params ) ) );
+    }
+        
+    /*
+     * non-standard server data
+     */
     $server_data = array_diff_key(
       $_REQUEST, array( "service"=>"","method"=>"","params"=>"" )
     );
