@@ -45,6 +45,14 @@ mySim.demoFrame = selWin + '.' + qxAppInst + '._iframe';
 mySim.demoWin = mySim.demoFrame + ".getWindow()";
 mySim.demoQx = mySim.demoWin + ".qx";
 mySim.demoQxApp = mySim.demoQx + '.core.Init.getApplication()';
+mySim.checkDemoReady = 'var demoReady = false;'
++ 'try {'
++ '  if (' + mySim.demoQxApp +') {'
++ '    demoReady = true;'
++ '  }'
++ '}'
++ 'catch(ex) {}'
++ 'demoReady;';
 
 /*
 *  Returns a command that selects sample number [entry] from the sample tree 
@@ -112,11 +120,7 @@ var getDemosByCategory = function(category)
 
 simulation.Simulation.prototype.waitForDemoApp = function()
 {
-  this.__sel.waitForCondition(qxAppInst, 20000);
-  this.__sel.waitForCondition(this.demoFrame, 20000);
-  this.__sel.waitForCondition(this.demoWin, 20000);
-  this.__sel.waitForCondition(this.demoQx, 20000);
-  this.__sel.waitForCondition(this.demoQxApp, 20000);
+  this.__sel.waitForCondition(mySim.checkDemoReady, 20000);
 };
 
 /*
