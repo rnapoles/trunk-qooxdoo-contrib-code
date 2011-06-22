@@ -516,7 +516,7 @@ simulation.Simulation.prototype.openLog = function()
   if (!this.__logOpened) {
     this.qxClick("qxhv=*/qx.ui.toolbar.ToolBar/*/[@label=Log File]");
     Packages.java.lang.Thread.sleep(2000);
-    var logEmbed = "qxhv=[@classname=demobrowser.DemoBrowser]/qx.ui.splitpane.Pane/qx.ui.splitpane.Pane/qx.ui.container.Stack/[@classname=log.LogView]/qx.ui.embed.Html";
+    var logEmbed = "qxhv=[@classname=demobrowser.DemoBrowser]/qx.ui.splitpane.Pane/qx.ui.splitpane.Pane/qx.ui.container.Stack/[@classname=qxc.ui.logpane.LogView]/qx.ui.embed.Html";
     var isNewLog = false;
     try {
       isNewLog = this.__sel.isElementPresent(logEmbed);
