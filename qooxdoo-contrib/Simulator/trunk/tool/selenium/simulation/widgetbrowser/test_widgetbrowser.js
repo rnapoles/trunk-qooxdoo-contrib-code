@@ -50,12 +50,22 @@ simulation.Simulation.prototype.runTest = function()
 
 simulation.Simulation.prototype.checkUrlParameter = function()
 {
-  var match = /\?qx\.theme=(.*)/.exec(this.getConfigSetting("autPath"));
-  if (!match) {
+  var selectedTheme = "qx.theme.Simple";
+  
+  var urlWithParam = this.getConfigSetting("autHost") + "" 
+  + this.getConfigSetting("autPath") + "?qx.theme=" + selectedTheme;
+  this.qxOpen(urlWithParam);
+  var isAppReady = this.waitForCondition(simulation.Simulation.ISQXAPPREADY, 60000, 
+                                          "Waiting for qooxdoo application");
+
+  if (!isAppReady) {
+    this.testFailed = true;
+    this.log("checkUrlParameter: Application was not reloaded correctly!", "error");
     return;
   }
   
-  var selectedTheme = match[1];
+  this.addGlobalErrorHandler();
+  
   var environmentTheme = "";
   var themeGetter = selWin + ".qx.core.Environment.get(\"qx.theme\")";
   try {
