@@ -200,6 +200,11 @@ simulation.Simulation.prototype.checkEdit = function(sampleName)
 
 simulation.Simulation.prototype.checkUrlParameter = function(pattern)
 {
+  var agent = this.getEval('navigator.userAgent');
+  if (/MSIE (6|7|8)\.0/.exec(agent)) {
+    return;
+  }
+  
   this.__sel.open(this.getConfigSetting("autHost"));
   
   var codeParameter = "#%7B%22code%22%3A%20%22var%2520label%2520%253D%2520new%2520qx.ui.basic.Label(%2522Code%2520loaded%2520from%2520URL%2520parameter%2522)%253B%250Athis.getRoot().add(label)%253B%22%7D";
