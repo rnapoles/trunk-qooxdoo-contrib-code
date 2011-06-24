@@ -36,5 +36,15 @@ class qcl_data_db_Timestamp
   {
   	return date_diff( $this, $datetime );
   }
+  
+  /**
+   * Overridden to make PHP 5.2-compatible
+   */  
+  public function getTimestamp() 
+  {
+     return method_exists('DateTime', 'getTimestamp') ? 
+           parent::getTimestamp() : $this->format('U');
+  }
+  
 }
 ?>
