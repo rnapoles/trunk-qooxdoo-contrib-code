@@ -39,7 +39,8 @@ var locators = {
   gistUserNameField : 'qxh=[@classname="playground.view.gist.GistMenu"]/child[0]/qx.ui.form.TextField',
   gistLoadButton : 'qxh=[@classname="playground.view.gist.GistMenu"]/[@classname="playground.view.gist.UserNameMenuItem"]/qx.ui.form.Button',
   gistMenuButton : 'qxh=[@classname="playground.view.gist.GistMenu"]/child[5]',
-  shortenUrlButton : 'qxh=qx.ui.container.Composite/[@classname="playground.view.Toolbar"]/[@label="URL"]'
+  shortenUrlButton : 'qxh=qx.ui.container.Composite/[@classname="playground.view.Toolbar"]/[@label="URL"]',
+  labelFromUrlCode : 'qxhv=qx.ui.container.Composite/qx.ui.splitpane.Pane/qx.ui.splitpane.Pane/[@classname=playground.view.PlayArea]/qx.ui.container.Scroll/qx.ui.root.Inline/[@value=Code loaded from URL parameter]'
 };
 
 if (mySim.getConfigSetting("branch") == "branch_1_2_x") {
@@ -197,41 +198,32 @@ simulation.Simulation.prototype.checkEdit = function(sampleName)
   
 };
 
-simulation.Simulation.prototype.checkCodeFromUrl = function(pattern)
+simulation.Simulation.prototype.checkUrlParameter = function(pattern)
 {
-  var newButtonLabel = "A flying monkey";
-  try {
-    var hash = String(this.getEval(selWin + ".location.hash")).substr(1);
-    var newHash = hash.replace(pattern, newButtonLabel);
-    // Modifying the URL hash doesn't trigger a reload, so Selenium.load will 
-    // wait forever. Workaround: Load a different page first. 
-    this.__sel.open(this.getConfigSetting("autHost"));
-    // Now open the Playground with the modified code
-    this.qxOpen(this.getConfigSetting("autPath") + "#" + encodeURIComponent(newHash));
-    // There will be an alert box if running the URI code failed
-    if (this.__sel.isAlertPresent()) {
-      var al = this.__sel.getAlert();
-      this.log("Running code from URI failed: " + al);
-    }
-    this.addGlobalErrorHandler();
-  } catch(ex) {
-    this.log("Unable to load Playground with URI code: " + ex);
+  this.__sel.open(this.getConfigSetting("autHost"));
+  
+  var codeParameter = "#%7B%22code%22%3A%20%22var%2520label%2520%253D%2520new%2520qx.ui.basic.Label(%2522Code%2520loaded%2520from%2520URL%2520parameter%2522)%253B%250Athis.getRoot().add(label)%253B%22%7D";
+  
+  var urlWithParam = this.getConfigSetting("autHost") + "" 
+  + this.getConfigSetting("autPath") + codeParameter;
+  
+  this.qxOpen(urlWithParam);
+  var isAppReady = this.waitForCondition(simulation.Simulation.ISQXAPPREADY, 60000, 
+                                          "Waiting for qooxdoo application");
+  
+  if (!isAppReady) {
+    this.log("checkCodeFromUrl: Application did not reload correctly!", "error");
     return;
   }
+  this.addGlobalErrorHandler();
   
   try {
-    var playAppButtonLoc = locators.playgroundApplication + '/qx.ui.form.Button';
-    var playAppButtonLabel = new String(this.__sel.getQxObjectFunction(playAppButtonLoc, 'getLabel'));
-    if (playAppButtonLabel.indexOf(newButtonLabel) >= 0) {
-      this.log("Successfully ran sample code from URL", "info");
-    } else {
-      this.log("Running sample code from URL failed!", "error");
-    }
-  } catch(ex) {
-    this.log("Error while running sample code from URL: " + ex, "error");
-    return;
+    this.__sel.qxClick(locators.labelFromUrlCode);
+    this.log("checkUrlParameter: Code from URL executed correctly", "info");
   }
-  
+  catch(ex) {
+    this.log("checkUrlParameter: " + ex.message, "error");
+  }
 };
 
 simulation.Simulation.prototype.checkSyntaxHighlighting = function(editor)
@@ -275,8 +267,8 @@ simulation.Simulation.prototype.runTest = function()
   //this.__sel.windowmaximize();
   // Make sure the locale is 'en' to simplify dealing with log messages.
   var setLocale = "qx.locale.Manager.getInstance().setLocale('en')";
-  this.runScript(setLocale, "Setting application locale to EN");    
-   
+  this.runScript(setLocale, "Setting application locale to EN");  
+  
   // Open log pane
   this.qxClick(locators.logButton, "", 'Opening log pane');
   
@@ -327,7 +319,7 @@ simulation.Simulation.prototype.runTest = function()
   
   this.checkGistFromList();
   
-  //this.checkGistFromUrl();
+  this.checkUrlParameter();
   
 };
 
