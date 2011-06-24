@@ -82,7 +82,7 @@ public class ProxyPropertyImpl extends AbstractProxyProperty {
 			method.setAccessible(true);
 			return method;
 		}catch(NoSuchMethodException e) {
-			throw new IllegalArgumentException("Cannot find an expire method called " + name + ": " + e.getMessage());
+			throw new IllegalArgumentException("Cannot find a method called " + name + ": " + e.getMessage());
 		}
 	}
 	
@@ -259,13 +259,12 @@ public class ProxyPropertyImpl extends AbstractProxyProperty {
 			}
 	}
 	
-	/**
-	 * Called internally to serialize a value to the client
-	 * @param proxied
-	 * @param value
-	 * @return
+	/*
+	 * (non-Javadoc)
+	 * @see com.zenesis.qx.remote.ProxyProperty#serialize(com.zenesis.qx.remote.Proxied, java.lang.Object)
 	 */
-	protected Object serialize(Proxied proxied, Object value) {
+	@Override
+	public Object serialize(Proxied proxied, Object value) {
 		try {
 			if (serializeMethod != null)
 				value = serializeMethod.invoke(proxied, this, value);
@@ -280,13 +279,12 @@ public class ProxyPropertyImpl extends AbstractProxyProperty {
 		return value;
 	}
 	
-	/**
-	 * Called internally to deserialize a value from the client
-	 * @param proxied
-	 * @param value
-	 * @return
+	/*
+	 * (non-Javadoc)
+	 * @see com.zenesis.qx.remote.ProxyProperty#deserialize(com.zenesis.qx.remote.Proxied, java.lang.Object)
 	 */
-	protected Object deserialize(Proxied proxied, Object value) {
+	@Override
+	public Object deserialize(Proxied proxied, Object value) {
 		try {
 			if (value != null && propertyClass.isSubclassOf(Date.class)) {
 				long millis = ((Number)value).longValue();

@@ -245,9 +245,10 @@ public class ProxyManager implements EventListener {
 		if (tracker == null)
 			return;
 		CommandQueue queue = tracker.getQueue();
+		/* can't do this because we don't want to stop server events firing
 		RequestHandler handler = tracker.getRequestHandler();
 		if (handler != null && handler.isSettingProperty(keyObject, propertyName))
-			return;
+			return;*/
 		ProxyType type = ProxyTypeManager.INSTANCE.getProxyType(keyObject.getClass());
 		ProxyProperty property = getProperty(type, propertyName);
 		if (property == null) {
@@ -257,10 +258,38 @@ public class ProxyManager implements EventListener {
 		if (property.isOnDemand() && !tracker.doesClientHaveValue(keyObject, property))
 			return; //queue.queueCommand(CommandId.CommandType.EXPIRE, keyObject, propertyName, null);
 		else
-			queue.queueCommand(CommandId.CommandType.SET_VALUE, keyObject, propertyName, newValue);
+			queue.queueCommand(CommandId.CommandType.SET_VALUE, keyObject, propertyName, property.serialize(keyObject, newValue));
 		if (property.getEvent() != null) {
 			EventManager.fireDataEvent(keyObject, property.getEvent().getName(), newValue);
 		}
+	}
+	
+	/**
+	 * Helper static method to register that an on-demand property has changed and it's value should be
+	 * expired on the client, so that the next attempt to access it causes a refresh
+	 * @param proxied
+	 * @param propertyName
+	 * @param oldValue
+	 * @param newValue
+	 */
+	public static void expireProperty(Proxied keyObject, String propertyName) {
+		ProxySessionTracker tracker = getTracker();
+		if (tracker == null)
+			return;
+		CommandQueue queue = tracker.getQueue();
+		/* can't do this because we don't want to stop server events firing
+		RequestHandler handler = tracker.getRequestHandler();
+		if (handler != null && handler.isSettingProperty(keyObject, propertyName))
+			return;
+			*/
+		ProxyType type = ProxyTypeManager.INSTANCE.getProxyType(keyObject.getClass());
+		ProxyProperty property = getProperty(type, propertyName);
+		if (property == null) {
+			log.warn("Cannot find a property called " + propertyName);
+			return;
+		}
+		if (property.isOnDemand() && tracker.doesClientHaveValue(keyObject, property))
+			queue.queueCommand(CommandId.CommandType.EXPIRE, keyObject, propertyName, null);
 	}
 	
 	/**

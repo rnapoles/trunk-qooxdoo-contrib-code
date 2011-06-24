@@ -94,5 +94,20 @@ public interface ProxyProperty extends JsonSerializable {
 	 * @param proxied
 	 */
 	public void expire(Proxied proxied);
+	
+	/**
+	 * Called internally to serialize a value to the client
+	 * @param proxied
+	 * @param value
+	 * @return
+	 */
+	public Object serialize(Proxied proxied, Object value);
 
+	/**
+	 * Called internally to deserialize a value from the client
+	 * @param proxied
+	 * @param value
+	 * @return
+	 */
+	public Object deserialize(Proxied proxied, Object value);
 }

@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 
-import org.apache.log4j.Logger;
-
 import com.zenesis.qx.remote.annotations.AlwaysProxy;
 import com.zenesis.qx.remote.annotations.DoNotProxy;
 import com.zenesis.qx.remote.annotations.Properties;
@@ -28,8 +26,6 @@ import com.zenesis.qx.remote.annotations.Remote;
 })
 public class BasicBootstrap implements UploadReceiver {
 	
-	private static final Logger log = Logger.getLogger(BasicBootstrap.class);
-
 	private AppFile appFilesRoot;
 	private AppFile uploadFolder;
 	private HashMap<String, UploadingFile> uploading = new HashMap<String, UploadingFile>();

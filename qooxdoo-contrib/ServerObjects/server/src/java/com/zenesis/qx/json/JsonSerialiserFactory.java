@@ -73,6 +73,7 @@ public class JsonSerialiserFactory extends BeanSerializerFactory {
 		}
 	};
 
+	private static final ThreadLocal<Integer> s_recursion = new ThreadLocal<Integer>();
 	private static final JsonSerializer<Iterable> SER_ITERABLE = new JsonSerializer<Iterable>() {
 
 		/* (non-Javadoc)
@@ -87,8 +88,17 @@ public class JsonSerialiserFactory extends BeanSerializerFactory {
 				for (Object obj : iterable)
 					if (obj == null)
 						jgen.writeNull();
-					else
+					else {
+						Integer rec = s_recursion.get();
+						if (rec == null)
+							s_recursion.set(1);
+						else {
+							s_recursion.set(rec + 1);
+							if (rec > 200)
+								rec = rec;
+						}
 						jgen.writeObject(obj);
+					}
 				jgen.writeEndArray();
 			}
 		}
