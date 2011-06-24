@@ -28,6 +28,7 @@
 package com.zenesis.qx.remote;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 
 import java.util.Collections;
@@ -99,6 +100,11 @@ public class ProxyTypeImpl extends AbstractProxyType {
 			boolean explicitOnly = fromClass.isAnnotationPresent(ExplicitProxyOnly.class);
 			Method[] ifcMethods = fromClass.getDeclaredMethods();
 			for (Method method : ifcMethods) {
+				int mods = method.getModifiers();
+				// Public and protected only
+				if (!Modifier.isPublic(mods) && !Modifier.isProtected(mods))
+					continue;
+				
 				method.setAccessible(true);// Short cut access controls validation
 				if (explicitOnly && !method.isAnnotationPresent(AlwaysProxy.class) && !method.isAnnotationPresent(com.zenesis.qx.remote.annotations.Method.class))
 					continue;

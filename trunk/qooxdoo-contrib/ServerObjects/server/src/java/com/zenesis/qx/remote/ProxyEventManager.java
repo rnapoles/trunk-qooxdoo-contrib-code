@@ -27,7 +27,6 @@
  */
 package com.zenesis.qx.remote;
 
-import com.zenesis.qx.event.EventListener;
 import com.zenesis.qx.event.EventManager;
 
 /**

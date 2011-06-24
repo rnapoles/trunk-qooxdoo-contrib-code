@@ -31,11 +31,14 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import javax.servlet.ServletException;
 import org.apache.log4j.Logger;
@@ -158,6 +161,16 @@ public class RequestHandler {
 		tracker.setRequestHandler(this);
 		ObjectMapper objectMapper = tracker.getObjectMapper();
 		try {
+			if (log.isDebugEnabled()) {
+				StringWriter sw = new StringWriter();
+				char[] buffer = new char[32 * 1024];
+				int length;
+				while ((length = request.read(buffer)) > 0) {
+					sw.write(buffer, 0, length);
+				}
+				log.debug("Received: " + sw.toString());
+				request = new StringReader(sw.toString());
+			}
 			JsonParser jp = objectMapper.getJsonFactory().createJsonParser(request);
 			if (jp.nextToken() == JsonToken.START_ARRAY) {
 				while(jp.nextToken() != JsonToken.END_ARRAY)
@@ -280,8 +293,9 @@ public class RequestHandler {
 						Method method = methods[i].getMethod();
 						
 						// Call the method
+						Object[] values;
 						try {
-							Object[] values = readParameters(jp, method.getParameterTypes());
+							values = readParameters(jp, method.getParameterTypes());
 							Object result = method.invoke(serverObject, values);
 							tracker.getQueue().queueCommand(CommandId.CommandType.FUNCTION_RETURN, serverObject, null, result);
 						}catch(InvocationTargetException e) {
@@ -439,7 +453,7 @@ public class RequestHandler {
 		
 		if (action.equals("replaceAll")) {
 			if (prop.getPropertyClass().isCollection()) {
-				ArrayList list = (ArrayList)prop.getValue(serverObject);
+				Collection list = (Collection)prop.getValue(serverObject);
 				list.clear();
 				for (Object obj : items)
 					list.add(obj);
