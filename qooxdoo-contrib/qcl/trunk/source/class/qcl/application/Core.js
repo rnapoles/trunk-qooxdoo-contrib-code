@@ -111,7 +111,8 @@ qx.Class.define("qcl.application.Core",
     {
       check : "String",
       nullable : false,
-      init : "A qooxdoo application"
+      init : "A qooxdoo application",
+      apply : "_applyApplicationName"
     },
     
     /**
@@ -328,6 +329,11 @@ qx.Class.define("qcl.application.Core",
       }
     },
     
+    _applyApplicationName : function( value, old )
+    {
+      window.name = value;
+    },
+    
     /*
     ---------------------------------------------------------------------------
        MODULE REGISTRATION
@@ -434,8 +440,8 @@ qx.Class.define("qcl.application.Core",
     */   
     
     /**
-     * Subscribes to a message name
-     * @param name {String} The name of the message
+     * Subscribes to one or more message channels
+     * @param name {Array|String} The name(s) of the channels(s)
      * @param callback {Function} A function that is called when the message is 
      *    published 
      * @param context {Object} The context object
@@ -443,33 +449,56 @@ qx.Class.define("qcl.application.Core",
      */
     subscribe : function( name, callback, context )
     {
+      if (qx.lang.Type.isArray(name) )
+      {
+        name.forEach(function(n){
+          this.subscribe(n, callback, context);
+        },this);
+        return;
+      }      
       qx.event.message.Bus.subscribe( name, callback, context );
     },
     
     /**
-     * Returns true if the callback is already subscribed
-     * @param name {String} The name of the message
+     * Returns true if the channel(s) is/are already subscribed by the given function
+     * and context
+     * @param name {Array|String} The name(s) of the message(s)
      * @param callback {Function} A function that is called when the message is 
      *    published 
      * @param context {Object} The context object
-     * @return {Boolean}
+     * @return {Boolean} Returns true if all of the given channel names are subscribed.
      */
     isSubscribed : function( name, callback, context )
     {
+      if (qx.lang.Type.isArray(name) )
+      {
+        var isSubscribed = true;
+        name.forEach(function(n){
+          isSubscribed = isSubscribed && this.isSubscribed(n, callback, context);
+        },this);
+        return isSubscribed;
+      }
       return qx.event.message.Bus.checkSubscription( name, callback, context );
     },    
 
     
     /**
-     * Unsubscribes from a message name
-     * @param name {String} The name of the message
-     * @param callback {Function} A function that is called when the message is 
-     *    published 
-     * @param context {Object} The context object
+     * Unsubscribes from one or more channels
+     * @param name {Array|String} The name(s) of the channels(s)
+     * @param callback {Function|undefined} If given, unsubscribe only this 
+     * particular handler, otherwise unsubscribe all handlers 
+     * @param context {Object|undefined} if given, unsubscribe only the handlers
+     * with the given context object
      * @return {void}
      */
     unsubscribe : function( name, callback, context )
     {
+      if (qx.lang.Type.isArray(name) )
+      {
+        name.forEach(function(n){
+          this.unsubscribe(n, callback, context);
+        },this);
+      }      
       qx.event.message.Bus.unsubscribe( name, callback, context );
     },
     
@@ -645,17 +674,18 @@ qx.Class.define("qcl.application.Core",
     },
     
     /**
-     * Subscribes to a message channel on the server.
-     * @param name {String} 
-     *    The name of the channel
+     * Subscribes to one or more message channels on the server.
+     * @param name {Array|String} 
+     *    The name(s) of the channel(s)
      * @param callback {Function} 
-     *    A function that is called when the message is published 
-     * @param context {Object} The context object
+     *    A function that is called when the message is published to this channel 
+     * @param context {Object} The context object of the callback
      * @param finalCallback {Function} 
      *    An optional callback which is called when the subscription has been made
      * @param finalContext {Object}
      *    The context of the finalCallback function 
      * @return {void}
+     * @todo use promise instead
      */
     subscribeToChannel : function( name, callback, context, finalCallback, finalContext )
     {
@@ -664,7 +694,7 @@ qx.Class.define("qcl.application.Core",
        */
       if ( ! this.isMessageTransportRunning() )
       {
-        this.warn("Cannot subscribe to channel '" + name + "'. Message transport is not running.");
+        this.warn("Cannot subscribe to channel(s) '" + name + "'. Message transport is not running.");
         return false;
       }
       
@@ -684,7 +714,7 @@ qx.Class.define("qcl.application.Core",
           }
           else
           {
-            this.error("Cannot subscribe to channel '" + name + "'. Anonymous subscriptions are not allowed and user is not yet authenticated.");
+            this.error("Cannot subscribe to channel(s) '" + name + "'. Anonymous subscriptions are not allowed and user is not yet authenticated.");
           }
         }
       }
@@ -692,7 +722,7 @@ qx.Class.define("qcl.application.Core",
       /*
        * subscribe on client, where the messages are actually published
        */
-      if ( ! this.isSubscribed (name, callback, context ) )
+      if ( ! this.isSubscribed(name, callback, context ) )
       {
         this.subscribe( name, callback, context );  
       }
@@ -706,7 +736,14 @@ qx.Class.define("qcl.application.Core",
         // otherwise we'll have a ton of subscription requests to the 
         // server. So we'll need a way to remove the subscription
         // from the list when an error occurs
-        this.__channels.push( name ); 
+        if ( qx.lang.Type.isArray(name) )
+        {
+          this.__channels = this.__channels.concat( name ); 
+        }
+        else
+        {
+          this.__channels.push( name );  
+        }
         switch( this.__messageTransportOptions.mode )
         {
           case "poll":
@@ -716,7 +753,7 @@ qx.Class.define("qcl.application.Core",
                 this.rpcRequest( 
                   this.__messageTransportOptions.service, "subscribe", [name],
                   function() {
-                    this.info("Subscribed to channel " + name );
+                    this.info("Subscribed to channel(s) " + name );
                     if ( typeof finalCallback == "function" )
                     {
                       finalCallback.call( finalContext );
@@ -733,24 +770,34 @@ qx.Class.define("qcl.application.Core",
     /**
      * Returns true if a channel of this name has been subscribed to,
      * false if not
-     * @param name {String}
-     * @return {Boolean}
+     * @param name {Array|String} If you supply an array, it will check
+     * if all of the given channels are subscribed. 
+     * @return {Boolean} Returns true if the one given or all of the given channels
+     * are subscribed to
      */
     isSubscribedChannel : function( name )
     {
+      if (qx.lang.Type.isArray(name) )
+      {
+        var isSubscribed = true;
+        name.forEach(function(n){
+          isSubscribed = isSubscribed && this.isSubscribedChannel(n);
+        },this);
+        return isSubscribed;
+      }
       return qx.lang.Array.contains( this.__channels, name );
     },
     
     /**
-     * Unsubscribes from a message channel on the server
-     * @param name {String} 
-     *    The name of the channel
-     * @param callback {Function} 
-     *    A function that is called when the message is published 
-     * @param context {Object} 
-     *    The context object
+     * Unsubscribes from one or more message channels on the server
+     * @param name {Array|String} 
+     *    The name(s) of the channel(s)
+     * @param callback {Function|undefined} If given, unsubscribe only this 
+     * particular handler, otherwise unsubscribe all handlers 
+     * @param context {Object|undefined} if given, unsubscribe only the handlers
+     * with the given context object
      * @param finalCallback {Function} 
-     *    An optional callback which is called when the subscription has been cancelled
+     *    An optional callback which is called when the subscription(s) has been cancelled
      * @param finalContext {Object}
      *    The context of the finalCallback function 
      * @return {void}
@@ -777,7 +824,17 @@ qx.Class.define("qcl.application.Core",
       
       // need to remove already without knowing if the unsuscribe action
       // will be successful.
-      qx.lang.Array.remove( this.__channels, name );
+      if ( qx.lang.Type.isArray(name) )
+      {
+        name.forEach(function(n){
+          qx.lang.Array.remove( this.__channels, name );
+        });
+      }
+      else
+      {
+        qx.lang.Array.remove( this.__channels, name );
+      }      
+      
       
       /*
        * unsubscribe dependent on transport mode
@@ -791,7 +848,7 @@ qx.Class.define("qcl.application.Core",
               this.rpcRequest( 
                 this.__messageTransportOptions.service, "unsubscribe", [name],
                 function() {
-                  this.info("Unsubscribed from channel " + name );
+                  this.info("Unsubscribed from channel(s) " + name );
                   this.unsubscribe( name, callback, context );
                   if ( typeof finalCallback == "function" )
                   {
@@ -1217,6 +1274,7 @@ qx.Class.define("qcl.application.Core",
      * Returns object or qx.core.Object (default) with values used for application layout.
      * @param nativeObject {Boolean|undefined} 
      * @return {qx.core.Object|Object}
+     * @deprecated This method will be removed.
      */
     getLayoutConfig : function( nativeObject )
     {
