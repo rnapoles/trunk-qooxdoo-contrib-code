@@ -26,7 +26,8 @@ var mySim = new simulation.Simulation(baseConf,args);
 var selWin = simulation.Simulation.SELENIUMWINDOW;
 var qxAppInst = simulation.Simulation.QXAPPINSTANCE;
 var locators = {
-  previewList : 'qxh=inline:showcase//[@classname="showcase.ui.PreviewList"]'
+  previewList : 'qxh=inline:showcase//[@classname="showcase.ui.PreviewList"]',
+  virtualListContactsWindow : 'qxhybrid=showcase&&qxhv=qx.ui.container.Stack/qx.ui.container.Composite/qx.ui.window.Desktop/[@caption=Contacts]'
 };
 
 simulation.Simulation.prototype.runTest = function()
@@ -38,6 +39,8 @@ simulation.Simulation.prototype.runTest = function()
   // Log any errors caught during showcase startup
   this.logGlobalErrors();
   this.clearGlobalErrorStore();
+  
+  this.checkUrlParameter();
   
   var hasNext = true;
   var demoCount = 0;
@@ -61,6 +64,22 @@ simulation.Simulation.prototype.testDemo = function()
   // Log any errors caught during demo startup 
   this.logGlobalErrors();
   this.clearGlobalErrorStore();
+};
+
+simulation.Simulation.prototype.checkUrlParameter = function()
+{
+  var selectedDemo = /(#.*)$/.exec(this.getConfigSetting("autPath"));
+  if (!selectedDemo || selectedDemo[1] !== "#virtuallist") {
+    return;
+  }
+  
+  try {
+    this.__sel.qxClick(locators.virtualListContactsWindow);
+    this.log("checkUrlParameter: Demo selected via URL loaded correctly", "info");
+  }
+  catch(ex) {
+    this.log("checkUrlParameter: " + ex.message, "error");
+  }
 };
 
 // - Main --------------------------------------------------------------------
