@@ -547,6 +547,45 @@ function qcl_parse_filesize($val)
     return $val;
 }
 
+
+/**
+ * from http://php.net/manual/en/function.getallheaders.php
+ * @return array all header keys are lower-case!
+ */
+function qcl_get_request_header( $header_name )
+{
+  static $headers = array();
+  if ( count( $headers ) == 0 )
+  {
+    if (!function_exists('getallheaders') ) 
+    { 
+      foreach ($_SERVER as $name => $value)
+      {
+        $name = strtolower( $name );
+         if (substr( $name, 0, 5) == 'http_')
+         {
+             $name = str_replace(' ', '-', str_replace('_', ' ', substr($name, 5)));
+             $headers[$name] = $value;
+         } else if ($name == "content_type") {
+             $headers["content-type"] = $value;
+         } else if ($name == "content_length") {
+             $headers["content-length"] = $value;
+         }
+      }
+    }
+    else
+    {
+      foreach( getallheaders() as $key => $value )
+      {
+        $headers[strtolower($key)] = $value;
+      }
+    }
+  
+  }  
+  $header_value = $headers[$header_name];
+  return $header_value; 
+}
+
 /**
  * Returns the first non-null argument.
  * Avoids if statements such as if($a) $c=$a; else $c=$b;
