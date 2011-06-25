@@ -365,18 +365,28 @@ class qcl_access_Controller
   }
 
   /**
-   * Gets the session id from the request, either from the server data part of the
-   * json-rpc request (deprecated), or as stored in a cookie.
+   * Gets the session id from the request, from a variety of alternative sources, in order:
+   *  - from the 'sessionId' key in the server data part of the json-rpc request (deprecated)
+   *  - from the 'x-qcl-sessionid' request header
+   *  - from the QCLSESSID in the request parameters
+   *  - from the QCLSESSID cookie
    * @return string|null The session id, if it can be retrieved, otherwise null.
-   * @todo rename to getSessionIdFromRequest
+   * @todo move into request object
    */
-  public function getSessionIdFromServerData()
+  public function getSessionIdFromRequest()
   {
-    return either(
+    $sessionId = either(
       qcl_server_Request::getInstance()->getServerData("sessionId"),
-      $_COOKIE['sessionId'],
+      qcl_get_request_header('x-qcl-sessionid'),
+      $_REQUEST['QCLSESSID'],
+      $_COOKIE['QCLSESSID'],
       null
     );
+    if ( $sessionId )
+    {
+      $this->log("Got session id from request: #$sessionId", QCL_LOG_ACCESS );
+    }
+    return $sessionId;
   }
 
   //-------------------------------------------------------------
@@ -398,7 +408,7 @@ class qcl_access_Controller
     /*
      * on-the-fly authentication
      */
-    $sessionId = $this->getSessionIdFromServerData();
+    $sessionId = $this->getSessionIdFromRequest();
 
     if ( $sessionId )
     {
