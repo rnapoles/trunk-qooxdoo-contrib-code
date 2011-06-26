@@ -98,8 +98,15 @@ qx.Class.define("qcl.access.UserManager",
 		 */
 		_applyModel : function ( model, old )
 		{
+      if( model && ! model.getSessionId() )
+      {
+        this.setActiveUser(null);
+        return;
+      }
+      
 		  if ( model && ! model.getError() )
 		  {
+        
 		    /*
 		     * create user
 		     */
