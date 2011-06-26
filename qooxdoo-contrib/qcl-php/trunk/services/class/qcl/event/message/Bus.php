@@ -286,6 +286,15 @@ class qcl_event_message_Bus
         		continue;
         	}
         	
+          /*
+        	 * do not dispatch if the message should not go to anonymous users
+        	 * the client itself
+        	 */
+        	if( $message->isExcludeAnonymousUsers() and $userModel->isAnonymous() )
+        	{
+        		continue;
+        	}
+        	
 			    /*
 			     * do not dispatch the message when one of the registered
 			     * callbacks returns false

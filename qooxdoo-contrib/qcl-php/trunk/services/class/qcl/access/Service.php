@@ -79,37 +79,39 @@ class qcl_access_Service
          );
       }
     }
-
+    
+    /*
+     * Disallow revious behavior 
+     */
+    elseif ( is_null($first) )
+    {
+      $this->raiseError("Anonymous authentication with a 'null' session is no longer supported. Please generate a random session id on the client.");
+    }
+    
     /*
      * authentication with session id
      */
-    if ( is_null( $first )  or is_null( $password ) )
+    elseif ( is_string($first) and is_null( $password ) )
     {
-      $sessionId = either( $first, $this->getSessionId() );
+      $sessionId = $this->getSessionId();
       
-      /*
-       * parent and sibling session support
-       */
-      if( substr($sessionId,0,2) == "P_" )
-      {
-        $sessionId = $this->getAccessController()->createChildSession( substr($sessionId,2) );
-      }
-      if( substr($sessionId,0,2) == "S_" )
-      {
-        $sessionId = $this->getAccessController()->createSiblingSession( substr($sessionId,2) );
-      }      
-
-      $this->log("Authenticating from existing session '$sessionId'...", QCL_LOG_ACCESS);
+      //@todo - what to do with given session id, since it has already been handled
+       
+      $this->log("Authenticating from session id '$sessionId'...", QCL_LOG_ACCESS);
       try
       {
         $userId = $accessController->getUserIdFromSession( $sessionId );
       }
       catch( qcl_access_InvalidSessionException $e )
       {
+        /*
+         * if there is no user associated with this session id
+         * and anonymous access is allowed, reuse the session id
+         */
         if ( $accessController->isAnonymousAccessAllowed() )
         {
           $this->warn( $e->getMessage() );
-          $userId = $accessController->grantAnonymousAccess();
+          $userId = $accessController->grantAnonymousAccess($sessionId);
         }
         else
         {
@@ -476,9 +478,11 @@ class qcl_access_Service
   /**
    * Service method to log out the active user. Automatically creates guest
    * access. Override this method if this is not what you want.
-   * @return qcl_data_Result
+   * @param boolean $returnAsAnonymous if true (default), log out the current user but return
+   * authentication data for a new anonymous user. If false, return "OK".
+   * @return qcl_data_Result|string
    */
-  public function method_logout()
+  public function method_logout($returnAsAnonymous=false)
   {
     $accessController = $this->getApplication()->getAccessController();
 
@@ -493,13 +497,25 @@ class qcl_access_Service
     else
     {
       $accessController->logout();
-      $accessController->grantAnonymousAccess();
     }
 
     /*
      * return authentication data
      */
-    return $this->method_authenticate(null);
+    if ( $returnAsAnonymous )
+    {
+      $this->log("Creating new anonymous session",QCL_LOG_ACCESS);
+      $this->getAccessController()->grantAnonymousAccess();
+      return $this->method_authenticate(null);
+    }
+    else 
+    {
+      $this->log("Successfully logged out...",QCL_LOG_ACCESS);
+      $response = new qcl_access_AuthenticationResult();
+      $response->set( "sessionId", "");
+      $response->set( "anonymous", true );
+      return $response;
+    }
   }
 
   /**

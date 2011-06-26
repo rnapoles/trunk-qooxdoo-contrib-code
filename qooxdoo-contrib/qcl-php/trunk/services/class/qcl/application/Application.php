@@ -53,7 +53,7 @@ abstract class qcl_application_Application
    * Whether anoynmous access is allowed
    * @var boolean
    */
-  protected $allowAnonymousAccess = true;
+  protected $allowAnonymousAccess = false;
 
   /**
    * Whether authentication should be skipped altogether.
