@@ -178,45 +178,6 @@ qx.Class.define("qcl.io.RpcManager",
         this._appStore.setServiceName( serviceName );  
       }
       this._appStore.execute( serviceMethod, params, callback, context);
-    },
-    
-//    /**
-//     * Registers a store with the server
-//     * @param store {qcl.data.store.JsonRpc}
-//     */
-//    registerStore : function( store )
-//    {
-//      this.load("register",[ store.getStoreId() ],function(data){
-//        //this.info(data);
-//      }, this );  
-//    },
-//    
-//    /**
-//     * Unregisters a store from the server
-//     * @param store {qcl.data.store.JsonRpc}
-//     */
-//    unregisterStore : function( store )
-//    {
-//      this.load("unregister",[ store.getStoreId() ],function(data){
-//        //this.info(data);
-//      }, this );  
-//    },
-    
-    /**
-     * Called when the page is closed and unregisteres stores on the server. 
-     * If you want to have additional termination
-     * action, define a _terminate method in your main application, which is 
-     * called after at the end of this method.
-     */
-    terminate : function()
-    {
-      /*
-       * execute terminate function on server
-       */
-      if ( this.getServiceMethodOnTerminate() && this.getRpcObject() )
-      {
-        this.execute( this.getServiceMethodOnTerminate() );
-      }
-    } 
+    }
   }
 });

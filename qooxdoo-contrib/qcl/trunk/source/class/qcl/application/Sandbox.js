@@ -108,6 +108,19 @@ qx.Class.define("qcl.application.Sandbox",
     },
     
     /**
+     * Subscribes to one message channel, but only for one message
+     * @param name {String} The name of the channels
+     * @param callback {Function} A function that is called when the message is 
+     *    published 
+     * @param context {Object} The context object
+     * @return {void}
+     */
+    subscribeOnce : function( name, callback, context )
+    {
+      this.__core.subscribeOnce( name, callback, context );
+    },      
+    
+    /**
      * Returns true if the channel(s) is/are already subscribed by the given function
      * and context
      * @param name {Array|String} The name(s) of the message(s)

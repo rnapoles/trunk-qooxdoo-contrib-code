@@ -277,7 +277,16 @@ qx.Class.define("qcl.application.Core",
     
   },
 
-
+  /*
+  *****************************************************************************
+     EVENTS
+  *****************************************************************************
+  */
+  
+  events :
+  {
+    
+  },
 
   /*
   *****************************************************************************
@@ -460,6 +469,22 @@ qx.Class.define("qcl.application.Core",
     },
     
     /**
+     * Subscribes to one message channel, but only for one message
+     * @param name {String} The name of the channels
+     * @param callback {Function} A function that is called when the message is 
+     *    published 
+     * @param context {Object} The context object
+     * @return {void}
+     */
+    subscribeOnce : function( name, callback, context )
+    {
+      qx.event.message.Bus.subscribe( name, function(){
+        callback.apply(context,arguments);
+        qx.event.message.Bus.unsubscribe( name, callback, context );
+      }, this );
+    },    
+    
+    /**
      * Returns true if the channel(s) is/are already subscribed by the given function
      * and context
      * @param name {Array|String} The name(s) of the message(s)
@@ -470,7 +495,7 @@ qx.Class.define("qcl.application.Core",
      */
     isSubscribed : function( name, callback, context )
     {
-      if (qx.lang.Type.isArray(name) )
+      if ( qx.lang.Type.isArray(name) )
       {
         var isSubscribed = true;
         name.forEach(function(n){
@@ -513,7 +538,9 @@ qx.Class.define("qcl.application.Core",
     },
     
     /**
-     * Starts the message transport.
+     * Starts the message transport. When established, publishes the
+     * "qcl/messagetransport/ready" message.
+     * 
      * @param options {Map} 
      *    A map with the following structure:<pre>
      *    {
@@ -539,6 +566,7 @@ qx.Class.define("qcl.application.Core",
      *          Whne the mode is "poll", the number of seconds between polling
      *          requests
      *    }</pre>
+     *  
      */
     startMessageTransport : function( options )
     {
@@ -641,7 +669,7 @@ qx.Class.define("qcl.application.Core",
       }
       this.__messageTransportOptions = options;
       this.__transportRunning = true;
-      this.publish("messageTransportReady");
+      this.publish("qcl/messagetransport/ready");
     },
     
     /**
@@ -651,7 +679,8 @@ qx.Class.define("qcl.application.Core",
     {
       if ( ! this.__transportRunning )
       {
-        this.error( "Message transport is not running.");
+        // ignore
+        return false;
       }
       
       switch( this.__messageTransportOptions.mode )
@@ -690,16 +719,8 @@ qx.Class.define("qcl.application.Core",
     subscribeToChannel : function( name, callback, context, finalCallback, finalContext )
     {
       /*
-       * check transport
-       */
-      if ( ! this.isMessageTransportRunning() )
-      {
-        this.warn("Cannot subscribe to channel(s) '" + name + "'. Message transport is not running.");
-        return false;
-      }
-      
-      /*
-       * check authentication state
+       * check authentication state and delay if not authenticated yet
+       * @todo rewrite this
        */
       if ( ! this.isAuthenticatedUser() )
       {
@@ -721,10 +742,25 @@ qx.Class.define("qcl.application.Core",
       
       /*
        * subscribe on client, where the messages are actually published
+       * this way we can listen to messages even before the message transport 
+       * has started
        */
-      if ( ! this.isSubscribed(name, callback, context ) )
+      if ( ! this.isSubscribed( name, callback, context ) )
       {
         this.subscribe( name, callback, context );  
+      }      
+      
+      /*
+       * if no transport is running yet, delay subscription until we 
+       * the transport is ready.
+       */
+      if ( ! this.isMessageTransportRunning() )
+      {
+        var args = qx.lang.Array.fromArguments(arguments);
+        this.subscribeOnce("qcl/messagetransport/ready", function(){
+          this.subscribeToChannel.apply(this,args);
+        },this);
+        return;
       }
         
       /*
@@ -863,17 +899,12 @@ qx.Class.define("qcl.application.Core",
     },    
     
     /**
-     * Unsubscribes from all channels. Returns false if no transport
-     * is running or no subscriptions have been made, otherwise true
-     * @return {Boolean}
+     * Unsubscribes from all channels. Continues with the given callback
+     * @return {void}
      */
     unsubscribeFromAllChannels : function( finalCallback, finalContext )
     {
-      if ( ! this.isMessageTransportRunning() || this.__channels.length == 0 )
-      {
-        return false;
-      }
-      
+     
       /*
        * locally remove all
        */
@@ -901,8 +932,7 @@ qx.Class.define("qcl.application.Core",
           }
           break;
       }
-      return true;
-    },
+     },
     
     /**
      * Publishes a message to a message channel on the server
@@ -921,12 +951,16 @@ qx.Class.define("qcl.application.Core",
     publishToChannel : function( name, data, now, clientAlso )
     {
       /*
-       * check transport
+       * if no transport is running yet, publish when 
+       * the transport is ready.
        */
-      if ( ! this.__transportRunning )
+      if ( ! this.isMessageTransportRunning() )
       {
-        this.warn("Cannot publish to channel. Message transport is not running.");
-        return false;
+        var args = qx.lang.Array.fromArguments(arguments);
+        this.subscribeOnce("qcl/messagetransport/ready", function(){
+          this.publishToChannel.apply(this,args);
+        },this);
+        return;
       }
       
       /*
@@ -1027,6 +1061,7 @@ qx.Class.define("qcl.application.Core",
      * Initializes the managers. Override by defining this method in your
      * application class. 
      * @todo is a session manager object really needed?
+     * @todo document session id behavior
      */
     initializeManagers : function()
     {
@@ -1041,13 +1076,9 @@ qx.Class.define("qcl.application.Core",
       // this.setClipboardManager ( new qcl.application.ClipboardManager( this ) );
    
       /*
-       * set session id from state,
+       * initialize the session id
        */
-      var sid =  this.getStateManager().getState("sessionId");
-      if ( sid )
-      {
-        this.setSessionId( sid );  
-      }
+      this.initSessionId();
       
       /*
        * initialize some managers
@@ -1064,6 +1095,38 @@ qx.Class.define("qcl.application.Core",
        * bind the active user's session id 
        */
       this.getAccessManager().getStore().bind("model.sessionId", this, "sessionId" );
+    },
+    
+    /**
+     * Initializes the session id for this application. Current behavior: if a sessionId
+     * key is in the URL hash-based application state, use its value. Otherwise generate
+     * a random md5 hash. 
+     */
+    initSessionId : function()
+    {
+      /*
+       * set session id from state, or create a random session id for this
+       * application
+       */
+      var sessionId = this.getStateManager().getState("sessionId");
+      if ( qx.lang.Type.isString(sessionId) && sessionId.length )
+      {
+        /*
+         * parent and sibling session behavior
+         */
+        if( sessionId.substr(0,2)=="P_" || sessionId.substr(0,2)=="S_" )
+        {
+          if( sessionId.split("_").length == 2 )
+          {
+            sessionId += "_" + qcl.crypto.md5.createRandom();  
+          }
+        }
+        this.setSessionId( sessionId ); 
+      }
+      else
+      {
+        this.setSessionId( qcl.crypto.md5.createRandom() );      
+      }
     },
     
     /*
@@ -1181,6 +1244,7 @@ qx.Class.define("qcl.application.Core",
      */
     connect : function( callback, context )
     {
+      var sessionId = this.getSessionId();
       this.getAccessManager().connect( this.getSessionId(), callback, context );
     },    
     
@@ -1205,7 +1269,10 @@ qx.Class.define("qcl.application.Core",
      */
     logout : function( callback, context )
     {
-      this.getAccessManager().logout( callback, context );
+      this.unsubscribeFromAllChannels(function(){
+        this.stopMessageTransport();
+        this.getAccessManager().logout( callback, context );
+      },this);
     },
 
     
@@ -1325,7 +1392,15 @@ qx.Class.define("qcl.application.Core",
     removeApplicationState : function( name )
     {
       this.getStateManager().removeState( name );
-    },        
+    },
+    
+    /**
+     * Removes all application state variables
+     */
+    removeAllApplicationStates : function()
+    {
+      this.getStateManager().removeAllStates();
+    },          
     
     /**
      * Returns a map with all application states
@@ -1433,18 +1508,16 @@ qx.Class.define("qcl.application.Core",
       {  
         return qx.locale.Manager.tr("Do you really want to quit %1?",  this.getApplicationName() );
       }
-      this.unsubscribeFromAllChannels();
       return undefined;
     },
     
     /**
-     * Called when the page is closed. Calls the terminate() method of the
-     * rpc manager. Override by definining a terminate() method in your application
-     * class
+     * Called when the page is closed.
      */
     terminate : function()
     {
-      this.getRpcManager().terminate();
+      // doesn't work
+      //this.logout();
     },
     
     /*

@@ -605,6 +605,18 @@ qx.Class.define("qcl.application.StateManager",
       this.addToHistory(location.hash.substr(1),null);
     },
     
+    /**
+     * Removes all application state variables
+     */
+    removeAllStates : function ()
+    {
+      var states = this.getStates();
+      for( var state in states )
+      {
+        this.removeState( state );
+      }
+    },
+    
     
     /*
     ---------------------------------------------------------------------------

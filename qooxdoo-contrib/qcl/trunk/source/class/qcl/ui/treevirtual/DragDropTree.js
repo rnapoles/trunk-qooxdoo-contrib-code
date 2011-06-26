@@ -1086,7 +1086,7 @@ qx.Class.define("qcl.ui.treevirtual.DragDropTree",
         /*
          * import the node into the tree's node array
          */
-        var nodeData = nodes[i];
+        var node = qx.lang.Object.clone(nodes[i]);
         node.nodeId = nodeArr.length;
         nodeArr.push(node);
         
