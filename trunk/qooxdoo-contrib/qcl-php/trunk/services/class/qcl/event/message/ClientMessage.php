@@ -37,6 +37,13 @@ class qcl_event_message_ClientMessage
   protected $excludeOwnSession = false;
   
   /**
+   * Whether anonymous users should be excluded from getting the message
+   * Defaults to false
+   * @var boolean
+   */
+  protected $excludeAnonymousUsers = true;
+  
+  /**
    * Arbitrary access control information
    * @var array|null
    */
@@ -79,6 +86,26 @@ class qcl_event_message_ClientMessage
   public function isExcludeOwnSession()
   {
     return $this->excludeOwnSession;
+  }
+  
+  
+  /**
+   * Setter for excludeAnonymousUsers
+   * @param boolean $value
+   */
+  public function setExcludeAnonymousUsers( $value )
+  {
+    qcl_assert_boolean( $value );
+    $this->excludeAnonymousUsers = $value;
+  }
+
+  /**
+   * Getter for excludeAnonymousUsers
+   * @return boolean
+   */
+  public function isExcludeAnonymousUsers()
+  {
+    return $this->excludeAnonymousUsers;
   }
   
   /**

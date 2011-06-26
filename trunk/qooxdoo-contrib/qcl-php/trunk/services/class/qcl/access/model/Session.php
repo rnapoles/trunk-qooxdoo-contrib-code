@@ -119,6 +119,7 @@ class qcl_access_model_Session
   // API methods
   //-------------------------------------------------------------
 
+ 
   /**
    * Registers a session. adds an entry with the current timestamp if the session
    * doesn't exist, otherwise leaves the last action column alone.

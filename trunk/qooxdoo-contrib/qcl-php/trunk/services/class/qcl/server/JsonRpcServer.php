@@ -405,8 +405,11 @@ class qcl_server_JsonRpcServer
       $events    = $app->getEventDispatcher()->getClientEvents(); 
       $response->setEvents( $events );
       $sessionId = $app->getAccessController()->getSessionId();
-      $messages  = $app->getMessageBus()->getClientMessages( $sessionId );
-      $response->setMessages( $messages );
+      if( $sessionId )
+      {
+        $messages  = $app->getMessageBus()->getClientMessages( $sessionId );
+        $response->setMessages( $messages );
+      }
     }
 
     if( is_a( $data, "qcl_data_Result" ) )
@@ -423,7 +426,7 @@ class qcl_server_JsonRpcServer
    * @param bool $includeBacktrace Whether a backtrace should be printed as well
    * @return void
    */
-  public function logError( $msg, $includeBacktrace = false )
+  public function logError( $msg, $includeBacktrace = true )
   {
     qcl_log_Logger::getInstance()->error( $msg, $includeBacktrace );
   }
