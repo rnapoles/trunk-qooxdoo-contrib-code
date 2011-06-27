@@ -145,7 +145,8 @@ class qcl_access_model_Session
     ) );
     if ( ! $localhost and $sessionMismatch )
     {
-      throw new qcl_access_AccessDeniedException("Access denied");
+      $this->warn("Session #$sessionId originates from a different host. Aborting.");
+      throw new qcl_access_AccessDeniedException("Illegal session id. Access denied");
     }
 
     /*
