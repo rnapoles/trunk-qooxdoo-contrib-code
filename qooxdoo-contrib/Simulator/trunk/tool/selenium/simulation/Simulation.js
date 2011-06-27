@@ -1044,8 +1044,9 @@ simulation.Simulation.prototype.addRingBufferGetter = function()
     var entryArray = [];
     for (var i=0,l=entries.length; i<l; i++) {
       try {
-      var entry = selenium.qxStoredVars['autWindow'].qx.log.appender.Util.toText(entries[i]);
-      entryArray.push(entry);
+        var entry = entries[i].level + ":" 
+        + selenium.qxStoredVars['autWindow'].qx.log.appender.Util.toText(entries[i]);
+        entryArray.push(entry);
       } catch(ex) {
         var entry = entries[i].level + ":";
         for (var j=0,m=entries[i].items.length; j<m; j++) {
@@ -1073,7 +1074,9 @@ simulation.Simulation.prototype.logRingBufferEntries = function()
   var debugLogArray = debugLog.split("|");
   
   for (var i=0,l=debugLogArray.length; i<l; i++) {
-    this.log(debugLogArray[i], "info");
+    var entry = debugLogArray[i].split(":");
+    var level = entry.shift();
+    this.log(entry.join(" : "), level);
   }
 };
 
