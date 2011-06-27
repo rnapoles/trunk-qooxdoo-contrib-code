@@ -33,7 +33,7 @@ qx.Class.define("rpcexample.Application",
       this.base(arguments);
 
       // Enable logging in debug variant
-      if (qx.core.Variant.isSet("qx.debug", "on"))
+      if (qx.core.Environment.get("qx.debug"))
       {
         var appender;
 
@@ -186,7 +186,7 @@ qx.Class.define("rpcexample.Application",
       var defaultURL = qx.io.remote.Rpc.makeServerURL();
       if (defaultURL == null)
       {
-        defaultURL = qx.core.Setting.get("rpcexample.URL");
+        defaultURL = qx.core.Environment.get("rpcexample.URL");
       }
       var url = new qx.ui.form.TextField(defaultURL);
 
@@ -300,7 +300,7 @@ qx.Class.define("rpcexample.Application",
       page.add(new qx.ui.basic.Label("URL:"));
       var defaultURL = qx.io.remote.Rpc.makeServerURL();
       if (defaultURL == null) {
-        defaultURL = qx.core.Setting.get("rpcexample.URL");
+        defaultURL = qx.core.Environment.get("rpcexample.URL");
       }
       var url = new qx.ui.form.TextField(defaultURL);
 
@@ -411,7 +411,7 @@ qx.Class.define("rpcexample.Application",
       page.add(new qx.ui.basic.Label("URL:"));
       var defaultURL = qx.io.remote.Rpc.makeServerURL();
       if (defaultURL == null) {
-        defaultURL = qx.core.Setting.get("rpcexample.URL");
+        defaultURL = qx.core.Environment.get("rpcexample.URL");
       }
       var url = new qx.ui.form.TextField(defaultURL);
 
@@ -677,7 +677,7 @@ qx.Class.define("rpcexample.Application",
       page.add(new qx.ui.basic.Label("URL:"));
       var defaultURL = qx.io.remote.Rpc.makeServerURL();
       if (defaultURL == null) {
-        defaultURL = qx.core.Setting.get("rpcexample.URL");
+        defaultURL = qx.core.Environment.get("rpcexample.URL");
       }
       var url = new qx.ui.form.TextField(defaultURL);
 

@@ -36,7 +36,7 @@ qx.Class.define("rpcexample.RemoteDataModel",
   statics :
   {
     // The URL for remote services.
-    URL     : qx.core.Setting.get("rpcexample.URL"),
+    URL     : qx.core.Environment.get("rpcexample.URL"),
 
     // The service to use.  We expect this service to implement two methods:
     // getRowCount and getRowData.
