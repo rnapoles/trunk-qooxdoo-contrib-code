@@ -59,17 +59,13 @@ class qcl_access_SessionController
    * the user by a given session id in the request.
    *
    * @override
+   * @param string $sessionId
    * @throws qcl_access_InvalidSessionException
    * @throws qcl_access_TimeoutException
    * @return int user id
    */
-  public function configureUserSession()
+  public function configureUserSession( $sessionId )
   {
-    /*
-     * get session from request
-     */
-    $sessionId = $this->getSessionIdFromRequest();
-
     /*
      * if the application allows unauthenticated acces,
      */
