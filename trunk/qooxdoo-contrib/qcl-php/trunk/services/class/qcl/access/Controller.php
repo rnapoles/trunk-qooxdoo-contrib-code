@@ -267,24 +267,39 @@ class qcl_access_Controller
     ), QCL_LOG_ACCESS );
     
     /*
-     * if authentication is not necessary, create an anonymous
-     * user based on the php session
+     * check session id
      */
-    if( $this->getApplication()->skipAuthentication() )
+    $sessionId = $this->getSessionIdFromRequest();
+    if ( ! $sessionId )
     {
-      $sessionId = $this->getSessionId();
-      $userId = $this->grantAnonymousAccess( $sessionId );
-      $this->createUserSessionByUserId( $userId );
-      $this->log("Temporary anonymous user #$userId with php session #$sessionId ...", QCL_LOG_ACCESS );
-      return true;
+      /*
+       * if authentication is not necessary, create an anonymous
+       * user based on the php session
+       */
+      if( $this->getApplication()->skipAuthentication() )
+      {
+        $sessionId = $this->getSessionId();
+        $userId = $this->grantAnonymousAccess( $sessionId );
+        $this->createUserSessionByUserId( $userId );
+        $this->log("Temporary anonymous user #$userId with php session #$sessionId ...", QCL_LOG_ACCESS );
+        return true;
+      }
+      
+      /*
+       * otherwise, reject access
+       */
+      else 
+      {
+        throw new qcl_access_InvalidSessionException("No access: Missing session id.");
+      }
     }
     
     /*
-     * otherwise, require a valid session id
+     * we have a session id, check if valid
      */
     else 
     {
-      $this->configureUserSession();
+      $this->configureUserSession($sessionId);
     }
   }
 
@@ -413,17 +428,12 @@ class qcl_access_Controller
 
   /**
    * Checks if the requesting client is an authenticated user.
+   * @param string $sessionId
    * @return int userId
    * @todo reimplement timeouts
    */
-  public function configureUserSession()
+  public function configureUserSession($sessionId)
   {
-
-    /*
-     * on-the-fly authentication
-     */
-    $sessionId = $this->getSessionIdFromRequest();
-
     /*
      * get the active user from the session and check for timout
      */
