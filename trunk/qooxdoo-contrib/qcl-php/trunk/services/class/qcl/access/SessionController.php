@@ -72,18 +72,12 @@ class qcl_access_SessionController
 
     /*
      * if the application allows unauthenticated acces,
-     * try to use the PHP session id
      */
-    if ( ! $sessionId && $this->getApplication()->skipAuthentication() )
-    {
-      $sessionId = session_id();
-      $this->log("Skipping authentication, using PHP session id: #$sessionId", QCL_LOG_ACCESS );
-    }
-    elseif ( ! $sessionId )
+    if ( ! $sessionId )
     {
       throw new qcl_access_InvalidSessionException($this->tr("No session id available."));
     }
-  
+    
     /*
      * get user id from session. deny access if not valid
      */
@@ -153,13 +147,13 @@ class qcl_access_SessionController
      */
     $sessionId = parent::getSessionIdFromRequest();
     
-   /*
-    * Sub-session of a parent session: creates a new session 
-    * from a parent session, for example, when opening
-    * child windows hat share the user's access rights, but has to have
-    * a different session to keep its data apart. The child windows session will be 
-    * deleted when the parent's session ends.
-    */
+    /*
+     * Sub-session of a parent session: creates a new session 
+     * from a parent session, for example, when opening
+     * child windows hat share the user's access rights, but has to have
+     * a different session to keep its data apart. The child windows session will be 
+     * deleted when the parent's session ends.
+     */
     if( substr($sessionId,0,2) == "P_" )
     {
       $sessionId = $this->createChildSession( substr($sessionId,2) );
@@ -172,7 +166,7 @@ class qcl_access_SessionController
      * to exist when the other session ends. 
      * @return string
      */
-    if( substr($sessionId,0,2) == "S_" )
+    elseif( substr($sessionId,0,2) == "S_" )
     {
       $sessionId = $this->createSiblingSession( substr($sessionId,2) );
     }    

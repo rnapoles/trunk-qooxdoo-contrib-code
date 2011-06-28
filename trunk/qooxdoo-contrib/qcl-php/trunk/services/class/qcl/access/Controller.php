@@ -266,26 +266,25 @@ class qcl_access_Controller
       "Checking access to service object '%s'", $serviceObject->className()
     ), QCL_LOG_ACCESS );
     
-    try
+    /*
+     * if authentication is not necessary, create an anonymous
+     * user based on the php session
+     */
+    if( $this->getApplication()->skipAuthentication() )
+    {
+      $sessionId = $this->getSessionId();
+      $userId = $this->grantAnonymousAccess( $sessionId );
+      $this->createUserSessionByUserId( $userId );
+      $this->log("Temporary anonymous user #$userId with php session #$sessionId ...", QCL_LOG_ACCESS );
+      return true;
+    }
+    
+    /*
+     * otherwise, require a valid session id
+     */
+    else 
     {
       $this->configureUserSession();
-    }
-    catch( qcl_access_AccessDeniedException $e)
-    {
-      /*
-       * no access control for methods that don't need authenticating
-       */
-      if ( $method=="authenticate" or $method=="setup" )
-      {
-        $userId = $this->grantAnonymousAccess( $this->getSessionId() );
-        $this->createUserSessionByUserId( $userId );
-        $this->log("Temporary anonymous user #$userId for method '$method'...", QCL_LOG_ACCESS );
-        return true;
-      }
-      else
-      {
-        throw $e;
-      }
     }
   }
 
@@ -381,6 +380,8 @@ class qcl_access_Controller
    */
   public function getSessionIdFromRequest()
   {
+    $sessionId = null;
+    
     // server_data, deprecated
     if ( $sessionId = qcl_server_Request::getInstance()->getServerData("sessionId") )
     {
@@ -400,12 +401,7 @@ class qcl_access_Controller
     elseif ( $sessionId =  $_COOKIE['QCLSESSID'] )
     {
       $source = "cookie";
-    }  
-    else
-    {
-      $sessionId = session_id();
-      $source = "PHP session";
-    };
+    }
     $this->log("Got session id from $source: #$sessionId", QCL_LOG_ACCESS );
     return $sessionId;
   }
