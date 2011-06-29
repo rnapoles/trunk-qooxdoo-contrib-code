@@ -279,11 +279,8 @@ class qcl_access_Controller
       if( $this->getApplication()->skipAuthentication() )
       {
         $sessionId = $this->getSessionId();
-        $this->debug( "session id #### $sessionId", __CLASS__, __LINE__ );
         $userId = $this->createAnonymous( $sessionId );
-        $this->debug( "anon granted", __CLASS__, __LINE__ );
         $this->setActiveUserById( $userId );
-        $this->debug( "active user created", __CLASS__, __LINE__ );
         $this->log("Temporary anonymous user #$userId with php session #$sessionId ...", QCL_LOG_ACCESS );
       }
       
