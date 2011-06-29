@@ -54,82 +54,6 @@ class qcl_access_SessionController
     return qcl_getInstance( __CLASS__ );
   }
 
-  /**
-   * This overrides and extends the parent method by providing a way to determine
-   * the user by a given session id in the request.
-   *
-   * @override
-   * @param string $sessionId
-   * @throws qcl_access_InvalidSessionException
-   * @throws qcl_access_TimeoutException
-   * @return int user id
-   */
-  public function configureUserSession( $sessionId )
-  {
-    /*
-     * if the application allows unauthenticated acces,
-     */
-    if ( ! $sessionId )
-    {
-      throw new qcl_access_InvalidSessionException($this->tr("No session id available."));
-    }
-    
-    /*
-     * get user id from session. deny access if not valid
-     */
-    $userId = $this->getUserIdFromSession( $sessionId );
-    if ( ! $userId )
-    {
-      /*
-       * if the application allows unauthenticated acces,
-       * and the session id is not yet linked to a user,
-       * create an anonymous user for all unauthenticated
-       * requests
-       */
-      if ( $this->getApplication()->isAnonymousAccessAllowed() )
-      {
-        $userId = $this->grantAnonymousAccess( $sessionId );
-      }
-
-      /*
-       * else, deny access. You can handle this exception in the
-       * calling method
-       */
-      else
-      {
-        throw new qcl_access_InvalidSessionException("Invalid session id.");
-      }
-    }
-    
-		/*
-     * We have a valid session referring to a valid user.
-     * Configure the user session and return the user id.
-     */    
-    else
-    {
-      $this->setSessionId( $sessionId );
-    }
-
-    /*
-     * We have a valid user now.
-     */
-    $this->setActiveUserById( $userId );
-    $this->log("Success: Got user id #$userId from session:#$sessionId.", QCL_LOG_ACCESS );
-    return $userId;
-  }
-
-  /**
-   * Creates a valid user session for the given user id, i.e. creates
-   * the user object and the session. Overridden to create session record.
-   * @param $userId
-   * @return void
-   */
-  public function setActiveUserById( $userId )
-  {
-    parent::setActiveUserById( $userId );
-    $this->registerSession();
-  }
-
 
  	/**
    * Returns the session id from the request. Overridden to support parent and 
@@ -284,10 +208,7 @@ class qcl_access_SessionController
    */
   public function getUserIdFromSession( $sessionId )
   {
-    if ( ! $sessionId )
-    {
-      throw new qcl_access_InvalidSessionException( "Missing session id.");
-    }
+    qcl_assert_valid_string( $sessionId );
 
     $sessionModel = $this->getSessionModel();
     try
@@ -311,6 +232,7 @@ class qcl_access_SessionController
       
       /*
        * mark user as online
+       * //FIXME wrong place !!
        */
       $this->getUserModel()->set("online",true);
     }
