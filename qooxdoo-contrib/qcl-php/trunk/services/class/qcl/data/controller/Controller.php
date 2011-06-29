@@ -247,6 +247,7 @@ class qcl_data_controller_Controller
    */
   public function checkDatasourceAccess( $datasource )
   {
+    qcl_assert_valid_string($datasource,"Invalid datasource name '$datasource'");
     if ( $this->controlDatasourceAccess === true and
         ! in_array( $datasource, $this->getAccessibleDatasources() ) )
     {
