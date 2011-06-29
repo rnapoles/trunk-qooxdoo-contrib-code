@@ -411,11 +411,11 @@ class qcl_access_Controller
     {
       $source = "request parameter";
     }   
-    // cookie
-    elseif ( $sessionId =  $_COOKIE['QCLSESSID'] )
-    {
-      $source = "cookie";
-    }
+    // cookie, deactivated
+    //elseif ( $sessionId =  $_COOKIE['QCLSESSID'] )
+    //{
+    //  $source = "cookie";
+    //}
     if( $sessionId )
     {
       $this->log("Got session id from $source: #$sessionId", QCL_LOG_ACCESS );
