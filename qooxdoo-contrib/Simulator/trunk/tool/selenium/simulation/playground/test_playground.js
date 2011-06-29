@@ -212,12 +212,13 @@ simulation.Simulation.prototype.checkUrlParameter = function(pattern)
   var urlWithParam = this.getConfigSetting("autHost") + "" 
   + this.getConfigSetting("autPath") + codeParameter;
   
+  this.log("checkUrlParameter: Relaoding Playground with code in URL", "debug");
   this.qxOpen(urlWithParam);
   var isAppReady = this.waitForCondition(simulation.Simulation.ISQXAPPREADY, 60000, 
                                           "Waiting for qooxdoo application");
   
   if (!isAppReady) {
-    this.log("checkCodeFromUrl: Application did not reload correctly!", "error");
+    this.log("checkUrlParameter: Application did not reload correctly!", "error");
     return;
   }
   this.addGlobalErrorHandler();
