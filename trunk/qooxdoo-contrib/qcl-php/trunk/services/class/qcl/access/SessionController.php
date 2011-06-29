@@ -108,12 +108,12 @@ class qcl_access_SessionController
     else
     {
       $this->setSessionId( $sessionId );
-      $this->createUserSessionByUserId( $userId );      
     }
 
     /*
      * We have a valid user now.
      */
+    $this->setActiveUserById( $userId );
     $this->log("Success: Got user id #$userId from session:#$sessionId.", QCL_LOG_ACCESS );
     return $userId;
   }
@@ -124,9 +124,9 @@ class qcl_access_SessionController
    * @param $userId
    * @return void
    */
-  public function createUserSessionByUserId( $userId )
+  public function setActiveUserById( $userId )
   {
-    parent::createUserSessionByUserId( $userId );
+    parent::setActiveUserById( $userId );
     $this->registerSession();
   }
 
