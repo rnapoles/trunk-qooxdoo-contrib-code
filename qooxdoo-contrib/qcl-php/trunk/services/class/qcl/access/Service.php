@@ -171,7 +171,7 @@ class qcl_access_Service
     /*
      * create (new) valid user session
      */
-    $accessController->createUserSessionByUserId( $userId );
+    $accessController->setActiveUserById( $userId );
     
     /*
      * Save the IP of the user in the session to allow to check for 

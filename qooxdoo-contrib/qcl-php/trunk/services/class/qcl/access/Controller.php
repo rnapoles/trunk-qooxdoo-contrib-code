@@ -279,10 +279,12 @@ class qcl_access_Controller
       if( $this->getApplication()->skipAuthentication() )
       {
         $sessionId = $this->getSessionId();
-        $userId = $this->grantAnonymousAccess( $sessionId );
-        $this->createUserSessionByUserId( $userId );
+        $this->debug( "session id #### $sessionId", __CLASS__, __LINE__ );
+        $userId = $this->createAnonymous( $sessionId );
+        $this->debug( "anon granted", __CLASS__, __LINE__ );
+        $this->setActiveUserById( $userId );
+        $this->debug( "active user created", __CLASS__, __LINE__ );
         $this->log("Temporary anonymous user #$userId with php session #$sessionId ...", QCL_LOG_ACCESS );
-        return true;
       }
       
       /*
@@ -325,7 +327,7 @@ class qcl_access_Controller
   {
     if ( ! $this->isValidSessionId( $sessionId ) )
     {
-      throw new qcl_access_InvalidSessionException("Invalid session id #$sessionId.");
+      throw new qcl_access_InvalidSessionException("Malformed session id #$sessionId.");
     }
     $old = $this->getSessionId();
     if ( $sessionId != $old )
@@ -343,7 +345,7 @@ class qcl_access_Controller
    */
   public function isValidSessionId( $sessionId )
   {
-    return $sessionId and is_string( $sessionId ) and strlen( $sessionId ) == 32;
+    return $sessionId and is_string( $sessionId ) and strlen( $sessionId ) < 50;
   }
 
   /**
@@ -417,7 +419,14 @@ class qcl_access_Controller
     {
       $source = "cookie";
     }
-    $this->log("Got session id from $source: #$sessionId", QCL_LOG_ACCESS );
+    if( $sessionId )
+    {
+      $this->log("Got session id from $source: #$sessionId", QCL_LOG_ACCESS );
+    }
+    else
+    {
+      $this->log("Request contains no session id.", QCL_LOG_ACCESS );
+    }
     return $sessionId;
   }
 
@@ -435,16 +444,11 @@ class qcl_access_Controller
   public function configureUserSession($sessionId)
   {
     /*
-     * get the active user from the session and check for timout
+     * in this implementation, we ignore the session id and get the 
+     * active user's id from the php session 
      */
     $userId = qcl_util_registry_Session::get("activeUserId");
-    $activeUser = $this->getUserModel();
-    $activeUser->load($userId);
-    $this->setActiveUser( $activeUser );
-
-    /*
-     * success!!
-     */
+    $this->setActiveUserById($userId);
     return $userId;
   }
 
@@ -623,7 +627,7 @@ class qcl_access_Controller
    * generated
    * @return int user id
    */
-  public function grantAnonymousAccess( $sessionId = null )
+  public function createAnonymous( $sessionId )
   {
     /*
      * create new anonymous user session 
@@ -633,9 +637,9 @@ class qcl_access_Controller
     $this->log ("Creating anonymous user #$userId.",QCL_LOG_ACCESS);
     
     /*
-     * handling the session id
+     * create a session id if none was passed
      */
-    if( is_null( $sessionId ) )
+    if( ! $sessionId  )
     {
       $this->createSessionId();  
     }
@@ -643,11 +647,6 @@ class qcl_access_Controller
     {
       $this->setSessionId($sessionId);      
     }
-    
-    /*
-     * configure user session 
-     */
-    $this->createUserSessionByUserId( $userId );
     return $userId;
   }
 
@@ -657,7 +656,7 @@ class qcl_access_Controller
    * @param $userId
    * @return void
    */
-  public function createUserSessionByUserId( $userId )
+  public function setActiveUserById( $userId )
   {
 
     $sessionId = $this->getSessionId();
