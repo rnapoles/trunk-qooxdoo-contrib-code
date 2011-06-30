@@ -205,14 +205,20 @@ simulation.Simulation.prototype.checkUrlParameter = function(pattern)
     return;
   }
   
-  this.__sel.open(this.getConfigSetting("autHost"));
+  this.log("checkUrlParameter: Unloading Playground", "debug");
+  try {
+    this.__sel.open(this.getConfigSetting("autHost"));
+  } catch(ex) {
+    this.log("checkUrlParameter: Failed to unload Playground!", "error");
+    return;
+  }
   
   var codeParameter = "#%7B%22code%22%3A%20%22var%2520label%2520%253D%2520new%2520qx.ui.basic.Label(%2522Code%2520loaded%2520from%2520URL%2520parameter%2522)%253B%250Athis.getRoot().add(label)%253B%22%7D";
   
   var urlWithParam = this.getConfigSetting("autHost") + "" 
   + this.getConfigSetting("autPath") + codeParameter;
   
-  this.log("checkUrlParameter: Relaoding Playground with code in URL", "debug");
+  this.log("checkUrlParameter: Reloading Playground with code in URL", "debug");
   this.qxOpen(urlWithParam);
   var isAppReady = this.waitForCondition(simulation.Simulation.ISQXAPPREADY, 60000, 
                                           "Waiting for qooxdoo application");
@@ -308,10 +314,10 @@ simulation.Simulation.prototype.runTest = function()
   
   var editor = this.getConfigSetting("editor");
   if (editor) {
-    this.checkSyntaxHighlighting(editor);
+    //this.checkSyntaxHighlighting(editor);
   }
   
-  var editOk = this.checkEdit(sampleArr[0]);
+  //var editOk = this.checkEdit(sampleArr[0]);
   
   /*
    * This opens a TinyURL window which sends a request to PayPal that causes a
