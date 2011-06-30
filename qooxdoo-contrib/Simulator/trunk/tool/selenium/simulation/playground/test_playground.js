@@ -314,10 +314,10 @@ simulation.Simulation.prototype.runTest = function()
   
   var editor = this.getConfigSetting("editor");
   if (editor) {
-    //this.checkSyntaxHighlighting(editor);
+    this.checkSyntaxHighlighting(editor);
   }
   
-  //var editOk = this.checkEdit(sampleArr[0]);
+  var editOk = this.checkEdit(sampleArr[0]);
   
   /*
    * This opens a TinyURL window which sends a request to PayPal that causes a
