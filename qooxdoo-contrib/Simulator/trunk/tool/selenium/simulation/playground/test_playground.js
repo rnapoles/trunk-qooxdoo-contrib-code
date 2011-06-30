@@ -206,11 +206,11 @@ simulation.Simulation.prototype.checkUrlParameter = function(pattern)
   }
   
   this.log("checkUrlParameter: Unloading Playground", "debug");
+  // For some reason this throws a "currentDocument is null" 
+  // Selenium error even though it works.
   try {
     this.__sel.open(this.getConfigSetting("autHost"));
   } catch(ex) {
-    this.log("checkUrlParameter: Failed to unload Playground!", "error");
-    return;
   }
   
   var codeParameter = "#%7B%22code%22%3A%20%22var%2520label%2520%253D%2520new%2520qx.ui.basic.Label(%2522Code%2520loaded%2520from%2520URL%2520parameter%2522)%253B%250Athis.getRoot().add(label)%253B%22%7D";
