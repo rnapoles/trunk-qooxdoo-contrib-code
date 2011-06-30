@@ -329,7 +329,7 @@ simulation.Simulation.prototype.runTest = function()
   
   this.checkSampleLoad(sampleArr);
   
-  this.checkGistFromList();
+  //this.checkGistFromList();
   
   this.checkUrlParameter();
   
