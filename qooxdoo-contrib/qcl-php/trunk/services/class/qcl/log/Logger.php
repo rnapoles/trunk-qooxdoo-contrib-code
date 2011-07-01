@@ -16,6 +16,11 @@
  *  * Christian Boulanger (cboulanger)
  */
 
+define( "QCL_LOG_DEBUG",  "debug" );
+define( "QCL_LOG_INFO",  	"info" );
+define( "QCL_LOG_WARN",  	"warn" );
+define( "QCL_LOG_ERROR", 	"error" );
+
 /**
  * path to log file
  */
