@@ -227,7 +227,7 @@ class qcl_log_Logger
     static $counter = 0;
     $message = date( "y-m-j H:i:s" );
     $message .=  "-" . $counter++;
-    $message .=  ($filter ? ": [$filter] " : "" );
+    $message .=  ($filter ? ": [$filter] " : ": " );
     $message .= "$msg\n";
     return $message;
   }
@@ -338,9 +338,13 @@ class qcl_log_Logger
     if ( ! QCL_LOG_DEBUG ) return; 
     
     /*
-     * stringify non-scalar values 
+     * stringify boolean and non-scalar values 
      */
-    if ( ! is_scalar($msg) )
+    if ( is_bool( $msg ) )
+    {
+      $msg = boolString( $msg );
+    }
+    elseif ( ! is_scalar($msg) )
     {
       $msg = typeof( $var, true ) . ": " . print_r( $msg, true ); 
     }
@@ -356,7 +360,7 @@ class qcl_log_Logger
     /*
      * log message
      */
-    $this->log( ">>> DEBUG <<< " . $msg, QCL_LOG_DEBUG );
+    $this->writeLog( $this->formatMessage( ">>> DEBUG <<< " . $msg ) );
   }
   
   /**
