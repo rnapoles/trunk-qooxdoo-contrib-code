@@ -76,11 +76,10 @@ class qcl_log_Logger
    */
   private function _registerInitialFilters()
   {
-    $this->registerFilter("debug",    "Verbose debugging, all messages",false);
-    $this->registerFilter("info",     "Important messages", true);
-    $this->registerFilter("warn",     "Warnings", true);
-    $this->registerFilter("error",    "Non-fatal errors", true);
-    $this->registerFilter("framework","Framework-related debugging", false);
+    $this->registerFilter(QCL_LOG_DEBUG,    "Verbose debugging, all messages",false);
+    $this->registerFilter(QCL_LOG_INFO,     "Important messages", true);
+    $this->registerFilter(QCL_LOG_WARN,     "Warnings", true);
+    $this->registerFilter(QCL_LOG_ERROR,    "Fatal errors", true);
   }
 
 
@@ -178,31 +177,59 @@ class qcl_log_Logger
    * @param string|array $filters
    * @return message written to file
    */
-  public function log( $msg, $filters="debug" )
+  public function log( $msg, $filters= QCL_LOG_DEBUG )
   {
-
+    
     /*
      * check if a matching filter has been enabled
      */
-    static $counter = 0;
     $found = false;
     foreach ( (array) $filters as $filter )
     {
+       /*
+        * only the core filters will be used when debugging is off
+        */
+       switch($filter)
+       {
+         case QCL_LOG_INFO:
+         case QCL_LOG_WARN:
+         case QCL_LOG_ERROR:
+           break;
+         default:
+           if( ! QCL_DEBUG )
+           {
+             return;
+           }
+       }
+
+       /*
+        * check if filter is enabled
+        */
        if ( $this->filters[$filter]  )
        {
          $found = true;
          if ( $this->filters[$filter]['enabled'] )
          {
-           $message = date( "y-m-j H:i:s" );
-           $message .=  "-" . $counter++;
-           $message .= ": [$filter] $msg\n";
-           $this->writeLog( $message );
+           $this->writeLog( $this->formatMessage($msg, $filter ) );
            break;
          }
        }
     }
 
     return $found;
+  }
+  
+  /**
+   * Formats log message, adding date/time 
+   */
+  protected function formatMessage( $msg, $filter = "" )
+  {
+    static $counter = 0;
+    $message = date( "y-m-j H:i:s" );
+    $message .=  "-" . $counter++;
+    $message .=  ($filter ? ": [$filter] " : "" );
+    $message .= "$msg\n";
+    return $message;
   }
 
   /**
@@ -269,7 +296,7 @@ class qcl_log_Logger
    */
   function info( $msg )
   {
-    $this->log( $msg, "info" );
+    $this->log( $msg, QCL_LOG_INFO );
   }
 
   /**
@@ -279,7 +306,7 @@ class qcl_log_Logger
    */
   function warn( $msg )
   {
-    $this->log( "*** WARNING *** " . $msg, "warn" );
+    $this->log( "*** WARNING *** " . $msg, QCL_LOG_WARN );
   }
 
   /**
@@ -293,8 +320,79 @@ class qcl_log_Logger
     {
       $msg .= "\n" . debug_get_backtrace();
     }
-    $this->log( "### ERROR ### " . $msg, "error" );
+    $this->log( "### ERROR ### " . $msg, QCL_LOG_ERROR );
   }
-
+  
+	/**
+   * Logs a message with of level "debug". a non-scalar parameter will
+   * be turned into a string dump 
+   * @return void
+   * @param mixed $msg 
+   * @todo get file and line 
+   */
+  function debug( $msg, $includeBacktrace=false )
+  {
+    /*
+     * don't do this when there is no debugging 
+     */
+    if ( ! QCL_LOG_DEBUG ) return; 
+    
+    /*
+     * stringify non-scalar values 
+     */
+    if ( ! is_scalar($msg) )
+    {
+      $msg = typeof( $var, true ) . ": " . print_r( $msg, true ); 
+    }
+    
+    /*
+     * include a backtrace?
+     */
+    if ( $includeBacktrace )
+    {
+      $msg .= "\n" . debug_get_backtrace();
+    }
+    
+    /*
+     * log message
+     */
+    $this->log( ">>> DEBUG <<< " . $msg, QCL_LOG_DEBUG );
+  }
+  
+  /**
+   * Creates a divider for more clarity in log files
+   */
+  static function createDivider()
+  {
+    return str_repeat("-", 80 );
+  }
+  
+  /**
+   * Creates a divider with a timestamp
+   */
+  static function createDividerWithTimestamp( $title )
+  {
+    return str_repeat("-", 30 ) . " " . date("d.m.Y H:i:s", time() ) . " " . str_repeat("-", 29 );
+  }
+  
+  function divider($withTimestamp=false)
+  {
+    /*
+     * don't do this when there is no debugging 
+     */
+    if ( ! QCL_LOG_DEBUG ) return; 
+    
+    /*
+     * output with or without timestamp
+     */
+    if ( $withTimestamp )
+    {
+      $this->writeLog( self::createDividerWithTimestamp() );
+    }
+    else
+    {
+      $this->writeLog( self::createDivider() );
+    }
+  }
 }
 ?>
