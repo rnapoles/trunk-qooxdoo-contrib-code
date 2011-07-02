@@ -83,6 +83,14 @@ if ( ! defined("QCL_LOG_MAX_FILESIZE") )
 }
 
 /*
+ * turn debug messages off by default
+ */
+if ( ! defined( "QCL_DEBUG" ) )
+{
+  define( "QCL_DEBUG", false );
+}
+
+/*
  * load core functions
  */
 require_once "qcl/core/functions.php";
