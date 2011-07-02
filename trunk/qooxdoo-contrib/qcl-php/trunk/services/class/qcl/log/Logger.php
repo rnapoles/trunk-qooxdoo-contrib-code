@@ -330,7 +330,7 @@ class qcl_log_Logger
    * @param mixed $msg 
    * @todo get file and line 
    */
-  function debug( $msg, $includeBacktrace=false )
+  function debug( $msg, $class, $line, $includeBacktrace=false )
   {
     /*
      * don't do this when there is no debugging 
@@ -346,8 +346,16 @@ class qcl_log_Logger
     }
     elseif ( ! is_scalar($msg) )
     {
-      $msg = typeof( $var, true ) . ": " . print_r( $msg, true ); 
+      $msg = typeof( $msg, true ) . ": " . print_r( $msg, true ); 
     }
+    
+    /*
+     * class name and line number?
+     */
+    if ($class and $line) 
+    {
+      $msg = "$class:$line:\n$msg";
+    }    
     
     /*
      * include a backtrace?
@@ -391,11 +399,11 @@ class qcl_log_Logger
      */
     if ( $withTimestamp )
     {
-      $this->writeLog( self::createDividerWithTimestamp() );
+      $this->writeLog( self::createDividerWithTimestamp() . "\n" );
     }
     else
     {
-      $this->writeLog( self::createDivider() );
+      $this->writeLog( self::createDivider() . "\n" );
     }
   }
 }

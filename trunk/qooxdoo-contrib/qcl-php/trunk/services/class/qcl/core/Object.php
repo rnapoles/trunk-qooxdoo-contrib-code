@@ -1014,11 +1014,7 @@ class qcl_core_Object
    */
   public function debug($msg,$class=null,$line=null)
   {
-    if ($class and $line) 
-    {
-      $msg = "$class:$line:\n$msg";
-    }
-    $this->getLogger()->debug($msg);
+    $this->getLogger()->debug($msg, $class, $line);
   }
 
   /**
