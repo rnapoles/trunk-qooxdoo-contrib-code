@@ -374,7 +374,7 @@ class qcl_log_Logger
   /**
    * Creates a divider with a timestamp
    */
-  static function createDividerWithTimestamp( $title )
+  static function createDividerWithTimestamp()
   {
     return str_repeat("-", 30 ) . " " . date("d.m.Y H:i:s", time() ) . " " . str_repeat("-", 29 );
   }
