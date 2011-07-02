@@ -1010,27 +1010,22 @@ class qcl_core_Object
    * @param mixed $msg
    * @param string $class Optional class name
    * @param int $line Optional line number
+   * @todo streamline with debugger API
    */
   public function debug($msg,$class=null,$line=null)
   {
-    if ( is_bool( $msg ) )
+    if ($class and $line) 
     {
-      $msg = boolString( $msg );
+      $msg = "$class:$line:\n$msg";
     }
-    elseif ( ! is_scalar($msg) )
-    {
-      $msg = print_r($msg,true);
-    }
-    $m = ">>> DEBUG <<< ";
-    if ($class and $line) $m .= "$class:$line: ";
-    $m .= $msg;
-    $this->info ( $m, "info" );
+    $this->getLogger()->debug($msg);
   }
 
   /**
    * Logs a message with of level "info"
    * @return void
    * @param mixed $msg
+   * @todo streamline with debugger API
    */
   public function info ( $msg )
   {
@@ -1042,6 +1037,7 @@ class qcl_core_Object
    * Logs a message with of level "warn"
    * @return void
    * @param $msg string
+   * @todo streamline with debugger API
    */
   public function warn ( $msg )
   {

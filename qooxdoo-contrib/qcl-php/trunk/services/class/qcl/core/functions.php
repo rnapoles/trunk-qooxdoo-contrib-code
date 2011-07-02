@@ -587,6 +587,19 @@ function qcl_get_request_header( $header_name )
 }
 
 /**
+ * Does a very simple conversion from a html to a text-only text
+ * @param string $html
+ * @return string the text-only stream
+ */
+function qcl_html_to_text( $html )
+{
+  $html = str_replace("\n", "", $html );
+  $html = str_replace(array("<br>","<br />","<br/>"), "\n", $html );
+  $html = str_replace(array("<p>","</p>"), "\n", $html );
+  return html_entity_decode( strip_tags($html) );
+}
+
+/**
  * Returns the first non-null argument.
  * Avoids if statements such as if($a) $c=$a; else $c=$b;
  *
