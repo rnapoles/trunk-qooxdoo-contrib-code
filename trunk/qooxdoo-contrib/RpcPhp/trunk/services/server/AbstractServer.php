@@ -458,8 +458,12 @@ class AbstractServer
    */
   public function start()
   {
+    /*
+     * measure time taken by the request
+     */
+    $time_start = microtime(true);
 
-    /**
+    /*
      * error behavior
      * @todo this could be rewritten using interfaces
      */
@@ -469,7 +473,7 @@ class AbstractServer
       throw new AbstractError("No valid error behavior instance!");
     }
 
-    /**
+    /*
      * accessibility behavior
      * @todo this could be rewritten using interfaces
      */
@@ -516,8 +520,8 @@ class AbstractServer
     $errorBehavior->setId( $this->id );
 
     $this->debug("Service request: $service.$method");
-    $this->debug("Parameters: " . var_export($params,true) );
-    $this->debug("Server Data: " . var_export($serverData,true) );
+    $this->debug("Parameters: " . print_r($params,true) );
+    $this->debug("Server Data: " . print_r($serverData,true) );
 
     /*
      * service components
@@ -618,10 +622,18 @@ class AbstractServer
     $this->output = $this->formatOutput( $result );
 
     /*
+     * measure script execution time
+     */
+    $time_end = microtime(true);
+    $secs = ($time_end - $time_start);
+    $this->debug("Computing output took $secs seconds ...");
+    
+    /*
      * send reply
      */
     $this->debug("Sending output to client ...");
-    $this->sendReply( $this->output );
+    $this->sendReply( $this->output );    
+    
   }
 
   /**
