@@ -74,7 +74,8 @@ class qcl_server_JsonRpcRestServer
         $params = '["'. implode('","', explode(",", $_REQUEST['params'] ) ) . '"]';
       }
       
-      // @todo not sure why sometimes the quotes in the json string are escaped
+      // @todo make sure only valid json is sent!
+      $params = str_replace(array("undefined"), "null", $params);
       $input->params  = either( json_decode( $params ), json_decode( stripslashes( $params ) ) );
     }
         

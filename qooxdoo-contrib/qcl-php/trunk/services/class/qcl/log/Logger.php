@@ -330,7 +330,7 @@ class qcl_log_Logger
    * @param mixed $msg 
    * @todo get file and line 
    */
-  function debug( $msg, $class, $line, $includeBacktrace=false )
+  function debug( $msg, $class=null, $line=null, $includeBacktrace=false )
   {
     /*
      * don't do this when there is no debugging 
