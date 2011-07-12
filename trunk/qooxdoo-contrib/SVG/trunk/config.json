@@ -27,7 +27,7 @@
   "let" :
   {
     "APPLICATION"  : "svg",
-    "QOOXDOO_PATH" : "../../qooxdoo/1.4",
+    "QOOXDOO_PATH" : "../../qooxdoo/1.5",
     "QXTHEME"      : "qx.theme.Modern",
     "INCLUDE"      : ["svg.core.Types"],
     "API_EXCLUDE"  : ["qx.*", "${APPLICATION}.demo.*", "${APPLICATION}.theme.*", "${APPLICATION}.test.*"],
