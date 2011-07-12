@@ -46,6 +46,20 @@ qx.Class.define("svg.struct.Group",
   
   properties :
   {
+    /**
+     * Whether or not the group and its children should be rendered.
+     * 
+     * Possible values:
+     * <ul>
+     *   <li><em>inline</em>: the group is rendered</li>
+     *   <li><em>none</em>: the group is not rendered</li>
+     * </ul>
+     * 
+     * More info:
+     * <ul>
+     *   <li>http://www.w3.org/TR/SVG/painting.html#DisplayProperty</li>
+     * </ul>
+     */
     display : {
       nullable : true,
       init     : null,
