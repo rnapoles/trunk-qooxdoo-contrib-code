@@ -68,6 +68,11 @@ qx.Mixin.define("svg.coords.MTransform",
   
   events :
   {
+    /**
+     * Fired when the effective transformation changes.
+     * This happens when the transform or transformMode property changes, or when
+     * the transformation's "change" event was fired. 
+     */
     transformed : "qx.event.type.Event"
   },
   
