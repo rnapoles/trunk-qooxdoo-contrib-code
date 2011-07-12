@@ -30,7 +30,10 @@ qx.Class.define("svg.text.Text", {
               svg.text.MTextAlignment,
               svg.text.MFontProperties,
               svg.text.MTextSpacing,
-              svg.text.MTextDecoration ],
+              svg.text.MTextDecoration,
+              svg.paint.MFillProperties,
+              svg.paint.MStrokeProperties
+            ],
   
   construct : function() {
     this.base(arguments, "text");
