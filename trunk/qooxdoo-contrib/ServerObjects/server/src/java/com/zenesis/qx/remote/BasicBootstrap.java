@@ -157,7 +157,7 @@ public class BasicBootstrap implements UploadReceiver {
 			uploadFolder = getUploadFolder();
 		if (uploadFolder == null)
 			throw new IOException("Cannot upload " + upfile + " because there is no root to upload to");
-		AppFile appFile = uploadFolder.addFile(upfile.getFile(), upfile.getOriginalName(), false, true);
+		AppFile appFile = uploadFolder.addFile(upfile.getFile(), upfile.getOriginalName(), false, false);
 		return appFile;
 	}
 
