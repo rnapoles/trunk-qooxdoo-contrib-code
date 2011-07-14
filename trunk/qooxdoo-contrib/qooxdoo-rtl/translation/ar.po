@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: you@your.org\n"
 "POT-Creation-Date: 2011-04-01 14:31+0100\n"
-"PO-Revision-Date: 2011-07-08 19:25+0100\n"
+"PO-Revision-Date: 2011-07-12 12:46+0100\n"
 "Last-Translator: slah lachtar <slachtar@gmail.com>\n"
 "Language-Team: Team <yourteam@your.org>\n"
 "MIME-Version: 1.0\n"
@@ -19,129 +19,198 @@ msgstr "...تصفية"
 msgid "Info"
 msgstr "معلومات"
 
-#: demobrowser/DemoBrowser.js:388
+#: demobrowser/DemoBrowser.js:343
+msgid "Unable to access namespace. Maybe no demo loaded."
+msgstr ".غير قادر على الوصول إلى مساحة الاسم. ربما لم يتم تحميل العرض"
+
+#: demobrowser/DemoBrowser.js:385
 msgid "Could not open the Playground."
 msgstr ".لا يمكن فتح الملعب"
 
-#: demobrowser/DemoBrowser.js:446
+#: demobrowser/DemoBrowser.js:443
 msgid "Demo has been disposed."
 msgstr ".تم التخلص من العرض"
 
-#: demobrowser/DemoBrowser.js:450
+#: demobrowser/DemoBrowser.js:447
 msgid "Unable to access application."
 msgstr ".غير قادر على الوصول للتطبيق"
 
-#: demobrowser/DemoBrowser.js:474
+#: demobrowser/DemoBrowser.js:471
 msgid "Run"
 msgstr "تشغيل"
 
-#: demobrowser/DemoBrowser.js:476
+#: demobrowser/DemoBrowser.js:473
 msgid "Run the selected demo(s)"
 msgstr "تشغيل العروض المختارة"
 
-#: demobrowser/DemoBrowser.js:480
+#: demobrowser/DemoBrowser.js:477
 msgid "Stop"
 msgstr "توقف"
 
-#: demobrowser/DemoBrowser.js:483
+#: demobrowser/DemoBrowser.js:480
 msgid "Stop playback after current demo"
 msgstr " إيقاف تشغيل بعد العرض التجريبي الحالي"
 
-#: demobrowser/DemoBrowser.js:496
+#: demobrowser/DemoBrowser.js:499
 msgid "Run previous demo"
 msgstr "تشغيل العرض التجريبي السابق"
 
-#: demobrowser/DemoBrowser.js:503
+#: demobrowser/DemoBrowser.js:506
 msgid "Run next demo"
 msgstr "تشغيل العرض التجريبي التالي"
 
-#: demobrowser/DemoBrowser.js:518
+#: demobrowser/DemoBrowser.js:521
 msgid "Own Window"
 msgstr "النافذة الخاصة"
 
-#: demobrowser/DemoBrowser.js:520
+#: demobrowser/DemoBrowser.js:523
 msgid "Open demo in new window"
 msgstr "فتح عرض في نافذة جديدة"
 
-#: demobrowser/DemoBrowser.js:526
+#: demobrowser/DemoBrowser.js:529
 msgid "To Playground"
 msgstr "إلى الملعب."
 
-#: demobrowser/DemoBrowser.js:528
+#: demobrowser/DemoBrowser.js:531
 msgid "Open demo in the playground"
 msgstr "فتح عرض في الملعب"
 
-#: demobrowser/DemoBrowser.js:544
+#: demobrowser/DemoBrowser.js:547
 msgid "API Viewer"
 msgstr "عارض ال API"
 
-#: demobrowser/DemoBrowser.js:547
+#: demobrowser/DemoBrowser.js:550
 msgid "Open the qooxdoo API Viewer"
 msgstr "فتح المعهد qooxdoo عارض"
 
-#: demobrowser/DemoBrowser.js:552
+#: demobrowser/DemoBrowser.js:555
 msgid "Manual"
 msgstr "دليل"
 
-#: demobrowser/DemoBrowser.js:555
+#: demobrowser/DemoBrowser.js:558
 msgid "Open the qooxdoo Manual"
 msgstr "فتح المختصر qooxdoo"
 
-#: demobrowser/DemoBrowser.js:580
+#: demobrowser/DemoBrowser.js:583
 msgid "Available locales"
 msgstr "متاح لغات"
 
-#: demobrowser/DemoBrowser.js:621
+#: demobrowser/DemoBrowser.js:624
 msgid "Modern Theme"
 msgstr "الحديث الموضوع"
 
-#: demobrowser/DemoBrowser.js:622
+#: demobrowser/DemoBrowser.js:625
 msgid "Classic Theme"
 msgstr "كلاسيك الموضوع"
 
-#: demobrowser/DemoBrowser.js:623
+#: demobrowser/DemoBrowser.js:626
 msgid "Simple Theme"
 msgstr "الموضوع بسيط"
 
-#: demobrowser/DemoBrowser.js:637
+#: demobrowser/DemoBrowser.js:640
 msgid "Theme"
 msgstr "موضوع"
 
-#: demobrowser/DemoBrowser.js:652
+#: demobrowser/DemoBrowser.js:642
+msgid "Choose theme"
+msgstr "اختيار السمة"
+
+#: demobrowser/DemoBrowser.js:655
 msgid "Object Summary"
 msgstr "كائن ملخص"
 
-#: demobrowser/DemoBrowser.js:658
+#: demobrowser/DemoBrowser.js:661
 msgid "Dispose Demo"
 msgstr "التصرف تجريبي"
 
-#: demobrowser/DemoBrowser.js:667
+#: demobrowser/DemoBrowser.js:670
 msgid "Hide/Show Tests Demos"
 msgstr "إخفاء / إظهار الاختبارات ديموس"
 
-#: demobrowser/DemoBrowser.js:673
+#: demobrowser/DemoBrowser.js:676
 msgid "Debug"
 msgstr "التصحيح"
 
-#: demobrowser/DemoBrowser.js:703
+#: demobrowser/DemoBrowser.js:678
+msgid "Debugging options"
+msgstr "خيارات التصحيح"
+
+#: demobrowser/DemoBrowser.js:692
+msgid "HTML Code"
+msgstr " HTML كود بلغة"
+
+#: demobrowser/DemoBrowser.js:693
+msgid "Display HTML source"
+msgstr " HTML عرض مصدر"
+
+#: demobrowser/DemoBrowser.js:695
+msgid "JS Code"
+msgstr "JS كود"
+
+#: demobrowser/DemoBrowser.js:696
+msgid "Display JavaScript source"
+msgstr "عرض المصدر جافا سكريبت"
+
+#: demobrowser/DemoBrowser.js:706
 msgid "Log File"
 msgstr "ملف السجل"
 
-#: demobrowser/DemoBrowser.js:704
+#: demobrowser/DemoBrowser.js:707
 msgid "Display log file"
 msgstr "عرض ملف السجل"
 
-#: demobrowser/DemoBrowser.js:972
+#: demobrowser/DemoBrowser.js:927
+msgid "<div class='script'>The sample source will be displayed here.</div>"
+msgstr "<div class='script'>.سيتم عرض نموذج المصدر هنا</div>"
+
+#: demobrowser/DemoBrowser.js:940
+msgid "<div class='script'>The sample JS source will be displayed here.</div>"
+msgstr "<div class='script'>.سيتم عرض مصدر نموذج جافا سكريبت هنا</div>"
+
+#: demobrowser/DemoBrowser.js:962
+#: demobrowser/DemoBrowser.js:1070
+msgid "Demos"
+msgstr "العروض"
+
+#: demobrowser/DemoBrowser.js:980
 msgid "Demo Link"
 msgstr "عرض وصله"
 
-#: demobrowser/DemoBrowser.js:993
+#: demobrowser/DemoBrowser.js:1001
 msgid "Get Demo Link"
 msgstr "الحصول على رابط تجريبي"
+
+#: demobrowser/DemoBrowser.js:1305
+#: demobrowser/DemoBrowser.js:1309
+msgid " Demo Browser "
+msgstr "متصفح العرض التوضيحي"
+
+#: demobrowser/DemoBrowser.js:1309
+msgid " Start"
+msgstr "بداية"
+
+#: demobrowser/DemoBrowser.js:1586
+msgid ""
+"Failed to load demo data from the file system.\n"
+"\n"
+"The security settings of your browser may prohibit AJAX when using the file protocol. Please try the http protocol instead."
+msgstr ""
+".فشل في تحميل البيانات التجريبية من نظام الملفات\n"
+"\n"
+".قد ضبط أمن المتصفح لديك بحيث يحظر اجاكس عند استخدام بروتوكول الملف. يرجى المحاولة ببروتوكول  هتتب بدلا من ذلك"
+
+#: demobrowser/DemoBrowser.js:1896
+msgid "Demo Browser"
+msgstr "متصفح العرض التوضيحي"
 
 #: demobrowser/Readme.js:94
 msgid "Readme"
 msgstr "إقرأني"
+
+#: demobrowser/TreeDataHandler.js:123
+#: demobrowser/TreeDataHandler.js:327
+msgid "All"
+msgstr "الكل"
 
 #: demobrowser/demo/animation/Login.js:93
 msgid "Login"
@@ -161,8 +230,8 @@ msgid ""
 msgstr " كليلة ودمنة (باب الحمامة المطوقة) زعموا أنه كان بأرض سكاوندجين، عند مدينة داهر، مكان كثير الصيد، ينتابه الصيادون؛ وكان في ذلك المكان شجرة كثيرة الأغصان ملتفة الورق فيها وكر غراب فبينما هو ذات يوم ساقط في وكره إذ بصر بصياد قبيح المنظر، سيئ الخلق، على عاتقه شبكة، وفي يده عصاً مقبلاً نحو الشجرة، فذعر منه الغراب؛ وقال: لقد ساق هذا الرجل إلى هذا المكان: إما حيني وإما حين غيري. فلأثبتن مكاني حتى أنظر ماذا يصنع. ثم إن الصياد نصب شبكته، ونثر عليها الحب، وكمن قريبا منها، فلم يلبث إلا قليلا، حتى مرت به حمامة يقال لها المطوقة، وكانت سيدة الحمام ومعها حمام كثير؛ فعميت هي وصواحبها عن الشرك، فوقعن على الحبِّ يلتقطنه فعلقن في الشبكة كلهن؛ وأقبل الصياد فرحاً مسروراً. فجعلت كل حمامة تضطرب في حبائلها وتلتمس الخلاص لنفسها. قالت المطوقة: لا تخاذلنا في المعالجة ولا تكن نفس إحداكن أهم إليها م نفس صاحبتها؛ ولكن نتعاون جميعاً فنقلع الشبكة فينجو بعضنا ببعض؛ فقلعن الشبكة جميعهن بتعاونهن، وعلون في الجو؛ ولم يقطع الصياد رجاءه منهن وظن أنهن لا يجاوزن إلا قريباً ويقعن. فقال الغراب: لأتبعهن وأنظرو ما يكون منهن. فالتفتت المطوقة فرأت الصياد يتبعهن. فقالت للحمام: هذا الصياد مجد في طلبكن، فإن نحن أخذنا في الفضاء لم يخف عليه أمرنا ولم يزل يتبعنا وإن نحن توجهنا إلى العمران خفي عليه أمرنا، وانصرف. وبمكان كذا جرذٌ هو لي أخ؛ فلو انتهينا إليه قطع عنا هذا الشرك. ففعلن ذلك. وأيس الصياد منهن وانصرف. وتبعهن الغراب. فلما انتهت الحمامة المطوقة إلى الجرذ، أمرت الحمام أن يسقطن، فوقعن؛ وكان للجرذ مائة حجر للمخاوف فنادته المطوقة باسمه، وكان اسمه زيرك، فأجابها الجرذ من حجره: من أنت؟ قالت: أنا خليلتك المطوقة. فأقبل إليها الجرذ يسعى، فقال لها: ما أوقعك في هذه الورطة؟ قالت له: ألم تعلم أنه ليس من الخير والشر شيء إلا هو مقدرٌ على من تصيبه المقادير، وهي التي أوقعتني في هذه الورطة؛ فقد لا يمتنع من القدر من هو أقوى مني وأعظم أمراً؛ وقد تنكسف الشمس والقمر إذا قضي ذلك عليهما. ثم إن الجرذ أخذ في قرض العقد الذي فيه المطوقة. فقالت له المطوقة: ابدأ بقطع عقد سائر الحمام، وبعد ذلك أقبل على عقدي؛ وأعادت ذلك عليه مراراً، وهو لا يلتفت إلى قولها، فلما أكثرت عليه القول وكررت، قال لها: لقد كررت القول عليّ كأنك ليس لك في نفسك حاجة، ولا لك عليها شفقة، ولا ترعين لها حقاً. قالت: إني أخاف، إن أنت بدأت بقطع عقدي أن تمل وتكسل عن قطع ما بقي؛ وعرفت أنك إن بدأت بهن قبلي، وكنت أنا الأخيرة لم ترضَ وإن أدركك الفتور أن أبقى في الشرك قال الجرذ: هذا مما يزيد الرغبة والمودة فيك. ثم إن الجرذ أخذ في قرض الشبكة حتى فرغ منها، فانطلقت المطوقة وحمامها معها.فلما رأى الغراب صنع الجرذ، رغب في مصادقته، فجاء وناداه باسمه، فأخرج الجرذ رأسه، فقال له: ما حاجتك؟ قال: إني أريد مصادقتك. قال الجرذ: ليس بيني وبينك تواصل، وإنما العاقل ينبغي له أن يلتمس ما يجد إليه سبيلاً، ويترك التماس ما ليس إليه سبيلٌ، فإنما أنت الآكل، وأنا طعام لك. قال الغراب: إن أكلي إياك، وإن كنت لي طعاماً، مما لا يغني عني شيئاً؛ وإن مودتك آنس لي مما ذكرت ولست بحقيق، إذا جئت أطلب مودتك، أن تردني خائباً. فإنه قد ظهر لي منك من حسن الخلق ما رغبني فيك، وإن لم تكن تلتمس إظهار ذلك: فإن العاقل لا يخفي فضله، وإن هو أخفاه؛ كالمسك الذي يكتم ثم لا يمنعه ذلك من النشر الطيب والأرج الفائح. قال الجرذ. إن أشد العداوة عداوة الجوهر: وهي عداوتان: منها ما هو متكافئ كعداوة الفيل والأسد. فإنه ربما قتل الأسد الفيل أو الفيل الأسد، ومنها ما قوَّته من أحد الجانبين على الآخر كعداوة ما بيني وبين السنور وبيني وبينك: فإن العداوة التي بيننا ليست تضرك، وإنما ضررها عائد عليَّ: فإن الماء لو أطيل إسخانه لم يمنعه ذلك من إطفائه النار إذا صب عليها، وإنما مصاحب العدوّ ومصالحه كصاحب الحية يحملها في كمه، والعاقل لا يستأنس إلى العدو الأريب..."
 
 #: demobrowser/demo/animation/Save_Dialog.js:148
-msgid "<b \"font-size:12pt;\">Do you want to save the changes you made in the doc \"Untitled\"?</b>"
-msgstr "<b \"font-size:12pt;\"> هل تريد حفظ التغييرات التي أدخلتها على الوثيقة \"بلا عنوان\"؟ </ b>"
+msgid "<b "font-size:12pt;">Do you want to save the changes you made in the doc "Untitled"?</b>"
+msgstr "<b"font-size:12pt;">هل تريد حفظ التغييرات التي أدخلتها على الوثيقة \"بلا عنوان\"؟</b>"
 
 #: demobrowser/demo/animation/Save_Dialog.js:149
 msgid "Your changes will be lost if you don't save them."
@@ -285,8 +354,8 @@ msgstr "مناوبة بين البداية و النهاية . تبدو لطيف
 
 #: demobrowser/demo/animation/Transition_Position.js:36
 #: demobrowser/demo/animation/Transition_Color.js:36
-msgid "<span style=\"color:white;\">Welcome to <br><b style=\"color:#F3FFB3;\">qooxdoo</b> animations!</span>"
-msgstr "<span style=\"color:white;\">مرحبا بكم في <br><b style=\"color:#F3FFB3;\">كوكسدو</b> مأثرات!</span>"
+msgid "<span style="color:white;">Welcome to <br><b style="color:#F3FFB3;">qooxdoo</b> animations!</span>"
+msgstr "<span style="color:white;">مرحبا بكم في <br><b style="color:#F3FFB3;">كوكسدو</b> مأثرات!</span>"
 
 #: demobrowser/demo/animation/Transition_Position.js:42
 #: demobrowser/demo/animation/Transition_Color.js:42
@@ -408,6 +477,10 @@ msgstr "تلقائي"
 msgid "Reset tree"
 msgstr "إعادة ضبط الشجرة"
 
+#: demobrowser/demo/bom/AttributeStyle_2.js:43
+msgid "Checkbox #1"
+msgstr "خانة الاختيار #1"
+
 #: demobrowser/demo/bom/Audio.js:49
 msgid "It seems that your browser doesn't support HTML5 audio"
 msgstr " HTML5 Audio يبدو أن متصفحك لا يعالج"
@@ -475,7 +548,27 @@ msgstr "فشل : ٪ 1"
 
 #: demobrowser/demo/bom/HtmlArea.js:71
 msgid "<h1>HtmlArea low-level widget</h1><p>This low-level widget can be used separately at traditional web pages / single-page applications.<br/> It is the foundation for the UI widget component.</p><p style='margin-bottom:10px'><b>No UI-level code</b> is included in this demo.You can play around with this widget by hitting the buttons at the toolbar.</p>"
-msgstr ""
+msgstr "<h1>تطبيق مصغر هتمل على مستوى منخفض</h1><p>.ويمكن استخدام هذه القطعة على مستوى منخفض بشكل منفصل في صفحات الويب التقليدية / التطبيقات ذات الصفحة الواحدة<br/>.وهو الأساس لمكون واجهة التطبيق المصغر</p><p style='margin-bottom:10px'><b>لا يوجد أي كود واجهة المستخدم </b>تم تضمينها في هذا العرض.يمكنك تشغيل هذا التطبيق من خلال ضرب الأزرار في شريط الأدوات.</p>"
+
+#: demobrowser/demo/bom/HtmlArea.js:119
+msgid "FontSize: "
+msgstr ":حجم الخط "
+
+#: demobrowser/demo/bom/HtmlArea.js:170
+msgid "<td>First Row, First cell</td>"
+msgstr "<td>أول صف، الخلية الأولى</td>"
+
+#: demobrowser/demo/bom/HtmlArea.js:171
+msgid "<td>First Row, Second cell</td>"
+msgstr "<td>أول صف، الخلية الثانية</td>"
+
+#: demobrowser/demo/bom/HtmlArea.js:174
+msgid "<td>Second Row, First cell</td>"
+msgstr "<td>الصف الثاني، الخلية الأولى</td>"
+
+#: demobrowser/demo/bom/HtmlArea.js:175
+msgid "<td>Second Row, Second cell</td>"
+msgstr "<td>الصف الثاني، الخلية الثانية</td>"
 
 #: demobrowser/demo/bom/HtmlArea.js:189
 msgid "Link: "
@@ -493,6 +586,12 @@ msgstr "تغيير حجم الخط"
 msgid "testFrame"
 msgstr "إطار الاختبار"
 
+#: demobrowser/demo/bom/Input.js:105
+#: demobrowser/demo/bom/Input.js:127
+#: demobrowser/demo/bom/Input.js:150
+msgid "Value %1"
+msgstr "%1 القيمة"
+
 #: demobrowser/demo/bom/Label.js:31
 #: demobrowser/demo/bom/Label.js:36
 msgid "Quite a long label text"
@@ -503,6 +602,74 @@ msgstr ".نص التسمية طويل جدا"
 #: demobrowser/demo/bom/Label.js:49
 msgid "This is <b>bold</b> text"
 msgstr "<b> غامق </b> هذا النص"
+
+#: demobrowser/demo/bom/Label.js:54
+msgid "hello world"
+msgstr "مرحبا بالعالم"
+
+#: demobrowser/demo/bom/Label.js:55
+msgid "foo bar"
+msgstr "شريط فو"
+
+#: demobrowser/demo/bom/Label.js:66
+msgid "hello <b>world</b>"
+msgstr "<b>بالعالم</b> مرحبا "
+
+#: demobrowser/demo/bom/Label.js:67
+msgid "foo <i>bar</i>"
+msgstr "فو <i>شريط </i>"
+
+#: demobrowser/demo/bom/Selection.js:41
+msgid "test test2 test3 test4 test5 test6"
+msgstr "اختبار اختبار2 اختبار3 اختبار4 اختبار5 اختبار6"
+
+#: demobrowser/demo/bom/Selection.js:116
+msgid "<strong>Results</strong>"
+msgstr "<strong>النتائج</strong>"
+
+#: demobrowser/demo/bom/Selection.js:126
+msgid "this is a test"
+msgstr "هذا اختبار"
+
+#: demobrowser/demo/bom/Selector.js:58
+msgid "Click to follow the link"
+msgstr "انقر لاتباع الرابط"
+
+#: demobrowser/demo/bom/Selector.js:227
+msgid "<li>inserted via append()</li>"
+msgstr "<li> append() تم إدراجها عبر</li>"
+
+#: demobrowser/demo/bom/Selector.js:228
+msgid "<li>inserted via prepend()</li>"
+msgstr "<li> append() تم إدراجها عبر</li>"
+
+#: demobrowser/demo/bom/Selector.js:241
+msgid "<li>inserted via after()</li>"
+msgstr "<li> append() تم إدراجها عبر</li>"
+
+#: demobrowser/demo/bom/Selector.js:242
+msgid "<li>inserted via before()</li>"
+msgstr "<li> append() تم إدراجها عبر</li>"
+
+#: demobrowser/demo/bom/Selector.js:252
+msgid "<option>Dr</option>"
+msgstr "<option>.د</option>"
+
+#: demobrowser/demo/bom/Selector.js:252
+msgid "<option>Mr</option>"
+msgstr "<option>السيد</option>"
+
+#: demobrowser/demo/bom/Selector.js:252
+msgid "<option>Mrs</option>"
+msgstr "<option>السيدة</option>"
+
+#: demobrowser/demo/bom/Selector.js:252
+msgid "<option>Prof</option>"
+msgstr "<option>بروفيسور</option>"
+
+#: demobrowser/demo/bom/Selector.js:255
+msgid "<h3>Dynamically Inserted H3</h3>"
+msgstr "<h3> H3 تم إدراج ديناميكيا </h3>"
 
 #: demobrowser/demo/bom/Video.js:53
 msgid "It seems that your browser doesn't support HTML5 video"
@@ -536,10 +703,6 @@ msgstr "0:00"
 msgid "key"
 msgstr "مفتاح"
 
-#: demobrowser/demo/bom/WebStorage.js:40
-msgid "value"
-msgstr "القيمة"
-
 #: demobrowser/demo/bom/WebStorage.js:43
 msgid "Clear"
 msgstr "واضح"
@@ -549,17 +712,34 @@ msgstr "واضح"
 msgid "Remove"
 msgstr "إزالة"
 
-#: demobrowser/demo/bom/WebWorker.js:44
-msgid "Calculate Fibonacci Numbers in a web worker. Enter a number and click the Calculate button."
+#: demobrowser/demo/bom/WebWorker.js:40
+msgid "Calculate Fibonacci Numbers in a Web Worker"
 msgstr ".يقوم بحساب أرقام فيبوناتشي في عامل على شبكة الإنترنت. أدخل رقما وانقر على زر حساب"
 
-#: demobrowser/demo/bom/WebWorker.js:45
+#: demobrowser/demo/bom/WebWorker.js:42
+#: demobrowser/demo/bom/WebWorker.js:65
 msgid "Calculate"
 msgstr "أحسب"
+
+#: demobrowser/demo/bom/WebWorker.js:47
+msgid "Your browser supports Web Workers"
+msgstr "المتصفح يدعم عمال الويب"
+
+#: demobrowser/demo/bom/WebWorker.js:49
+msgid "Your browser doesn't support Web Workers"
+msgstr "متصفحك لا يدعم عمال الويب"
+
+#: demobrowser/demo/bom/WebWorker.js:74
+msgid "Calculating..."
+msgstr "...حساب"
 
 #: demobrowser/demo/bom/Window.js:48
 msgid "Open Native Window"
 msgstr "افتح نافذة أم"
+
+#: demobrowser/demo/bom/Window.js:61
+msgid "window1"
+msgstr "نافذة 1"
 
 #: demobrowser/demo/bom/Window.js:65
 msgid "Window closed?"
@@ -569,6 +749,10 @@ msgstr "نافذة مغلقة؟"
 msgid "Open Native Modal Window"
 msgstr "افتح نافذة أم مشروطة"
 
+#: demobrowser/demo/bom/Window.js:87
+msgid "window2"
+msgstr "نافذة 2"
+
 #: demobrowser/demo/bom/Window.js:91
 msgid "Modal Window closed?"
 msgstr "نافذة مشروطة مغلقة؟"
@@ -577,29 +761,9 @@ msgstr "نافذة مشروطة مغلقة؟"
 msgid "Open Faked Native Modal Window"
 msgstr "افتح نافذة أم مشروطة مزيفة"
 
-#: demobrowser/demo/data/ExtendedList.js:43
-msgid "angel"
-msgstr "ملاك"
-
-#: demobrowser/demo/data/ExtendedList.js:43
-msgid "embarrassed"
-msgstr "محرج"
-
-#: demobrowser/demo/data/ExtendedList.js:43
-msgid "kiss"
-msgstr "قبلة"
-
-#: demobrowser/demo/data/ExtendedList.js:43
-msgid "plain"
-msgstr "واضح"
-
-#: demobrowser/demo/data/ExtendedList.js:43
-msgid "sad"
-msgstr "حزين"
-
-#: demobrowser/demo/data/ExtendedList.js:43
-msgid "surprise"
-msgstr "مفاجأة"
+#: demobrowser/demo/bom/Window.js:116
+msgid "window3"
+msgstr "نافذة 3"
 
 #: demobrowser/demo/data/ExtendedList.js:90
 #: demobrowser/demo/data/ListControllerWithObjects.js:119
@@ -610,7 +774,7 @@ msgstr "متصل<> غير متصل"
 #: demobrowser/demo/data/ExtendedList.js:126
 #: demobrowser/demo/virtual/ExtendedList.js:111
 msgid "<b>Displaying Checkboxes in a list</b><br/>This list display a set of persons in a list as checkbox. Every person does have a name as label and an online status as checkbox."
-msgstr "<b>عرض خانات اختيار في قائمة</b><br/>.تعرض هذه القائمة مجموعة من الأشخاص في القائمة كخانة اختيار. كل شخص لديه اسم كتسمية وحالة اتصال بالإنترنت كخانة ااختيار"
+msgstr "<b>عرض خانات اختيار في قائمة</b><br/>.تعرض هذه القائمة مجموعة من الأشخاص في القائمة كخانة اختيار. كل شخص لديه اسم كتسمية وحالة اتصال بالإنترنت كخانة اختيار"
 
 #: demobrowser/demo/data/ExtendedTree.js:75
 msgid "all boring black"
@@ -647,14 +811,19 @@ msgstr "- يرجى الإختيار -"
 
 #: demobrowser/demo/data/Form.js:61
 #: demobrowser/demo/widget/RadioButtonGroup.js:45
+#: demobrowser/demo/showcase/Dialog.js:84
 #: demobrowser/demo/data/FormAndListController.js:40
+#: demobrowser/demo/test/Validation.js:174
+#: demobrowser/demo/test/Validation.js:175
 #: demobrowser/demo/ui/FormRenderer.js:56
 msgid "male"
 msgstr "ذكر"
 
 #: demobrowser/demo/data/Form.js:63
 #: demobrowser/demo/widget/RadioButtonGroup.js:45
+#: demobrowser/demo/showcase/Dialog.js:83
 #: demobrowser/demo/data/FormAndListController.js:41
+#: demobrowser/demo/test/Validation.js:175
 #: demobrowser/demo/ui/FormRenderer.js:57
 msgid "female"
 msgstr "أنثى"
@@ -742,12 +911,6 @@ msgstr "تجاهل"
 msgid "You are saving: %1"
 msgstr "تقوم بحفظ : ٪ 1"
 
-#: demobrowser/demo/data/JsonToList.js:60
-#: demobrowser/demo/data/JsonToTree.js:54
-#: demobrowser/demo/data/NamesList.js:58
-msgid "Loading..."
-msgstr "تحميل..."
-
 #: demobrowser/demo/data/JsonToList.js:80
 msgid "<b>List bound to data in a json file</b><br/>Loading the json file <a href='%1' target='_blank'>list.json</a> and bind the items to the list widget. The icons  will be created by a converter which converts the type to an icon url."
 msgstr "<b>JSON  قائمة مرتبطة بالبيانات في ملف</b><br/><a href='%1' target='_blank'>persons.json  JSON تحميل الملف </a> .وربط العناصر إلى القائمة. سيتم إنشاء الأيقونات بواسطة المحول الذي يحول النوع إلى أيقونة رابط"
@@ -759,9 +922,11 @@ msgstr "<b>JSON شجرة مرتبطة بالبيانات في ملف</b><br/><a 
 #: demobrowser/demo/data/ListController.js:37
 #: demobrowser/demo/test/SelectBox_EdgeCases.js:85
 #: demobrowser/demo/virtual/Tree_Columns.js:91
+#: demobrowser/demo/data/ListControllerWith3Widgets.js:36
 #: demobrowser/demo/virtual/SelectBox.js:70
 #: demobrowser/demo/virtual/SelectBox.js:216
 #: demobrowser/demo/data/ExtendedTree.js:41
+#: demobrowser/demo/data/TreeController.js:38
 #: demobrowser/demo/data/Tree_Columns.js:90
 #: demobrowser/demo/virtual/ComboBox.js:220
 #: demobrowser/demo/widget/SelectBox.js:59
@@ -877,11 +1042,19 @@ msgstr "جعل الجميع سعداء"
 
 #: demobrowser/demo/data/ListControllerWithObjects.js:155
 msgid "<b>Displaying objects in a list</b><br/>This list display a set of persons in a list. Every person does have a name and an emotion, which is displayed with the help of  a converter by the icon. The font color shows the online status."
-msgstr ""
+msgstr "<b>عرض الكائنات في قائمة</b><br/>.تعرض هذه القائمة مجموعة من الأشخاص في القائمة. كل شخص لديه اسم و حالة انفعال.لون الخط يوضح حالة الإتصال بالانترنت."
 
 #: demobrowser/demo/data/ModelDebugging.js:73
 msgid "<b>Debugging models</b><br/>Every model created by the data stores consists only of qooxdoo objects with properties. To see the properties, you can use the debugModel function in qx.dev.Debug."
-msgstr ""
+msgstr "<b>نماذج التصحيح</b><br/>كل نموذج أنشأتها مخازن البيانات يتكون فقط من الكائنات qooxdoo مع الخصائص. لمشاهدة الخصائص، يمكنك استخدام وظيفة في debugModel qx.dev.Debug."
+
+#: demobrowser/demo/data/NamesList.js:49
+#: demobrowser/demo/virtual/SelectBox.js:246
+#: demobrowser/demo/virtual/GroupedList.js:108
+#: demobrowser/demo/virtual/GroupedList.js:131
+#: demobrowser/demo/virtual/GroupedList.js:175
+msgid "no model..."
+msgstr "...لا يوجد نموذج"
 
 #: demobrowser/demo/data/NamesList.js:78
 msgid "<b>List bound to data in a json file</b><br/>Loading the json file <a href='%1' target='_blank'>persons.json</a> and bind the items to the list widget. In the converter for the label, the names will be set to both, the first and last name."
@@ -897,7 +1070,7 @@ msgstr "ترتيب حسب الاسم"
 
 #: demobrowser/demo/data/OwnCodeInModel.js:106
 msgid "<b>Adding own code to the model</b><br/>Using the delegation to bring two sort function to the root model class of this demo. The buttons just calling those sort functions."
-msgstr ""
+msgstr "<b>إضافة كود خاص لهذا النموذج</b><br/>استخدام الوفد لجلب اثنين من دالة الفرز"
 
 #: demobrowser/demo/data/SearchAsYouType.js:84
 msgid "<b>Search As You Type List</b><br/>Type a name and the list will show only the matching results (case-sensitive)."
@@ -992,6 +1165,10 @@ msgstr "<b>وصف</b><br/>. ربط عناصر العقدة التي تحتوي �
 msgid "<b>Description</b><br/>Binding the textfield to a property with a validation. The validator in the object only accepts numbers. On a validation fail, a red  border will surround the textfield."
 msgstr "<b>وصف</b><br/>. ربط حقل النص إلى خاصية مع التحقق من الصحة. المدقق في الكائن يقبل أرقام فقط. إذا فشل التحقق، فإن حدود حمراء تحيط حقل النص"
 
+#: demobrowser/demo/data/TreeController.js:39
+msgid "Thing %1"
+msgstr " %1 شيء"
+
 #: demobrowser/demo/data/TreeController.js:76
 msgid "Add an item to root"
 msgstr "إضافة عنصر إلى الجذر"
@@ -1011,6 +1188,10 @@ msgstr ".هذه الشجرة متصلة بمجموعة من العقد تم إن
 #: demobrowser/demo/data/TreeController.js:140
 msgid "<b>Selected Items</b><br/>A list containing the selected items of the tree."
 msgstr "<b>عناصر مختارة</b><br/>.قائمة تحتوي على العناصر المختارة من الشجرة"
+
+#: demobrowser/demo/data/Tree_Columns.js:106
+msgid "May "
+msgstr "مايو"
 
 #: demobrowser/demo/layout/Canvas_MinMaxSizes.js:46
 msgid "maxHeight=300"
@@ -1060,11 +1241,80 @@ msgstr "عدد 6"
 msgid "7th a wide, short button"
 msgstr "مجموعة واسعة 7، زر قصيرة"
 
+#: demobrowser/demo/layout/Grid_Simple.js:101
+msgid "click me"
+msgstr "انقر فوقي"
+
+#: demobrowser/demo/layout/HBox_Reversed.js:47
+#: demobrowser/demo/layout/VBox_Reversed.js:47
+msgid "click to reverse"
+msgstr "انقر لعكس"
+
+#: demobrowser/demo/layout/HSplit.js:62
+#: demobrowser/demo/layout/HSplit.js:107
+#: demobrowser/demo/layout/HSplit.js:188
+#: demobrowser/demo/layout/HSplit.js:234
+#: demobrowser/demo/layout/VSplit.js:65
+#: demobrowser/demo/layout/VSplit.js:110
+#: demobrowser/demo/layout/VSplit.js:187
+#: demobrowser/demo/layout/VSplit.js:232
+msgid "Flex:1"
+msgstr "Flex:1"
+
+#: demobrowser/demo/layout/HSplit.js:68
+#: demobrowser/demo/layout/HSplit.js:91
+#: demobrowser/demo/layout/VSplit.js:71
+#: demobrowser/demo/layout/VSplit.js:94
+msgid "Flex:2"
+msgstr "Flex:2"
+
+#: demobrowser/demo/layout/HSplit.js:84
+#: demobrowser/demo/layout/HSplit.js:130
+#: demobrowser/demo/layout/VSplit.js:87
+#: demobrowser/demo/layout/VSplit.js:133
+msgid "Flex:1; Min:250"
+msgstr "Flex:1; Min:250"
+
+#: demobrowser/demo/layout/HSplit.js:113
+#: demobrowser/demo/layout/HSplit.js:161
+#: demobrowser/demo/layout/VSplit.js:116
+#: demobrowser/demo/layout/VSplit.js:164
+msgid "Flex:2; Max:100"
+msgstr "Flex:2; Max:100"
+
+#: demobrowser/demo/layout/HSplit.js:137
+#: demobrowser/demo/layout/VSplit.js:140
+msgid "Flex:2; Min:250"
+msgstr "Flex:2; Min:250"
+
+#: demobrowser/demo/layout/HSplit.js:154
+#: demobrowser/demo/layout/VSplit.js:157
+msgid "Flex:1; Max:100"
+msgstr "Flex:1; Max:100"
+
+#: demobrowser/demo/layout/HSplit.js:182
+#: demobrowser/demo/layout/HSplit.js:204
+#: demobrowser/demo/layout/VSplit.js:181
+#: demobrowser/demo/layout/VSplit.js:202
+msgid "Flex:0"
+msgstr "Flex:0"
+
+#: demobrowser/demo/layout/HSplit.js:210
+#: demobrowser/demo/layout/VSplit.js:208
+msgid "Flex:1; Max:200"
+msgstr "Flex:1; Max:200"
+
+#: demobrowser/demo/layout/HSplit.js:227
+#: demobrowser/demo/layout/VSplit.js:225
+msgid "Flex:0; Min:350"
+msgstr "Flex:0; Min:350"
+
 #: demobrowser/demo/mobile/Fingers.js:98
 msgid "<b>Use your fingers to move the dots</b>"
 msgstr "<b>استخدام أصابعك لتحريك النقاط </ B>"
 
 #: demobrowser/demo/mobile/ScaleImage.js:82
+#: demobrowser/demo/test/Touch.js:80
 #: demobrowser/demo/mobile/PingPong.js:91
 #: demobrowser/demo/mobile/Fingers.js:84
 msgid "<b>This demo is supposed to be run in a WebKit-based browser on a touch-enabled device.</b>"
@@ -1095,6 +1345,14 @@ msgstr "لغة تأشير النص الفائق"
 #: demobrowser/demo/progressive/ProgressiveTable_Html.js:29
 msgid "Literal"
 msgstr "حرفي3"
+
+#: demobrowser/demo/progressive/ProgressiveTable_Html.js:46
+msgid "  Hello world!"
+msgstr "مرحبا بالعالم"
+
+#: demobrowser/demo/progressive/ProgressiveTable_Html.js:55
+msgid "    I'm red!"
+msgstr "!أنا أحمر"
 
 #: demobrowser/demo/progressive/ProgressiveTable_Mouseover.js:46
 #: demobrowser/demo/progressive/ProgressiveTable.js:57
@@ -1382,8 +1640,8 @@ msgstr "ترجمة بسيطة : this.tr (\"مرحبا بالعالم\")"
 #: demobrowser/demo/showcase/Translation.js:184
 msgid "I have an apple"
 msgid_plural "I have %1 apples"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "لدي تفاحة"
+msgstr[1] "لدي تفاحات"
 
 #: demobrowser/demo/showcase/Translation.js:129
 msgid "Singular/Plural Translate: this.trn('I have an apple', I have %1 apples, %1, applesNumber"
@@ -1517,7 +1775,7 @@ msgstr "خلية %1x%2"
 msgid "Text"
 msgstr "نص"
 
-#: demobrowser/demo/table/RemoteTableModel.js:130
+#: demobrowser/demo/table/RemoteTableModel.js:127
 msgid "Hello %1 Generated on:%2"
 msgstr " مرحبا %1 إنشاؤها في: %2"
 
@@ -1544,6 +1802,18 @@ msgstr "صلاحية"
 #: demobrowser/demo/table/Table_Cell_Editor.js:68
 msgid "editable combobox"
 msgstr " مربع تحرير وسرد قابل للتحرير"
+
+#: demobrowser/demo/table/Table_Cell_Editor.js:72
+msgid "admin"
+msgstr "مشرف"
+
+#: demobrowser/demo/table/Table_Cell_Editor.js:73
+msgid "manager"
+msgstr "مدير"
+
+#: demobrowser/demo/table/Table_Cell_Editor.js:74
+msgid "user"
+msgstr "مستخدم"
 
 #: demobrowser/demo/table/Table_Cell_Editor.js:81
 msgid "Status"
@@ -1617,14 +1887,6 @@ msgstr "جدول يتضمن عارض الخلية الشرطية "
 #: demobrowser/demo/table/Table_Conditional.js:50
 msgid "Image"
 msgstr "صورة"
-
-#: demobrowser/demo/table/Table_Context_Menu.js:54
-#: demobrowser/demo/table/Table_Drag_And_Drop.js:45
-#: demobrowser/demo/table/Table.js:45
-#: demobrowser/demo/table/Table_Events.js:42
-#: demobrowser/demo/table/Table_Huge.js:31
-msgid "Table"
-msgstr "جدول"
 
 #: demobrowser/demo/table/Table_Context_Menu.js:67
 msgid "Default ctx menu #1"
@@ -1774,6 +2036,15 @@ msgstr "ابقي الصف الأول"
 msgid "Whether the the first visible row should be rendered completely when scrolling."
 msgstr ".ما إذا كان ينبغي أن يصدر تماما في الصف الأول المرئي عند التنقل"
 
+#: demobrowser/demo/table/Table_Selection.js:42
+#: demobrowser/demo/table/Table_Context_Menu.js:54
+#: demobrowser/demo/table/Table_Drag_And_Drop.js:45
+#: demobrowser/demo/table/Table.js:45
+#: demobrowser/demo/table/Table_Events.js:42
+#: demobrowser/demo/table/Table_Huge.js:31
+msgid "Table"
+msgstr "جدول"
+
 #: demobrowser/demo/table/Table_Selection.js:53
 #: demobrowser/demo/table/Table_Drag_And_Drop.js:53
 #: demobrowser/demo/table/Table.js:56
@@ -1908,6 +2179,30 @@ msgstr "عنوان : ٪ 1"
 msgid "Window: "
 msgstr "نافذة :"
 
+#: demobrowser/demo/test/Element_1.js:59
+msgid "<b>hello</b>"
+msgstr "<b>مرحبا</b>"
+
+#: demobrowser/demo/test/Element_1.js:60
+msgid "hello"
+msgstr "مرحبا"
+
+#: demobrowser/demo/test/Element_1.js:129
+msgid "before2"
+msgstr "قبل 2"
+
+#: demobrowser/demo/test/Element_1.js:133
+msgid "after2"
+msgstr "بعد 2"
+
+#: demobrowser/demo/test/Element_5.js:46
+msgid "row%1"
+msgstr "صف %1"
+
+#: demobrowser/demo/test/Element_5.js:55
+msgid "row%1col%2"
+msgstr "صف %1 عمود %2"
+
 #: demobrowser/demo/test/Opacity.js:93
 #: demobrowser/demo/test/Opacity.js:99
 #: demobrowser/demo/test/Opacity.js:105
@@ -1989,6 +2284,10 @@ msgstr "تبديل المحتوى"
 
 #: demobrowser/demo/test/ScrollContainer_EdgeCaseWidth.js:87
 #: demobrowser/demo/test/ScrollContainer_EdgeCaseHeight.js:87
+#: demobrowser/demo/layout/HSplit.js:252
+#: demobrowser/demo/layout/HSplit.js:258
+#: demobrowser/demo/layout/VSplit.js:247
+#: demobrowser/demo/layout/VSplit.js:253
 msgid "Auto"
 msgstr "تلقائي"
 
@@ -2019,6 +2318,10 @@ msgstr "طقم الحروف %1 "
 #: demobrowser/demo/test/SelectBox_EdgeCases.js:79
 msgid "Long button, short text"
 msgstr "الزر طويل، والنص قصير"
+
+#: demobrowser/demo/test/Style.js:39
+msgid "Welcome to <br><b style="color:#F3FFB3;">qooxdoo</b> animations!"
+msgstr "مرحبا بكم في الرسوم المتحركة <br><b style=\"color:#F3FFB3;\">qooxdoo.</b>"
 
 #: demobrowser/demo/test/Table_CellEditor.js:66
 msgid "Get value"
@@ -2097,6 +2400,14 @@ msgstr "أداة تلميح"
 msgid "Start timers"
 msgstr "ابدأ المؤقتات"
 
+#: demobrowser/demo/test/Touch.js:147
+msgid "<b>Cancel Touch</b>"
+msgstr "<b>إلغاء اللمس</b>"
+
+#: demobrowser/demo/test/Touch.js:150
+msgid "Touch canceled"
+msgstr "إلغاء اللمسة"
+
 #: demobrowser/demo/test/Touch.js:160
 msgid "Type: %1"
 msgstr "نوع"
@@ -2141,9 +2452,63 @@ msgstr "%2:%1 DIV هل كل اللمسات المستهدفة"
 msgid "<b>Initial property values</b><br>name:%1<br>age:%2<br>gender:%3<br><br><b>Setting the name to 'Hans'</b><br>"
 msgstr " <b>قيم الخصائص الأولية</b> <br>%1 :الاسم<br>%2 :العمر<br>%3:الجنس<br><br><b>ضبط الاسم إلى صلاح </b><br>"
 
-#: demobrowser/demo/test/Validation.js:131
+#: demobrowser/demo/test/Validation.js:62
+msgid "new name: %1<br>"
+msgstr " %1: الاسم الجديد<br>"
+
+#: demobrowser/demo/test/Validation.js:64
+msgid "<b>Setting the name to ''</b><br>"
+msgstr "<b>'' ضبط الاسم إلى</b><br>"
+
+#: demobrowser/demo/test/Validation.js:69
+msgid "new name: <br>"
+msgstr ": الاسم الجديد<br>"
+
+#: demobrowser/demo/test/Validation.js:71
+msgid "<font color='red'>NAME NOT SET</font><br>old name: %1<br>"
+msgstr "<font color='red'>لم يتم تعيين الاسم</font><br>old name: %1<br>"
+
+#: demobrowser/demo/test/Validation.js:77
+msgid "<br><b>Setting the age property to 27</b><br>"
+msgstr "<br><b>تعيين خاصية العمر إلى 27</b><br>"
+
+#: demobrowser/demo/test/Validation.js:82
+#: demobrowser/demo/test/Validation.js:90
+msgid "new age: %1<br>"
+msgstr "%1 :عمر جديد <br>"
+
+#: demobrowser/demo/test/Validation.js:84
+msgid "<b>Setting the age property to 'true'</b><br>"
+msgstr "<b>'true' تعيين خاصية العمر إلى</b><br>"
+
+#: demobrowser/demo/test/Validation.js:92
+msgid "<font color='red'>AGE NOT SET</font><br>old age: %1<br>"
+msgstr "<font color='red'>لم يتم تعيين العمر</font><br>old age: %1<br>"
+
+#: demobrowser/demo/test/Validation.js:98
+msgid "<br><b>Setting the gender property to 'female'</b><br>"
+msgstr "<b> 'female' اختبار خاصية الجنس إلى</b><br>"
+
+#: demobrowser/demo/test/Validation.js:103
+#: demobrowser/demo/test/Validation.js:111
+msgid "new gender: %1<br>"
+msgstr "%1 : جنس جديد<br>"
+
+#: demobrowser/demo/test/Validation.js:105
+msgid "<b>Testing the gender property to 'fmale'</b><br>"
+msgstr "<b> 'fmale' اختبار خاصية الجنس إلى</b><br>"
+
+#: demobrowser/demo/test/Validation.js:113
+msgid "<font color='red'>GENDER NOT SET</font><br>old gender: %1<br>"
+msgstr "<font color='red'>الجنس غير محدد</font><br>old gender: %1<br>"
+
+#: demobrowser/demo/test/Validation.js:127
 msgid "<b>Description</b><br/>The demo creates an internal class containing three properties:<br/>- name: Name is validated to a minimum length of two.<br/>- age: Age is validated to be a number.<br/>- gender: Gender is validated to be either male or female."
 msgstr "<br/>:العرض التجريبي يخلق طبقة داخلية تتضمن ثلاث خصائص<br/>.الاسم : التحقق من صحة الاسم حيث لا يقل طوله عن اثنين-<br/>.العمر : التحقق من صحة العمر حيث يجب أن يكون رقما-<br/>.الجنس : التحقق من صحة الجنس حيث يجب أن يكون ذكرا أو أنثى-<b>وصف</b>"
+
+#: demobrowser/demo/test/Validation.js:164
+msgid "My name"
+msgstr "اسمي"
 
 #: demobrowser/demo/test/Virtual_List.js:45
 #: demobrowser/demo/widget/List.js:49
@@ -2184,14 +2549,6 @@ msgstr "الاختيار المضاف"
 msgid "One Selection"
 msgstr "اختيار احادي"
 
-#: demobrowser/demo/test/Virtual_List.js:124
-#: demobrowser/demo/virtual/Selection.js:163
-#: demobrowser/demo/widget/List.js:124
-#: demobrowser/demo/widget/Tree.js:178
-#: demobrowser/demo/virtual/List.js:173
-msgid "Enable drag selection"
-msgstr " إتاحة سحب الاختيار"
-
 #: demobrowser/demo/test/Virtual_List.js:125
 #: demobrowser/demo/virtual/Selection.js:179
 #: demobrowser/demo/widget/List.js:125
@@ -2219,9 +2576,16 @@ msgstr "%1 البند رقم"
 msgid "Additive selection"
 msgstr "اختيار مضاف"
 
-#: demobrowser/demo/test/Virtual_ListBinding.js:54
+#: demobrowser/demo/test/Virtual_ListBinding.js:59
 msgid "Affe %1"
 msgstr "%1 قرد"
+
+#: demobrowser/demo/test/io_HttpRequest.js:35
+#: demobrowser/demo/data/NamesList.js:58
+#: demobrowser/demo/data/JsonToList.js:60
+#: demobrowser/demo/data/JsonToTree.js:54
+msgid "Loading..."
+msgstr "تحميل..."
 
 #: demobrowser/demo/treevirtual/TreeVirtual.js:68
 msgid "Spam Message #"
@@ -2230,6 +2594,7 @@ msgstr "الرسائل غير المرغوب فيها #"
 #: demobrowser/demo/treevirtual/TreeVirtual_Events.js:25
 #: demobrowser/demo/animation/Tree_Highlight.js:40
 #: demobrowser/demo/treevirtual/TreeVirtual.js:26
+#: demobrowser/demo/treevirtual/TreeVirtual_Selections.js:24
 #: demobrowser/demo/treevirtual/TreeVirtual_Multiple_Columns.js:28
 #: demobrowser/demo/treevirtual/TreeVirtual_Filter.js:26
 msgid "Tree"
@@ -2419,6 +2784,10 @@ msgstr "بيانات"
 msgid "Edit"
 msgstr "تحرير"
 
+#: demobrowser/demo/treevirtual/TreeVirtual_Events.js:102
+msgid "Selected labels:"
+msgstr " :تسميات مختارة"
+
 #: demobrowser/demo/treevirtual/TreeVirtual_Filter.js:78
 msgid "Filter"
 msgstr "مصفي"
@@ -2507,10 +2876,6 @@ msgstr "حجم التلقائي "
 msgid "Non-default minimal line height"
 msgstr "الارتفاع الأدنى الغير الافتراضي للخط"
 
-#: demobrowser/demo/ui/AutoSizeTextArea.js:67
-msgid "qooxdoo is…"
-msgstr " ...هو qooxdoo"
-
 #: demobrowser/demo/ui/AutoSizeTextArea.js:78
 msgid "Minimal height"
 msgstr "أدنى ارتفاع"
@@ -2523,15 +2888,16 @@ msgstr "أقصى ارتفاع"
 msgid "Wrap handling"
 msgstr "التفاف المعالجة"
 
-#: demobrowser/demo/ui/AutoSizeTextArea.js:125
-msgid "qooxdoo is a comprehensive and innovative framework for creating rich internet applications (RIAs)."
-msgstr "(تمثل إطارا شاملا ومبتكرا لإنشاء تطبيقات إنترنت غنية (اتفاقات التكامل الإقليمي qooxdoo"
+#: demobrowser/demo/ui/AutoSizeTextArea.js:126
+msgid "The quick brown fox jumps over the lazy dog. "
+msgstr ".يقفز الثعلب البني السريع فوق الكلب الكسول"
 
 #: demobrowser/demo/ui/Command.js:42
 #: demobrowser/demo/data/FormController.js:56
 #: demobrowser/demo/table/Table_Window_Editor.js:152
 #: demobrowser/demo/bom/WebStorage.js:42
 #: demobrowser/demo/widget/MenuBar.js:136
+#: demobrowser/demo/bom/Cookie.js:41
 #: demobrowser/demo/test/UIDeclaration.js:101
 #: demobrowser/demo/widget/Menu.js:255
 #: demobrowser/demo/widget/Menu.js:344
@@ -2541,6 +2907,10 @@ msgstr "حفظ"
 #: demobrowser/demo/ui/Command.js:44
 msgid "Save the current file."
 msgstr "حفظ الملف الحالي"
+
+#: demobrowser/demo/ui/Command.js:46
+msgid "Saving..."
+msgstr "...تسجيل"
 
 #: demobrowser/demo/ui/Command.js:50
 msgid "Editor"
@@ -2588,7 +2958,7 @@ msgstr "يمكن إعادة ترتيبها"
 
 #: demobrowser/demo/ui/FiniteStateMachine.js:63
 msgid "This is a simple example of using a finite state machine, in which virtual mice solve a maze. <p>Each mouse is quite dumb, having in its arsenal of knowledge only these characteristics: it knows only how to travel in a single direction (the direction in which it was instantiated); when it arrives at a new cell, it looks left and right and creates a clone of itself to go each available direction; upon hitting a wall, it dies.<p>The initial mouse is a bit special, in that it looks for the possibility to clone a mouse to travel in the direction behind it, as well as to its left and right.<p>Each mouse is driven by (and in fact, in this example, is a subclass of) a finite state machine.  The FSM has five states: FadingIn, CellArrival (look for cloning opportunities), Moving, FadingOut, and Zombie (about to dispose).<p><u>The finite state diagram is below the maze.</u>"
-msgstr ""
+msgstr ".هذا مثال بسيط لاستخدام آلة الدولة المحدودة ، فيه  فأرة افتراضية تحل متاهة"
 
 #: demobrowser/demo/ui/Font.js:39
 msgid "Serif, 16px"
@@ -2716,6 +3086,7 @@ msgstr "من فضلك أعطنا بعض التفاصيل عنك"
 #: demobrowser/demo/ui/FormRendererPlaceholder.js:55
 #: demobrowser/demo/data/Form.js:75
 #: demobrowser/demo/ui/FormValidator.js:112
+#: demobrowser/demo/ui/FormValidator.js:127
 #: demobrowser/demo/ui/FormRenderer.js:62
 #: demobrowser/demo/ui/FormRendererDouble.js:62
 msgid "Send"
@@ -2789,9 +3160,13 @@ msgstr "<b>التحقق جهة العميل</b><br/>.جميع المجالات �
 msgid "Screenshots #1 and #2 show that the label can be reduced in size to 102 pixels horizontally or to 55 pixels vertically, so long as there is enough space in the other direction. Screenshot #3 shows what happens when the label is squeezed down to its minimum height and minimum width."
 msgstr "لقطات من رقم 1 ورقم 2 وتظهر أنه يمكن تخفيض حجم التسمية إلى 102 بكسل أفقيا أو رأسيا إلى 55 بكسل، ما دام هناك مساحة كافية في الاتجاه الآخر. لقطة رقم 3 توضح ما يحدث عندما يتم ضغط التسمية وصولا الى ارتفاعها و عرضها  الأدنيين."
 
+#: demobrowser/demo/ui/HeightForWidth.js:50
+msgid "We would like QLabel to tell the layout that screenshot #1 and screenshot #2 are acceptable but that screenshot #3 is not. The sizeHint() and minimumSizeHint() functions cannot do this, so Qt provides a complementary mechanism: height-for-width."
+msgstr ".كيو تي يوفر آلية تكميلية : ارتفاع مقابل العرض"
+
 #: demobrowser/demo/ui/HeightForWidth.js:57
 msgid "Every widget's QSizePolicy contains a boolean height-for-width flag that indicates whether or not the widget is able to trade width for height and height for width. The layout will call the virtual function QWidget::heightForWidth() as necessary to determine the desired height for a height-for-width widget with a given width."
-msgstr ""
+msgstr "Every widget's QSizePolicy contains a boolean height-for-width flag that indicates whether or not the widget is able to trade width for height and height for width. The layout will call the virtual function QWidget::heightForWidth() as necessary to determine the desired height for a height-for-width widget with a given width."
 
 #: demobrowser/demo/ui/Label_Reflow.js:57
 msgid "Toggle first paragraph"
@@ -2905,9 +3280,29 @@ msgstr "خصائص التطبيقات المصغرة  "
 msgid "Selected Widget"
 msgstr " التطبيقات المصغرة  المختارة"
 
+#: demobrowser/demo/util/PropertyEditor.js:241
+msgid " layout properties"
+msgstr "خصائص التصميم"
+
+#: demobrowser/demo/util/PropertyEditor.js:284
+msgid " properties"
+msgstr "خصائص"
+
 #: demobrowser/demo/util/PropertyGroup.js:54
 msgid "null"
 msgstr "خالي"
+
+#: demobrowser/demo/virtual/CellEvents.js:72
+msgid "<p style="color:green;">You clicked on cell %1 / %2</p>"
+msgstr "<p style=\"color:green;\">ضغطت على الخلية %1 / %2</p>"
+
+#: demobrowser/demo/virtual/CellEvents.js:78
+msgid "<p style="color:yellow;">You rightclicked cell %1 / %2</p>"
+msgstr "<p style=\"color:yellow;\">نقرت باليمين الخلية %1 / %2</p>"
+
+#: demobrowser/demo/virtual/CellEvents.js:85
+msgid "<p style="color:red;">You double clicked cell %1 / %2</p>"
+msgstr "<p style=\"color:red;\">النقر المزدوج خلية %1 / %2</p>"
 
 #: demobrowser/demo/virtual/CellSpan.js:52
 msgid "HTML Cells"
@@ -2957,6 +3352,14 @@ msgstr ":مجمعة حسب اسم العائلة"
 #: demobrowser/demo/virtual/GroupedList.js:164
 msgid "Grouped by group:"
 msgstr ":مجمعة حسب المجموعة"
+
+#: demobrowser/demo/virtual/HeaderSimple.js:49
+msgid "Foo"
+msgstr "فو"
+
+#: demobrowser/demo/virtual/HeaderSimple.js:50
+msgid "Bar"
+msgstr "شريط"
 
 #: demobrowser/demo/virtual/Pane_Row.js:51
 #: demobrowser/demo/virtual/Pane_Column.js:51
@@ -3014,13 +3417,6 @@ msgstr "مصفى"
 #: demobrowser/demo/virtual/SelectBox.js:239
 msgid "Grouped with Persons"
 msgstr "مجمعة بالأشخاص"
-
-#: demobrowser/demo/virtual/SelectBox.js:246
-#: demobrowser/demo/virtual/GroupedList.js:108
-#: demobrowser/demo/virtual/GroupedList.js:131
-#: demobrowser/demo/virtual/GroupedList.js:175
-msgid "no model..."
-msgstr "...لا يوجد نموذج"
 
 #: demobrowser/demo/virtual/Selection.js:63
 msgid "Row Selection"
@@ -3080,42 +3476,60 @@ msgstr "تحكم"
 msgid "Selection: "
 msgstr "خيار"
 
-#: demobrowser/demo/virtual/Tree.js:90
+#: demobrowser/demo/virtual/Tree.js:95
 #: demobrowser/demo/widget/Tree.js:140
 msgid "Open mode:"
 msgstr " طريقة الفتح"
 
-#: demobrowser/demo/virtual/Tree.js:115
+#: demobrowser/demo/virtual/Tree.js:119
+msgid "Selection:"
+msgstr ":التحديد"
+
+#: demobrowser/demo/virtual/Tree.js:121
+#: demobrowser/demo/widget/Tree.js:167
+msgid "Enable multi selection"
+msgstr " إتاحة الاختيار المتعدد"
+
+#: demobrowser/demo/virtual/Tree.js:130
+#: demobrowser/demo/test/Virtual_List.js:124
+#: demobrowser/demo/virtual/Selection.js:163
+#: demobrowser/demo/widget/List.js:124
+#: demobrowser/demo/widget/Tree.js:178
+#: demobrowser/demo/virtual/List.js:173
+msgid "Enable drag selection"
+msgstr " إتاحة سحب الاختيار"
+
+#: demobrowser/demo/virtual/Tree.js:144
 #: demobrowser/demo/widget/Tree.js:194
 msgid "Root node:"
 msgstr "عقدة الجذر :"
 
-#: demobrowser/demo/virtual/Tree.js:117
+#: demobrowser/demo/virtual/Tree.js:146
 #: demobrowser/demo/widget/Tree.js:196
 msgid "Hide Root Node"
 msgstr ".إخفاء العقدة الجذر"
 
-#: demobrowser/demo/virtual/Tree.js:124
+#: demobrowser/demo/virtual/Tree.js:153
 msgid "Show top level open/close icons"
 msgstr "إظهار أيقونات فتح / إغلاق  في أعلى مستوى"
 
-#: demobrowser/demo/virtual/Tree.js:133
+#: demobrowser/demo/virtual/Tree.js:162
 msgid "Tree:"
 msgstr "شجرة"
 
-#: demobrowser/demo/virtual/Tree.js:135
+#: demobrowser/demo/virtual/Tree.js:164
 msgid "Show Leafs"
 msgstr "اعرض الاوراق"
 
-#: demobrowser/demo/virtual/Tree.js:145
+#: demobrowser/demo/virtual/Tree.js:174
 msgid "Update Model"
 msgstr "تحديث النموذج"
 
-#: demobrowser/demo/virtual/Tree.js:152
+#: demobrowser/demo/virtual/Tree.js:181
 msgid "File #%1"
 msgstr "ملف # 1 ٪"
 
-#: demobrowser/demo/virtual/Tree.js:159
+#: demobrowser/demo/virtual/Tree.js:188
 #: demobrowser/demo/widget/Tree.js:250
 msgid "Toggle Height"
 msgstr "تبديل الارتفاع"
@@ -3306,26 +3720,32 @@ msgid "With HTML (rich) text"
 msgstr " HTML مع نص غني"
 
 #: demobrowser/demo/widget/ComboBox.js:151
+#: demobrowser/demo/virtual/ComboBox.js:157
 msgid "... &gt; (as literal HTML entity)"
 msgstr "... &gt; (HTML  ككيان حرفي)"
 
 #: demobrowser/demo/widget/ComboBox.js:152
+#: demobrowser/demo/virtual/ComboBox.js:158
 msgid "... &gt; (as Richtext)"
 msgstr "... &gt; (كنص غني)"
 
 #: demobrowser/demo/widget/ComboBox.js:153
+#: demobrowser/demo/virtual/ComboBox.js:159
 msgid "<b>Bold Text</b>"
 msgstr "<b>خط عريض</b>"
 
 #: demobrowser/demo/widget/ComboBox.js:154
+#: demobrowser/demo/virtual/ComboBox.js:160
 msgid "<u>Underlined Text</u>"
 msgstr "<u>تحته خط</u>"
 
 #: demobrowser/demo/widget/ComboBox.js:155
+#: demobrowser/demo/virtual/ComboBox.js:161
 msgid "<i>Italic Text</i>"
 msgstr "<i>خط مائل</i>"
 
 #: demobrowser/demo/widget/ComboBox.js:156
+#: demobrowser/demo/virtual/ComboBox.js:162
 msgid "HTML entities: &laquo; &lt; &amp; &gt; &raquo;"
 msgstr "HTML الكيانات: &laquo; &lt; &amp; &gt; &raquo;"
 
@@ -3464,6 +3884,9 @@ msgid ""
 "1) no pop-up or advertising blocker is activated.\n"
 "2) this html page is not loaded from the file system, but a webserver."
 msgstr ""
+" :تعذر الاتصال لمشغل فلاش! يرجى التأكد مما يلي\n"
+". لم يتم تفعيل مانع المنبثقة  أو الدعاية (1 \n"
+"2).لم يتم تحميل هذه الصفحة من نظام الملفات، ولكن من مزود ويب "
 
 #: demobrowser/demo/widget/GroupBox.js:50
 msgid "Code Assist"
@@ -3504,11 +3927,11 @@ msgstr "خيارات إضافية"
 
 #: demobrowser/demo/widget/HtmlArea.js:57
 msgid "<h1>HtmlArea UI-level widget</h1><p>This UI-level widget can be used at RIA (Rich Internet Applications) and inline applications.<br/>The UI widget does use the low-level component internally so code-duplication is avoided.<br/>As an application developer you can <b>use the same API.</b></p><p>You can play around with this widget by hitting the buttons at the toolbar.</p>"
-msgstr ""
+msgstr "<h1> منطقة هتمل على مستوى واجهة المستخدم</h1>"
 
 #: demobrowser/demo/widget/HtmlArea.js:67
 #: demobrowser/demo/bom/HtmlArea.js:95
-msgid "<h1>About</h1><p>qooxdoo (pronounced [ku:ksdu:]) is a comprehensive and innovative Ajax application framework. Leveraging object-oriented JavaScript allows developers to build impressive cross-browser applications. No <acronym title=\"HyperText Markup Language\">HTML</acronym>, <acronym title=\"Cascading Style Sheets\">CSS</acronym> nor <acronym title=\"Document Object Model\">DOM</acronym> knowledge is needed. qooxdoo includes a platform-independent development tool chain, a state-of-the-art <acronym title=\"Graphical User Interface\">GUI</acronym> toolkit and an advanced client-server communication layer. It is Open Source under an <acronym title=\"GNU Lesser General Public License\">LGPL</acronym>/<acronym title=\"Eclipse Public License\">EPL</acronym> dual <a href=\"http://qooxdoo.org/license\" class=\"wikilink1\" title=\"license\">license</a>.</p>"
+msgid "<h1>About</h1><p>qooxdoo (pronounced [ku:ksdu:]) is a comprehensive and innovative Ajax application framework. Leveraging object-oriented JavaScript allows developers to build impressive cross-browser applications. No <acronym title="HyperText Markup Language">HTML</acronym>, <acronym title="Cascading Style Sheets">CSS</acronym> nor <acronym title="Document Object Model">DOM</acronym> knowledge is needed. qooxdoo includes a platform-independent development tool chain, a state-of-the-art <acronym title="Graphical User Interface">GUI</acronym> toolkit and an advanced client-server communication layer. It is Open Source under an <acronym title="GNU Lesser General Public License">LGPL</acronym>/<acronym title="Eclipse Public License">EPL</acronym> dual <a href="http://qooxdoo.org/license" class="wikilink1" title="license">license</a>.</p>"
 msgstr "<h1>حول</h1>كوكسدو (تنطق [كوكس دو]) هو إطار تطبيق أجاكس شامل ومبتكر, زيادة فعالية الشيئية جافا سكريبت يتيح للمطورين بناء تطبيقات مثيرة للإعجاب وتعمل على أي متصفح. كوكسدو تتضمن منصة سلسلة أدوات مستقلة للتنمية، وهي من بين أحدث أدوات واجهة المستخدم الرسومية، و تتضمن أيضا طبقة لاتصالات العميل خادم. لا حاجة لمعرفة سي أس أس، هاش تي أم ال، أو دوم, هي مصدر مفتوح بموجب ترخيص ال جي بي ال/اي بي ال المزدوج."
 
 #: demobrowser/demo/widget/HtmlArea.js:103
@@ -3523,6 +3946,8 @@ msgstr "BgColor (Hex): "
 
 #: demobrowser/demo/widget/HtmlArea.js:129
 #: demobrowser/demo/widget/HtmlArea.js:130
+#: demobrowser/demo/bom/HtmlArea.js:154
+#: demobrowser/demo/bom/HtmlArea.js:155
 msgid "qooxdoo logo"
 msgstr "qooxdoo شعار "
 
@@ -3725,6 +4150,23 @@ msgstr "تسمية كبيرة طويلة"
 #: demobrowser/demo/widget/Label.js:70
 msgid "Big Long Label Cutted"
 msgstr "تسمية كبيرة طويلة مقصوصة"
+
+#: demobrowser/demo/widget/Label.js:113
+#: demobrowser/demo/bom/WebStorage.js:40
+msgid "value"
+msgstr "القيمة"
+
+#: demobrowser/demo/widget/Label.js:122
+msgid "selectable"
+msgstr "للتحديد"
+
+#: demobrowser/demo/widget/Label.js:127
+msgid "native context menu"
+msgstr "قائمة السياق الأصلية"
+
+#: demobrowser/demo/widget/Label.js:132
+msgid "rich"
+msgstr "غني"
 
 #: demobrowser/demo/widget/List.js:101
 #: demobrowser/demo/virtual/List.js:161
@@ -4198,7 +4640,7 @@ msgid "Not Editable"
 msgstr "غير قابل للتحرير"
 
 #: demobrowser/demo/widget/Spinner.js:55
-#: demobrowser/demo/ui/AutoSizeTextArea.js:110
+#: demobrowser/demo/ui/AutoSizeTextArea.js:111
 msgid "Wrap"
 msgstr "لف"
 
@@ -4240,13 +4682,13 @@ msgstr " (%1) :إزاحة"
 
 #: demobrowser/demo/widget/StackContainer.js:52
 #: demobrowser/demo/widget/StackContainer.js:87
-#: demobrowser/DemoBrowser.js:494
+#: demobrowser/DemoBrowser.js:497
 msgid "Previous"
 msgstr "السابقة"
 
 #: demobrowser/demo/widget/StackContainer.js:53
 #: demobrowser/demo/widget/StackContainer.js:88
-#: demobrowser/DemoBrowser.js:501
+#: demobrowser/DemoBrowser.js:504
 #: demobrowser/demo/widget/Menu.js:251
 msgid "Next"
 msgstr "القادم"
@@ -4575,10 +5017,6 @@ msgstr "%غير هام # 1 "
 msgid "%1 items"
 msgstr "%1 العناصر"
 
-#: demobrowser/demo/widget/Tree.js:167
-msgid "Enable multi selection"
-msgstr " إتاحة الاختيار المتعدد"
-
 #: demobrowser/demo/widget/Tree.js:206
 msgid "Show root open button"
 msgstr ".إظهار زر فتح الأصل"
@@ -4808,3 +5246,4 @@ msgstr "لا"
 #: demobrowser/demo/widget/Window.js:280
 msgid "Sorry, please click 'Yes'!"
 msgstr "عفوا , الرجاء انقر نعم"
+
