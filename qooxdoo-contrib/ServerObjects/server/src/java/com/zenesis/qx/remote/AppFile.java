@@ -475,7 +475,7 @@ public class AppFile implements Proxied {
 	 * Deletes the file
 	 */
 	public void deleteFile() {
-		// Not implemented!
+		file.delete();
 	}
 
 	/**

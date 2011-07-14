@@ -27,6 +27,7 @@
  */
 package com.zenesis.qx.remote;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -244,16 +245,27 @@ public class ProxyTypeImpl extends AbstractProxyType {
 		// Load properties
 		HashMap<String, ProxyEvent> events = new HashMap<String, ProxyEvent>();
 		HashMap<String, ProxyProperty> properties = new HashMap<String, ProxyProperty>();
-		if (clazz.isAnnotationPresent(Properties.class)) {
-			Properties annoProperties = (Properties)clazz.getAnnotation(Properties.class);
+		Properties annoProperties = (Properties)clazz.getAnnotation(Properties.class);
+		if (annoProperties != null) {
 			for (Property anno : annoProperties.value()) {
-				ProxyProperty property = new ProxyPropertyImpl(clazz, anno, annoProperties);
-				properties.put(anno.value(), property);
+				ProxyProperty property = new ProxyPropertyImpl(clazz, anno.value(), anno, annoProperties);
+				properties.put(property.getName(), property);
 				ProxyEvent event = property.getEvent();
 				if (event != null)
 					events.put(event.getName(), event);
 			}
 		}
+		for (Field field : clazz.getDeclaredFields()) {
+			Property anno = field.getAnnotation(Property.class);
+			if (anno != null) {
+				ProxyProperty property = new ProxyPropertyImpl(clazz, anno.value().length() > 0 ? anno.value() : field.getName(), anno, annoProperties);
+				properties.put(property.getName(), property);
+				ProxyEvent event = property.getEvent();
+				if (event != null)
+					events.put(event.getName(), event);
+			}
+		}
+		
 		
 		// Classes need to have all inherited properties added
 		if (!clazz.isInterface()) {

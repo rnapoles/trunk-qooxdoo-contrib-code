@@ -43,13 +43,13 @@ import java.lang.annotation.Target;
  * @author John Spackman [john.spackman@zenesis.com]
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.ANNOTATION_TYPE})
+@Target({ElementType.ANNOTATION_TYPE, ElementType.FIELD})
 public @interface Property {
 	
 	/**
 	 * The name of the property
 	 */
-	public String value();
+	public String value() default "";
 	
 	/**
 	 * For array properties, these can be created on the client as native arrays or

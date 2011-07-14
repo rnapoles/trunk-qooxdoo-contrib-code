@@ -46,13 +46,13 @@ public class ProxyPropertyImpl extends AbstractProxyProperty {
 	 * Creates a ProxyProperty from a Property annotation
 	 * @param anno
 	 */
-	public ProxyPropertyImpl(Class clazz, Property anno, Properties annoProperties) {
-		super(anno.value());
+	public ProxyPropertyImpl(Class clazz, String name, Property anno, Properties annoProperties) {
+		super(name);
 		this.anno = anno;
 		this.clazz = clazz;
 		sync = anno.sync();
 		if (anno.event().length() == 0) {
-			if (annoProperties.autoEvents())
+			if (annoProperties == null || annoProperties.autoEvents())
 				event = new ProxyEvent("change" + upname(name));
 			else
 				event = null;
@@ -164,6 +164,8 @@ public class ProxyPropertyImpl extends AbstractProxyProperty {
 		if (propertyClass.isCollection()) {
 			if (anno.arrayType() != Object.class)
 				propertyClass.setJavaType(anno.arrayType());
+			else if (!readOnly)
+				throw new IllegalArgumentException("Missing @Property.arrayType for property " + this);
 			propertyClass.setWrapArray(anno.array() != Remote.Array.NATIVE);
 			
 		// Array
