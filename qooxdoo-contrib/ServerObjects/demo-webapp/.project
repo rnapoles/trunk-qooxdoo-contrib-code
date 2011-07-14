@@ -37,7 +37,7 @@
 		<link>
 			<name>WebContent/arraytest</name>
 			<type>2</type>
-			<locationURI>QSO/client/arraytest</locationURI>
+			<locationURI>QSO</locationURI>
 		</link>
 		<link>
 			<name>WebContent/demoapp</name>
@@ -58,7 +58,7 @@
 	<variableList>
 		<variable>
 			<name>QSO</name>
-			<value>file:/Volumes/MIRROR/Users/john/dev/Qooxdoo%20Server%20Objects</value>
+			<value>$%7BPARENT-1-PROJECT_LOC%7D</value>
 		</variable>
 	</variableList>
 </projectDescription>
