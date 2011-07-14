@@ -37,7 +37,12 @@ class qcl_access_model_Session
    * The foreign key of this model
    */
   protected $foreignKey = "SessionId";
-	
+  
+  /**
+   * Expires after one hour
+   */
+  protected $expiresAfter = 3600;   
+  	
   /**
    * Properties of the model
    * @var unknown_type
@@ -232,8 +237,10 @@ class qcl_access_model_Session
   	catch( qcl_data_model_RecordNotFoundException $e )
   	{
   		$this->delete();
+  		return true;
   	}
-  	return false;
+  	
+  	return parent::checkExpiration();
   }
 }
 ?>

@@ -1716,7 +1716,7 @@ class qcl_data_model_AbstractActiveRecord
   		$m  = $this->getModified();
   		if ( $m instanceof  DateTime )
   		{
-	  		$d 	= $m->diff( new DateTime() );
+	  		$d 	= $m->diff( new DateTime() ); // FIXME: not PHP 5.2-compatible
 	  		$s 	= $d->s + 
 				  		$d->i * 60 + 
 				  		$d->h * 3600 +
