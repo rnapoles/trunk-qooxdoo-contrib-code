@@ -229,6 +229,7 @@ class qcl_access_model_Session
   	
   	/*
   	 * delete this record if no corresponding user exists
+  	 * @todo : this should not be neccessary, rewrite the cleanup stuff
   	 */
   	try 
   	{
