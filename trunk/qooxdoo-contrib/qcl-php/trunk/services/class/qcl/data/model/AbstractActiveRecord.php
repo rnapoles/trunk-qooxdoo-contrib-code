@@ -1702,7 +1702,7 @@ class qcl_data_model_AbstractActiveRecord
   
   
   /**
-   * Method called in the load() method to check whether the record auto-expires.
+   * Method to check whether the record auto-expires.
    * By default, checks the expiresAfter property and removes the record if
    * the record hasn't been touched for the number of seconds stored in the
    * property (if not NULL). Returns true if record is expired and should be deleted,
