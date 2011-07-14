@@ -27,6 +27,7 @@
  */
 package com.zenesis.qx.remote.test.simple;
 
+import com.zenesis.qx.remote.annotations.Method;
 import com.zenesis.qx.remote.test.properties.ITestArrays;
 import com.zenesis.qx.remote.test.properties.ITestExceptions;
 import com.zenesis.qx.remote.test.properties.ITestProperties;
@@ -97,4 +98,18 @@ public class TestBootstrap implements ITestBootstrap {
 		return testArrays;
 	}
 	
+	@Method
+	public Pippo getPippo() {
+		return new Pippo();
+	}
+
+	@Method
+	public String testPippoArray(Pippo[] pippos) {
+		String str = "";
+		for (int i = 0; i < pippos.length; i++) {
+			str += "Pippo #" + i + ": name=" + pippos[i].getName();
+		}
+		System.out.println("Received pippos: " + str);
+		return str;
+	}
 }

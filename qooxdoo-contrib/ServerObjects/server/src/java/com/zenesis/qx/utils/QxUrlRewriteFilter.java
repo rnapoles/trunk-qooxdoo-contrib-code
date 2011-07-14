@@ -85,7 +85,11 @@ public class QxUrlRewriteFilter implements Filter {
 				if (pos > 0) {
 					String mapTo = path.substring(pos + 1);
 					path = path.substring(0, pos);
-					File file = new File(root, mapTo);
+					File file;
+					if (mapTo.length() == 0 || mapTo.charAt(0) != '/')
+						file = new File(root, mapTo);
+					else
+						file = new File(mapTo);
 					rewrites.put(path, file);
 				}
 			}
