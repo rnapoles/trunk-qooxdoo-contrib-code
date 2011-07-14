@@ -47,7 +47,7 @@ public class ProxiedDeserializer extends JsonDeserializer<Proxied> {
 		Object obj = jp.readValueAs(Object.class);
 		if (obj == null)
 			return null;
-		return tracker.getProxied(Integer.parseInt(obj.toString()));
+		return tracker.getRequestHandler().getProxied(Integer.parseInt(obj.toString()));
 	}
 
 }
