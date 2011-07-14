@@ -50,7 +50,7 @@ qx.Class.define("demoapp.Application", {
 			this.base(arguments);
 		
 			// Enable logging in debug variant
-			if (qx.core.Variant.isSet("qx.debug", "on")) {
+			if (qx.core.Environment.get("qx.debug") == "on") {
 				// support native logging capabilities, e.g. Firebug for Firefox
 				qx.log.appender.Native;
 				// support additional cross-browser console. Press F7 to toggle
@@ -67,6 +67,22 @@ qx.Class.define("demoapp.Application", {
 			var manager = new com.zenesis.qx.remote.ProxyManager("/sampleServlet/ajax");
 			
 			var boot = manager.getBootstrapObject();
+			
+			var pippo1 = new com.zenesis.qx.remote.test.simple.Pippo();
+			var result = pippo1.getExampleCode();
+			for (var i = 0; i < result.getLength(); i++) {
+				console.log("Pippo #" + i + ": name=" + result.getItem(i).getName());
+			}
+			qx.core.Assert.assertEquals(2, result.getLength());
+			qx.core.Assert.assertEquals("prova1", result.getItem(0).getName());
+			qx.core.Assert.assertEquals("prova2", result.getItem(1).getName());
+			
+			var pippo2 = new com.zenesis.qx.remote.test.simple.Pippo();
+			pippo1.setName("hello");
+			pippo2.setName("world");
+			var result = boot.testPippoArray([ pippo1, pippo2 ]);
+			console.log("testPippoArray: " + result);
+			qx.core.Assert.assertEquals("Pippo #0: name=helloPippo #1: name=world", result);
 			var testScalars = boot.getTestScalars();
 			
 			qx.core.Assert.assertEquals(43, testScalars.getFourtyThree());
