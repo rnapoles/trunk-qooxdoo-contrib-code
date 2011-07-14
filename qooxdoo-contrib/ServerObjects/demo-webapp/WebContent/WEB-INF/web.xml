@@ -37,27 +37,11 @@
 		</init-param>
 		<init-param>
 			<param-name>rewrite-1</param-name>
-			<param-value>/qooxdoo=qooxdoo</param-value>
+			<param-value>/qooxdoo=/Users/john/os/qooxdoo-1.4.1-sdk</param-value>
 		</init-param>
 		<init-param>
 			<param-name>rewrite-2</param-name>
-			<param-value>/explorer/cache-downloads=qooxdoo/cache/downloads</param-value>
-		</init-param>
-		<init-param>
-			<param-name>rewrite-3</param-name>
-			<param-value>/qso-lib=client/qso-lib</param-value>
-		</init-param>
-		<init-param>
-			<param-name>rewrite-4</param-name>
-			<param-value>/demoapp=client/demoapp</param-value>
-		</init-param>
-		<init-param>
-			<param-name>rewrite-5</param-name>
-			<param-value>/explorer=client/explorer</param-value>
-		</init-param>
-		<init-param>
-			<param-name>rewrite-6</param-name>
-			<param-value>/arraytest=client/arraytest</param-value>
+			<param-value>/explorer/cache-downloads=/Users/john/os/qooxdoo-1.4.1-sdk/cache/downloads</param-value>
 		</init-param>
 	</filter>
 	
