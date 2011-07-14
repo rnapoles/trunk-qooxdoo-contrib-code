@@ -35,9 +35,14 @@
 	</natures>
 	<linkedResources>
 		<link>
+			<name>QSO server</name>
+			<type>2</type>
+			<locationURI>QSO/server</locationURI>
+		</link>
+		<link>
 			<name>WebContent/arraytest</name>
 			<type>2</type>
-			<locationURI>QSO</locationURI>
+			<locationURI>QSO/client/arraytest</locationURI>
 		</link>
 		<link>
 			<name>WebContent/demoapp</name>
