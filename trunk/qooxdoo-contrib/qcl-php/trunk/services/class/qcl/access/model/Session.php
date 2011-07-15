@@ -237,10 +237,8 @@ class qcl_access_model_Session
   	}
   	catch( qcl_data_model_RecordNotFoundException $e )
   	{
-  		$this->delete();
   		return true;
   	}
-  	
   	return parent::checkExpiration();
   }
 }
