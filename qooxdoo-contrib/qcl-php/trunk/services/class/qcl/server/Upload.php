@@ -76,7 +76,7 @@ class qcl_server_Upload
     if ( ! is_writable( QCL_UPLOAD_PATH ) )
     {
       $this->logError( sprintf(
-        "Upload path '%s' is not writeable."
+        "Upload path '%s' is not writeable.", QCL_UPLOAD_PATH
       ) );
       $this->abort("Upload path is not writable");
     }
