@@ -603,7 +603,7 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 			if (qx.lang.Type.isArray(value)) {
 				var send = [];
 				for (var j = 0; j < value.length; j++) {
-					if (!value[j])
+					if (typeof value[j] === "undefined" || value[j] === null)
 						send[j] = null;
 					else
 						send[j] = this.serializeValue(value[j]);
