@@ -311,7 +311,7 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 		 * object (creating classes as required) or returns an existing one
 		 */
 		_readProxyObject: function(data) {
-			if (!data)
+			if (typeof data == "undefined")
 				return null;
 			var result = null;
 			

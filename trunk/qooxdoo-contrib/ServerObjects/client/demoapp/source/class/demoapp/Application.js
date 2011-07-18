@@ -85,6 +85,9 @@ qx.Class.define("demoapp.Application", {
 			qx.core.Assert.assertEquals("Pippo #0: name=helloPippo #1: name=world", result);
 			var testScalars = boot.getTestScalars();
 			
+			qx.core.Assert.assertTrue(testScalars.getZero() === 0);
+			qx.core.Assert.assertTrue(testScalars.getTrue() === true);
+			qx.core.Assert.assertTrue(testScalars.getFalse() === false);
 			qx.core.Assert.assertEquals(43, testScalars.getFourtyThree());
 			qx.core.Assert.assertEquals(6.7, testScalars.getSixPointSeven());
 			qx.core.Assert.assertEquals("Hello World", testScalars.getHelloWorld());
