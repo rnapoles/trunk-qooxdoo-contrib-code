@@ -17,7 +17,14 @@ var baseConf = {
                            "Expected exception",
                            "test404",
                            "testLoadError",
-                           "testRequireState" ]
+                           "testRequireState",
+                           "call onerror on network error",
+                           "call onloadend on network error",
+                           "reset responseJson when reopened",
+                           "myCallback is not a function",
+                           "loading failed because of network error",
+                           "failure when request failed",
+                           "remove script from DOM when request failed"]
 };
 
 var args = arguments ? arguments : "";
