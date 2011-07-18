@@ -27,6 +27,8 @@
  */
 package com.zenesis.qx.remote.test.simple;
 
+import com.zenesis.qx.remote.annotations.Method;
+
 public class TestScalars implements ITestScalars {
 
 	@Override
@@ -42,6 +44,21 @@ public class TestScalars implements ITestScalars {
 	@Override
 	public float getSixPointSeven() {
 		return 6.7f;
+	}
+	
+	@Method
+	public int getZero() {
+		return 0;
+	}
+	
+	@Method
+	public boolean getTrue() {
+		return true;
+	}
+	
+	@Method
+	public boolean getFalse() {
+		return false;
 	}
 
 	@Override
