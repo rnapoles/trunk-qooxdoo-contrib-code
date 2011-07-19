@@ -960,7 +960,7 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 						var pd = def.properties[propName];
 						if (!pd.readOnly && !pd.onDemand) {
 							var value = clientObject.get(propName);
-							if (value)
+							if (value !== undefined)
 								data.properties[propName] = this.serializeValue(value);
 						}
 					}
