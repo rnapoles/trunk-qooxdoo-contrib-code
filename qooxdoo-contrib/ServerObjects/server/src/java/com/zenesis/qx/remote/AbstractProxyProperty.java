@@ -37,6 +37,8 @@ public abstract class AbstractProxyProperty implements ProxyProperty {
 	
 	public AbstractProxyProperty(String name) {
 		super();
+		if (name.equals("property"))
+			throw new IllegalArgumentException("Cannot have a property called 'property'");
 		this.name = name;
 	}
 	
