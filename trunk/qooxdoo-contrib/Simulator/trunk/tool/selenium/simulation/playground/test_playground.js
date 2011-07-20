@@ -27,31 +27,20 @@ var selWin = simulation.Simulation.SELENIUMWINDOW;
 var qxAppInst = simulation.Simulation.QXAPPINSTANCE;
 
 var locators = {
-  menuButton : 'qxh=qx.ui.container.Composite/[@classname="playground.view.Toolbar"]/qx.ui.toolbar.MenuButton',
+  menuButton : 'qxhv=qx.ui.container.Composite/[@classname="playground.view.Toolbar"]/qx.ui.toolbar.MenuButton',
   syntaxHighlightingButton : 'qxh=qx.ui.container.Composite/[@classname="playground.view.Toolbar"]/qx.ui.form.ToggleButton',
   editorTextArea : 'qxh=qx.ui.container.Composite/qx.ui.splitpane.Pane/[@classname="playground.view.Editor"]/qx.ui.form.TextArea',
   runButton : 'qxh=qx.ui.container.Composite/[@classname="playground.view.Toolbar"]/child[0]',
-  playgroundApplication : 'qxh=qx.ui.container.Composite/qx.ui.splitpane.Pane/qx.ui.splitpane.Pane/qx.ui.container.Composite/qx.ui.container.Scroll/qx.ui.root.Inline',
+  playgroundApplication : 'qxhv=qx.ui.container.Composite/qx.ui.splitpane.Pane/qx.ui.splitpane.Pane/[@classname=playground.view.PlayArea]/[@classname=playground.view.RiaPlayArea]/qx.ui.container.Scroll/qx.ui.root.Inline',
   logButton : 'qxh=qx.ui.container.Composite/[@classname="playground.view.Toolbar"]/qx.ui.toolbar.CheckBox',
-  sampleMenuButton : 'qxh=qx.ui.container.Composite/[@classname="playground.view.Toolbar"]/qx.ui.toolbar.MenuButton',
   gitHubButton : 'qxh=qx.ui.container.Composite/[@classname="playground.view.Toolbar"]/child[3]',
   gistMenu : 'qxh=[@classname="playground.view.gist.GistMenu"]',
   gistUserNameField : 'qxh=[@classname="playground.view.gist.GistMenu"]/child[0]/qx.ui.form.TextField',
   gistLoadButton : 'qxh=[@classname="playground.view.gist.GistMenu"]/[@classname="playground.view.gist.UserNameMenuItem"]/qx.ui.form.Button',
   gistMenuButton : 'qxh=[@classname="playground.view.gist.GistMenu"]/child[5]',
   shortenUrlButton : 'qxh=qx.ui.container.Composite/[@classname="playground.view.Toolbar"]/[@label="URL"]',
-  labelFromUrlCode : 'qxhv=qx.ui.container.Composite/qx.ui.splitpane.Pane/qx.ui.splitpane.Pane/[@classname=playground.view.PlayArea]/qx.ui.container.Scroll/qx.ui.root.Inline/[@value=Code loaded from URL parameter]'
+  labelFromUrlCode : 'qxhv=qx.ui.container.Composite/qx.ui.splitpane.Pane/qx.ui.splitpane.Pane/[@classname=playground.view.PlayArea]/[@classname=playground.view.RiaPlayArea]/qx.ui.container.Scroll/qx.ui.root.Inline/[@value=Code loaded from URL parameter]'
 };
-
-if (mySim.getConfigSetting("branch") == "branch_1_2_x") {
-  locators.menuButton = 'qxh=qx.ui.container.Composite/[@classname="playground.view.Toolbar"]/qx.ui.toolbar.Part/qx.ui.toolbar.MenuButton';
-  locators.syntaxHighlightingButton = 'qxh=qx.ui.container.Composite/[@classname="playground.view.Toolbar"]/child[0]/qx.ui.form.ToggleButton';
-  locators.runButton = 'qxh=qx.ui.container.Composite/[@classname="playground.view.Toolbar"]/qx.ui.toolbar.Part/child[0]',
-  locators.logButton = 'qxh=qx.ui.container.Composite/[@classname="playground.view.Toolbar"]/child[2]/qx.ui.toolbar.CheckBox';
-  locators.sampleMenuButton = 'qxh=qx.ui.container.Composite/[@classname="playground.view.Toolbar"]/qx.ui.toolbar.Part/qx.ui.toolbar.MenuButton',
-  locators.gitHubButton = 'qxh=qx.ui.container.Composite/[@classname="playground.view.Toolbar"]/qx.ui.toolbar.Part/child[3]';
-  locators.shortenUrlButton = 'qxh=qx.ui.container.Composite/[@classname="playground.view.Toolbar"]/child[2]/[@label="URL"]'
-}
 
 var getLogHtml = function()
 {
@@ -64,8 +53,10 @@ var getSampleNames = function(sampleMenuButtonLocator)
   var menuWidget = selenium.getQxWidgetByLocator(sampleMenuButtonLocator);
   var kids = menuWidget.getMenu().getChildren();  
   var sampleNames = "";
-  for(var i=0,l=kids.length; i<l; i++) {  
-    sampleNames += kids[i].getLabel() + ",";
+  for(var i=0,l=kids.length; i<l; i++) {
+    if (kids[i].isVisible()) {
+      sampleNames += kids[i].getLabel() + ",";
+    }
   }
   return sampleNames;
 };
@@ -294,23 +285,23 @@ simulation.Simulation.prototype.runTest = function()
   var sampleNames = this.getEval(selWin + ".qx.Simulation.getSampleNames('" + locators.menuButton +"');", "Getting sample names");
   sampleNames = String(sampleNames);
   var sampleArr = sampleNames.split(",");
-  print("Found " + sampleArr.length + " samples: " + sampleArr); 
+  print("Found " + sampleArr.length + " samples: " + sampleArr);
 
   // Log any errors that might have occurred since the application was started 
   this.logGlobalErrors();
   this.clearGlobalErrorStore();
   
-  locators.sampleMenuLocator = locators.sampleMenuButton + '/qx.ui.menu.Menu';
+  locators.sampleMenuLocator = locators.menuButton + '/qx.ui.menu.Menu';
   
   // Click the menu button so the menu is created
-  this.qxClick(locators.sampleMenuButton, '', 'Clicking menu button');
+  this.qxClick(locators.menuButton, '', 'Clicking menu button');
   var sampleMenuFirstChild = this.__sel.getQxObjectFunction(locators.sampleMenuLocator + '/child[0]', 'toString');
   
   if (sampleMenuFirstChild.indexOf("MenuSlideBar") > 0) {
     locators.sampleMenuLocator += '/qx.ui.menu.MenuSlideBar';
   }
   // Close the menu
-  this.qxClick(locators.sampleMenuButton, '', 'Clicking menu button');
+  this.qxClick(locators.menuButton, '', 'Clicking menu button');
   
   var editor = this.getConfigSetting("editor");
   if (editor) {
@@ -350,7 +341,7 @@ simulation.Simulation.prototype.checkSampleLoad = function(sampleArr)
     }
       this.__sel.chooseOkOnNextConfirmation();
       print("Selecting next sample: " + sampleArr[i]);
-      this.qxClick(locators.sampleMenuButton, '', 'Clicking menu button');
+      this.qxClick(locators.menuButton, '', 'Clicking menu button');
       this.qxClick(locators.sampleMenuLocator + '/child[' + i + ']', '', 'Selecting sample ' + sampleArr[i]);
 
       try {
