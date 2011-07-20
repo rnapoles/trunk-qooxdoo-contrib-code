@@ -380,6 +380,7 @@ simulation.Simulation.prototype.checkUrlParameter = function()
 
 simulation.Simulation.prototype.runTest = function()
 {
+  this.__sel.windowMaximize();
   this.checkUrlParameter();
   
   print("Starting sample playback");
