@@ -30,10 +30,6 @@ var logHtml = selWin + "." + qxAppInst + ".logelem.innerHTML";
 simulation.Simulation.prototype.runTest = function()
 {
   this.__sel.windowMaximize();
-  // Make sure the locale is 'en' to simplify dealing with log messages.
-  var setLocale = "qx.locale.Manager.getInstance().setLocale('en')";  
-  this.runScript(setLocale, "Setting application locale to EN");
-  
   if (this.getConfigSetting("autPath").indexOf("~press") > 0) {
     this.checkUrlParameter();
   }
