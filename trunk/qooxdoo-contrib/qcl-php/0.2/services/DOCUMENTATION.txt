@@ -1,0 +1,34 @@
+/*
+ * qcl - the qooxdoo component library
+ *
+ * http://qooxdoo.org/contrib/project/qcl/
+ *
+ * Copyright:
+ *   2007-2009 Christian Boulanger
+ *
+ * License:
+ *   LGPL: http://www.gnu.org/licenses/lgpl.html
+ *   EPL: http://www.eclipse.org/org/documents/epl-v10.php
+ *   See the LICENSE file in the project's top-level directory for details.
+ *
+ * Authors:
+ *  * Christian Boulanger (cboulanger)
+ */
+ 
+You can generate documentation from the source files using PhpDocumentor
+from the PEAR repository:
+ 
+  http://pear.php.net/package/PhpDocumentor/
+  http://www.phpdoc.org/
+  
+Install it with
+
+$ pear config-set data_dir /path/to/your/htdocs/pear
+$ pear install PhpDocumentor
+
+The data_dir must be a subfolder of your server's document root, this way
+you can use the web interface to control its behavior. 
+
+Configure PhpDocumentor to parse the contents in the class/ folder into the
+doc/ folder. You can find an example configuration file for PhpDocumentro 
+in the doc/ subfolder.
