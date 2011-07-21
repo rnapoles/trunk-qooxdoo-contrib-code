@@ -273,16 +273,6 @@ class qcl_data_model_PropertyBehavior
   }
 
   /**
-   * Checks if the object has a  property of this name.
-   * @param $property
-   * @return bool
-   */
-  public function has( $property )
-  {
-    return in_array( $property, $this->names() );
-  }
-
-  /**
    * Implementation of property getter
    * @param $property
    * @return mixed
