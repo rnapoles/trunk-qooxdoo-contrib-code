@@ -52,7 +52,8 @@ qx.Class.define("qcl.ui.treevirtual.TreeView",
     datasource :
     {
       check : "String",
-      init  : false,
+      init  : null,
+      nullable : true,
       event : "changeDatasource",
       apply : "_applyDatasource",
       event : "changeDatasource"
@@ -65,6 +66,7 @@ qx.Class.define("qcl.ui.treevirtual.TreeView",
     {
       check : "Integer",
       init  : null,
+      nullable : true,
       event : "changeNodeId",
       apply : "_applyNodeId",
       event : "changeNodeId"
