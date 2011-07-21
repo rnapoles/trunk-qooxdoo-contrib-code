@@ -162,6 +162,9 @@ qx.Class.define("qcl.application.ConfigManager",
     
     _applyModel : function( model, old )
     {
+      
+      if( model === null ) return;
+      
       /* 
        * create index
        */
