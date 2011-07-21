@@ -112,4 +112,25 @@ public class TestBootstrap implements ITestBootstrap {
 		System.out.println("Received pippos: " + str);
 		return str;
 	}
+	
+	@Method
+	public String testPippoArray2(Pippo[] pippos) {
+		String str = "";
+		for (int i = 0; i < pippos.length; i++) {
+			str += "Pippo #" + i + ": name=" + pippos[i].getName();
+		}
+		System.out.println("Received pippos: " + str);
+		return str;
+	}
+	
+	@Method
+	public int waitForMillis(int millis) {
+		try {
+			Thread.sleep(millis);
+		}catch(InterruptedException e) {
+			// Nothing
+		}
+		return millis;
+	}
+	
 }

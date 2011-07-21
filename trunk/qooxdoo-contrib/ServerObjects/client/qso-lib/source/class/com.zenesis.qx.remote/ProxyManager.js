@@ -329,7 +329,7 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 				
 				// Copy values by hand
 				else {
-					var result = [];
+					result = [];
 					for (var i = 0; i < data.length; i++)
 						result[i] = this._readProxyObject(data[i]);
 				}
@@ -342,7 +342,7 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 					var serverId = data.serverId;
 					
 					// Get or create it
-					var result = this.getServerObject(serverId);
+					result = this.getServerObject(serverId);
 					if (!result) {
 						var clazz = this.getClassOrCreate(data.clazz);
 						result = this.__serverObjects[serverId] = new clazz(serverId);
@@ -646,8 +646,13 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 			
 			// Serialise the request
 			var parameters = [];
-			for (var i = 0; i < args.length; i++)
-				parameters[i] = this.serializeValue(args[i]);
+			var notify = [];
+			for (var i = 0; i < args.length; i++) {
+				if (typeof args[i] == "function")
+					notify.push(args[i]);
+				else
+					parameters.push(this.serializeValue(args[i]));
+			}
 			var data = {
 				cmd: "call",
 				serverId: serverObject.getServerId(),
@@ -656,7 +661,7 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 			};
 			
 			// Call the server
-			var result = null;
+			var result = undefined;
 			this._sendCommandToServer(data, function(evt) {
 				result = this._processResponse(evt);
 				if (!this.getException()) {
@@ -664,8 +669,10 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 					if (array == "wrap")
 						result = new qx.data.Array(result||[]);
 				}
+				for (var i = 0; i < notify.length; i++)
+					notify[i].call(serverObject, result);
 				return result;
-			}, this);
+			}, this, notify.length != 0);
 			
 			// Store in the cache and return
 			if (methodDef && methodDef.cacheResult) {
@@ -875,9 +882,10 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 		 * @param obj {Object} object to be turned into a JSON string and sent to the server
 		 * @param callback {function} callback
 		 * @param context {Object?} context for the callback
+		 * @param aync {Boolean?} whether to make it an asynch call (default is synchronous)
 		 * @return {String} the server response 
 		 */
-		_sendCommandToServer: function(obj, callback, context) {
+		_sendCommandToServer: function(obj, callback, context, async) {
 	      	// Queue any client-created object which need to be sent to the server 
 			this._queueClientObjects();
 			
@@ -898,7 +906,7 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 			// Set the data
 	      	var text = qx.util.Json.stringify(obj);
 	      	var req = new qx.io.remote.Request(this.getProxyUrl(), "POST", "text/plain");
-	      	req.setAsynchronous(false);
+	      	req.setAsynchronous(!!async);
 	      	req.setData(text);
 	      	
 	      	// Send it

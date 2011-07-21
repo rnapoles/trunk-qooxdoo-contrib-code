@@ -255,9 +255,6 @@ public class ProxySessionTracker {
 	// Queue for properties and events
 	private CommandQueue queue;
 	
-	// The request handler (only while the RequestHandler is active)
-	private RequestHandler requestHandler;
-
 	// Bootstrap object
 	private final Class<? extends Proxied> bootstrapClass;
 	private Proxied bootstrap;
@@ -488,25 +485,6 @@ public class ProxySessionTracker {
 		if (queue == null)
 			queue = createQueue();
 		return queue;
-	}
-	
-	/**
-	 * Returns the RequestHandler (if there is one)
-	 * @return null if no RequestHandler is in use
-	 */
-	public RequestHandler getRequestHandler() {
-		return requestHandler;
-	}
-	
-	/**
-	 * Sets the RequestHandler
-	 * @param requestHandler
-	 * @throws IllegalArgumentException if there already is a RequestHandler
-	 */
-	/*package*/ void setRequestHandler(RequestHandler requestHandler) {
-		if (this.requestHandler != null && requestHandler != null)
-			throw new IllegalArgumentException("Cannot set RequestHandler more than once");
-		this.requestHandler = requestHandler;
 	}
 	
 	/**

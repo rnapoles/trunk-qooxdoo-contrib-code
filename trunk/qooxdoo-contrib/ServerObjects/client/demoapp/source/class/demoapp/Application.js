@@ -71,7 +71,7 @@ qx.Class.define("demoapp.Application", {
 			var pippo1 = new com.zenesis.qx.remote.test.simple.Pippo();
 			var result = pippo1.getExampleCode();
 			for (var i = 0; i < result.getLength(); i++) {
-				console.log("Pippo #" + i + ": name=" + result.getItem(i).getName());
+				this.debug("Pippo #" + i + ": name=" + result.getItem(i).getName());
 			}
 			qx.core.Assert.assertEquals(2, result.getLength());
 			qx.core.Assert.assertEquals("prova1", result.getItem(0).getName());
@@ -81,9 +81,13 @@ qx.Class.define("demoapp.Application", {
 			pippo1.setName("hello");
 			pippo2.setName("world");
 			var result = boot.testPippoArray([ pippo1, pippo2 ]);
-			console.log("testPippoArray: " + result);
+			this.debug("testPippoArray: " + result);
 			qx.core.Assert.assertEquals("Pippo #0: name=helloPippo #1: name=world", result);
 			var testScalars = boot.getTestScalars();
+			
+			boot.waitForMillis(1000, function(result) {
+				this.debug("waitForMillis completed, result=" + result);
+			});
 			
 			qx.core.Assert.assertTrue(testScalars.getZero() === 0);
 			qx.core.Assert.assertTrue(testScalars.getTrue() === true);
