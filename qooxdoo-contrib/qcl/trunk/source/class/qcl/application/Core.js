@@ -242,15 +242,34 @@ qx.Class.define("qcl.application.Core",
     },
     
     /**
-     * Whether the application should ask users if they "really" want 
-     * to quit the application.
+     * todoc
      * @type {Boolean} 
      */
     confirmQuit : 
     {
       check : "Boolean",
-      init : true
+      init : false
     },
+    
+    /**
+     * todoc 
+     * @type {Boolean} 
+     */
+    confirmLogout : 
+    {
+      check : "Boolean",
+      init : true
+    },    
+    
+    /**
+     * todoc
+     * @type {Boolean} 
+     */
+    confirmLogoutMessage : 
+    {
+      check : "String",
+      init : "Do you want to log out (press OK) or simply quit this window (Press cancel)"
+    },    
     
     /**
      * Whether to allow anonymous subscriptions, i.e. unauthenticated
@@ -1503,9 +1522,17 @@ qx.Class.define("qcl.application.Core",
      * @return
      */
     close : function()
-    {  
+    { 
+      if ( this.isConfirmLogout() )
+      {
+        if( confirm( this.getConfirmLogoutMessage() ) )
+        {
+          this.logout();
+        }
+        return undefined;        
+      }
       if ( this.isConfirmQuit() )
-      {  
+      { 
         return qx.locale.Manager.tr("Do you really want to quit %1?",  this.getApplicationName() );
       }
       return undefined;
