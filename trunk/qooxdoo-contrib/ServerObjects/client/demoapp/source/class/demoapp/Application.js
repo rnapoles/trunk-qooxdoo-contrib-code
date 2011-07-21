@@ -87,6 +87,7 @@ qx.Class.define("demoapp.Application", {
 			
 			boot.waitForMillis(1000, function(result) {
 				this.debug("waitForMillis completed, result=" + result);
+				qx.core.Assert.assertTrue(this == boot);
 			});
 			
 			qx.core.Assert.assertTrue(testScalars.getZero() === 0);
