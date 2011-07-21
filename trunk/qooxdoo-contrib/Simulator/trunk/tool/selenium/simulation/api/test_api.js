@@ -29,13 +29,8 @@ var qxAppInst = simulation.Simulation.QXAPPINSTANCE;
 
 
 simulation.Simulation.prototype.runTest = function()
-{  
-  // Make sure the locale is 'en' to simplify dealing with log messages.
-  var setLocale = "qx.locale.Manager.getInstance().setLocale('en')";  
-  this.runScript(setLocale, "Setting application locale to EN");
-  
+{
   this.logDocErrors();
-  
 };
 
 simulation.Simulation.prototype.logDocErrors = function() 
