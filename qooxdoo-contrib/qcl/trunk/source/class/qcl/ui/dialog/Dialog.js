@@ -112,12 +112,17 @@ qx.Class.define("qcl.ui.dialog.Dialog",
           _this.__sandbox.rpcRequest( 
               data.service, data.method, data.params 
           );
-        }
+        };
       }
-      var widget = dialog.Dialog.getInstanceByType( data.type );
-      widget.set( data.properties );
-      widget.show();
-    
+      /*
+       * deferring the construction of the widget so that errors are 
+       * not thrown within request handler
+       */
+      new qx.util.DeferredCall(function(){
+          var widget = dialog.Dialog.getInstanceByType( data.type );          
+          widget.set( data.properties );        
+          widget.show();
+      },this).schedule();    
     }
   }
 });
