@@ -43,11 +43,10 @@ public class ProxiedDeserializer extends JsonDeserializer<Proxied> {
 
 	@Override
 	public Proxied deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-		ProxySessionTracker tracker = ProxyManager.getTracker();
 		Object obj = jp.readValueAs(Object.class);
 		if (obj == null)
 			return null;
-		return tracker.getRequestHandler().getProxied(Integer.parseInt(obj.toString()));
+		return RequestHandler.getCurrentHandler().getProxied(Integer.parseInt(obj.toString()));
 	}
 
 }

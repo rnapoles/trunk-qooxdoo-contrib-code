@@ -42,6 +42,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import javax.servlet.ServletException;
 import org.apache.log4j.Logger;
+import org.apache.log4j.helpers.ThreadLocalMap;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonToken;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -120,6 +121,9 @@ public class RequestHandler {
 			this.oldValue = oldValue;
 		}		
 	}
+
+	// RequestHandler for the current thread
+	private static ThreadLocal<RequestHandler> s_currentHandler = new ThreadLocal<RequestHandler>();
 	
 	// Tracker for the session
 	private final ProxySessionTracker tracker;
@@ -158,7 +162,7 @@ public class RequestHandler {
 	 * @throws IOException
 	 */
 	public void processRequest(Reader request, Writer response) throws ServletException, IOException {
-		tracker.setRequestHandler(this);
+		s_currentHandler.set(this);
 		ObjectMapper objectMapper = tracker.getObjectMapper();
 		try {
 			if (log.isDebugEnabled()) {
@@ -188,8 +192,16 @@ public class RequestHandler {
 			tracker.getQueue().queueCommand(CommandType.EXCEPTION, e.getServerObject(), null, new ExceptionDetails(e.getClass().getName(), e.getMessage()));
 			objectMapper.writeValue(response, tracker.getQueue());
 		} finally {
-			tracker.setRequestHandler(null);
+			s_currentHandler.set(null);
 		}
+	}
+	
+	/**
+	 * Returns the request handler for the current thread
+	 * @return
+	 */
+	public static RequestHandler getCurrentHandler() {
+		return s_currentHandler.get();
 	}
 	
 	/**
