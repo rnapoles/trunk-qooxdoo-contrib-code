@@ -6,7 +6,7 @@
     "summary" : "qooxdoo component library, php backend",
     "description" : "A couple of interoperating extensions that are useful for web application development.",
     
-    "keywords" : [ "acces control", "authentication", "databinding", "backend", "jsonrpc", "php" ],
+    "keywords" : [ "access control", "authentication", "databinding", "backend", "jsonrpc", "php" ],
     "homepage" : "http://qooxdoo.org/contrib/project/qcl",
   
     "license" : "LGPL/EPL",
