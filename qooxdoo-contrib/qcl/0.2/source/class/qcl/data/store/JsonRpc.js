@@ -558,16 +558,17 @@ qx.Class.define("qcl.data.store.JsonRpc",
       /*
        * server messages
        */
-      if( data.messages && data.messages instanceof Array ){
+      if( data.messages && qx.lang.Type.isArray(data.messages) ){
         data.messages.forEach( function(message){
-          qx.event.message.Bus.dispatch( message.name, message.data ); 
+          var msg = new qx.event.message.Message(message.name, message.data );
+          qx.event.message.Bus.dispatch( msg ); 
         });
       }
 
       /*
        * server events
        */ 
-      if( data.events && data.events instanceof Array )
+      if( data.events && qx.lang.Type.isArray(data.events) )
       {
         data.events.forEach( function(event) {
           if (event.data) 
