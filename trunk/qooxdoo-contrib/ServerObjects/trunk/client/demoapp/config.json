@@ -11,6 +11,7 @@
   "export" :
   [
     "api",
+    "api-data",
     "build",
     "clean",
     "distclean",
@@ -23,19 +24,24 @@
     "profiling",
     "source",
     "source-all",
+    "source-hybrid",
+    "simulation-build",
+    "simulation-run",
     "test",
     "test-source",
     "translation"
   ],
+  
+  "default-job" : "source",
 
   "let" :
   {
     "APPLICATION"  : "demoapp",
-    "QOOXDOO_PATH" : "/Users/john/os/qooxdoo-1.4.1-sdk",
+    "QOOXDOO_PATH" : "/Users/john/os/qooxdoo-1.5-sdk",
     "QXTHEME"      : "demoapp.theme.Theme",
-    "API_EXCLUDE"  : ["qx.test.*", "${APPLICATION}.theme.*", "${APPLICATION}.test.*"],
+    "API_EXCLUDE"  : ["qx.test.*", "${APPLICATION}.theme.*", "${APPLICATION}.test.*", "${APPLICATION}.simulation.*"],
     "LOCALES"      : [ "en" ],
-    "CACHE"        : "../../qooxdoo/cache",
+    "CACHE"        : "${TMPDIR}/qx${QOOXDOO_VERSION}/cache",
     "ROOT"         : "."
   },
 
