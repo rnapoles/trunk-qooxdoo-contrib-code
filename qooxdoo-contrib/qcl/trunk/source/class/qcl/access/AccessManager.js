@@ -183,7 +183,7 @@ qx.Class.define("qcl.access.AccessManager",
       {
         this.error("Method signature change: connect() must be called with the session id as first parameter ");
       }
-      this.getStore().load("authenticate",[ sessionId ], callback, context );
+      this.getStore().load("authenticate",[ sessionId, null ], callback, context );
     },
     
     /**
