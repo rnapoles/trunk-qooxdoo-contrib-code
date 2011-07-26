@@ -23,6 +23,7 @@
     "profiling",
     "source",
     "source-all",
+    "source-hybrid",
     "test",
     "test-source",
     "translation"
@@ -31,11 +32,10 @@
   "let" :
   {
     "APPLICATION"  : "dragdroptree",
-    "QOOXDOO_PATH" : "../../../../../qooxdoo-trunk",
+    "QOOXDOO_PATH" : "../../../../qooxdoo/1.5",
     "QXTHEME"      : "dragdroptree.theme.Theme",
     "API_EXCLUDE"  : ["qx.test.*", "${APPLICATION}.theme.*", "${APPLICATION}.test.*"],
     "LOCALES"      : [ "en" ],
-    "CACHE"        : "${TMPDIR}/cache",
     "ROOT"         : "."
   },
 

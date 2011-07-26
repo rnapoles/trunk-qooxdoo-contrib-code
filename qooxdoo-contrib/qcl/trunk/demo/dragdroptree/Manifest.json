@@ -3,8 +3,8 @@
   {
     "name" : "dragdroptree",
 
-    "summary" : "Custom Application",
-    "description" : "This is a skeleton for a custom application with qooxdoo.",
+    "summary" : "A demo for the qcl.ui.treevirtual.DragDropTree widget",
+    "description" : "",
     
     "homepage" : "http://some.homepage.url/",
 
@@ -18,7 +18,7 @@
     ],
 
     "version" : "trunk",
-    "qooxdoo-versions": ["1.2-pre"]
+    "qooxdoo-versions": ["1.2","1.3","1.4","1.5"]
   },
   
   "provides" : 
