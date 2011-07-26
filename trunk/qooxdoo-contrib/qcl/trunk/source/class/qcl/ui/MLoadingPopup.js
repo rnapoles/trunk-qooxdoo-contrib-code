@@ -74,13 +74,15 @@ qx.Mixin.define("qcl.ui.MLoadingPopup",
      _centerPopup :function()
      {
         var bounds = this.__popup.getBounds();
+        try{
         if ( this.__target && ( "left" in this.__target.getLayoutProperties() ) )
         {
           var l = this.__target.getLayoutProperties();
+      
           this.__popup.placeToPoint({
             left: Math.round( l.left + ( l.width / 2) - ( bounds.width / 2) ),
             top : Math.round( l.top + ( l.height / 2 ) - ( bounds.height / 2) )
-          });          
+          });  
         }
         else
         {
@@ -89,6 +91,7 @@ qx.Mixin.define("qcl.ui.MLoadingPopup",
             marginLeft : Math.round( ( qx.bom.Document.getWidth() -bounds.width) / 2)
           });          
         }
+        }catch(e){}
      },
      
      /**
