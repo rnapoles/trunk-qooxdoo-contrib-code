@@ -1,6 +1,6 @@
 /* ***********************************************************************
 
-   com.zenesis.qx.upload contrib - provides an API for uploading one or multiple files
+   UploadMgr - provides an API for uploading one or multiple files
    with progress feedback (on modern browsers), does not block the user 
    interface during uploads, supports cancelling uploads.
 
@@ -30,7 +30,7 @@
  * Uploader will use XhrHandler to upload via XMLHttpRequest if supported or 
  * will fall back to FormHandler.
  */
-qx.Class.define("com.zenesis.qx.upload.Uploader", {
+qx.Class.define("com.zenesis.qx.upload.UploadMgr", {
 	extend: qx.core.Object,
 	
 	construct: function(widget, uploadUrl) {

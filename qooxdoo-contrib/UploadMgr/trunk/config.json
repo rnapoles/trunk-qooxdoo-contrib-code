@@ -1,5 +1,5 @@
 {
-  "name"    : "com.zenesis.qx.upload",
+  "name"    : "UploadMgr",
 
   "include" :
   [

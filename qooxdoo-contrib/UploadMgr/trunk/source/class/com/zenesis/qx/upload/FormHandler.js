@@ -1,6 +1,6 @@
 /* ***********************************************************************
 
-   com.zenesis.qx.upload contrib - provides an API for uploading one or multiple files
+   UploadMgr - provides an API for uploading one or multiple files
    with progress feedback (on modern browsers), does not block the user 
    interface during uploads, supports cancelling uploads.
 
