@@ -1,7 +1,7 @@
 {
   "info" : 
   {
-    "name" : "com.zenesis.qx.upload",
+    "name" : "UploadMgr",
 
     "summary" : "Uploader widget",
     "description" : "Library for uploading files, with progress feedback and doesn't block UI",

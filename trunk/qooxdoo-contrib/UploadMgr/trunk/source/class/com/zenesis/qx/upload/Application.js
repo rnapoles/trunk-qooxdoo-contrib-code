@@ -1,6 +1,6 @@
 /* ***********************************************************************
 
-   com.zenesis.qx.upload contrib - provides an API for uploading one or multiple files
+   UploadMgr - provides an API for uploading one or multiple files
    with progress feedback (on modern browsers), does not block the user 
    interface during uploads, supports cancelling uploads.
 
@@ -72,19 +72,18 @@ qx.Class.define("com.zenesis.qx.upload.Application", {
       		var btn = new com.zenesis.qx.upload.UploadButton("Add File(s)", "com/zenesis/qx/upload/test.png");
       		var lst = new qx.ui.form.List();
       		
-      		/*
-      		 * Uploader controls the upload process; btn is the widget that will have the input[type=file]
-      		 * attached, and "/demoupload" is the path files will be uploaded to (i.e. it's the value used
-      		 * for the form's action attribute)
-      		 */
-      		var uploader = new com.zenesis.qx.upload.Uploader(btn, "/demoupload");
+      		// Uploader controls the upload process; btn is the widget that will have the input[type=file]
+      		// attached, and "/demoupload" is the path files will be uploaded to (i.e. it's the value used
+      		// for the form's action attribute)
+      		//
+      		var uploader = new com.zenesis.qx.upload.UploadMgr(btn, "/demoupload");
       		uploader.addListener("addFile", function(evt) {
       			var file = evt.getData(),
       				item = new qx.ui.form.ListItem(file.getFilename(), null, file);
       			lst.add(item);
       			
       			// On modern browsers (ie not IE) we will get progress updates
-      			var listenerId = file.addListener("changeProgress", function(evt) {
+      			var progressListenerId = file.addListener("changeProgress", function(evt) {
       				this.debug("Upload " + file.getFilename() + ": " + evt.getData() + " / " + file.getSize() + " - " +
       						Math.round(evt.getData() / file.getSize() * 100) + "%");
       				item.setLabel(file.getFilename() + ": " + evt.getData() + " / " + file.getSize() + " - " +
@@ -92,7 +91,7 @@ qx.Class.define("com.zenesis.qx.upload.Application", {
       			}, this);
       			
       			// All browsers can at least get changes in state (ie "uploading", "cancelled", and "uploaded")
-      			file.addListener("changeState", function(evt) {
+      			var stateListenerId = file.addListener("changeState", function(evt) {
       				var state = evt.getData();
       				
       				this.debug(file.getFilename() + ": state=" + state + ", file size=" + file.getSize() + ", progress=" + file.getProgress());
@@ -104,8 +103,10 @@ qx.Class.define("com.zenesis.qx.upload.Application", {
       				else if (state == "cancelled")
       					item.setLabel(file.getFilename() + " (Cancelled)");
       				
-      				if (state == "uploaded" || state == "cancelled")
-          				file.removeListenerById(listenerId);
+      				if (state == "uploaded" || state == "cancelled") {
+          				file.removeListenerById(stateListenerId);
+          				file.removeListenerById(progressListenerId);
+      				}
       				
       			}, this);
       			
@@ -114,9 +115,7 @@ qx.Class.define("com.zenesis.qx.upload.Application", {
       		
       		doc.add(btn, { left: 50, top: 50 });
 
-      		/*
-      		 * Create a button to cancel the upload selected in the list
-      		 */
+      		// Create a button to cancel the upload selected in the list
       		var btnCancel = new qx.ui.form.Button("Cancel download", "qx/icon/Oxygen/22/actions/process-stop.png");
       		btnCancel.set({ enabled: false });
       		lst.addListener("changeSelection", function(evt) {
@@ -133,22 +132,19 @@ qx.Class.define("com.zenesis.qx.upload.Application", {
       				uploader.cancel(file);
       		}, this);
       		
-      		/*
-      		 * Auto upload? (default=true)
-      		 */
+      		// Auto upload? (default=true)
       		var cbx = new qx.ui.form.CheckBox("Automatically Upload");
       		cbx.setValue(true);
       		cbx.addListener("changeValue", function(evt) {
       			uploader.setAutoUpload(evt.getData());
       		}, this);
       		
-      		/*
-      		 * add them to the UI
-      		 */
+      		// add them to the UI
       		lst.set({ width: 350 });
       		doc.add(cbx, { left: 170, top: 50 });
       		doc.add(lst, { left: 170, top: 65 });
       		doc.add(btnCancel, { left: 540, top: 50 });
+      		
 		}
 	}
 });
