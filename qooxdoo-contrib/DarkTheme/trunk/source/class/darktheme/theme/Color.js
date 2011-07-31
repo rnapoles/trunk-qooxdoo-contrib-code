@@ -55,7 +55,7 @@ qx.Theme.define("darktheme.theme.Color",
 	"background-window": "#525252",
 	
 	// selection
-	"background-selected": "#398E9D",
+	"background-selected": "#3E646E",
 
     /*
     ---------------------------------------------------------------------------
@@ -139,9 +139,9 @@ qx.Theme.define("darktheme.theme.Color",
 
     // own table colors
     "table-focus-indicator": "#80B4EF",
-    "table-row-background-focused-selected": "#398E9D",
-    "table-row-background-focused": "#80B4EF",
-    "table-row-background-selected": "#398E9D",
+    "table-row-background-focused-selected": "#3E646E",
+    "table-row-background-focused": "transparent",
+    "table-row-background-selected": "#3E646E",
 
     // equal to "background-pane" and "background-odd"
     "table-row-background-even": "#F3F3F3",
