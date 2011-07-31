@@ -515,14 +515,15 @@ function qcl_get_content_type( $file )
   {
     case "pdf": $ctype="application/pdf"; break;
     case "txt": $ctype="text/plain"; break;
-    case "exe": throw new InvalidArgumentException("Executables are not allowed");
+    case "exe": throw new InvalidArgumentException(".exe files are not allowed");
     case "zip": $ctype="application/zip"; break;
     case "doc": $ctype="application/msword"; break;
     case "xls": $ctype="application/vnd.ms-excel"; break;
     case "ppt": $ctype="application/vnd.ms-powerpoint"; break;
     case "gif": $ctype="image/gif"; break;
     case "png": $ctype="image/png"; break;
-    case "jpg": $ctype="image/jpg"; break;
+    case "jpg": 
+    case "jpeg": $ctype="image/jpg"; break;
     default: $ctype="application/octet-stream";
   }
   return $ctype;
