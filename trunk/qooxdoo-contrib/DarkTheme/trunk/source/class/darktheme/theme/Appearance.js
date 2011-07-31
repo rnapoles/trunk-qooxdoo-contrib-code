@@ -91,11 +91,6 @@ qx.Theme.define("darktheme.theme.Appearance",
           decorator = "button-checked";
           textColor = undefined;
         }
-        else if (states.disabled)
-        {
-          decorator = "button-disabled";
-          textColor = undefined;
-        }
         else if (states.pressed)
         {
           decorator = "button-checked";

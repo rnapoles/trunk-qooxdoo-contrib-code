@@ -916,6 +916,22 @@ qx.Theme.define("darktheme.theme.Decoration",
 		backgroundRepeat: "scale"
       }
     },
+    
+    "toolbar-blank" :
+    {
+	  decorator: qx.ui.decoration.Single,
+
+      style:
+      {
+        backgroundColor: "transparent",
+
+        width: 1,
+		color: "transparent",
+        colorBottom: "border-separator",
+		
+        style: "solid"
+      }
+    },
 	
 	"toolbar-light":
     {

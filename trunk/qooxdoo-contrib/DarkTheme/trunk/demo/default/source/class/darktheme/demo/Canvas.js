@@ -32,7 +32,7 @@ qx.Class.define("darktheme.demo.Canvas",
       });
       win1.setLayout(new qx.ui.layout.Canvas());
 
-      if (qx.core.Variant.isSet("qx.client", "mshtml"))
+      if ((qx.core.Environment.get("engine.name") === "mshtml"))
       {
         var canvas1 = new qx.ui.container.Composite(new qx.ui.layout.HBox());
         canvas1.add(new qx.ui.basic.Label("Canvas is not support in Internet Explorer!").set({
@@ -60,7 +60,7 @@ qx.Class.define("darktheme.demo.Canvas",
       });
       win2.setLayout(new qx.ui.layout.Canvas());
 
-      if (qx.core.Variant.isSet("qx.client", "mshtml"))
+      if ((qx.core.Environment.get("engine.name") === "mshtml"))
       {
         var canvas2 = new qx.ui.container.Composite(new qx.ui.layout.HBox());
         canvas2.add(new qx.ui.basic.Label("Canvas is not support in Internet Explorer!").set({
