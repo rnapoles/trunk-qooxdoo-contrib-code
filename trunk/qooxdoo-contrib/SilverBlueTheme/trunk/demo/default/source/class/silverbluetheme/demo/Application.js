@@ -69,7 +69,7 @@ qx.Class.define("silverbluetheme.demo.Application",
       this.base(arguments);
 
       // Enable logging in debug variant
-      if (qx.core.Variant.isSet("qx.debug", "on"))
+      if ((qx.core.Environment.get("qx.debug")))
       {
         // support native logging capabilities, e.g. Firebug for Firefox
         qx.log.appender.Native;
@@ -245,7 +245,7 @@ qx.Class.define("silverbluetheme.demo.Application",
       var label = new qx.ui.basic.Atom(headerStr);
       label.set({alignY: "middle", font: "bold", rich: true});
       
-      var version = new qx.ui.basic.Atom(qx.core.Setting.get("qx.version"), "silverbluetheme.demo/logo.png");
+      var version = new qx.ui.basic.Atom(qx.core.Environment.get("qx.version"), "silverbluetheme.demo/logo.png");
       version.set({alignY: "middle", font: "bold"});
       
       header.add(label);

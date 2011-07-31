@@ -17,6 +17,8 @@ qx.Class.define("silverbluetheme.demo.CheckBox",
 
   members:
   {
+    __checkBoxes: null,
+    
     _createControls: function()
     {
       var layout = new qx.ui.layout.VBox(8);
@@ -28,13 +30,12 @@ qx.Class.define("silverbluetheme.demo.CheckBox",
       var cbTowel = new qx.ui.form.CheckBox("Towel");
       var cbBeer = new qx.ui.form.CheckBox("Beer");
       var cbBT =  new qx.ui.form.CheckBox("Bathing togs");
-	  cbBT.setTriState(true);
 
       var btOk = new qx.ui.form.Button("OK");
       btOk.addListener("execute", this._onExecute, this);
       btOk.setAllowGrowX(false);
 
-      this._checkBoxes = [ cbOil, cbTowel, cbBeer, cbBT ];
+      this.__checkBoxes = [ cbOil, cbTowel, cbBeer, cbBT ];
 
 	  this.addListenerOnce("appear", function(e)
       {
@@ -47,9 +48,12 @@ qx.Class.define("silverbluetheme.demo.CheckBox",
 	  }, this);
 	},  
 
+    /**
+    * @lint ignoreDeprecated(alert)
+    */
     _onExecute : function(e)
     {
-      var cbs = this._checkBoxes;
+      var cbs = this.__checkBoxes;
       var count = 0;
       var str = "";
 

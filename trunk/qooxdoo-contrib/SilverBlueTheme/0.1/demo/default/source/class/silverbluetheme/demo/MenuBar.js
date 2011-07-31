@@ -17,6 +17,15 @@ qx.Class.define("silverbluetheme.demo.MenuBar",
 
   members:
   {
+    __newCommand: null,
+    __openCommand: null,
+    __saveCommand: null,
+    __undoCommand: null,
+    __redoCommand: null,
+    __cutCommand: null,
+    __copyCommand: null,
+    __pasteCommand: null,
+    
     _createControls: function()
     {
       var layout = new qx.ui.layout.Canvas();
@@ -91,31 +100,31 @@ qx.Class.define("silverbluetheme.demo.MenuBar",
 
     createCommands : function()
     {
-      this._newCommand = new qx.ui.core.Command("Ctrl+N");
-      this._newCommand.addListener("execute", this.debugCommand);
+      this.__newCommand = new qx.ui.core.Command("Ctrl+N");
+      this.__newCommand.addListener("execute", this.debugCommand);
 
-      this._openCommand = new qx.ui.core.Command("Ctrl+O");
-      this._openCommand.addListener("execute", this.debugCommand);
+      this.__openCommand = new qx.ui.core.Command("Ctrl+O");
+      this.__openCommand.addListener("execute", this.debugCommand);
 
-      this._saveCommand = new qx.ui.core.Command("Ctrl+S");
-      this._saveCommand.addListener("execute", this.debugCommand);
+      this.__saveCommand = new qx.ui.core.Command("Ctrl+S");
+      this.__saveCommand.addListener("execute", this.debugCommand);
 
-      this._undoCommand = new qx.ui.core.Command("Ctrl+Z");
-      this._undoCommand.addListener("execute", this.debugCommand);
+      this.__undoCommand = new qx.ui.core.Command("Ctrl+Z");
+      this.__undoCommand.addListener("execute", this.debugCommand);
 
-      this._redoCommand = new qx.ui.core.Command("Ctrl+R");
-      this._redoCommand.addListener("execute", this.debugCommand);
+      this.__redoCommand = new qx.ui.core.Command("Ctrl+R");
+      this.__redoCommand.addListener("execute", this.debugCommand);
 
-      this._cutCommand = new qx.ui.core.Command("Ctrl+X");
-      this._cutCommand.addListener("execute", this.debugCommand);
+      this.__cutCommand = new qx.ui.core.Command("Ctrl+X");
+      this.__cutCommand.addListener("execute", this.debugCommand);
 
-      this._copyCommand = new qx.ui.core.Command("Ctrl+C");
-      this._copyCommand.addListener("execute", this.debugCommand);
+      this.__copyCommand = new qx.ui.core.Command("Ctrl+C");
+      this.__copyCommand.addListener("execute", this.debugCommand);
 
-      this._pasteCommand = new qx.ui.core.Command("Ctrl+P");
-      this._pasteCommand.addListener("execute", this.debugCommand);
+      this.__pasteCommand = new qx.ui.core.Command("Ctrl+P");
+      this.__pasteCommand.addListener("execute", this.debugCommand);
 
-      this._pasteCommand.setEnabled(false);
+      this.__pasteCommand.setEnabled(false);
     },
 
 
@@ -148,10 +157,10 @@ qx.Class.define("silverbluetheme.demo.MenuBar",
     {
       var menu = new qx.ui.menu.Menu;
 
-      var newButton = new qx.ui.menu.Button("New", "icon/16/actions/document-new.png", this._newCommand);
-      var openButton = new qx.ui.menu.Button("Open", "icon/16/actions/document-open.png", this._openCommand);
+      var newButton = new qx.ui.menu.Button("New", "icon/16/actions/document-new.png", this.__newCommand);
+      var openButton = new qx.ui.menu.Button("Open", "icon/16/actions/document-open.png", this.__openCommand);
       var closeButton = new qx.ui.menu.Button("Close");
-      var saveButton = new qx.ui.menu.Button("Save", "icon/16/actions/document-save.png", this._saveCommand);
+      var saveButton = new qx.ui.menu.Button("Save", "icon/16/actions/document-save.png", this.__saveCommand);
       var saveAsButton = new qx.ui.menu.Button("Save as...", "icon/16/actions/document-save-as.png");
       var printButton = new qx.ui.menu.Button("Print", "icon/16/actions/document-print.png");
       var exitButton = new qx.ui.menu.Button("Exit", "icon/16/actions/application-exit.png");
@@ -179,11 +188,11 @@ qx.Class.define("silverbluetheme.demo.MenuBar",
     {
       var menu = new qx.ui.menu.Menu;
 
-      var undoButton = new qx.ui.menu.Button("Undo", "icon/16/actions/edit-undo.png", this._undoCommand);
-      var redoButton = new qx.ui.menu.Button("Redo", "icon/16/actions/edit-redo.png", this._redoCommand);
-      var cutButton = new qx.ui.menu.Button("Cut", "icon/16/actions/edit-cut.png", this._cutCommand);
-      var copyButton = new qx.ui.menu.Button("Copy", "icon/16/actions/edit-copy.png", this._copyCommand);
-      var pasteButton = new qx.ui.menu.Button("Paste", "icon/16/actions/edit-paste.png", this._pasteCommand);
+      var undoButton = new qx.ui.menu.Button("Undo", "icon/16/actions/edit-undo.png", this.__undoCommand);
+      var redoButton = new qx.ui.menu.Button("Redo", "icon/16/actions/edit-redo.png", this.__redoCommand);
+      var cutButton = new qx.ui.menu.Button("Cut", "icon/16/actions/edit-cut.png", this.__cutCommand);
+      var copyButton = new qx.ui.menu.Button("Copy", "icon/16/actions/edit-copy.png", this.__copyCommand);
+      var pasteButton = new qx.ui.menu.Button("Paste", "icon/16/actions/edit-paste.png", this.__pasteCommand);
 
       undoButton.addListener("execute", this.debugButton);
       redoButton.addListener("execute", this.debugButton);
@@ -426,9 +435,9 @@ qx.Class.define("silverbluetheme.demo.MenuBar",
 
   destruct : function()
   {
-    this._disposeObjects("_newCommand", "_openCommand", "_saveCommand",
-      "_undoCommand", "_redoCommand", "_cutCommand", "_copyCommand",
-      "_pasteCommand");
+    this._disposeObjects("__newCommand", "__openCommand", "__saveCommand",
+      "__undoCommand", "__redoCommand", "__cutCommand", "__copyCommand",
+      "__pasteCommand");
   }
 
 });

@@ -17,6 +17,10 @@ qx.Class.define("silverbluetheme.demo.SplitPane",
 
   members:
   {
+    __pane: null,
+    __container1: null,
+    __container2: null,
+    
     _createControls: function()
     {
       var layout = new qx.ui.layout.Canvas();
@@ -71,8 +75,8 @@ qx.Class.define("silverbluetheme.demo.SplitPane",
       container2.add(button);
       container2.add(label);
 
-      this._container1 = container1;
-      this._container2 = container2;
+      this.__container1 = container1;
+      this.__container2 = container2;
 
       // Add the first container to the pane. Flex = 0 means that this child should not grow
       pane.add(container1, 0);
@@ -135,18 +139,18 @@ qx.Class.define("silverbluetheme.demo.SplitPane",
 
       if(data == "both")
       {
-        this._container1.show();
-        this._container2.show();
+        this.__container1.show();
+        this.__container2.show();
       }
       else if(data == "first")
       {
-        this._container1.show();
-        this._container2.exclude();
+        this.__container1.show();
+        this.__container2.exclude();
       }
       else if(data == "second")
       {
-        this._container1.exclude();
-        this._container2.show();
+        this.__container1.exclude();
+        this.__container2.show();
       }
     },
 
@@ -209,7 +213,7 @@ qx.Class.define("silverbluetheme.demo.SplitPane",
 
   destruct : function()
   {
-    this._disposeObjects("__pane", "_container1", "_container2");
+    this._disposeObjects("__pane", "__container1", "__container2");
   }
 
 });

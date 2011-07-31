@@ -26,7 +26,6 @@ qx.Class.define("silverbluetheme.demo.Button",
 
       this.addNormalButtons(container);
       this.addToggleButton(container);
-	  this.addToggleButtonGroup(container);
       this.addRepeatButton(container);
       this.addHoverButton(container);
 
@@ -55,18 +54,6 @@ qx.Class.define("silverbluetheme.demo.Button",
       button.addListener("changeValue", function(e) {
         this.debug("Checked: " + e.getData());
       }, this);
-    },
-
-	addToggleButtonGroup: function(container)
-    {
-      var button1 = new qx.ui.form.ToggleButton("On");
-      var button2 = new qx.ui.form.ToggleButton("Off");
-
-      var group = new qx.ui.form.RadioGroup();
-      group.add(button1, button2);
-
-      container.add(button1);
-      container.add(button2);
     },
 
     addRepeatButton : function(container)
