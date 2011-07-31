@@ -92,7 +92,9 @@ qx.Class.define("silverbluetheme.demo.Tree",
       return tree;
     },
 
-
+    /**
+    * @lint ignoreDeprecated(alert)
+    */
     getCommandFrame : function(tree)
     {
       var commandFrame = new qx.ui.groupbox.GroupBox("Control");

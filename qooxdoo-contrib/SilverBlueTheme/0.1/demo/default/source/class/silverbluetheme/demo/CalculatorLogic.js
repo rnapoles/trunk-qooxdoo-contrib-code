@@ -270,6 +270,7 @@ qx.Class.define("silverbluetheme.demo.CalculatorLogic",
      *
      * @param currentOperation {var} desired operation to compute
      * @return {void}
+     * @lint ignoreDeprecated(alert)
      */
     calculate : function(currentOperation)
     {

@@ -226,7 +226,9 @@ qx.Class.define("silverbluetheme.demo.Window",
       return wm1;
     },
 
-
+    /**
+    * @lint ignoreDeprecated(alert)
+    */
     getModalWindow2 : function()
     {
       var wm2 = new qx.ui.window.Window("Second Modal Dialog");

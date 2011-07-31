@@ -154,7 +154,6 @@ qx.Class.define("silverbluetheme.demo.Application",
       widgetButton.add(new qx.ui.form.ListItem("Menu"));
       widgetButton.add(new qx.ui.form.ListItem("MenuBar"));
       widgetButton.add(new qx.ui.form.ListItem("Popup"));
-	  widgetButton.add(new qx.ui.form.ListItem("ProgressBar"));
       widgetButton.add(new qx.ui.form.ListItem("RadioButton"));
       widgetButton.add(new qx.ui.form.ListItem("RadioButtonGroup"));
       widgetButton.add(new qx.ui.form.ListItem("Resizer"));
@@ -245,6 +244,7 @@ qx.Class.define("silverbluetheme.demo.Application",
       var label = new qx.ui.basic.Atom(headerStr);
       label.set({alignY: "middle", font: "bold", rich: true});
       
+      var strVersion = qx.core.Setting.get("qx.version");
       var version = new qx.ui.basic.Atom(qx.core.Setting.get("qx.version"), "silverbluetheme.demo/logo.png");
       version.set({alignY: "middle", font: "bold"});
       
@@ -287,7 +287,6 @@ qx.Class.define("silverbluetheme.demo.Application",
       stack.add(new silverbluetheme.demo.Menu());
       stack.add(new silverbluetheme.demo.MenuBar());
       stack.add(new silverbluetheme.demo.Popup());
-	  stack.add(new silverbluetheme.demo.ProgressBar());
       stack.add(new silverbluetheme.demo.RadioButton());
       stack.add(new silverbluetheme.demo.RadioButtonGroup());
       stack.add(new silverbluetheme.demo.Resizer());

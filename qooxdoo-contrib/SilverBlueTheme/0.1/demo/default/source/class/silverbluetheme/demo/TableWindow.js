@@ -18,8 +18,9 @@ qx.Class.define("silverbluetheme.demo.TableWindow",
 
   members :
   {
-    table: null,
-    nextId: 0,
+    __table: null,
+    __tableModel: null,
+    __nextId: 0,
 
     _createControls: function()
     {
@@ -40,7 +41,7 @@ qx.Class.define("silverbluetheme.demo.TableWindow",
       var rowData = this.createRandomRows(50);
 
       // table model
-      var tableModel = this._tableModel = new qx.ui.table.model.Simple();
+      var tableModel = this.__tableModel = new qx.ui.table.model.Simple();
       tableModel.setColumns([ "ID", "A number", "A date", "Boolean" ]);
       tableModel.setData(rowData);
       tableModel.setColumnEditable(1, true);
@@ -48,7 +49,7 @@ qx.Class.define("silverbluetheme.demo.TableWindow",
       tableModel.setColumnSortable(3, false);
 
       // table
-      var table = this.table = new qx.ui.table.Table(tableModel);
+      var table = this.__table = new qx.ui.table.Table(tableModel);
 
       table.set({
         width: 450,
@@ -78,7 +79,7 @@ qx.Class.define("silverbluetheme.demo.TableWindow",
       var dateRange = 400 * 24 * 60 * 60 * 1000; // 400 days
       for (var row = 0; row < rowCount; row++) {
         var date = new Date(now + Math.random() * dateRange - dateRange / 2);
-        rowData.push([ this.nextId++, Math.random() * 10000, date, (Math.random() > 0.5) ]);
+        rowData.push([ this.__nextId++, Math.random() * 10000, date, (Math.random() > 0.5) ]);
       }
       return rowData;
     },
@@ -94,8 +95,8 @@ qx.Class.define("silverbluetheme.demo.TableWindow",
       button = new qx.ui.toolbar.Button("Change row with ID 10", "icon/22/actions/edit-undo.png");
       button.addListener("execute", function(evt) {
         var rowData = this.createRandomRows(1);
-        for (var i = 1; i < this._tableModel.getColumnCount(); i++) {
-          this._tableModel.setValue(i, 10, rowData[0][i]);
+        for (var i = 1; i < this.__tableModel.getColumnCount(); i++) {
+          this.__tableModel.setValue(i, 10, rowData[0][i]);
         }
         this.info("Row 10 changed");
       }, this);
@@ -104,15 +105,15 @@ qx.Class.define("silverbluetheme.demo.TableWindow",
       button = new qx.ui.toolbar.Button("Add 10 rows", "icon/22/actions/list-add.png");
       button.addListener("execute", function(evt) {
         var rowData = this.createRandomRows(10);
-        this._tableModel.addRows(rowData);
+        this.__tableModel.addRows(rowData);
         this.info("10 rows added");
       }, this);
       part.add(button);
 
       button = new qx.ui.toolbar.Button("Remove 5 rows", "icon/22/actions/list-remove.png");
       button.addListener("execute", function(evt) {
-        var rowCount = this._tableModel.getRowCount();
-        this._tableModel.removeRows(rowCount-5, 5);
+        var rowCount = this.__tableModel.getRowCount();
+        this.__tableModel.removeRows(rowCount-5, 5);
         this.info("5 rows removed");
       }, this);
       part.add(button);
@@ -136,21 +137,21 @@ qx.Class.define("silverbluetheme.demo.TableWindow",
 
       checkBox = new qx.ui.toolbar.CheckBox("Keep first row");
       checkBox.set({
-        value: this.table.getKeepFirstVisibleRowComplete(),
+        value: this.__table.getKeepFirstVisibleRowComplete(),
         toolTip: new qx.ui.tooltip.ToolTip(
           "Whether the the first visible row should " +
           "be rendered completely when scrolling."
         )
       });
       checkBox.addListener("changeValue", function(evt) {
-        this.table.setKeepFirstVisibleRowComplete(this.getValue());
+        this.__table.setKeepFirstVisibleRowComplete(this.getValue());
       },
       checkBox);
       part.add(checkBox);
 
       checkBox = new qx.ui.toolbar.CheckBox("Change ID sort method");
       checkBox.set({
-        value: this.table.getKeepFirstVisibleRowComplete(),
+        value: this.__table.getKeepFirstVisibleRowComplete(),
         toolTip: new qx.ui.tooltip.ToolTip("Demonstrate use of alternate sorting algorithm.")
       });
       checkBox.addListener("changeValue", function(evt)
