@@ -20,6 +20,8 @@ qcl_import("qcl_core_Object");
 
 /**
  * A wrapper around mail()
+ * @deprecated Replaced by phpmailer class in qcl/lib/phpmailer, which is much
+ * 		more powerful and handles encoding issues correctly.
  *
  */
 class qcl_util_system_Mail
