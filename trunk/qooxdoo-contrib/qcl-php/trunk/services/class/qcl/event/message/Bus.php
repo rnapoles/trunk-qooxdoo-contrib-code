@@ -17,6 +17,7 @@
  */
 
 qcl_import("qcl_core_Object");
+qcl_import("qcl_data_store_keyvalue_Session");
 
 /**
  * Message Bus
@@ -67,7 +68,6 @@ class qcl_event_message_Bus
    * initialized during runtime. Filtering not yet supported, i.e. message name must
    * match the one that has been used when subscribing the message, i.e. no wildcards!
    *
-   *
    * @param string $filter
    * @param qcl_core_Object $subscriber
    * @param string $method Callback method of the subscriber
@@ -78,8 +78,13 @@ class qcl_event_message_Bus
     {
       $this->raiseError("Invalid parameter.");
     }
+    
+    if ( ! method_exists( $subscriber, $method ) )
+    {
+      throw new BadMethodCallException("Method $method does not exist on given object");
+    }
 
-    $message_db = $this->messages;
+    $message_db =& $this->messages;
 
     /*
      * object id
@@ -147,16 +152,28 @@ class qcl_event_message_Bus
 	{
 		return true;
 	}
-
+	
   /**
-   * Dispatches a message. Filtering not yet supported, i.e. message name must
+   * Publishes a message. Filtering not yet supported, i.e. message name must
    * match the one that has been used when subscribing the message, i.e. no wildcards!
    *
    * @param qcl_event_message_Message $message Message
    * @param mixed $data Data dispatched with message
    * @return void
+   * @deprecated Renamed to "publish"
    */
-  public function dispatch ( qcl_event_message_Message $message )
+  public function dispatch ( qcl_event_message_Message $message )	
+  {
+    return $this->publish( $message );
+  }
+
+  /**
+   * Publishes a message. Wildcard support exists for local listeners only. 
+   * @param qcl_event_message_Message $message Message
+   * @param mixed $data Data dispatched with message
+   * @return void
+   */
+  public function publish( qcl_event_message_Message $message )
   {
     /*
      * message data
@@ -183,22 +200,50 @@ class qcl_event_message_Bus
      * search message database
      */
     $message_db = $this->messages;
-    $index = array_search ( $name, $message_db['filters'] );
-
-    /*
-     * call registered subscriber methods
-     */
-    if ( $index !== false )
+    if ( count ( $message_db['filters'] ) )
     {
-      foreach ( $message_db['data'][$index] as $subscriberData )
+      
+      $index = array_search ( $name, $message_db['filters'] );
+  
+      /*
+       * call registered subscriber methods if found
+       */
+      if ( $index !== false )
       {
-        list( $subscriberId, $method ) = $subscriberData;
-        $subscriber = $this->getObjectById( $subscriberId );
-        $subscriber->$method( $message );
+        foreach ( $message_db['data'][$index] as $subscriberData )
+        {
+          list( $subscriberId, $method ) = $subscriberData;
+          $subscriber = $this->getObjectById( $subscriberId );
+          $subscriber->$method( $message );
+        }
       }
-      return true;
+      
+      /*
+       * otherwise try the wildcard matching
+       */      
+      else 
+      {
+        $index = 0;
+        foreach( $message_db['filters'] as  $filter )
+        {
+          $pos = strpos( $filter, "*" );
+          if( substr( $name, 0, $pos ) == substr( $filter, 0, $pos ) )
+          {
+            /*
+             * found, call subscribers
+             */
+            foreach ( $message_db['data'][$index] as $subscriberData )
+            {
+              list( $subscriberId, $method ) = $subscriberData;
+              $subscriber = $this->getObjectById( $subscriberId );
+              $subscriber->$method( $message );
+            }
+          }
+          $index++;
+        }
+      }
     }
-
+    
     /**
      * Broadcast message to connected clients
      */
@@ -218,7 +263,8 @@ class qcl_event_message_Bus
         {
         	/*
         	 * check if user of this session exists, otherwise
-        	 * delete the session
+        	 * delete the session. This cleans up the session/user data
+        	 * on-the-fly.
         	 */
           try 
 			    {
@@ -236,6 +282,15 @@ class qcl_event_message_Bus
         	 * the client itself
         	 */
         	if( $message->isExcludeOwnSession() and $sessionModel->namedId() == $sessionId )
+        	{
+        		continue;
+        	}
+        	
+          /*
+        	 * do not dispatch if the message should not go to anonymous users
+        	 * the client itself
+        	 */
+        	if( $message->isExcludeAnonymousUsers() and $userModel->isAnonymous() )
         	{
         		continue;
         	}
@@ -305,6 +360,7 @@ class qcl_event_message_Bus
    * @param string $name
    * @param mixed $data
    * @return bool Whether message was dispatched
+   * FIXME rename to "publishMessage" or remove
    */
   public function dispatchMessage( $sender, $name, $data )
   {
@@ -324,6 +380,7 @@ class qcl_event_message_Bus
    * @param string $name
    * @param mixed $data
    * @return bool Whether message was dispatched
+   * @deprecated use publishClientMessage() instead
    */
   public function dispatchClientMessage( $sender, $name, $data )
   {
@@ -333,8 +390,23 @@ class qcl_event_message_Bus
     {
       $message->setSender( $sender );
     }
-    return $this->dispatch( $message );
+    return $this->publish( $message );
   }
+  
+  /**
+   * Shorthand method for publishing a message that will be forwarded
+   * to the client.
+   * @param qcl_core_Object $sender
+   * @param string $name
+   * @param mixed $data
+   * @return bool Whether message was dispatched
+   */
+  public function publishClientMessage( $name, $data )
+  {
+    qcl_import( "qcl_event_message_ClientMessage" );
+    $message = new qcl_event_message_ClientMessage( $name, $data );
+    return $this->publish( $message );
+  }  
 
   /**
    * Broadcasts a message to all connected clients.
@@ -346,6 +418,8 @@ class qcl_event_message_Bus
    * @param bool $excludeOwnSession 
    * 		Whether the current session should be excluded from the broadcast (Default: false).
    * @todo use into qcl_server_Response object
+   * @deprecated Use broadcast() instead
+
    */
   public function broadcastClientMessage ( $sender, $name, $data, $excludeOwnSession=false )
   {
@@ -359,11 +433,32 @@ class qcl_event_message_Bus
     }
     return $this->dispatch( $message );
   }
+  
+  /**
+   * Broadcasts a message to all connected clients.
+   * @param mixed $message 
+   *    Message name or hash map of messages
+   * @param mixed $data 
+   *    Data dispatched with message
+   * @param mixed $acl 
+   *    Access control data
+   * @param bool $excludeOwnSession 
+   *    Whether the current session should be excluded from the broadcast (Default: false).
+   */
+  public function broadcast( $name, $data, $aclData=null, $excludeOwnSession=false )
+  {
+    qcl_import( "qcl_event_message_ClientMessage" );
+    $message = new qcl_event_message_ClientMessage( $name, $data );
+    $message->setBroadcast( true );
+    $message->setExcludeOwnSession( $excludeOwnSession );
+    $message->setAcl( $aclData );
+    return $this->publish( $message );
+  }  
 
   /**
    * Returns broadcasted messages for the client with the given session
    * id.
-   * @param int $sessionId
+   * @param string $sessionId
    * @return array
    *
    */
@@ -389,12 +484,31 @@ class qcl_event_message_Bus
      * get name and data and delete message
      */
     $messages = array();
+    $channels = $this->getChannels();
+    
     while ( $msgModel->loadNext() )
     {
-      $messages[] = array(
-        'name'  => $msgModel->get( "name" ),
-        'data'  => unserialize( stripslashes( $msgModel->get("data") ) )
-      );    
+      $channel = $msgModel->get( "name" );
+      $data    = $msgModel->get("data");
+      /*
+       * check if channel is subscribed
+       * @todo this should be checked while dispatching and not
+       * while fetching! But the way it is set up requires the
+       * session active (since the subscribed channels are stored in
+       * the session).
+       */
+      if ( array_search( $channel, $channels ) !== false )
+      {
+        //$this->debug( "Sending message to $sessionId, channel $channel", __CLASS__, __LINE__ );
+        $messages[] = array(
+          'name'  => $channel,
+          'data'  => unserialize( stripslashes( $data ) )
+        );   
+      }
+      else 
+      {
+        //$this->debug( "NOT sending message to $sessionId, channel $channel not in channel list " . implode(",",$channels), __CLASS__, __LINE__ );
+      }
       $msgModel->delete();
     }
 
@@ -403,5 +517,66 @@ class qcl_event_message_Bus
      */
     return $messages;
   }
+  
+  /**
+   * Get a list of channels that the client is subscribed to
+   * @return array
+   */
+  public function getChannels()
+  {
+    $store = new qcl_data_store_keyvalue_Session();
+    $key = __CLASS__ . "_channels";
+    $channels = $store->has( $key ) ? $store->get($key) : array();
+    return $channels;    
+  }
+  
+  /**
+   * Adds the given channel to the list of channels that the 
+   * client is listening to 
+   * @param $name
+   */
+  public function addChannel( $name )
+  {
+    $store = new qcl_data_store_keyvalue_Session();
+    $key = __CLASS__ . "_channels";
+    $channels = $this->getChannels();
+    $channels[] = $name;
+    $store->set($key, array_unique( $channels ) );
+    //$this->debug( "Added channel $name for session " . $this->getApplication()->getAccessController()->getSessionId(), __CLASS__, __LINE__ ); 
+  }
+  
+  /**
+   * Returns true if the channel of the given name is subscribed
+   * by the current user.
+   * @param string $name
+   * @return boolean
+   */
+  public function isSubscribedChannel( $name )
+  {
+    return in_array($name, $this->getChannels() );
+  }
+  
+  /**
+   * Removes the given channel from the list of channels that the 
+   * client is listening to 
+   * @param $name
+   */
+  public function removeChannel( $name )
+  {
+    $store = new qcl_data_store_keyvalue_Session();
+    $key = __CLASS__ . "_channels";
+    $store->set($key, array_diff( $this->getChannels(), array( $name ) ) );
+    //$this->debug( "Removed channel $name for session " . $this->getApplication()->getAccessController()->getSessionId(), __CLASS__, __LINE__ );
+  } 
+  
+  /**
+   * Removes all channels
+   */
+  public function removeAllChannels()
+  {
+    $store = new qcl_data_store_keyvalue_Session();
+    $key = __CLASS__ . "_channels";
+    $store->delete($key);
+  } 
 }
 ?>
