@@ -18,6 +18,7 @@
 
 qcl_import( "qcl_access_model_User" ); // this imports all the other required models
 qcl_import( "qcl_application_ApplicationCache" );
+qcl_import( "qcl_server_Server" );
 
 /**
  * Base class for applications. This class mainly provides access to the
@@ -67,7 +68,7 @@ abstract class qcl_application_Application
    * such as database connectivity etc.
    * @var string
    */
-  protected $iniPath = null;
+  protected $iniPath = "config/application.ini.php";
 
   /**
    * The manager for the initial application configuration
