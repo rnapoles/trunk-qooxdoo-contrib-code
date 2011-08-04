@@ -10,7 +10,7 @@ var baseConf = {
   'simulatorSvn' : '/home/dwagner/workspace/qooxdoo.contrib/Simulator',
   'debug' : true,
   'logAll' : false,
-  'ignore' : 'data:Gears,showcase:Browser,widget:Iframe,test:Serialize,bom:Iframe,progressive:*,legacy:*',
+  'ignore' : 'showcase:Browser,widget:Iframe,test:Serialize,bom:Iframe,progressive:*',
   'sampleGlobalErrorLogging' : false,
   'shutdownSample' : false,
   'reloadBrowser' : false
@@ -87,7 +87,7 @@ var chooseDemo = function(category, sample)
 {
   var viewer = selenium.browserbot.getCurrentWindow().qx.core.Init.getApplication().viewer;
   var tree = viewer.tree; 
-  items = tree.getItems();
+  var items = tree.getItems();
   for (var i=1; i<items.length; i++) {
     if (items[i].getParent().getLabel() == category) {
       if (items[i].getLabel() == sample) {
@@ -108,7 +108,7 @@ var getDemosByCategory = function(category)
 {
   var viewer = selenium.browserbot.getCurrentWindow().qx.core.Init.getApplication().viewer;
   var tree = viewer.tree; 
-  items = tree.getItems();
+  var items = tree.getItems();
   var samples = [];
   for (var i=1; i<items.length; i++) {
     if (items[i].getParent().getLabel() == category) {
@@ -130,14 +130,16 @@ simulation.Simulation.prototype.waitForDemoApp = function()
 simulation.Simulation.prototype.sampleRunner = function(script)
 {
   var scriptCode = script ? script : runSample;
+  var nextSampleCategory = "unknown category;"
+  var nextSampleLabel = "unknown demo";
   
   var skip = false;
   // If we have an ignore list, check if the next sample is in there.
   var ignore = this.ignore;
   if (ignore.length > 0 && scriptCode.indexOf('playNext') > 0 ) {
     try {
-      var nextSampleCategory = this.getEval(getNextSampleCategory, "Getting category of next sample");
-      var nextSampleLabel = this.getEval(getNextSampleLabel, "Getting label of next sample");
+      nextSampleCategory = this.getEval(getNextSampleCategory, "Getting category of next sample");
+      nextSampleLabel = this.getEval(getNextSampleLabel, "Getting label of next sample");
   
       // Category "Demos" means there's a category folder selected, 
       // so look at the first sample inside.
@@ -242,29 +244,11 @@ simulation.Simulation.prototype.sampleRunner = function(script)
   this.openLog();
   print(category + " - " + currentSample + ": Processing log");
 
-  var sampleLog = this.getEval(this.qxLog, "Getting log for sample " + category + " - " + currentSample);
+  var sampleLog = String(this.getEval(this.qxLog, "Getting log for sample " + category + " - " + currentSample));
 
-  //this.log('Last loaded demo: ' + category + ' - ' + currentSample, "debug");
-  
-  var expectedLogEntries = [
-    "Load runtime",
-    "Main runtime",
-    "Finalize runtime"
-  ];
-  
-  if (this.getConfigSetting("shutdownSample", false)) {
-    expectedLogEntries.push("ObjectRegistry: Disposed");
-  }
-  
-  if (sampleLog) {
-    for (var i = 0, l = expectedLogEntries.length; i < l; i++) {
-      if (sampleLog.indexOf(expectedLogEntries[i]) < 0) {
-        errWarn = true;
-      }
-    }
-  }
-  else {
+  if (!sampleLog) {
     this.log("Unable to get log for sample " + category + "-" + currentSample, "error");
+    return [category,currentSample];
   }
   
   if (this.getConfigSetting("sampleGlobalErrorLogging")) {
@@ -277,14 +261,13 @@ simulation.Simulation.prototype.sampleRunner = function(script)
     }
   }
   
-  //Packages.java.lang.Thread.sleep(120000);
-
   // we're only interested in logs containing warnings or errors
   var isErrWarn = false;
   if (sampleLog.indexOf('level-warn') > 0 || sampleLog.indexOf('level-error') > 0) {
     this.log("Sample " + category + "-" + currentSample + " has incomplete log!","warn");
     isErrWarn = true;
   }
+  
   if (isErrWarn || this.getConfigSetting("logAll")) {
 
     /* Selenium uses http get requests to pass messages to the server log.
