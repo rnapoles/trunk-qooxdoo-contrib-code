@@ -88,6 +88,8 @@ extend : qx.core.Object
 		 * background service implementation.
 		 */
 		var localcallback = function(returnz) {
+			// If there is no callback
+			if(!callback) return;
 			// Now package up the returnz and return them
 			returnz = [returnz];	// Get ready for .apply
 			if(argz)
