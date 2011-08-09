@@ -1,28 +1,18 @@
-IS_WINDOWS = $(shell python -c "import sys; print (sys.platform[:3]=='win' or sys.platform[:6]=='cygwin')")
 
-ifeq ($(IS_WINDOWS), True)
-	ZIP_SUFFIX = zip
-else
-	ZIP_SUFFIX = tar.gz
-endif
-
-#download-1.4.2: qooxdoo-1.4.2-sdk
-#qooxdoo-1.4.2-sdk: 1.4.2/qooxdoo-1.4.2-sdk.$(ZIP_SUFFIX)
-
-download-1.5: qooxdoo-1.5-sdk
-qooxdoo-1.5-sdk: 1.5/qooxdoo-1.5-sdk.$(ZIP_SUFFIX)
+download: qooxdoo-$(VERSION)-sdk
+qooxdoo-$(VERSION)-sdk: qooxdoo-$(VERSION)-sdk.zip
 
 %.zip:
-	wget http://sourceforge.net/projects/qooxdoo/files/qooxdoo-current/$@/download
-	unzip $@
+	wget http://downloads.sourceforge.net/qooxdoo/$@
+	unzip -d $(WORK_PATH) $@
+	rm $(WORK_PATH)/$@
 	
-%.tar.gz:
-	wget http://sourceforge.net/projects/qooxdoo/files/qooxdoo-current/$@/download
-	tar xvfz $@
+trunk: trunk
 
-download-trunk: download-trunk
-
-download-trunk:
-	svn co https://qooxdoo.svn.sourceforge.net/svnroot/qooxdoo/trunk/qooxdoo trunk
-	svn up trunk
+trunk:
+	svn co https://qooxdoo.svn.sourceforge.net/svnroot/qooxdoo/trunk/qooxdoo $(WORK_PATH)/trunk
+	svn up $(WORK_PATH)/trunk
+	patch -d $(WORK_PATH) ./trunk/patch/qooxdoo.diff
+	patch -d $(WORK_PATH) ./trunk/patch/qooxdoo-tool.diff
+	patch -d $(WORK_PATH) ./trunk/patch/demobrowser.diff
 
