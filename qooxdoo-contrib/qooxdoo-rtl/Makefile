@@ -15,4 +15,5 @@ trunk:
 	patch -d $(WORK_PATH) ./trunk/patch/qooxdoo.diff
 	patch -d $(WORK_PATH) ./trunk/patch/qooxdoo-tool.diff
 	patch -d $(WORK_PATH) ./trunk/patch/demobrowser.diff
-
+	cp -R ./trunk/resource $(WORK_PATH)/
+	cp ./trunk/translation/*.po $(WORK_PATH)/
