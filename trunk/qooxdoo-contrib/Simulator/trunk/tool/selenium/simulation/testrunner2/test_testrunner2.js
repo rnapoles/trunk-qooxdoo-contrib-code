@@ -83,9 +83,17 @@ simulation.Simulation.prototype.logErrors = function()
   var prefix = selWin + "." + qxAppInst;
   
   var errorGetter = selWin + ".qx.lang.Json.stringify(" + prefix + ".runner.view.getFailedResults())";
+  var resultsString;
+  try {
+    resultsString = this.__sel.getEval(errorGetter);
+    resultsString = String(resultsString);
+    eval("var results=" + resultsString);
+  }
+  catch(ex) {
+    this.log("Couldn't get results: " + ex.message, "error");
+    return;
+  }
   
-  var resultsString = String(this.__sel.getEval(errorGetter));
-  eval("var results=" + resultsString);
     
   for (var testName in results) {
     var result = results[testName];
@@ -122,7 +130,15 @@ simulation.Simulation.prototype.logAutErrors = function()
   };
   
   this.addOwnFunction("getAutErrors", autErrorGetter);
-  var autErrors = String(this.__sel.getEval(selWin + ".qx.Simulation.getAutErrors()"));
+  var autErrors = "";
+  try {
+    autErrors = String(this.__sel.getEval(selWin + ".qx.Simulation.getAutErrors()"));
+  }
+  catch(ex) {
+    this.log("Couldn't get AUT errors " + ex.message, "error");
+    return;
+  }
+  
   if (autErrors.length != "") {
     var errArr = eval(autErrors);
     for (var i=0,l=errArr.length; i<l; i++) {
