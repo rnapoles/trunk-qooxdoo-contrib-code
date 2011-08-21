@@ -62,7 +62,7 @@ class qcl_event_message_Bus
     qcl_import("qcl_event_message_db_Message");
     return qcl_event_message_db_Message::getInstance();
   }
-
+  
   /**
    * Adds a message subscriber. This works only for objects which have been
    * initialized during runtime. Filtering not yet supported, i.e. message name must
@@ -71,13 +71,37 @@ class qcl_event_message_Bus
    * @param string $filter
    * @param qcl_core_Object $subscriber
    * @param string $method Callback method of the subscriber
+   * @deprecated use qcl_event_message_Bus::subscribe() instead
    */
   public function addSubscriber( $filter, $subscriber, $method )
   {
-    if ( ! $filter or ! $method or ! is_a( $subscriber, "qcl_core_Object" ) )
+    return $this->subscribe($filter, $subscriber, $method);
+  }  
+
+  /**
+   * Subscribes  to a channel/message. 
+   * Filtering not yet supported, i.e. no wildcards!
+   *
+   * @param string $channel
+   * 		Name of the channel 
+   * @param qcl_core_Object|string $subscriber 
+   * 		Object subscribing to the channel or the name of the class
+   *    that should be instantiated when a message is dispatched
+   * @param string $method 
+   * 		Callback method of the subscribing object
+   */
+  public function subscribe( $channel, $subscriber, $method )
+  {
+    qcl_assert_valid_string($channel, "Invalid channel name" );
+    qcl_assert_valid_string($method, "Invalid method name" );
+    $filter = $channel; 
+    
+    if ( is_string( $subscriber ) )
     {
-      $this->raiseError("Invalid parameter.");
+      qcl_assert_true( class_exists( $subscriber ), "Class '$subscriber' does not exist." );
+      $subscriber = qcl_getInstance( $subscriber );  
     }
+    qcl_assert_true( $subscriber instanceof qcl_core_Object, "Subscriber object/class must subclass qcl_core_Object." );
     
     if ( ! method_exists( $subscriber, $method ) )
     {
