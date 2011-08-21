@@ -528,12 +528,12 @@ class qcl_access_Service
     else
     {
   		/*
-       * set online status to "offline" if no more sessions are alive
+       * set online status to "offline" if only one session left
        */
       $sessionModel = $accessController->getSessionModel();
       $sessionCount = $sessionModel->countLinksWithModel( $activeUser );
       $this->log( "User $activeUser has $sessionCount sessions.");
-      if( $sessionCount == 0 )
+      if( $sessionCount == 1 )
       {
         $activeUser->set("online", false)->save();
         $this->log( "Setting user $activeUser to offline.");
