@@ -48,7 +48,7 @@ class qcl_access_Service
    * Shorthand method to filter log messages
    * @see qcl_core_Object::log()
    */
-  protected function log( $msg )
+  public function log( $msg )
   {
     parent::log($msg,QCL_LOG_ACCESS);
   }
