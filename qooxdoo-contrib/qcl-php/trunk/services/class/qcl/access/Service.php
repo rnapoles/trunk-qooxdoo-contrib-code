@@ -22,6 +22,7 @@ qcl_import( "qcl_access_AuthenticationResult" );
 
 /**
  * Service providing methods for authentication and authorization
+ * 
  *
  */
 class qcl_access_Service
@@ -42,6 +43,15 @@ class qcl_access_Service
    * @var bool
    */
   protected $ldapAuth = false;
+  
+  /**
+   * Shorthand method to filter log messages
+   * @see qcl_core_Object::log()
+   */
+  protected function log( $msg )
+  {
+    parent::log($msg,QCL_LOG_ACCESS);
+  }
 
   /**
    * Actively authenticate the user with session id or with username and password.
@@ -55,6 +65,8 @@ class qcl_access_Service
    * 		Plaintext Password
    * @return qcl_access_AuthenticationResult
    * @throws qcl_access_AuthenticationException
+   * @event qcl_event_message_ClientMessage "qcl/access/login"  
+   * 	Dispatched when authenticated user logs in. Data is  { fullname : string }
    */
   public function method_authenticate( $first=null, $password=null )
   {
@@ -97,7 +109,7 @@ class qcl_access_Service
       
       //@todo - what to do with given session id, since it has already been handled
        
-      $this->log("Authenticating from session id '$sessionId'...", QCL_LOG_ACCESS);
+      $this->log("Authenticating from session id '$sessionId'...");
       try
       {
         $userId = $accessController->getUserIdFromSession( $sessionId );
@@ -141,7 +153,7 @@ class qcl_access_Service
         }
         catch( qcl_access_AuthenticationException $e)
         {
-          $this->log("LDAP authentication failed, trying to authenticate locally ...", QCL_LOG_ACCESS);
+          $this->log("LDAP authentication failed, trying to authenticate locally ...");
           $userId = $accessController->authenticate( $username, $password );
         }
       }
@@ -151,11 +163,11 @@ class qcl_access_Service
        */
       else
       {
-        $this->log("Authenticating locally from username/password ...", QCL_LOG_ACCESS);
+        $this->log("Authenticating locally from username/password ...");
         $userId = $accessController->authenticate( $username, $password );
       }
 
-      $this->log("Authenticated user: #$userId", QCL_LOG_ACCESS);
+      $this->log("Authenticated user: #$userId");
 
       /*
        * authentication successful, logout the accessing user to log in the
@@ -169,10 +181,26 @@ class qcl_access_Service
     }
 
     /*
-     * create (new) valid user session
+     * user is authenticated, create (new) valid user session
      */
     $accessController->setActiveUserById( $userId );
     $accessController->registerSession();
+    
+    /*
+     * inform subscribers
+     */
+    $activeUser= $this->getActiveUser();
+    if( ! $activeUser->isAnonymous() )
+    {
+      $this->broadcastClientMessage("qcl/access/login", array(
+        "fullname"	 => $activeUser->getName()
+      ), true );
+    }
+    
+    /*
+     * set online status
+     */
+    $activeUser->set("online", true)->save();
     
     /*
      * Save the IP of the user in the session to allow to check for 
@@ -189,7 +217,6 @@ class qcl_access_Service
     /*
      * permissions
      */
-    $activeUser = $accessController->getActiveUser();
     $permissions = $activeUser->permissions();
     $response->set( "permissions", $permissions );
 
@@ -482,10 +509,13 @@ class qcl_access_Service
    * @param boolean $returnAsAnonymous if true (default), log out the current user but return
    * authentication data for a new anonymous user. If false, return "OK".
    * @return qcl_data_Result|string
+   * @event qcl_event_message_ClientMessage "qcl/access/logout"  
+   * 	Dispatched when authenticated user logs out. Data is  { fullname : string }
    */
   public function method_logout($returnAsAnonymous=false)
   {
     $accessController = $this->getApplication()->getAccessController();
+    $activeUser= $this->getActiveUser();
 
     /**
      * log out only if the current session id and the requesting session id match
@@ -497,7 +527,32 @@ class qcl_access_Service
     }
     else
     {
-      $accessController->logout();
+  		/*
+       * set online status to "offline" if no more sessions are alive
+       */
+      $sessionModel = $accessController->getSessionModel();
+      $sessionCount = $sessionModel->countLinksWithModel( $activeUser );
+      $this->log( "User $activeUser has $sessionCount sessions.");
+      if( $sessionCount == 0 )
+      {
+        $activeUser->set("online", false)->save();
+        $this->log( "Setting user $activeUser to offline.");
+      }
+      
+      /*
+       * inform subscribers
+       */
+      if( ! $activeUser->isAnonymous() )
+      {
+        $this->broadcastClientMessage("qcl/access/logout", array(
+          "fullname"	 => $activeUser->getName()
+        ), true );
+      }      
+
+      /*
+       * handle all other logout action
+       */
+      $accessController->logout();   
     }
 
     /*
