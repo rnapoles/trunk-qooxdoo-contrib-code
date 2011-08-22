@@ -22,6 +22,10 @@
 
 ************************************************************************/
 
+/*
+#require(qx.event.handler.Input)
+ */
+
 /**
  * Manages uploading of files to the server; this class can use any suitable
  * widget to attach the input[type=file] to, provided the widget includes
