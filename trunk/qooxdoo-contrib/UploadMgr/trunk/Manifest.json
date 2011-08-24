@@ -6,7 +6,7 @@
     "summary" : "Uploader widget",
     "description" : "Library for uploading files, with progress feedback and doesn't block UI",
     
-    "homepage" : "http://www.zeensis.com/",
+    "homepage" : "http://www.zenesis.com/",
 
     "license" : "LGPL and EPL (see http://qooxdoo.org)",
     "authors" : 
@@ -28,7 +28,7 @@
     "class"       : "source/class",
     "resource"    : "source/resource",
     "translation" : "source/translation",
-    "type"        : "application"
+    "type"        : "contribution"
   }
 }
 
