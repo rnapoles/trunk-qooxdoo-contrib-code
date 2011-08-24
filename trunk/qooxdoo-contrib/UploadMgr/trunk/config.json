@@ -37,7 +37,7 @@
   "let" :
   {
     "APPLICATION"  : "com.zenesis.qx.upload",
-    "QOOXDOO_PATH" : "../../../../../../Local/WebContent/public/grasshopper/qooxdoo-1.5-sdk",
+    "QOOXDOO_PATH" : "/Users/john/os/qooxdoo-1.5-sdk",
     "QXTHEME"      : "com.zenesis.qx.upload.theme.Theme",
     "API_EXCLUDE"  : ["qx.test.*", "${APPLICATION}.theme.*", "${APPLICATION}.test.*", "${APPLICATION}.simulation.*"],
     "LOCALES"      : [ "en" ],
@@ -60,7 +60,7 @@
       [
         {
           "manifest" : "${QOOXDOO_PATH}/framework/Manifest.json",
-          "uri": "/public/grasshopper/qooxdoo-1.5-sdk/framework"
+          "uri": "/public/tmp/qooxdoo-1.5-sdk/framework"
         }
       ]
     },

@@ -50,9 +50,11 @@ qx.Class.define("com.zenesis.qx.upload.XhrHandler", {
 	        	var bomFile = bomFiles[i];
 			    var id = "upload-" + this._getUniqueFileId(),
 			    	// fix missing name in Safari 4
-			    	filename = bomFile.fileName != null ? bomFile.fileName : bomFile.name,
+			    	//filename = bomFile.fileName != null ? bomFile.fileName : bomFile.name,
+			    	filename = typeof bomFile.name != "undefined" ? bomFile.name : bomFile.fileName,
 			    	file = new com.zenesis.qx.upload.File(bomFile, filename, id),
-			    	fileSize = bomFile.fileSize != null ? bomFile.fileSize : bomFile.size;
+			    	//fileSize = bomFile.fileSize != null ? bomFile.fileSize : bomFile.size;
+			    	fileSize = typeof bomFile.size != "undefined" ? bomFile.size : bomFile.fileSize;
 			    file.setSize(fileSize);
 			    files.push(file);
 	        }
