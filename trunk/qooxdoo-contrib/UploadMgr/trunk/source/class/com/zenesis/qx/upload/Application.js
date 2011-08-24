@@ -114,9 +114,11 @@ qx.Class.define("com.zenesis.qx.upload.Application", {
       		}, this);
       		
       		doc.add(btn, { left: 50, top: 115 });
+      		
+      		var RM = qx.util.ResourceManager.getInstance();
 
       		// Create a button to cancel the upload selected in the list
-      		var btnCancel = new qx.ui.form.Button("Cancel upload", "qx/icon/Oxygen/22/actions/process-stop.png");
+      		var btnCancel = new qx.ui.form.Button("Cancel upload", RM.toUri("qx/icon/Oxygen/22/actions/process-stop.png"));
       		btnCancel.set({ enabled: false });
       		lst.addListener("changeSelection", function(evt) {
       			var sel = evt.getData(),
@@ -147,12 +149,12 @@ qx.Class.define("com.zenesis.qx.upload.Application", {
       		
       		// Header
       		var comp = new qx.ui.container.Composite(new qx.ui.layout.HBox());
-      		comp.add(new qx.ui.basic.Image("com/zenesis/qx/upload/banner.png").set({ padding: [ 0, 30 ] }));
+      		comp.add(new qx.ui.basic.Image(RM.toUri("com/zenesis/qx/upload/banner.png")).set({ padding: [ 0, 30 ] }));
       		comp.add(new qx.ui.basic.Label("UploadMgr Contrib Demo").set({ font: new qx.bom.Font(28, ["Arial"]), padding: [22, 20], textColor: "white", allowGrowX: true }), { flex: 1 });
-      		comp.add(new qx.ui.basic.Image("com/zenesis/qx/upload/logo.gif"));
+      		comp.add(new qx.ui.basic.Image(RM.toUri("com/zenesis/qx/upload/logo.gif")));
       		doc.add(comp, { top: 0, left: 0, right: 0 });
       		comp.setDecorator(new qx.ui.decoration.Background().set({
-      			backgroundImage: "com/zenesis/qx/upload/banner-bg.png",
+      			backgroundImage: RM.toUri("com/zenesis/qx/upload/banner-bg.png"),
       			backgroundPositionX: 0}));
       		doc.add(new qx.ui.basic.Label("<a href='http://www.zenesis.com' target='_blank'>http://www.zenesis.com</a>").set({ rich: true, font: new qx.bom.Font(13, ["Arial","Lucida Grande"]) }), { left: 95, top: 85 });
       		
