@@ -12,7 +12,6 @@
   [
     "api",
     "api-data",
-    "build",
     "clean",
     "distclean",
     "fix",
@@ -21,25 +20,19 @@
     "lint",
     "migration",
     "pretty",
-    "profiling",
-    "source",
-    "source-all",
-    "source-hybrid",
-    "simulation-build",
-    "simulation-run",
     "test",
     "test-source",
     "translation"
   ],
-  
-  "default-job" : "source",
 
   "let" :
   {
     "APPLICATION"  : "com.zenesis.qx.upload",
-    "QOOXDOO_PATH" : "/Users/john/os/qooxdoo-1.5-sdk",
-    "QXTHEME"      : "com.zenesis.qx.upload.theme.Theme",
-    "API_EXCLUDE"  : ["qx.test.*", "${APPLICATION}.theme.*", "${APPLICATION}.test.*", "${APPLICATION}.simulation.*"],
+    "APPLICATION_MAIN_CLASS" : "${APPLICATION}.demo.Demo",
+    "QOOXDOO_PATH" : "../../qooxdoo/1.5",
+    //"QXTHEME"      : "uploadmgr.theme.modern.Theme",
+    "QXTHEME"      : "qx.theme.Modern",
+    "API_EXCLUDE"  : ["qx.test.*", "uploadmgr.demo.*", "${APPLICATION}.theme.*", "${APPLICATION}.test.*", "${APPLICATION}.simulation.*"],
     "LOCALES"      : [ "en" ],
     "CACHE"        : "${TMPDIR}/qx${QOOXDOO_VERSION}/cache",
     "ROOT"         : "."
@@ -54,25 +47,32 @@
     // project; make sure to adapt the path to the Manifest.json; if you are
     // using a contrib: library, it will be downloaded into the path specified
     // by the 'cache/downloads' config key
+    /*
     "libraries" : 
     {
       "library" :
       [
         {
-          "manifest" : "${QOOXDOO_PATH}/framework/Manifest.json",
-          "uri": "/public/tmp/qooxdoo-1.5-sdk/framework"
+          "manifest" : "contrib://SkeletonApplication/trunk/Manifest.json"
         }
       ]
-    },
-    
-    "source-script" :
+    }
+    */
+
+    // If you want to tweak a job setting, see the following sample where
+    // the "format" feature of the "build-script" job is overridden.
+    // To see a list of available jobs, invoke 'generate.py x'.
+    /*
+    ,"build-script" :
     {
       "compile-options" : 
       {
-				"uris" : {
-					"add-nocache-param" : false
-				}
-      }
+        "code" :
+        {
+          "format" : false
+        }
+      }      
     }
+    */
   }
 }
