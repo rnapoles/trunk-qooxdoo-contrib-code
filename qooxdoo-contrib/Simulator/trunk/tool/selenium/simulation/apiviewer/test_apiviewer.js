@@ -166,7 +166,7 @@ simulation.Simulation.prototype.checkUrlParameter = function()
     this.log("URI parameter handling checked: OK", "info");
   }
   catch(ex) {
-    this.log("Expected element not found after opening with URL parameter " + urlParam);
+    this.log("Expected element not found after opening with URL parameter!");
   }
   
 };
