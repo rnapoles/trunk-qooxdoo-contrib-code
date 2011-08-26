@@ -1,0 +1,72 @@
+{
+  "name"    : "Cropper",
+
+  "include" :
+  [
+    {
+      "path" : "${QOOXDOO_PATH}/tool/data/config/application.json"
+    }
+  ],
+
+  "export" :
+  [
+    "api",
+    "build",
+    "clean",
+    "distclean",
+    "fix",
+    "inspector",
+    "lint",
+    "migration",
+    "pretty",
+    "profiling",
+    "source",
+    "source-all",
+    "test",
+    "test-source",
+    "translation"
+  ],
+
+  "let" :
+  {
+    "APPLICATION"  : "cropper",
+    "APPLICATION_MAIN_CLASS" : "${APPLICATION}.demo.Demo",
+    "QOOXDOO_PATH" : "../../qooxdoo/1.4",
+    "QXTHEME"      : "qx.theme.Modern",
+    "API_EXCLUDE"  : ["qx.*", "cropper.test.*", "${APPLICATION}.theme.*", "${APPLICATION}.test.*"],
+    "LOCALES"      : [ "en" ],
+    "CACHE"        : "${TMPDIR}/${USER}_qx_cache",
+    "ROOT"         : "."
+  },
+
+  "jobs" :
+  {
+    "pretty" :
+     {
+        "pretty-print" : 
+         {
+            "general" : 
+            {           
+               "indent-string"            : "    "
+            },
+            "comments" :
+            {
+              "trailing" :
+              {
+                "keep-column"         : false,
+                "padding"             : "* "
+              }
+            },
+            "blocks" :
+            {
+              "align-with-curlies"     :  false,
+              "open-curly" :
+              { 
+                 "newline-before"      : "n",
+                 "indent-before"        : false
+              }
+            }
+         }
+      }
+  }
+}
