@@ -108,6 +108,9 @@ simulation.Simulation.prototype.testSamplesPaneToggle = function()
 
 simulation.Simulation.prototype.testSyntaxHighlightingToggle = function()
 {
+  if (this.isLegacyIe()) {
+    return;
+  }
   this.qxClick(this.locators.toolbarButtonSyntax);
   java.lang.Thread.sleep(2000);
   
@@ -124,6 +127,18 @@ simulation.Simulation.prototype.testSyntaxHighlightingToggle = function()
   else {
     this.log("Syntax highlighting was not disabled correctly!", "error");
   }
+};
+
+simulation.Simulation.prototype.isLegacyIe = function()
+{
+  var getBrowserName = selWin + ".qx.core.Environment.get('browser.name');"
+  var browserName = String(this.getEval(getBrowserName));
+  
+  var getBrowserVersion = selWin + ".qx.core.Environment.get('browser.version');"
+  var browserVersion = String(this.getEval(getBrowserVersion));
+  browserVersion = parseInt(browserVersion, 10);
+  
+  return browserName == "ie" && browserVersion < 9;
 };
 
 simulation.Simulation.prototype.runTest = function()
