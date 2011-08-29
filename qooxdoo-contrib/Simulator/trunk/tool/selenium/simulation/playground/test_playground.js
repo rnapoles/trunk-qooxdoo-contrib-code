@@ -84,7 +84,12 @@ simulation.Simulation.prototype.testSamples = function()
     this.log("Selecting sample " + sampleName, "debug");
     this.__sel.qxClickAt(this.locators.samplesList + "/*/[@label=" + sampleName + "]");
     //TODO: replace with sample load check
-    java.lang.Thread.sleep(2000);
+    java.lang.Thread.sleep(1000);
+    // Dismiss "Click OK to discard your changes" confirmation
+    if (this.__sel.isConfirmationPresent()) {
+      this.__sel.getConfirmation();
+      java.lang.Thread.sleep(2000);
+    }
     this.logGlobalErrors();
     this.clearGlobalErrorStore();
   }
@@ -145,6 +150,30 @@ simulation.Simulation.prototype.isSyntaxHighlightingToggleEnabled = function()
   return enabled === "true";
 };
 
+simulation.Simulation.prototype.testEdit = function()
+{
+  if (this.isSyntaxHighlightingToggleEnabled()) {
+    this.qxClick(this.locators.toolbarButtonSyntax, "", "Deactivating syntax highlighting");
+    java.lang.Thread.sleep(2000);
+  }
+  var editorTextAreaLocator = this.locators.editor + "/qx.ui.form.TextArea";
+  var newButtonLabel = "Simulator was here";
+  
+  try {
+    var playAreaCode = String(this.__sel.getQxObjectFunction(editorTextAreaLocator, "getValue"));
+    var modifiedCode = playAreaCode.replace(/First Button/, newButtonLabel);
+    this.__sel.type(editorTextAreaLocator, modifiedCode);
+    this.qxClick(this.locators.toolbarButtonSyntax, '', 'Activating syntax highlighting');
+    this.qxClick(this.locators.toolbarButtonRun, '', 'Pressing Run button');
+    java.lang.Thread.sleep(2000);
+  }
+  catch(ex) {
+    this.log("Could not edit sample " + sampleName + ": " + ex, "error");
+  }
+  this.logGlobalErrors();
+  this.clearGlobalErrorStore();
+};
+
 simulation.Simulation.prototype.runTest = function()
 {
   this.initLocators();
@@ -153,6 +182,7 @@ simulation.Simulation.prototype.runTest = function()
   this.clearGlobalErrorStore();
   this.testSamplesPaneToggle();
   this.testSyntaxHighlightingToggle();
+  this.testEdit();
   this.testSamples();
   /*
   Modify code, run, check result in play area
