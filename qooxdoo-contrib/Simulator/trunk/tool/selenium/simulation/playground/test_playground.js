@@ -108,7 +108,7 @@ simulation.Simulation.prototype.testSamplesPaneToggle = function()
 
 simulation.Simulation.prototype.testSyntaxHighlightingToggle = function()
 {
-  if (this.isLegacyIe()) {
+  if (this.isSyntaxHighlightingToggleEnabled()) {
     return;
   }
   this.qxClick(this.locators.toolbarButtonSyntax);
@@ -129,16 +129,10 @@ simulation.Simulation.prototype.testSyntaxHighlightingToggle = function()
   }
 };
 
-simulation.Simulation.prototype.isLegacyIe = function()
+simulation.Simulation.prototype.isSyntaxHighlightingToggleEnabled = function()
 {
-  var getBrowserName = selWin + ".qx.core.Environment.get('browser.name');"
-  var browserName = String(this.getEval(getBrowserName));
-  
-  var getBrowserVersion = selWin + ".qx.core.Environment.get('browser.version');"
-  var browserVersion = String(this.getEval(getBrowserVersion));
-  browserVersion = parseInt(browserVersion, 10);
-  
-  return browserName == "ie" && browserVersion < 9;
+  var enabled = String(this.__sel.getQxObjectFunction(this.locators.toolbarButtonSyntax, "isEnabled"));
+  return enabled === "true";
 };
 
 simulation.Simulation.prototype.runTest = function()
