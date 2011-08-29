@@ -98,6 +98,9 @@ simulation.Simulation.prototype.testSamplesPaneToggle = function()
   } catch(ex) {
     isSamplesToggleEnabled = false;
   }
+  if (!isSamplesToggleEnabled) {
+    return;
+  }
   
   this.qxClick(this.locators.toolbarButtonSamples);
   java.lang.Thread.sleep(2000);
@@ -146,11 +149,11 @@ simulation.Simulation.prototype.runTest = function()
 {
   this.initLocators();
   // Log any errors caught during startup
-  //this.logGlobalErrors();
-  //this.clearGlobalErrorStore();
+  this.logGlobalErrors();
+  this.clearGlobalErrorStore();
   this.testSamplesPaneToggle();
-  //this.testSyntaxHighlightingToggle();
-  //this.testSamples();
+  this.testSyntaxHighlightingToggle();
+  this.testSamples();
   /*
   Modify code, run, check result in play area
   Save modified sample
