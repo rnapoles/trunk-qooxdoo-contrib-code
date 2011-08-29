@@ -90,24 +90,57 @@ simulation.Simulation.prototype.testSamples = function()
   }
 };
 
+simulation.Simulation.prototype.testSamplesPaneToggle = function()
+{
+  this.qxClick(this.locators.toolbarButtonSamples);
+  java.lang.Thread.sleep(2000);
+  try {
+    this.__sel.qxClick(this.locators.samplesList);
+  }
+  catch(ex) {
+    this.log("Sample pane closed correctly", "debug");
+    this.qxClick(this.locators.toolbarButtonSamples);
+    return;
+  }
+  
+  this.log("Sample pane was not closed!", "error");
+};
+
+simulation.Simulation.prototype.testSyntaxHighlightingToggle = function()
+{
+  this.qxClick(this.locators.toolbarButtonSyntax);
+  java.lang.Thread.sleep(2000);
+  
+  var plainTextEditorLocator = this.locators.editor + "/qx.ui.form.TextArea";
+  var isHighlightingDisabled = false;
+  try {
+    isHighlightingDisabled = this.__sel.isElementPresent(plainTextEditorLocator);
+  }
+  catch(ex) {}
+  
+  if (isHighlightingDisabled) {
+    this.log("Syntax highlighting disabled correctly", "debug");
+  }
+  else {
+    this.log("Syntax highlighting was not disabled correctly!", "error");
+  }
+};
+
 simulation.Simulation.prototype.runTest = function()
 {
   this.initLocators();
-  /*
-  Run initial sample
-  Check for AUT errors
-  Open/close samples pane
-  */
+  // Log any errors caught during startup
+  this.logGlobalErrors();
+  this.clearGlobalErrorStore();
+  this.testSamplesPaneToggle();
+  this.testSyntaxHighlightingToggle();
   this.testSamples();
   /*
-  Check syntax highlighting toggle
   Modify code, run, check result in play area
   Save modified sample
   Rename saved sample
   Delete saved sample
   Check for AUT errors
-
-  
   */
 };
 
