@@ -38,7 +38,7 @@ simulation.Simulation.prototype.initLocators = function()
   
   this.locators.headerButtonDesktop = this.locators.header + "/[@label=Desktop]";
   this.locators.headerButtonMobile = this.locators.header + "/[@label=Mobile]";
-  this.locators.toolbarButtonRun = this.locators.toolbar + "/[@label=Run]";
+  this.locators.toolbarButtonRun = this.locators.toolbar + "/[@icon=media-playback-start]";
   this.locators.toolbarButtonSamples = this.locators.toolbar + "/[@label=Samples]";
   this.locators.toolbarButtonSyntax = this.locators.toolbar + "/[@label=Syntax Highlighting]";
   this.locators.toolbarButtonLog = this.locators.toolbar + "/[@label=Log]";
@@ -59,6 +59,11 @@ simulation.Simulation.prototype.initLocators = function()
   this.locators.logViewEmbedHtml = this.locators.logView + "/qx.ui.embed.Html";
 }
 
+simulation.Simulation.prototype.setLocaleEn = function()
+{
+  var setLocale = selWin + 'qx.locale.Manager.getInstance().setLocale("en")';
+  this.__sel.getEval(setLocale);
+};
 
 simulation.Simulation.prototype.getSampleLabels = function()
 {
@@ -177,6 +182,7 @@ simulation.Simulation.prototype.testEdit = function()
 simulation.Simulation.prototype.runTest = function()
 {
   this.initLocators();
+  this.setLocaleEn();
   // Log any errors caught during startup
   this.logGlobalErrors();
   this.clearGlobalErrorStore();
