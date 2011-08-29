@@ -120,7 +120,7 @@ var getDemosByCategory = function(category)
 
 simulation.Simulation.prototype.waitForDemoApp = function()
 {
-  this.__sel.waitForCondition(mySim.checkDemoReady, 20000);
+  this.__sel.waitForCondition(mySim.checkDemoReady, 30000);
 };
 
 /*
