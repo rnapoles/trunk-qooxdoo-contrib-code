@@ -61,7 +61,7 @@ simulation.Simulation.prototype.initLocators = function()
 
 simulation.Simulation.prototype.setLocaleEn = function()
 {
-  var setLocale = selWin + 'qx.locale.Manager.getInstance().setLocale("en")';
+  var setLocale = selWin + '.qx.locale.Manager.getInstance().setLocale("en")';
   this.__sel.getEval(setLocale);
 };
 
@@ -174,9 +174,25 @@ simulation.Simulation.prototype.testEdit = function()
   }
   catch(ex) {
     this.log("Could not edit sample " + sampleName + ": " + ex, "error");
+    return;
+  } finally {
+    this.logGlobalErrors();
+    this.clearGlobalErrorStore();
   }
-  this.logGlobalErrors();
-  this.clearGlobalErrorStore();
+  
+  var newButtonLocator = this.locators.playAreaRiaRoot + "/[@label=" + newButtonLabel + "]";
+  var modifiedCodeExecuted;
+  try {
+    modifiedCodeExecuted = this.__sel.isElementPresent(newButtonLocator);
+  } catch(ex) {
+    modifiedCodeExecuted = false;
+  }
+  if (modifiedCodeExecuted) {
+    this.log("Modified code was executed correctly", "debug");
+  }
+  else {
+    this.log("Modified code was not executed!", "error");
+  }
 };
 
 simulation.Simulation.prototype.runTest = function()
@@ -191,7 +207,6 @@ simulation.Simulation.prototype.runTest = function()
   this.testEdit();
   this.testSamples();
   /*
-  Modify code, run, check result in play area
   Save modified sample
   Rename saved sample
   Delete saved sample
