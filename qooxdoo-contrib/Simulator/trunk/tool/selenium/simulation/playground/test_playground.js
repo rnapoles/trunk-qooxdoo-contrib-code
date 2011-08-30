@@ -157,6 +157,8 @@ simulation.Simulation.prototype.isSyntaxHighlightingToggleEnabled = function()
 
 simulation.Simulation.prototype.testEdit = function()
 {
+  //(Re)select the Hello World sample
+  this.__sel.qxClickAt(this.locators.samplesList + "/*/[@label=Hello World]");
   if (this.isSyntaxHighlightingToggleEnabled()) {
     this.qxClick(this.locators.toolbarButtonSyntax, "", "Deactivating syntax highlighting");
     java.lang.Thread.sleep(2000);
@@ -192,7 +194,67 @@ simulation.Simulation.prototype.testEdit = function()
   }
   else {
     this.log("Modified code was not executed!", "error");
+    return;
   }
+  
+  if (this.isFileMenuActive()) {
+    this.testSave();
+  }
+};
+
+simulation.Simulation.prototype.testSave = function()
+{
+  var fileName = "Three-headed Monkey";
+  this.__sel.answerOnNextPrompt(fileName);
+  this.qxClick(this.locators.samplesButtonSave);
+  this.__sel.getPrompt();
+  
+  var newFileLabelLocator = this.locators.samplesList + "/*/[@label=" + fileName + "]";
+  var newFileLabelPresent;
+  try {
+    newFileLabelPresent = this.__sel.isElementPresent(newFileLabelLocator);
+  } catch(ex) {
+    newFileLabelPresent = false;
+  }
+  if (newFileLabelPresent) {
+    this.log("Modified sample saved correctly", "debug");
+  }
+  else {
+    this.log("Modified sample was not saved (no new entry in Samples list)!", "error");
+    return;
+  }
+  
+  var userGroupLabelLocator = this.locators.samplesList + "/*/[@value=User]";
+  var userGroupLabelPresent;
+  try {
+    userGroupLabelPresent = this.__sel.isElementPresent(userGroupLabelLocator);
+  } catch(ex) {
+    userGroupLabelPresent = false;
+  }
+  if (userGroupLabelPresent) {
+    this.log("New User group label added to samples list", "debug");
+  }
+  else {
+    this.log("New User group label not added to samples list!", "error");
+    return;
+  }
+};
+
+simulation.Simulation.prototype.isFileMenuActive = function()
+{
+  var saveButtonPresent;
+  try {
+    saveButtonPresent = this.__sel.isElementPresent(this.locators.samplesButtonSave);
+  } catch(ex) {
+    saveButtonPresent = false;
+  }
+  if (!saveButtonPresent) {
+    return false;
+  }
+  
+  var saveButtonEnabled = String(this.__sel.getQxObjectFunction(this.locators.samplesButtonSave, "isEnabled"));
+  print(saveButtonEnabled);
+  return saveButtonEnabled == "true";
 };
 
 simulation.Simulation.prototype.runTest = function()
@@ -204,10 +266,9 @@ simulation.Simulation.prototype.runTest = function()
   this.clearGlobalErrorStore();
   this.testSamplesPaneToggle();
   this.testSyntaxHighlightingToggle();
-  this.testEdit();
   this.testSamples();
+  this.testEdit();
   /*
-  Save modified sample
   Rename saved sample
   Delete saved sample
   Check for AUT errors
