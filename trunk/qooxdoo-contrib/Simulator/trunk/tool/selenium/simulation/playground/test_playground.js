@@ -49,9 +49,9 @@ simulation.Simulation.prototype.initLocators = function()
   this.locators.samplesList = this.locators.samples + "/qx.ui.list.List";
   this.locators.samplesListWidgetCell = this.locators.samplesList + "/qx.ui.virtual.core.Pane/qx.ui.container.Composite/qx.ui.virtual.layer.WidgetCell";
   this.locators.samplesFileMenu = this.locators.samples + "/qx.ui.toolbar.ToolBar";
-  this.locators.samplesButtonSave = this.locators.samplesFileMenu + "/[@icon=drive-harddisk]";
+  this.locators.samplesButtonSave = this.locators.samplesFileMenu + "/[@icon=document-save]";
   this.locators.samplesButtonDelete = this.locators.samplesFileMenu + "/[@icon=user-trash]";
-  this.locators.samplesButtonRename = this.locators.samplesFileMenu + "/[@icon=insert-text]";
+  this.locators.samplesButtonRename = this.locators.samplesFileMenu + "/[@icon=format-text]";
   this.locators.playAreaRia = this.locators.playArea + "/[@classname=playground.view.RiaPlayArea]";
   this.locators.playAreaRiaButtonMaximize = this.locators.playAreaRia + "/*/qx.ui.form.Button";
   this.locators.playAreaRiaRoot = this.locators.playAreaRia + "/qx.ui.container.Scroll/qx.ui.root.Inline";
@@ -204,7 +204,7 @@ simulation.Simulation.prototype.testEdit = function()
 
 simulation.Simulation.prototype.testSave = function()
 {
-  var fileName = "Three-headed Monkey";
+  var fileName = "Simulator Test";
   this.__sel.answerOnNextPrompt(fileName);
   this.qxClick(this.locators.samplesButtonSave);
   this.__sel.getPrompt();
@@ -238,6 +238,31 @@ simulation.Simulation.prototype.testSave = function()
     this.log("New User group label not added to samples list!", "error");
     return;
   }
+  
+  this.testRenameFile();
+};
+
+simulation.Simulation.prototype.testRenameFile = function()
+{
+  var newFileName = "Renamed";
+  this.__sel.answerOnNextPrompt(newFileName);
+  this.qxClick(this.locators.samplesButtonRename);
+  this.__sel.getPrompt();
+  
+  var newFileLabelLocator = this.locators.samplesList + "/*/[@label=" + newFileName + "]";
+  var newFileLabelPresent;
+  try {
+    newFileLabelPresent = this.__sel.isElementPresent(newFileLabelLocator);
+  } catch(ex) {
+    newFileLabelPresent = false;
+  }
+  if (newFileLabelPresent) {
+    this.log("Saved sample renamed correctly", "debug");
+  }
+  else {
+    this.log("Saved sample was not renamed!", "error");
+    return;
+  }
 };
 
 simulation.Simulation.prototype.isFileMenuActive = function()
@@ -269,7 +294,6 @@ simulation.Simulation.prototype.runTest = function()
   this.testSamples();
   this.testEdit();
   /*
-  Rename saved sample
   Delete saved sample
   Check for AUT errors
   */
