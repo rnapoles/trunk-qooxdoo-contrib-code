@@ -166,21 +166,12 @@ simulation.Simulation.prototype.testEdit = function()
   var editorTextAreaLocator = this.locators.editor + "/qx.ui.form.TextArea";
   var newButtonLabel = "Simulator was here";
   
-  try {
-    var playAreaCode = String(this.__sel.getQxObjectFunction(editorTextAreaLocator, "getValue"));
-    var modifiedCode = playAreaCode.replace(/First Button/, newButtonLabel);
-    this.__sel.type(editorTextAreaLocator, modifiedCode);
-    this.qxClick(this.locators.toolbarButtonSyntax, '', 'Activating syntax highlighting');
-    this.qxClick(this.locators.toolbarButtonRun, '', 'Pressing Run button');
-    java.lang.Thread.sleep(2000);
-  }
-  catch(ex) {
-    this.log("Could not edit sample " + sampleName + ": " + ex, "error");
-    return;
-  } finally {
-    this.logGlobalErrors();
-    this.clearGlobalErrorStore();
-  }
+  var playAreaCode = String(this.__sel.getQxObjectFunction(editorTextAreaLocator, "getValue"));
+  var modifiedCode = playAreaCode.replace(/First Button/, newButtonLabel);
+  this.__sel.type(editorTextAreaLocator, modifiedCode);
+  this.qxClick(this.locators.toolbarButtonSyntax, '', 'Activating syntax highlighting');
+  this.qxClick(this.locators.toolbarButtonRun, '', 'Pressing Run button');
+  java.lang.Thread.sleep(2000);
   
   var newButtonLocator = this.locators.playAreaRiaRoot + "/[@label=" + newButtonLabel + "]";
   var modifiedCodeExecuted;
@@ -196,14 +187,14 @@ simulation.Simulation.prototype.testEdit = function()
     this.log("Modified code was not executed!", "error");
     return;
   }
-  
-  if (this.isFileMenuActive()) {
-    this.testSave();
-  }
 };
 
 simulation.Simulation.prototype.testSave = function()
 {
+  if (!this.isFileMenuActive()) {
+    this.log("File menu is not active, skipping testSave", "info");
+    return;
+  }
   var fileName = "Simulator Test";
   this.__sel.answerOnNextPrompt(fileName);
   this.qxClick(this.locators.samplesButtonSave);
@@ -217,6 +208,7 @@ simulation.Simulation.prototype.testSave = function()
     newFileLabelPresent = false;
   }
   if (newFileLabelPresent) {
+    this.__savedSampleFileName = fileName;
     this.log("Modified sample saved correctly", "debug");
   }
   else {
@@ -238,12 +230,14 @@ simulation.Simulation.prototype.testSave = function()
     this.log("New User group label not added to samples list!", "error");
     return;
   }
-  
-  this.testRenameFile();
 };
 
 simulation.Simulation.prototype.testRenameFile = function()
 {
+  if (!this.__savedSampleFileName) {
+    this.log("Modified sample was not saved, skipping testRenameFile", "info");
+    return;
+  }
   var newFileName = "Renamed";
   this.__sel.answerOnNextPrompt(newFileName);
   this.qxClick(this.locators.samplesButtonRename);
@@ -257,11 +251,36 @@ simulation.Simulation.prototype.testRenameFile = function()
     newFileLabelPresent = false;
   }
   if (newFileLabelPresent) {
+    this.__savedSampleFileName = newFileName;
     this.log("Saved sample renamed correctly", "debug");
   }
   else {
     this.log("Saved sample was not renamed!", "error");
     return;
+  }
+};
+
+simulation.Simulation.prototype.testDeleteFile = function()
+{
+  if (!this.__savedSampleFileName) {
+    this.log("Modified sample was not saved, skipping testDeleteFile", "info");
+    return;
+  }
+  var fileLabelLocator = this.locators.samplesList + "/*/[@label=" + this.__savedSampleFileName + "]";
+  this.__sel.qxClickAt(fileLabelLocator);
+  this.qxClick(this.locators.samplesButtonDelete);
+  
+  var fileLabelPresent;
+  try {
+    fileLabelPresent = this.__sel.isElementPresent(fileLabelLocator);
+  } catch(ex) {
+    fileLabelPresent = false;
+  }
+  if (fileLabelPresent) {
+    this.log("Saved sample was not deleted!", "error");
+  }
+  else {
+    this.log("Saved sample was deleted correctly", "debug");
   }
 };
 
@@ -284,21 +303,40 @@ simulation.Simulation.prototype.isFileMenuActive = function()
 
 simulation.Simulation.prototype.runTest = function()
 {
+  this.__savedSampleFileName;
+  
   this.initLocators();
   this.setLocaleEn();
   // Log any errors caught during startup
   this.logGlobalErrors();
   this.clearGlobalErrorStore();
-  this.testSamplesPaneToggle();
-  this.testSyntaxHighlightingToggle();
-  this.testSamples();
-  this.testEdit();
-  /*
-  Delete saved sample
-  Check for AUT errors
-  */
+  
+  var testList = [
+    this.testSamplesPaneToggle,
+    this.testSyntaxHighlightingToggle,
+    this.testSamples,
+    this.testEdit,
+    this.testSave,
+    this.testRenameFile,
+    this.testDeleteFile
+  ];
+  this.runTestsWrapped(testList);
 };
 
+simulation.Simulation.prototype.runTestsWrapped = function(tests)
+{
+  for (var i=0,l=tests.length; i<l; i++) {
+    try {
+      tests[i].call(this);
+    } catch(ex) {
+      this.log("Error in test " + tests[i] + ": " + ex.message, "error");
+    }
+    finally {
+      this.logGlobalErrors();
+      this.clearGlobalErrorStore();
+    }
+  }
+};
 
 // - Main --------------------------------------------------------------------
 
