@@ -47,10 +47,37 @@ if (mySim.getConfigSetting("branch") == "branch_1_2_x") {
   locators.addFeedButton = 'qxh=qx.ui.container.Composite/child[1]/qx.ui.toolbar.Part/child[0]';
 }
 
+simulation.Simulation.prototype.waitForFeeds = function()
+{
+  var feedsLoaded = function(treeLocator) {
+    var tree = selenium.getQxWidgetByLocator(treeLocator);
+    var ready = true;
+    var items = tree.getItems();
+    for (var i=0,l=items.length; i<l; i++) {
+      if (items[i].getChildren().length == 0) {
+        var icon = items[i].getIcon();
+        if (!(icon.indexOf('internet-feed-reader.png') >=0 || icon.indexOf('process-stop') >=0 )) {
+          ready = false;
+        }
+      }
+    }
+    return ready;
+  };
+  this.addOwnFunction("feedsLoaded", feedsLoaded);
+  var condition = 'selenium.qxStoredVars["autWindow"].qx.Simulation.feedsLoaded("' + locators.feedTree + '")';
+  try {
+    this.waitForCondition(condition, "30000");
+    //this.debug("All feeds finished loading.");
+  } catch(ex) {
+    this.log("Feeds not loaded after 30 seconds, clicking reload", "warn");
+    this.qxClick(locators.reloadButton);
+    this.waitForCondition(condition, "30000");
+  }
+};
+
 simulation.Simulation.prototype.checkArticle = function()
 {
   var articleScript = 'selenium.getQxObjectFunction(\'' + locators.articleView + '\', "getArticle")';
-  //var articleScript = selWin + '.qx.Simulation.getObjectByClassname(' + selWin + '.qx.core.Init.getApplication(), "feedreader.view.Article").getArticle()';  
   var article = this.getEval(articleScript, "Checking for article");
 
   var modelClassName = "qx.data.model";
@@ -92,59 +119,9 @@ simulation.Simulation.prototype.checkFeeds = function()
   
 };
 
-simulation.Simulation.prototype.checkCombinedImage = function()
+simulation.Simulation.prototype.testLocaleSwitch = function()
 {
-  var getImageBackground = function(locator) {
-    var qxImg = selenium.getQxWidgetByLocator(locator);
-    return qxImg.getContentElement().getDomElement().style.backgroundImage;
-  }
-  this.addOwnFunction("getImageBackground", getImageBackground);
-  
-  var imgLoc = locators.addFeedButton + "/child[0]";
-  var imageBackground = this.getEval('selenium.qxStoredVars["autWindow"].qx.Simulation.getImageBackground("' + imgLoc +'")');
-  imageBackground = String(imageBackground);
-  
-  if (imageBackground.indexOf("combined") >= 0 || imageBackground.indexOf("base64") >= 0) {
-    this.log("Add Feed button icon uses combined image.", "info");
-  } else {
-    this.log("Add Feed button icon does not use combined image: " + imageBackground, "error");
-  }
-  
-};
-
-mySim.runTest = function()
-{
-  var feedLoadTimeout = 30000;
-  var tree = 'selenium.getQxWidgetByLocator("' + locators.feedTree + '")';  
-  
-  var lastFeedNum = this.getEval(tree + '.getItems().length - 1', "Getting last feed's number");
-  
-  var isLastFeedLoaded = tree + ".getItems()[" + lastFeedNum + "].getIcon().indexOf('internet-feed-reader.png') >= 0";  
-  
-  try {
-    this.__sel.waitForCondition(isLastFeedLoaded, feedLoadTimeout.toString());
-  } catch(ex) {
-    this.log("Feeds not loaded after 30 seconds, clicking reload", "info");
-    this.qxClick(locators.reloadButton, "", "Clicking reload button");
-    this.waitForCondition(isLastFeedLoaded, feedLoadTimeout, "Waiting for feeds to load");
-  }
-  
-  this.checkFeeds();
-  
-  var getLastFeedLabel = tree + ".getItems()[" + lastFeedNum + "].getLabel()";
-  var lastFeedLabel = this.getEval(getLastFeedLabel, "Getting last feed's label");
-  
-  this.__sel.setSpeed("1000");
-  
-  this.getEval(tree + ".resetSelection()", "Resetting tree selection");
-    
-  this.qxClick(locators.firstFeed, "", "Selecting first feed from list");  
-  
-  this.qxClick(locators.firstFeedItem, "", "Selecting first feed item.");
-  
-  this.checkArticle();
-  
-  var staticFeedsLabel = tree + ".getItems()[0].getContentElement().getChildren()[2].getChildren()[0].getValue().toString()";
+  var staticFeedsLabel = this.tree + ".getItems()[0].getContentElement().getChildren()[2].getChildren()[0].getValue().toString()";
   
   var oldLabel = this.getEval(staticFeedsLabel, "Getting label of Static Feeds");
 
@@ -188,8 +165,31 @@ mySim.runTest = function()
   else {
     this.log("ERROR: Language change failed.", "error");
   }
+};
+
+simulation.Simulation.prototype.isIe9 = function()
+{
+  var getBrowser = selWin + '.qx.core.Environment.get("browser.name")';
+  var getVersion = selWin + '.qx.core.Environment.get("browser.version")';
+  var browser = String(this.getEval(getBrowser));
+  var version = String(this.getEval(getVersion));
+  version = parseInt(version, 10);
   
-  // Add a new feed
+  return (browser == "ie" && version >= 9);
+};
+
+simulation.Simulation.prototype.testAddFeed = function()
+{
+  // "type" commands don't work in IE9
+  if (this.isIe9()) {
+    this.log("Skipping testAddFeed", "debug");
+    return;
+  }
+  
+  var lastFeedNum = this.getEval(this.tree + '.getItems().length - 1', "Getting last feed's number");
+  var getLastFeedLabel = this.tree + ".getItems()[" + lastFeedNum + "].getLabel()";
+  var lastFeedLabel = this.getEval(getLastFeedLabel, "Getting last feed's label");
+
   // Click "Add Feed"
   this.qxClick(locators.addFeedButton, "", "Clicking Add Feed button");
   Packages.java.lang.Thread.sleep(2000);
@@ -236,17 +236,17 @@ mySim.runTest = function()
   this.waitForCondition(isFeedWindowHidden, 10000, "Checking if Add Feed window is closed");
   
   // Check if the new feed loaded.
-  var newLastFeedNum = this.getEval(tree + ".getItems().length - 1", "Getting last feed's number");  
-  var isNewLastFeedLoaded = tree + ".getItems()[" + newLastFeedNum + "].getIcon().indexOf('internet-feed-reader.png') >= 0";
+  var newLastFeedNum = this.getEval(this.tree + ".getItems().length - 1", "Getting last feed's number");  
+  var isNewLastFeedLoaded = this.tree + ".getItems()[" + newLastFeedNum + "].getIcon().indexOf('internet-feed-reader.png') >= 0";
   
   try {
-    this.__sel.waitForCondition(isNewLastFeedLoaded, feedLoadTimeout.toString());    
+    this.__sel.waitForCondition(isNewLastFeedLoaded, this.feedLoadTimeout.toString());    
   } catch(ex) {
     this.log("New feed not loaded after 30 seconds, waiting another 30 sec.", "info");
-    this.waitForCondition(isNewLastFeedLoaded, feedLoadTimeout, "Waiting for new feed to load.");
+    this.waitForCondition(isNewLastFeedLoaded, this.feedLoadTimeout, "Waiting for new feed to load.");
   }
     
-  var getNewLastFeedLabel = tree + ".getItems()[" + newLastFeedNum + "].getLabel()";
+  var getNewLastFeedLabel = this.tree + ".getItems()[" + newLastFeedNum + "].getLabel()";
   var newLastFeedLabel = this.getEval(getNewLastFeedLabel, "Getting new feed's label");
   
   if (newLastFeedLabel != lastFeedLabel) {
@@ -257,17 +257,56 @@ mySim.runTest = function()
   }
   
   // Select the new feed
-  var treeLastSelect = tree + ".addToSelection(" + tree + ".getItems()[" + newLastFeedNum + "])";
+  var treeLastSelect = this.tree + ".addToSelection(" + this.tree + ".getItems()[" + newLastFeedNum + "])";
   this.getEval(treeLastSelect, "Selecting new feed.");      
   
-  this.qxClick(locators.firstFeedItem, "", "Selecting first item from new feed.");  
+  this.qxClick(locators.firstFeedItem, "", "Selecting first item from new feed.");
+  this.checkArticle();
+};
+
+simulation.Simulation.prototype.checkCombinedImage = function()
+{
+  // IE uses the AlphaImageLoader so no combined images
+  if (this.getConfigSetting("testBrowser").indexOf("iexplore") >= 0 ) {
+    return;
+  }
+  var getImageBackground = function(locator) {
+    var qxImg = selenium.getQxWidgetByLocator(locator);
+    return qxImg.getContentElement().getDomElement().style.backgroundImage;
+  }
+  this.addOwnFunction("getImageBackground", getImageBackground);
   
+  var imgLoc = locators.addFeedButton + "/child[0]";
+  var imageBackground = this.getEval('selenium.qxStoredVars["autWindow"].qx.Simulation.getImageBackground("' + imgLoc +'")');
+  imageBackground = String(imageBackground);
+  
+  if (imageBackground.indexOf("combined") >= 0 || imageBackground.indexOf("base64") >= 0) {
+    this.log("Add Feed button icon uses combined image.", "info");
+  } else {
+    this.log("Add Feed button icon does not use combined image: " + imageBackground, "error");
+  }
+};
+
+mySim.runTest = function()
+{
+  this.feedLoadTimeout = 30000;
+  this.tree = 'selenium.getQxWidgetByLocator("' + locators.feedTree + '")';  
+  
+  this.waitForFeeds();
+  this.checkFeeds();
+  
+  this.__sel.setSpeed("1000");
+  
+  this.getEval(this.tree + ".resetSelection()", "Resetting tree selection");
+  this.qxClick(locators.firstFeed, "", "Selecting first feed from list");  
+  this.qxClick(locators.firstFeedItem, "", "Selecting first feed item.");
   this.checkArticle();
   
-  // IE uses the AlphaImageLoader so no combined images
-  if (this.getConfigSetting("testBrowser").indexOf("iexplore") < 0 ) {
-    this.checkCombinedImage();
-  }
+  this.testLocaleSwitch();
+  
+  this.testAddFeed();
+  
+  this.checkCombinedImage();
 };
 
 // - Main --------------------------------------------------------------------
