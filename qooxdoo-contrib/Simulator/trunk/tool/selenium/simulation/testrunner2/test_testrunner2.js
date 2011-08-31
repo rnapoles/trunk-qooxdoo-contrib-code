@@ -26,7 +26,8 @@ var baseConf = {
                            "failure when request failed",
                            "remove script from DOM when request failed"],
   'accessInterval' : 10000,
-  'packageLoadTimeout' : 30000
+  'packageLoadTimeout' : 30000,
+  'packageRunTimeout' : 1800000
 };
 
 var args = arguments ? arguments : "";
@@ -52,8 +53,9 @@ var qxAppInst = simulation.Simulation.QXAPPINSTANCE;
 simulation.Simulation.prototype.runTest = function()
 {
   var accessInterval = this.getConfigSetting("accessInterval");
-  var lastLoadedPackage;
+  var lastLoadedPackage, lastRunningPackage;
   var loadCycles = 0;
+  var runCycles = 0;
   
   var getSuiteState = selWin + "." + qxAppInst + ".runner.getTestSuiteState()";
   var suiteStateCheck = getSuiteState + " !== \"loading\"";
@@ -112,7 +114,28 @@ simulation.Simulation.prototype.runTest = function()
       case "running":
         var match = viewStatus.match(/Running package (.*)/i);
         if (match && match.length > 1) {
-          print(suiteState + " " + match[1]);
+          var runningPackage = match[1];
+          print(suiteState + " " + runningPackage);
+          
+          if (lastRunningPackage && lastRunningPackage == runningPackage) {
+            var packageRunTimeout = this.getConfigSetting("packageRunTimeout")
+            runCycles++;
+            var runTime = (runCycles * accessInterval);
+            var msg = "Package " + runningPackage + " running for " + 
+            (runTime  / 1000) + "s";
+            this.log(msg, "debug");
+            print(msg);
+            if (runTime >= packageRunTimeout) {
+              this.testFailed = true;
+              this.log("Package run timeout reached, aborting!", "error");
+              this.logResult();
+              return;
+            }
+          }
+          else {
+            lastRunningPackage = runningPackage;
+            runCycles = 0;
+          }
         }
         break;
       default:
