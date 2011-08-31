@@ -24,7 +24,9 @@ var baseConf = {
                            "myCallback is not a function",
                            "loading failed because of network error",
                            "failure when request failed",
-                           "remove script from DOM when request failed"]
+                           "remove script from DOM when request failed"],
+  'accessInterval' : 10000,
+  'packageLoadTimeout' : 30000
 };
 
 var args = arguments ? arguments : "";
@@ -49,30 +51,75 @@ var qxAppInst = simulation.Simulation.QXAPPINSTANCE;
  */
 simulation.Simulation.prototype.runTest = function()
 {
-  var suiteStateCheck = selWin + "." + qxAppInst + ".runner.getTestSuiteState() !== \"loading\"";
+  var accessInterval = this.getConfigSetting("accessInterval");
+  var lastLoadedPackage;
+  var loadCycles = 0;
+  
+  var getSuiteState = selWin + "." + qxAppInst + ".runner.getTestSuiteState()";
+  var suiteStateCheck = getSuiteState + " !== \"loading\"";
   var suiteReady = this.waitForCondition(suiteStateCheck, 120000);
   if (!suiteReady) {
     this.log("Test suite not loaded within two minutes, aborting!", "error");
   }
-  
-  var stateGetter = selWin + "." + qxAppInst + ".runner.view.getStatus()";
+  var getViewStatus = selWin + "." + qxAppInst + ".runner.view.getStatus()";
   
   while (true) {
-    Packages.java.lang.Thread.sleep(10000);
+    Packages.java.lang.Thread.sleep(accessInterval);
     //Selenium doesn't like to execute the same command multiple times
     this.__sel.getSpeed();
-    var suiteState = String(this.getEval(stateGetter));
+    var suiteState = String(this.getEval(getSuiteState));
+    var viewStatus = String(this.getEval(getViewStatus));
     
+    print("=========================================================");
     switch (suiteState) {
       case "error":
+        this.testFailed = true;
         this.log("Error loading test suite", "error");
         return;
       case "finished":
-        this.logErrors();
-        this.logAutErrors();
-        return;
+        // testSuiteState "finished" means a package is done, need to check the
+        // view's status to know if the entire test suite is done
+        if (viewStatus == "finished") {
+          this.logResult();
+          return;
+        }
+      case "loading":
+        var match = viewStatus.match(/Loading package (.*)/i);
+        if (match && match.length > 1) {
+          var loadingPackage = match[1];
+          print(suiteState + " " + loadingPackage);
+          
+          if (lastLoadedPackage && lastLoadedPackage == loadingPackage) {
+            loadCycles++;
+            var loadTime = (loadCycles * accessInterval);
+            var msg = "Package " + loadingPackage + " loading for " + 
+            (loadTime  / 1000) + "s";
+            this.log(msg, "debug");
+            print(msg);
+            if (loadTime >= this.getConfigSetting("packageLoadTimeout")) {
+              this.testFailed = true;
+              this.log("Package load timeout reached, aborting!", "error");
+              this.logResult();
+              return;
+            }
+          }
+          else {
+            lastLoadedPackage = loadingPackage;
+            loadCycles = 0;
+          }
+        }
+        break;
+      case "running":
+        var match = viewStatus.match(/Running package (.*)/i);
+        if (match && match.length > 1) {
+          print(suiteState + " " + match[1]);
+        }
+        break;
       default:
-        print("status: " + suiteState);
+        var msg = "Unexpected suite state: " + suiteState + " View status: " + 
+        viewStatus;
+        this.log(msg, "warn");
+        print(msg);
     }
   }
 };
@@ -146,6 +193,17 @@ simulation.Simulation.prototype.logAutErrors = function()
         this.log(errArr[i], "warn");
       }
     }
+  }
+};
+
+simulation.Simulation.prototype.logResult = function()
+{
+  try {
+    this.logErrors();
+    this.logAutErrors();
+  }
+  catch(ex) {
+    this.log("Unable to log test results: " + ex.message, "error");
   }
 };
 
