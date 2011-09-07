@@ -435,6 +435,10 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 				return clazz;
 			}
 			
+			// Types are not created when encountered because thatr can lead to unsolvable recursive
+			//	problems; definitions are queued here instead
+			var deferredTypes = [];
+			
 			this.__classesBeingDefined[data.className] = true;
 			try {
 				// Create the JSON definition for qx.Class
@@ -443,9 +447,7 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 					def = { members: { } };
 				else {
 					def = {
-							construct: /*function(serverId) {
-								this.base(arguments, serverId);
-							},*/ new Function('serverId', 'this.base(arguments, serverId); this.$$proxy = {};'),
+							construct: new Function('serverId', 'this.base(arguments, serverId); this.$$proxy = {};'),
 							members: { }
 						};
 					if (data.extend) {
@@ -478,17 +480,14 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 						else
 							def.members[methodName] = new Function('return this._callServer("' + methodName + '", qx.lang.Array.fromArguments(arguments));');
 						
-						if (method.returnType)
-							this.getClassOrCreate(method.returnType);
-//						if (methodName == "addQuestion")
-//							debugger;
+						if (method.returnType && typeof method.returnType == "object")
+							deferredTypes.push(method.returnType);
 						
 						var params = method.parameters;
 						if (params)
-							for (var i = 0; i < params.length; i++) {
-								if (params[i])
-									params[i] = this.getClassOrCreate(params[i]);
-							}
+							for (var i = 0; i < params.length; i++)
+								if (params[i] && typeof params[i] == "object")
+									deferredTypes.push(params[i]);
 					}
 				
 				// Add properties
@@ -499,9 +498,8 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 						var fromDef = data.properties[propName];
 						fromDef.name = propName;
 						
-						var propClass = null;
-						if (fromDef.clazz)
-							propClass = this.getClassOrCreate(fromDef.clazz);
+						if (fromDef.clazz && typeof fromDef.clazz == "object")
+							deferredTypes.push(fromDef.clazz);
 						
 						var toDef = def.properties[propName] = {};
 						
@@ -559,12 +557,16 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 					var propDef = onDemandProperties[i];
 					this.__addOnDemandProperty(clazz, propDef.name, propDef.readOnly||false);
 				}
-				
-				// Done
-				return clazz;
 			}finally {
 				delete this.__classesBeingDefined[data.className];
 			}
+			
+			// Create dependent classes
+			for (var i = 0; i < deferredTypes.length; i++)
+				this.getClassOrCreate(deferredTypes[i]);
+			
+			// Done
+			return clazz;
 		},
 		
 		/**
