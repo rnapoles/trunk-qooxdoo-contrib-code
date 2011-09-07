@@ -70,9 +70,9 @@ qx.Class.define("com.zenesis.qx.upload.FormHandler", {
 		            return;
 		        }
 		        
-		        self.debug('iframe loaded');
+		        //self.debug('iframe loaded');
 		        
-		        var response = self._getIframeContentJSON(iframe);
+		        var response = self._getIframeContent(iframe);
 		
 		        self._onCompleted(file, response);
 		        
@@ -107,23 +107,14 @@ qx.Class.define("com.zenesis.qx.upload.FormHandler", {
 		},
 		
 		/**
-		 * Returns json object received by iframe from server.
-		 * @return {Object}
+		 * Returns text received by iframe from server.
+		 * @return {String}
 		 */
-		_getIframeContentJSON: function(iframe){
+		_getIframeContent: function(iframe){
 		    // iframe.contentWindow.document - for IE<7
 		    var doc = iframe.contentDocument ? iframe.contentDocument: iframe.contentWindow.document,
-		        response;
-		    
-		    this.debug("converting iframe's innerHTML to JSON");
-		    this.debug("innerHTML = " + doc.body.innerHTML);
-		                    
-		    try {
-		        response = eval("(" + doc.body.innerHTML + ")");
-		    } catch(err){
-		        response = {};
-		    }        
-		
+		        response = doc.body.innerHTML;
+		    //this.debug("response=" + response);
 		    return response;
 		},
 		

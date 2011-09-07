@@ -154,7 +154,7 @@ qx.Class.define("com.zenesis.qx.upload.AbstractHandler", {
 		/**
 		 * Called by derived classes when a file has completed
 		 * @param file {com.zenesis.qx.upload.File} the file which has finsihed uploading
-		 * @param response
+		 * @param response {String} text received
 		 */
 		_onCompleted: function(file, response) {
 			this.debug("completed: id=" + file.getId() + ", fileName=" + file.getFilename() + ", response=" + response);
@@ -164,6 +164,8 @@ qx.Class.define("com.zenesis.qx.upload.AbstractHandler", {
 					current.splice(i, 1);
 					break;
 				}
+			
+			file.setResponse(response);
 			
 			// File state should be uploading or cancelled
 			if (file.getState() == "uploading") {

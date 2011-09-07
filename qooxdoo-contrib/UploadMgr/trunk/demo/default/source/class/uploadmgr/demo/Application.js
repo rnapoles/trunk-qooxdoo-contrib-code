@@ -79,7 +79,7 @@ qx.Class.define("uploadmgr.demo.Application", {
       		var uploader = new com.zenesis.qx.upload.UploadMgr(btn, "http://www.zenesis.com/demoupload");
       		uploader.addListener("addFile", function(evt) {
       			var file = evt.getData(),
-      				item = new qx.ui.form.ListItem(file.getFilename(), null, file);
+      				item = new qx.ui.form.ListItem(file.getFilename() + " (queued for upload)", null, file);
       			lst.add(item);
       			
       			// On modern browsers (ie not IE) we will get progress updates
@@ -164,6 +164,20 @@ qx.Class.define("uploadmgr.demo.Application", {
 	  		var lbl = new qx.ui.basic.Label("You can upload anything you like to test this (or as many as you like); the files will be deleted after the upload completes.")
 				.set({ rich: true, width: 700 });
 			doc.add(lbl, { left: 100, top: 390 });
+			
+	  		var lbl = new qx.ui.basic.Label("Update:: You can now have multiple upload buttons per UploadMgr instance - below are a few extra upload buttons for testing.")
+				.set({ rich: true, width: 700 });
+			doc.add(lbl, { left: 100, top: 420 });
+			
+      		btn = new com.zenesis.qx.upload.UploadButton("Add File(s)", "com/zenesis/qx/upload/test.png");
+      		uploader.addWidget(btn);
+      		doc.add(btn, { left: 100, top: 460 });
+      		btn = new com.zenesis.qx.upload.UploadButton("Add File(s)", "com/zenesis/qx/upload/test.png");
+      		uploader.addWidget(btn);
+      		doc.add(btn, { left: 250, top: 460 });
+      		btn = new com.zenesis.qx.upload.UploadButton("Add File(s)", "com/zenesis/qx/upload/test.png");
+      		uploader.addWidget(btn);
+      		doc.add(btn, { left: 400, top: 460 });
 		}
 	}
 });

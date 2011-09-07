@@ -115,6 +115,9 @@ public class DemoUploadServlet extends HttpServlet {
     
     private void receiveOctetStream(HttpServletRequest request) throws IOException {
         String filename = request.getHeader("X-File-Name");
+        int pos = filename.lastIndexOf('/');
+        if (pos > -1)
+        	filename = filename.substring(pos + 1);
        	receiveFile(request.getInputStream(), new File(uploadFilesToDir, filename));
     }
     

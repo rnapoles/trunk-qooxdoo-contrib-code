@@ -39,8 +39,9 @@ qx.Class.define("com.zenesis.qx.upload.UploadMgr", {
 	
 	construct: function(widget, uploadUrl) {
 		this.base(arguments);
+		this.__widgetsData = {};
 		if (widget)
-			this.setWidget(widget);
+			this.addWidget(widget);
 		if (uploadUrl)
 			this.setUploadUrl(uploadUrl);
 		if (com.zenesis.qx.upload.XhrHandler.isSupported())
@@ -72,19 +73,6 @@ qx.Class.define("com.zenesis.qx.upload.UploadMgr", {
 	},
 	
 	properties: {
-		/**
-		 * The widget to add the input[type=file] to; this would typically be an instance
-		 * of com.zenesis.qx.upload.UploadButton (see com.zenesis.qx.upload.MUploadButton
-		 * for implementing for other widgets)
-		 */
-		widget: {
-			check: "qx.ui.core.Widget",
-			init: null,
-			nullable: true,
-			apply: "_applyWidget",
-			event: "changeWidget"
-		},
-		
 		/**
 		 * The URL to upload to
 		 */
@@ -120,25 +108,36 @@ qx.Class.define("com.zenesis.qx.upload.UploadMgr", {
 	},
 	
 	members: {
-		__appearListenerId: null,
+		__widgetsData: null,
 		__inputElement: null,
 		__uploadHandler: null,
 		
 		/**
-		 * Callback for changes to the widget property
-		 * @param value
-		 * @param oldValue
-		 * @param name
+		 * Adds a widget which is to have an input[type=file] attached; this would typically be an 
+		 * instance of com.zenesis.qx.upload.UploadButton (see com.zenesis.qx.upload.MUploadButton
+		 * for implementing for other widgets)
 		 */
-		_applyWidget: function(value, oldValue, name) {
-			if (oldValue && this.__appearListenerId) {
-				oldValue.removeListener(this.__appearListenerId);
-			}
-			this.__appearListenerId = null;
-			if (value) {
-				this.__appearListenerId = value.addListenerOnce("appear", function(evt) {
-					value.getContainerElement().addAt(this._createInputElement(), 0);
-				}, this);
+		addWidget: function(widget) {
+			var id = widget.addListenerOnce("appear", function(evt) {
+				var data = this.__widgetsData[widget.toHashCode()];
+				if (data) {
+					data.listenerId = null;
+					widget.getContainerElement().addAt(this._createInputElement(widget), 0);
+				}
+			}, this);
+			this.__widgetsData[widget.toHashCode()] = { listenerId: id, widget: widget, inputElement: null };
+		},
+		
+		/**
+		 * Removes a widget
+		 * @param widget
+		 */
+		removeWidget: function(widget) {
+			var data = this.__widgetsData[widget.toHashCode()];
+			if (data) {
+				if (data.listenerId)
+					widget.removeListener(data.listenerId);
+				delete this.__widgetsData[widget.toHashCode()];
 			}
 		},
 		
@@ -157,11 +156,10 @@ qx.Class.define("com.zenesis.qx.upload.UploadMgr", {
 		 * @param oldValue
 		 */
 		_applyMultiple: function(value, oldValue) {
-			if (this.__inputElement) {
-				if (value)
-					this.__inputElement.setAttribute("multiple", "multiple");
-				else
-					this.__inputElement.removeAttribute("multiple");
+			for (var hash in this.__widgetsData) {
+				var data = this.__widgetsData[hash];
+				if (data.inputElement)
+					data.inputElement.setMultiple(value);
 			}
 		},
 		
@@ -185,64 +183,26 @@ qx.Class.define("com.zenesis.qx.upload.UploadMgr", {
 		 * Creates the input[type=file] element
 		 * @returns
 		 */
-		_createInputElement: function() {
-	        var control;
-	        // styling the input[type=file]
-	        // element is a bit tricky. Some browsers just ignore the normal
-	        // css style input. Firefox is especially tricky in this regard.
-	        // since we are providing our one look via the underlying qooxdoo
-	        // button anyway, all we have todo is position the ff upload
-	        // button over the button element. This is tricky in itself
-	        // as the ff upload button consists of a text and a button element
-	        // which are not css accessible themselfes. So the best we can do,
-	        // is align to the top right corner of the upload widget and set its
-	        // font so large that it will cover even realy large underlying buttons.
-	        var css = {
-	              position  : "absolute", 
-	              cursor    : "pointer",
-	              hideFocus : "true",
-	              zIndex: this.getWidget().getZIndex() + 11,
-	              opacity: 0,
-	              // align to the top right hand corner
-	              top: '0px',
-	              right: '0px',
-	              // ff ignores the width setting pick a realy large font size to get
-	              // a huge button that covers the area of the upload button
-	              fontFamily: 'Arial',
-	              // from valums.com/ajax-upload: 4 persons reported this, the max values that worked for them were 243, 236, 236, 118
-	              fontSize: '118px'
-	        };
-	        if ((qx.core.Environment && qx.core.Environment.get('browser.name') == 'ie' && qx.core.Environment.get('browser.version') < 9 )
-	              || ( ! qx.core.Environment && qx.bom.client.Engine.MSHTML && qx.bom.client.Engine.VERSION < 9.0)) {
-	        	css.filter = 'alpha(opacity=0)';
-	            css.width = '200%';
-	            css.height = '100%';
-	        }
+		_createInputElement: function(widget) {
+			var data = this.__widgetsData[widget.toHashCode()];
+			qx.core.Assert.assertNull(data.inputElement);
+			var elem = data.inputElement = new com.zenesis.qx.upload.InputElement(widget, this.getMultiple());
+	        elem.addListenerOnce("change", qx.lang.Function.bind(this._onInputChange, this, elem));
 	
-	        control =  new qx.html.Element('input',css,{        
-	        	type : 'file',
-	        	name : 'myinput'
-	        }); 
-			if (this.getMultiple())
-				control.setAttribute("multiple", "multiple");
-	        control.addListener("change", this._onInputChange, this);
-	        this.__inputElement = control;
-	
-	        return control;
+	        return elem;
 		},
 		
 		/**
 		 * Resets the input element - ie discards the current one (which presumably has already
 		 * been queued for uploading) and creates a new one 
 		 */
-		_resetInputElement: function() {
-			var el = this.__inputElement,
-				widget = this.getWidget();
-			if (!el)
-				return;
-			el.removeListener("change", this._onInputChange, this);
-			widget.getContainerElement().remove(el);
-			widget.getContainerElement().addAt(this._createInputElement(), 0);
+		_resetInputElement: function(widget) {
+			var data = this.__widgetsData[widget.toHashCode()],
+				elem = data.inputElement,
+				container = widget.getContainerElement();
+			data.inputElement = null;
+			container.remove(elem);
+			container.addAt(this._createInputElement(widget), 0);
 		},
 		
 		/**
@@ -250,14 +210,13 @@ qx.Class.define("com.zenesis.qx.upload.UploadMgr", {
 		 * has selected a file to upload
 		 * @param evt
 		 */
-		_onInputChange: function(evt) {
-			var el = this.__inputElement;
-			this._resetInputElement();
+		_onInputChange: function(elem, evt) {
+			var widget = elem.getWidget();
 			
-			this.__uploadHandler.addFile(el.getDomElement());
+			this.__uploadHandler.addFile(elem.getDomElement());
 			if (this.getAutoUpload())
 				this.__uploadHandler.beginUploads();
-			this._resetInputElement();
+			this._resetInputElement(widget);
 		}
 	}
 });
