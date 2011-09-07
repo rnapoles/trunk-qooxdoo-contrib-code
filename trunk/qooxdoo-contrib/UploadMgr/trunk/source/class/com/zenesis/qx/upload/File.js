@@ -94,6 +94,16 @@ qx.Class.define("com.zenesis.qx.upload.File", {
 			init: "not-started",
 			event: "changeState",
 			apply: "_applyState"
+		},
+		
+		/**
+		 * The response string received from the server
+		 */
+		response: {
+			init: null,
+			nullable: true,
+			check: "String",
+			event: "changeResponse"
 		}
 	},
 	

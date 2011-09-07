@@ -25,7 +25,10 @@
      * John Spackman (john.spackman@zenesis.com)
 
 ************************************************************************/
-
+/*
+#ignore(File)
+#ignore(encodeUriComponent)
+ */
 /**
  * Implementation of AbstractHandler that uses XMLHttpRequest; this is based on work 
  * at http://valums.com/ajax-upload/.
@@ -72,7 +75,7 @@ qx.Class.define("com.zenesis.qx.upload.XhrHandler", {
 	        file.setUserData("com.zenesis.qx.upload.XhrHandler", xhr);
 	                                        
 	        xhr.upload.onprogress = function(e){
-	        	self.debug("onprogress: lengthComputable=" + e.lengthComputable + ", total=" + e.total + ", loaded=" + e.loaded);
+	        	//self.debug("onprogress: lengthComputable=" + e.lengthComputable + ", total=" + e.total + ", loaded=" + e.loaded);
 	            if (e.lengthComputable) {
 	            	file.setSize(e.total);
 	            	file.setProgress(e.loaded);
@@ -81,15 +84,8 @@ qx.Class.define("com.zenesis.qx.upload.XhrHandler", {
 
 	        xhr.onreadystatechange = function(){            
 	            if (xhr.readyState == 4) {
-	                var response = {};
-	                if (xhr.status == 200){
-		                self.debug("xhr server responseText = " + xhr.responseText);
-		                            
-		                try {
-		                    response = qx.lang.Json.parse(xhr.responseText);
-		                } catch(err){
-		                }
-	                }
+	                var response = xhr.responseText;
+	                //self.debug("xhr server status=" + xhr.status + ", responseText=" + response);
 	                file.setUserData("com.zenesis.qx.upload.XhrHandler", null);
 	                self._onCompleted(file, response);
 	            }                    
