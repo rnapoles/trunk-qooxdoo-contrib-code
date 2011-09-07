@@ -67,8 +67,8 @@ qx.Class.define("arraytest.Application", {
 			
 			arr.addListener("change", function(evt) {
 				var data = evt.getData();
-				this.debug(purpose + ": " + data.type + ", start=" + data.start + ", end=" + data.end + ", items=" + qx.util.Json.stringify(data.items));
-				this.debug(" ==> " + qx.util.Json.stringify(arr.toArray()));
+				this.debug(purpose + ": " + data.type + ", start=" + data.start + ", end=" + data.end + ", items=" + qx.lang.Json.stringify(data.items));
+				this.debug(" ==> " + qx.lang.Json.stringify(arr.toArray()));
 			}, this);
 			
 			// Doesn't fire event!

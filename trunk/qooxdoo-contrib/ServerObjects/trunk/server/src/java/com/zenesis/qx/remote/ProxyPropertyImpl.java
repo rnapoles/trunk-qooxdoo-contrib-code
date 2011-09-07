@@ -122,7 +122,10 @@ public class ProxyPropertyImpl extends AbstractProxyProperty {
 			// Fallback to a isXxxx() method
 			if (getMethod == null)
 				try {
-					getMethod = clazz.getMethod("is" + upname, NO_CLASSES);
+					if (upname.startsWith("Is"))
+						getMethod = clazz.getMethod(name, NO_CLASSES);
+					else
+						getMethod = clazz.getMethod("is" + upname, NO_CLASSES);
 					getMethod.setAccessible(true); // Disable access tests, MAJOR performance improvement
 				} catch(NoSuchMethodException e) {
 					throw new IllegalArgumentException("Cannot find any accessor for property " + name + " in class " + clazz);

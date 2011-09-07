@@ -266,6 +266,24 @@ public class ProxyTypeImpl extends AbstractProxyType {
 			}
 		}
 		
+		for (Method method : clazz.getDeclaredMethods()) {
+			String name = method.getName();
+			if (name.length() < 4 || !name.startsWith("get") || !Character.isUpperCase(name.charAt(3)))
+				continue;
+			Property anno = method.getAnnotation(Property.class);
+			if (anno == null)
+				continue;
+
+			name = Character.toLowerCase(name.charAt(3)) + name.substring(4);
+			if (properties.containsKey(name))
+				continue;
+			
+			ProxyProperty property = new ProxyPropertyImpl(clazz, anno.value().length() > 0 ? anno.value() : name, anno, annoProperties);
+			properties.put(property.getName(), property);
+			ProxyEvent event = property.getEvent();
+			if (event != null)
+				events.put(event.getName(), event);
+		}
 		
 		// Classes need to have all inherited properties added
 		if (!clazz.isInterface()) {

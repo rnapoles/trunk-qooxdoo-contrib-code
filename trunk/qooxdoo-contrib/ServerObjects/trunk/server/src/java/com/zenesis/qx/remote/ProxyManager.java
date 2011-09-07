@@ -179,7 +179,7 @@ public class ProxyManager implements EventListener {
 	}
 	
 	/**
-	 * Selects the tracker; must be called before and (de)serialisation 
+	 * Selects the tracker; must be called before (de)serialisation 
 	 * @param tracker
 	 * @throws IllegalArgumentException if there is already a tracker selected
 	 */
@@ -255,6 +255,8 @@ public class ProxyManager implements EventListener {
 			log.warn("Cannot find a property called " + propertyName);
 			return;
 		}
+		if (!tracker.doesClientHaveObject(keyObject))
+			return;
 		if (property.isOnDemand() && !tracker.doesClientHaveValue(keyObject, property))
 			return; //queue.queueCommand(CommandId.CommandType.EXPIRE, keyObject, propertyName, null);
 		else
@@ -275,6 +277,8 @@ public class ProxyManager implements EventListener {
 	public static void expireProperty(Proxied keyObject, String propertyName) {
 		ProxySessionTracker tracker = getTracker();
 		if (tracker == null)
+			return;
+		if (!tracker.doesClientHaveObject(keyObject))
 			return;
 		CommandQueue queue = tracker.getQueue();
 		/* can't do this because we don't want to stop server events firing

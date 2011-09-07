@@ -904,7 +904,7 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 				return;
 	      	
 			// Set the data
-	      	var text = qx.util.Json.stringify(obj);
+	      	var text = qx.lang.Json.stringify(obj);
 	      	var req = new qx.io.remote.Request(this.getProxyUrl(), "POST", "text/plain");
 	      	req.setAsynchronous(!!async);
 	      	req.setData(text);

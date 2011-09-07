@@ -470,6 +470,18 @@ public class ProxySessionTracker {
 	}
 	
 	/**
+	 * Detects whether the client has a value for the given property of an object; this
+	 * returns true if the object has been sent and either the property is not ondemand
+	 * or the ondemand value has already been requested and sent.
+	 * @param proxied
+	 * @param prop
+	 * @return
+	 */
+	public boolean doesClientHaveObject(Proxied proxied) {
+		return objectIds.containsKey(proxied);
+	}
+	
+	/**
 	 * Called to create a new instance of Queue; @see <code>getQueue</code>
 	 * @return
 	 */

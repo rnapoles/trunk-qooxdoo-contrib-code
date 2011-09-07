@@ -42,7 +42,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import javax.servlet.ServletException;
 import org.apache.log4j.Logger;
-import org.apache.log4j.helpers.ThreadLocalMap;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonToken;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -305,17 +304,17 @@ public class RequestHandler {
 						Method method = methods[i].getMethod();
 						
 						// Call the method
-						Object[] values;
+						Object[] values = null;
 						try {
 							values = readParameters(jp, method.getParameterTypes());
 							Object result = method.invoke(serverObject, values);
 							tracker.getQueue().queueCommand(CommandId.CommandType.FUNCTION_RETURN, serverObject, null, result);
 						}catch(InvocationTargetException e) {
 							Throwable t = e.getCause();
-							log.error("Exception while invoking " + method + " on " + serverObject + ": " + t.getMessage(), t);
+							log.error("Exception while invoking " + method + "(" + values + ") on " + serverObject + ": " + t.getMessage(), t);
 							throw new ProxyException(serverObject, "Exception while invoking " + method + " on " + serverObject + ": " + t.getMessage(), t);
 						}catch(RuntimeException e) {
-							log.error("Exception while invoking " + method + " on " + serverObject + ": " + e.getMessage(), e);
+							log.error("Exception while invoking " + method + "(" + values + ") on " + serverObject + ": " + e.getMessage(), e);
 							throw new ProxyException(serverObject, "Exception while invoking " + method + " on " + serverObject + ": " + e.getMessage(), e);
 						}catch(IllegalAccessException e) {
 							throw new ServletException("Exception while running " + method + ": " + e.getMessage(), e);

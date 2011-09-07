@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 
+import org.apache.log4j.Logger;
+
 import com.zenesis.qx.remote.Proxied;
 import com.zenesis.qx.remote.ProxyManager;
 import com.zenesis.qx.remote.annotations.DoNotProxy;
@@ -32,6 +34,8 @@ import com.zenesis.qx.remote.annotations.Property;
 	@Property("thumbnailUrl")
 })
 public class AppFile implements Proxied {
+	
+	private static final Logger log = Logger.getLogger(AppFile.class); 
 
 	private File file;
 	private AppFile parent;
@@ -404,6 +408,24 @@ public class AppFile implements Proxied {
 	 * @return
 	 */
 	public AppFile getChild(String name) {
+		File file = new File(this.file, name);
+		if (!isAncestorOf(file))
+			throw new IllegalArgumentException("Cannot find file " + file.getAbsolutePath() + " because it is not in a sub fodler");
+		if (!file.exists())
+			return null;
+		String[] segs = name.split("/");
+		AppFile curAppFile = this;
+		for (String seg : segs)
+			curAppFile = curAppFile.getChildImpl(seg);
+		return curAppFile;
+	}
+	
+	/**
+	 * Finds a child, and integrates it with this
+	 * @param name
+	 * @return
+	 */
+	protected AppFile getChildImpl(String name) {
 		if (name.indexOf('/') > -1 || name.indexOf('\\') > -1)
 			throw new IllegalArgumentException("Cannot get child called '" + name + "', paths are not supported");
 		if (children == null) {
@@ -423,6 +445,31 @@ public class AppFile implements Proxied {
 			children.add(child);
 			return child;
 		}
+	}
+	
+	/**
+	 * Tests whether this is a ancestor (parent, grand parent, etc) of the given file
+	 * @param file
+	 * @return
+	 */
+	protected boolean isAncestorOf(File file) {
+		String tpath;
+		String fpath;
+		try {
+			tpath = this.file.getCanonicalFile().getAbsolutePath();
+		}catch(IOException e) {
+			log.error("Error getting canoninical path for this=" + this.file.getAbsolutePath() + ": " + e.getMessage());
+			return false;
+		}
+		try {
+			fpath = file.getCanonicalFile().getAbsolutePath();
+		}catch(IOException e) {
+			log.error("Error getting canoninical path for file=" + file.getAbsolutePath() + ": " + e.getMessage());
+			return false;
+		}
+		if (!fpath.startsWith(fpath))
+			return false;
+		return fpath.length() == tpath.length() || fpath.charAt(tpath.length()) == File.separatorChar;
 	}
 	
 	/**
