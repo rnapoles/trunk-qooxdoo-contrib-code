@@ -43,7 +43,7 @@ import java.lang.annotation.Target;
  * @author John Spackman [john.spackman@zenesis.com]
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.ANNOTATION_TYPE, ElementType.FIELD})
+@Target({ElementType.ANNOTATION_TYPE, ElementType.FIELD, ElementType.METHOD })
 public @interface Property {
 	
 	/**

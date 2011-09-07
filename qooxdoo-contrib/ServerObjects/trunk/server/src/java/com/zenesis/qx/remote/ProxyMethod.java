@@ -83,7 +83,7 @@ public class ProxyMethod implements JsonSerializable {
 		if (returnType.isArray() || Iterable.class.isAssignableFrom(returnType)) {
 			// How to present on the client - only ArrayList by default is wrapped on the client
 			Remote.Array array;
-			if (returnType.isArray() || !ArrayList.class.isAssignableFrom(returnType)) {
+			if (returnType.isArray()) {
 				returnType = returnType.getComponentType();
 				array = Remote.Array.NATIVE;
 			} else {

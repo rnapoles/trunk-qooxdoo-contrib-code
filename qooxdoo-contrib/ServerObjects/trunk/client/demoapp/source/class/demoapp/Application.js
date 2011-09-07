@@ -22,7 +22,9 @@
 
 /* ************************************************************************
 
- #asset(demoapp/*)
+#asset(demoapp/*)
+#ignore(com.zenesis.qx.remote.test.simple.Pippo)
+#ignore(com.zenesis.qx.remote.test.properties.TestProperties)
 
  ************************************************************************ */
 
