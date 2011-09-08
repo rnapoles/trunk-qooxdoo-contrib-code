@@ -13,7 +13,8 @@ var baseConf = {
   'ignore' : 'showcase:Browser,widget:Iframe,test:Serialize,bom:Iframe,progressive:*',
   'sampleGlobalErrorLogging' : false,
   'shutdownSample' : false,
-  'reloadBrowser' : false
+  'reloadBrowser' : false,
+  'demoLoadTimeout' : 30000
 };
 
 var args = arguments ? arguments : "";
@@ -120,7 +121,8 @@ var getDemosByCategory = function(category)
 
 simulation.Simulation.prototype.waitForDemoApp = function()
 {
-  this.__sel.waitForCondition(mySim.checkDemoReady, 30000);
+  var timeout = this.getConfigSetting("demoLoadTimeout")
+  this.__sel.waitForCondition(mySim.checkDemoReady, timeout);
 };
 
 /*
