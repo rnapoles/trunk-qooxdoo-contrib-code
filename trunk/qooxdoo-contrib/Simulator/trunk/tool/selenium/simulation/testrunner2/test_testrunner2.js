@@ -205,7 +205,7 @@ simulation.Simulation.prototype.logAutErrors = function()
     autErrors = String(this.__sel.getEval(selWin + ".qx.Simulation.getAutErrors()"));
   }
   catch(ex) {
-    this.log("Couldn't get AUT errors " + ex.message, "error");
+    this.log("Couldn't get AUT errors " + ex.message, "warn");
     return;
   }
   
