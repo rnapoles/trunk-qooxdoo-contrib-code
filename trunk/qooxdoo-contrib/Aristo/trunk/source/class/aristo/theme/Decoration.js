@@ -562,7 +562,8 @@ qx.Theme.define("aristo.theme.Decoration",
       {
         /*backgroundImage  : "aristo/decoration/menu/background.png",
         backgroundRepeat : "scale",*/
-    	  backgroundColor: "background-menu"
+    	  backgroundColor: "background-menu", 
+    	  width: 1 /* width:1 is required or the popup will overlap the mouse and be immediately closed (as of Qx1.5)*/ 
 
         /*width : 1,
         color : "border-main",
