@@ -1,7 +1,7 @@
 /* ************************************************************************
 
    Copyright:
-     2009 Gregory Hellings, http://greg.thehellings.com
+     2011 Gregory Hellings, http://greg.thehellings.com
      
    License:
      LGPL: http://www.gnu.org/licenses/lgpl.html
