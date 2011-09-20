@@ -1,0 +1,34 @@
+{
+  "info" : 
+  {
+    "name" : "MutableList",
+
+    "summary" : "MutableList Contribution",
+    "description" : "List that can be augmented and edited.",
+    
+    "homepage" : "http://contrib.qooxdoo.org/project/MutableList",
+
+    "license" : "LGPL/EPL",
+    "authors" : 
+    [
+      {
+        "name" : "Gregory Hellings",
+        "email" : "greg.hellings@gmail.com"
+      }
+    ],
+
+    "version" : "trunk",
+    "qooxdoo-versions": ["1.5"]
+  },
+  
+  "provides" : 
+  {
+    "namespace"   : "mutablelist",
+    "encoding"    : "utf-8",
+    "class"       : "source/class",
+    "resource"    : "source/resource",
+    "translation" : "source/translation",
+    "type"        : "contribution"
+  }
+}
+
