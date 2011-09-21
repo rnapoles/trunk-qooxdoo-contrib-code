@@ -26,6 +26,14 @@ qooxdoo/ folder for info about how to set up symbolic links to the individual
 framework versions.
 
 
+= Select Demos =
+
+File config.demo.js allows you to configure what demos, i.e. demos for what
+contributions, should be built for the contrib demobrowser. Particularly when 
+developing and validating a single contribution of yours, you'd want to just 
+include that specific contribution to reduce build time of the demobrowser. 
+
+
 = Usage =
 
 In the contribDemobrowser/ folder execute the typical commands to build the
