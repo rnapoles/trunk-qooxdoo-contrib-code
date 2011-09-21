@@ -3,7 +3,7 @@
   {
     "name" : "QxExtJsCharts",
 
-    "summary" : "ExtJS Charts Integration for Qooxdoo",
+    "summary" : "ExtJS Charts Integration for qooxdoo",
     "description" : "Create ExtJS 4 charts in your qooxdoo application.",
     
     "homepage" : "http://contrib.qooxdoo.org/project/QxExtJsCharts",
