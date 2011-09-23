@@ -42,34 +42,30 @@ qx.Class.define("mutablelist.demo.Application",
       // Call super class
       this.base(arguments);
 
-      // Enable logging in debug variant
-      if (qx.core.Environment.get("qx.debug"))
-      {
-        // support native logging capabilities, e.g. Firebug for Firefox
-        qx.log.appender.Native;
-        // support additional cross-browser console. Press F7 to toggle visibility
-        qx.log.appender.Console;
-      }
-
       /*
       -------------------------------------------------------------------------
         Below is your actual application code...
       -------------------------------------------------------------------------
       */
 
-      // Create a button
-      var button1 = new mutablelist.Contribution("First Contribution", "mutablelist/test.png");
+      // Create a list, give it the label and name for the list header
+      var list = new mutablelist.MutableList("List of Items", "Column Header");
+      // Set default values
+      list.setData(['Pick up dry cleaning', 'Buy groceries', 'Drop Timmy off at little league practice']);
 
       // Document is the application root
       var doc = this.getRoot();
 			
-      // Add button to document at fixed coordinates
-      doc.add(button1, {left: 100, top: 50});
+      // Add list to document at fixed coordinates
+      doc.add(list, {left: 100, top: 50});
 
+      var button1 = new qx.ui.form.Button("Save");
       // Add an event listener
       button1.addListener("execute", function(e) {
-        alert("Hello World!");
+        var vals = list.getData().toArray();
+        alert(vals.join('\n'));
       });
+      doc.add(button1, {left: 10, top: 50});
     }
   }
 });
