@@ -182,10 +182,19 @@ simulation.Simulation.prototype.sampleRunner = function(script)
     // run the sample
     this.runScript(scriptCode, "Running sample");
     
+    var demoLoaded = false;
     try {
       this.waitForDemoApp();
+      demoLoaded = true;
     } catch(ex) {
       this.log("Error while waiting for demo " + nextSampleCategory + " - " + nextSampleLabel + " to load: " + ex, "error");
+    }
+    
+    var currentSample = "Unknown demo";
+    var category = "Unknown category";
+    
+    if (!demoLoaded) {
+      return [category,currentSample];
     }
     
     if (this.getConfigSetting("sampleGlobalErrorLogging")) {
@@ -195,9 +204,6 @@ simulation.Simulation.prototype.sampleRunner = function(script)
         this.log("Could not add global error handler to demo " + nextSampleCategory + ":" + nextSampleLabel);
       }
     }
-    
-    var currentSample = "Unknown demo";
-    var category = "Unknown category";
     
     try {
       var sampleTemp = this.getEval(getSampleLabel, "Getting current sample label");
