@@ -27,7 +27,6 @@
 ************************************************************************/
 /*
 #ignore(File)
-#ignore(encodeUriComponent)
  */
 /**
  * Implementation of AbstractHandler that uses XMLHttpRequest; this is based on work 
@@ -105,7 +104,7 @@ qx.Class.define("com.zenesis.qx.upload.XhrHandler", {
 	        		action += "&";
 	        	else
 	        		addAmpersand = true;
-	        	action += name + "=" + encodeUriComponent(params[name]);
+	        	action += name + "=" + encodeURIComponent(params[name]);
 	        }
 	        xhr.open("POST", action, true);
 	        xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");

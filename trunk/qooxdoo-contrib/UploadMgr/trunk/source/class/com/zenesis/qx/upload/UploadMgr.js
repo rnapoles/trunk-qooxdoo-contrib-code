@@ -217,6 +217,14 @@ qx.Class.define("com.zenesis.qx.upload.UploadMgr", {
 			if (this.getAutoUpload())
 				this.__uploadHandler.beginUploads();
 			this._resetInputElement(widget);
+		},
+		
+		/**
+		 * Returns the upload handler
+		 * @returns
+		 */
+		getUploadHandler: function() {
+			return this.__uploadHandler;
 		}
 	}
 });

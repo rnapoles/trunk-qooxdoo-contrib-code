@@ -77,6 +77,7 @@ qx.Class.define("uploadmgr.demo.Application", {
       		// for the form's action attribute)
       		//
       		var uploader = new com.zenesis.qx.upload.UploadMgr(btn, "http://www.zenesis.com/demoupload");
+      		uploader.getUploadHandler().addParam("myParam", "test");
       		uploader.addListener("addFile", function(evt) {
       			var file = evt.getData(),
       				item = new qx.ui.form.ListItem(file.getFilename() + " (queued for upload)", null, file);
