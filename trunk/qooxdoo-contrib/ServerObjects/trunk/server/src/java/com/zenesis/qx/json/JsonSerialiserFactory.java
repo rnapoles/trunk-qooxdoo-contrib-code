@@ -34,10 +34,13 @@ import java.util.Iterator;
 
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonProcessingException;
+import org.codehaus.jackson.map.BeanProperty;
+import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.JsonSerializer;
 import org.codehaus.jackson.map.SerializationConfig;
 import org.codehaus.jackson.map.SerializerProvider;
 import org.codehaus.jackson.map.ser.BeanSerializerFactory;
+import org.codehaus.jackson.type.JavaType;
 
 public class JsonSerialiserFactory extends BeanSerializerFactory {
 	
@@ -45,7 +48,7 @@ public class JsonSerialiserFactory extends BeanSerializerFactory {
 	
 	public static final JsonSerialiserFactory INSTANCE = new JsonSerialiserFactory();
 	
-	private static final JsonSerializer<Date> SER_DATE = new JsonSerializer<Date>() {
+	private static final JsonSerializer SER_DATE = new JsonSerializer<Date>() {
 
 		/* (non-Javadoc)
 		 * @see org.codehaus.jackson.map.JsonSerializer#serialize(java.lang.Object, org.codehaus.jackson.JsonGenerator, org.codehaus.jackson.map.SerializerProvider)
@@ -59,7 +62,7 @@ public class JsonSerialiserFactory extends BeanSerializerFactory {
 		}
 	};
 	
-	private static final JsonSerializer<Enum> SER_ENUM = new JsonSerializer<Enum>() {
+	private static final JsonSerializer SER_ENUM = new JsonSerializer<Enum>() {
 
 		/* (non-Javadoc)
 		 * @see org.codehaus.jackson.map.JsonSerializer#serialize(java.lang.Object, org.codehaus.jackson.JsonGenerator, org.codehaus.jackson.map.SerializerProvider)
@@ -74,7 +77,7 @@ public class JsonSerialiserFactory extends BeanSerializerFactory {
 	};
 
 	private static final ThreadLocal<Integer> s_recursion = new ThreadLocal<Integer>();
-	private static final JsonSerializer<Iterable> SER_ITERABLE = new JsonSerializer<Iterable>() {
+	private static final JsonSerializer SER_ITERABLE = new JsonSerializer<Iterable>() {
 
 		/* (non-Javadoc)
 		 * @see org.codehaus.jackson.map.JsonSerializer#serialize(java.lang.Object, org.codehaus.jackson.JsonGenerator, org.codehaus.jackson.map.SerializerProvider)
@@ -94,8 +97,6 @@ public class JsonSerialiserFactory extends BeanSerializerFactory {
 							s_recursion.set(1);
 						else {
 							s_recursion.set(rec + 1);
-							if (rec > 200)
-								rec = rec;
 						}
 						jgen.writeObject(obj);
 					}
@@ -104,7 +105,7 @@ public class JsonSerialiserFactory extends BeanSerializerFactory {
 		}
 	};
 
-	private static final JsonSerializer<Iterator> SER_ITERATOR = new JsonSerializer<Iterator>() {
+	private static final JsonSerializer SER_ITERATOR = new JsonSerializer<Iterator>() {
 
 		/* (non-Javadoc)
 		 * @see org.codehaus.jackson.map.JsonSerializer#serialize(java.lang.Object, org.codehaus.jackson.JsonGenerator, org.codehaus.jackson.map.SerializerProvider)
@@ -128,20 +129,24 @@ public class JsonSerialiserFactory extends BeanSerializerFactory {
 	};
 
 	/* (non-Javadoc)
-	 * @see org.codehaus.jackson.map.ser.BasicSerializerFactory#createSerializer(java.lang.Class, org.codehaus.jackson.map.SerializationConfig)
+	 * @see org.codehaus.jackson.map.ser.BeanSerializerFactory#createSerializer(org.codehaus.jackson.map.SerializationConfig, org.codehaus.jackson.type.JavaType, org.codehaus.jackson.map.BeanProperty)
 	 */
 	@Override
-	public <T> JsonSerializer<T> createSerializer(Class<T> type, SerializationConfig config) {
-		if (Date.class.isAssignableFrom(type))
-			return (JsonSerializer<T>)SER_DATE;
-		if (Enum.class.isAssignableFrom(type))
-			return (JsonSerializer<T>)SER_ENUM;
-		if (Iterator.class.isAssignableFrom(type))
-			return (JsonSerializer<T>)SER_ITERATOR;
-		if (Iterable.class.isAssignableFrom(type))
-			return (JsonSerializer<T>)SER_ITERABLE;
+	public JsonSerializer<Object> createSerializer(SerializationConfig config, JavaType origType, BeanProperty property)
+			throws JsonMappingException {
 		
-		return super.createSerializer(type, config);
+		if (Date.class.isAssignableFrom(origType.getRawClass()))
+			return SER_DATE;
+		if (origType.isEnumType())
+			return SER_ENUM;
+		/*
+		if (Iterator.class.isAssignableFrom(origType.getRawClass()))
+			return SER_ITERATOR;
+		if (Iterable.class.isAssignableFrom(origType.getRawClass()))
+			return SER_ITERABLE;
+		*/
+
+		return super.createSerializer(config, origType, property);
 	}
 
 	private static String enumToCamelCase(Enum e) {

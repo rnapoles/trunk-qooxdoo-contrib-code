@@ -57,6 +57,7 @@ public class ProxyObjectMapper extends ObjectMapper {
 		
 		//setQuoteFieldNames(false);
 		setIndent(indent);
+		configure(SerializationConfig.Feature.WRITE_DATES_AS_TIMESTAMPS, false);
 	}
 
 	/**

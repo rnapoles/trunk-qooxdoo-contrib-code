@@ -27,6 +27,9 @@
  */
 package com.zenesis.qx.remote.test.simple;
 
+import java.util.Calendar;
+import java.util.Date;
+
 import com.zenesis.qx.remote.annotations.Method;
 import com.zenesis.qx.remote.test.properties.ITestArrays;
 import com.zenesis.qx.remote.test.properties.ITestExceptions;
@@ -133,4 +136,18 @@ public class TestBootstrap implements ITestBootstrap {
 		return millis;
 	}
 	
+	@Method
+	public Date getTodaysDate() {
+		return new Date();
+	}
+	
+	@Method
+	public boolean isYesterday(Date dt) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(new Date());
+		cal.add(Calendar.DATE, -1);
+		return dt.getYear() + 1900 == cal.get(Calendar.YEAR) &&
+				dt.getMonth() == cal.get(Calendar.MONTH) &&
+				dt.getDate() == cal.get(Calendar.DAY_OF_MONTH);
+	}
 }

@@ -13,6 +13,11 @@ import com.zenesis.qx.remote.collections.ArrayChanges.Type;
  */
 public class ArrayList<T> extends java.util.ArrayList<T> {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	/* (non-Javadoc)
 	 * @see java.util.ArrayList#add(int, java.lang.Object)
 	 */

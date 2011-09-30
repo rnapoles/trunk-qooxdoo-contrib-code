@@ -36,6 +36,10 @@ import javax.servlet.ServletException;
  */
 public class ProxyException extends ServletException {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final Proxied serverObject;
 
 	/**

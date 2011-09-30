@@ -41,7 +41,7 @@ public class TestExceptions implements ITestExceptions {
 
 	@Override
 	public void throwException() throws DummyException {
-		throw new DummyException("Something went wrong");
+		throw new DummyException("Something went (deliberately) wrong");
 	}
 
 }
