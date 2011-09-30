@@ -5,7 +5,7 @@ if (!window.qx) window.qx = {};
 qx.$$start = new Date();
   
 if (!qx.$$environment) qx.$$environment = {};
-var envinfo = {"qx.application":"demoapp.Application","qx.revision":"21333:21339M","qx.theme":"demoapp.theme.Theme","qx.version":"1.5"};
+var envinfo = {"qx.application":"demoapp.Application","qx.revision":"21333:21433M","qx.theme":"demoapp.theme.Theme","qx.version":"1.5"};
 for (var k in envinfo) qx.$$environment[k] = envinfo[k];
 
 if (!qx.$$libraries) qx.$$libraries = {};
@@ -19,7 +19,7 @@ qx.$$packageData = {};
 
 qx.$$loader = {
   parts : {"boot":[0]},
-  packages : {"0":{"uris":["__out__:demoapp.801ce9c5a095.js","demoapp:demoapp/Application.js","__out__:demoapp.501c60856d23.js","demoapp:demoapp/theme/Appearance.js","__out__:demoapp.2362eb932f0c.js","demoapp:demoapp/theme/Color.js","__out__:demoapp.38c4a3d0a696.js","demoapp:demoapp/theme/Font.js","__out__:demoapp.cdcc6bf539ca.js","demoapp:demoapp/theme/Decoration.js","demoapp:demoapp/theme/Theme.js"]}},
+  packages : {"0":{"uris":["__out__:demoapp.801ce9c5a095.js","demoapp:demoapp/Application.js","__out__:demoapp.39df8347a044.js","com.zenesis.qx.remote:com/zenesis/qx/remote/ProxyManager.js","com.zenesis.qx.remote:com/zenesis/qx/remote/Proxy.js","__out__:demoapp.0e1c70c11bd7.js","demoapp:demoapp/theme/Appearance.js","__out__:demoapp.2362eb932f0c.js","demoapp:demoapp/theme/Color.js","__out__:demoapp.38c4a3d0a696.js","demoapp:demoapp/theme/Font.js","__out__:demoapp.cdcc6bf539ca.js","demoapp:demoapp/theme/Decoration.js","demoapp:demoapp/theme/Theme.js"]}},
   urisBefore : [],
   cssBefore : [],
   boot : "boot",

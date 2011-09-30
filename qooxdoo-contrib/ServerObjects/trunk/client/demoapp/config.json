@@ -62,6 +62,14 @@
       ]
     },
     
+    "source-hybrid": {
+    	"compile-options": {
+    		"code": {
+    			"=except": [ "com.zenesis.*", "demoapp.*" ]
+    		}
+    	}
+    },
+    
     "source-script": {
 	    "compile-options" : {
 		  "uris" : {

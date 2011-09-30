@@ -70,6 +70,10 @@ qx.Class.define("demoapp.Application", {
 			
 			var boot = manager.getBootstrapObject();
 			
+			var dt = boot.getTodaysDate();
+			dt.setDate(dt.getDate() - 1);
+			qx.core.Assert.assertTrue(boot.isYesterday(dt), "Dates are not passed correctly");
+			
 			var pippo1 = new com.zenesis.qx.remote.test.simple.Pippo();
 			var result = pippo1.getExampleCode();
 			for (var i = 0; i < result.getLength(); i++) {

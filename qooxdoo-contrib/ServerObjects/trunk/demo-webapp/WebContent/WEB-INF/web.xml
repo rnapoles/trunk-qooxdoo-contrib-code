@@ -48,7 +48,7 @@
 		</init-param>
 		<init-param>
 			<param-name>rewrite-1</param-name>
-			<param-value>/qooxdoo=/Users/john/os/qooxdoo-1.4.1-sdk</param-value>
+			<param-value>/qooxdoo=/Users/john/os/qooxdoo-1.5-sdk</param-value>
 		</init-param>
 		<init-param>
 			<param-name>rewrite-2</param-name>
