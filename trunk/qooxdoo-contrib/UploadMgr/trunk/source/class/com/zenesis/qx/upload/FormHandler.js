@@ -169,6 +169,7 @@ qx.Class.define("com.zenesis.qx.upload.FormHandler", {
 		    for (var name in params) {
 		    	var el = qx.bom.Element.create('input', {
 		    		type: "hidden",
+		    		name: name,
 		    		value: params[name]
 		    	});
 		    	form.appendChild(el);
