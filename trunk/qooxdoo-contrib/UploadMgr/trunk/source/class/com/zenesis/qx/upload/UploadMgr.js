@@ -104,12 +104,22 @@ qx.Class.define("com.zenesis.qx.upload.UploadMgr", {
 			nullable: false,
 			event: "changeMultiple",
 			apply: "_applyMultiple"
+		},
+		
+		/**
+		 * Prefix to apply to the name of input fields
+		 */
+		inputNamePrefix: {
+			check: "String",
+			init: "uploadMgrInput",
+			nullable: false,
+			event: "changeInputNamePrefix"
 		}
 	},
 	
 	members: {
 		__widgetsData: null,
-		__inputElement: null,
+		__inputSerial: 0,
 		__uploadHandler: null,
 		
 		/**
@@ -184,9 +194,10 @@ qx.Class.define("com.zenesis.qx.upload.UploadMgr", {
 		 * @returns
 		 */
 		_createInputElement: function(widget) {
-			var data = this.__widgetsData[widget.toHashCode()];
+			var data = this.__widgetsData[widget.toHashCode()],
+				name = this.getInputNamePrefix() + '-' + (++this.__inputSerial);
 			qx.core.Assert.assertNull(data.inputElement);
-			var elem = data.inputElement = new com.zenesis.qx.upload.InputElement(widget, this.getMultiple());
+			var elem = data.inputElement = new com.zenesis.qx.upload.InputElement(widget, this.getMultiple(), name);
 	        elem.addListenerOnce("change", qx.lang.Function.bind(this._onInputChange, this, elem));
 	
 	        return elem;

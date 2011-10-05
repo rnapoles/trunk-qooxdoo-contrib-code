@@ -1,7 +1,7 @@
 qx.Class.define("com.zenesis.qx.upload.InputElement", {
 	extend: qx.html.Element,
 	
-	construct: function(widget, multiple) {
+	construct: function(widget, multiple, name) {
         // styling the input[type=file]
         // element is a bit tricky. Some browsers just ignore the normal
         // css style input. Firefox is especially tricky in this regard.
@@ -36,7 +36,7 @@ qx.Class.define("com.zenesis.qx.upload.InputElement", {
         
 		this.base(arguments, 'input', css, {
     			type : 'file',
-		      	name : 'myinput'
+		      	name : name
 	        });
 		this.__widget = widget;
 		this.setMultiple(!!multiple);
