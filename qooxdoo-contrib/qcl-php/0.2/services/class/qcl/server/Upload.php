@@ -76,7 +76,7 @@ class qcl_server_Upload
     if ( ! is_writable( QCL_UPLOAD_PATH ) )
     {
       $this->logError( sprintf(
-        "Upload path '%s' is not writeable."
+        "Upload path '%s' is not writeable.", QCL_UPLOAD_PATH
       ) );
       $this->abort("Upload path is not writable");
     }
@@ -84,13 +84,13 @@ class qcl_server_Upload
     /*
      * authentication
      */
-    if ( ! isset( $_REQUEST['sessionId'] ) )
+    if ( ! isset( $_REQUEST['sessionId'] ) and ! isset( $_REQUEST['QCLSESSID'] )  )
     {
-      $this->abort("Missing paramenter 'sessionId'");
+      $this->abort("Missing session id");
     }
     $application = $this->getApplication();
     $accessController = $application->getAccessController();
-    $sessionId = $_REQUEST['sessionId'];
+    $sessionId = either($_REQUEST['sessionId'], $_REQUEST['QCLSESSID']);
     
     try
     {
@@ -142,10 +142,25 @@ class qcl_server_Upload
     ) );
 
     /*
-     * handle all received files
+     * handle all received fields
      */
-    foreach ( $_FILES as $fieldName => $file )
+    $files = $_FILES;
+    foreach ( $files as $fieldName => $file )
     {
+      /*
+       * convert string fields into array
+       */
+      if ( ! is_array( $file['name']) )
+      {
+        foreach( $file as $key => $value )
+        {
+          $file[$key] = array( $value );
+        }
+      }
+      
+      /*
+       * handle all received files
+       */
        for( $i=0; $i<count( $file['name'] ); $i++ )
        {
          
@@ -306,10 +321,9 @@ class qcl_server_Upload
     $input = parent::getInput();
     $input->params[] = $this->filePaths;
     $input->params[] = $this->fileNames;
+    $input->params[] = $this->error;
     return $input;
   }
-  
-  
 
   /**
    * Echo a HTML reply, ignored if jsonrpc request
@@ -333,15 +347,14 @@ class qcl_server_Upload
   {
     if( $this->rpcRequest )
     {
-      $error = new JsonRpcError($msg);
-      $error->sendAndExit();
-      exit;
+      $this->error = $msg;
+      parent::start();
     }
     else
     {
       echo "<span qcl_error='true'>$msg</span>";
+      exit;
     }
-    
   }
 
   /**
@@ -351,9 +364,16 @@ class qcl_server_Upload
    */
   public function abort ( $msg )
   {
-    $this->logError( $msg );
-    $this->echoWarning( $msg );
-    exit;
+    if( $this->rpcRequest )
+    {
+      $this->error = $msg;
+      parent::start();
+    }
+    else
+    {
+      echo "<span qcl_error='true'>$msg</span>";
+      exit;
+    }
   } 
 
 }
