@@ -54,9 +54,6 @@ END;
  * qcl and application classes
  */
 
-qcl_server_Server::run( array(
-  QCL_CLASS_PATH,
-  APPLICATION_CLASS_PATH
-), $testData );
+qcl_server_Server::run(null, $testData );
 
 ?>

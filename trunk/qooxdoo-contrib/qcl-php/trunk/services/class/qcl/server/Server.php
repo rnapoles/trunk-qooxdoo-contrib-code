@@ -16,7 +16,14 @@
  *  * Christian Boulanger (cboulanger)
  */
 
-require_once "qcl/bootstrap.php";
+/*
+ * bootstrap the library
+ */
+require_once dirname( dirname(__FILE__) ) . "/bootstrap.php";
+
+/*
+ * import all dependencies
+ */
 qcl_import("qcl_core_Object");
 
 /**
@@ -56,14 +63,21 @@ class qcl_server_Server
 
   /**
    * Start a server that handles the request type (JSONRPC, POST, ...).
-   * @param array $servicePaths An array of paths to the services used
-   * by the server
+   * @param array $additionalServicePaths An array of paths to the services used
+   * by the server in addition to the qcl and application classes
    * @param string|null $testData If provided, use the string data as the input
    *  request for test purposes
    * @return void
    */
-  public function start( $servicePaths=array(), $testData = null )
+  public function start( $additionalServicePaths = null, $testData = null )
   {
+    if( is_array($additionalServicePaths) and count( $additionalServicePaths ) )
+    {
+      $servicePaths = array_merge(
+        array( QCL_CLASS_PATH, APPLICATION_CLASS_PATH ), $additionalServicePaths
+      );
+    }
+    
     /*
      * if this is a file upload, call upload method and exit
      */
@@ -83,7 +97,7 @@ class qcl_server_Server
     }
 
     /*
-     * if POST request, use post request server extension
+     * if GET request, use post request server extension
      */
     elseif ( isset( $_REQUEST['service'] )  )
     {
@@ -101,7 +115,7 @@ class qcl_server_Server
     }
 
     /*
-     * in all cases, use qcl jsonrpc server extension
+     * in all other cases, use qcl jsonrpc server extension
      */
     else
     {
