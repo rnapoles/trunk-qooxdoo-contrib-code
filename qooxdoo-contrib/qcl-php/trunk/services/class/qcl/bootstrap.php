@@ -91,6 +91,20 @@ if ( ! defined( "QCL_DEBUG" ) )
 }
 
 /*
+ * set include paths
+ */
+ini_set('include_path', implode(
+  PATH_SEPARATOR,
+  array(
+    RPCPHP_SERVER_PATH,
+    QCL_CLASS_PATH,
+    APPLICATION_CLASS_PATH,
+    ini_get("include_path")
+  )
+) );
+
+
+/*
  * load core functions
  */
 require_once "qcl/core/functions.php";

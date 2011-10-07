@@ -65,16 +65,23 @@ define( "QCL_LOG_FILE", "log/test.log" );
  */
 //define( "QCL_LOG_MAX_FILESIZE" , 1024 * 500 );
 
-/*
- * don't touch anything beyong this point
+/**
+ * Global settings for the JSON-RPC server
  */
-ini_set('include_path', implode(
-  PATH_SEPARATOR,
-  array(
-    RPCPHP_SERVER_PATH,
-    QCL_CLASS_PATH,
-    APPLICATION_CLASS_PATH,
-    ini_get("include_path")
-  )
-) );
+
+/*
+ *  accessibility needed for test.php - change to "domain" before production use
+ */
+define( "defaultAccessibility", "public" );
+
+/*
+ * whether the server should log the request
+ * You need this only for debugging
+ */
+define("JsonRpcDebug", false );
+
+/*
+ * which file the server should log to
+ */
+define( "JsonRpcDebugFile", "log/server.log" );
 ?>
