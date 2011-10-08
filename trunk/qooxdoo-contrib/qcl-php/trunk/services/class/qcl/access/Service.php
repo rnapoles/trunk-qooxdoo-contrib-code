@@ -187,20 +187,24 @@ class qcl_access_Service
     $accessController->registerSession();
     
     /*
-     * inform subscribers
-     */
-    $activeUser= $this->getActiveUser();
-    if( ! $activeUser->isAnonymous() )
-    {
-      $this->broadcastClientMessage("qcl/access/login", array(
-        "fullname"	 => $activeUser->getName()
-      ), true );
-    }
-    
-    /*
      * set online status
      */
-    $activeUser->set("online", true)->save();
+    $activeUser= $this->getActiveUser();
+    if( ! $activeUser->get("online") )
+    {
+      $activeUser->set("online", true)->save();  
+      /*
+       * inform subscribers
+       */
+      if( ! $activeUser->isAnonymous() )
+      {
+        $this->broadcastClientMessage("qcl/access/login", array(
+          "name"	=> $activeUser->getName(),
+          "id"		=> $activeUser->id()
+        ), true );
+      }      
+    }
+    
     
     /*
      * Save the IP of the user in the session to allow to check for 
@@ -533,21 +537,23 @@ class qcl_access_Service
       $sessionModel = $accessController->getSessionModel();
       $sessionCount = $sessionModel->countLinksWithModel( $activeUser );
       $this->log( "User $activeUser has $sessionCount sessions.");
-      if( $sessionCount == 1 )
-      {
-        $activeUser->set("online", false)->save();
-        $this->log( "Setting user $activeUser to offline.");
-      }
       
       /*
-       * inform subscribers
+       * if only one user session exists, this is the final logout
        */
-      if( ! $activeUser->isAnonymous() )
+      if( $sessionCount == 1 )
       {
-        $this->broadcastClientMessage("qcl/access/logout", array(
-          "fullname"	 => $activeUser->getName()
-        ), true );
-      }      
+        /*
+         * inform subscribers
+         */
+        if( ! $activeUser->isAnonymous() )
+        {
+          $this->broadcastClientMessage("qcl/access/logout", array(
+            "name"	=> $activeUser->getName(),
+            "id"		=> $activeUser->id()
+          ), true );
+        }            
+      }
 
       /*
        * handle all other logout action
