@@ -101,20 +101,26 @@ class qcl_access_SessionController
   
   /**
    * Logs out a user
+   * @param $userId Optional id of user to logout
    * @return void
    */
-  public function logout()
+  public function logout($userId=null)
   {
-   
+    /*
+     * logout
+     */
+    $this->unregisterSession( $userId );
+    
 		/*
      * mark user as offline if no more sessions exist
      */
-    $this->checkOnlineStatus( $this->getActiveUser()->id() );
+    if ( is_null($userId) ) $userId = $this->getActiveUser()->id();
+    $sessionsLeft = $this->checkOnlineStatus( $userId );
 
     /*
      * logout
      */
-    parent::logout();
+    parent::logout( $userId, !$sessionsLeft );
   }
 
   //-------------------------------------------------------------
@@ -166,9 +172,32 @@ class qcl_access_SessionController
 
   /**
    * Unregisters the current session and deletes all messages
+   * @param int $userId 
+   * 		Optional id of user. If given and different from active user id, 
+   * 		delete all of this user's sessions
    */
-  public function unregisterSession()
+  public function unregisterSession( $userId=null )
   {
+    /*
+     * if user is given
+     */
+    if( ! is_null( $userId ) )
+    {
+      try 
+      {
+        $sessionModel = $this->getSessionModel();
+        $sessionModel->findLinked( $this->getUserModel()->load($userId) );
+        while( $sessionModel->loadNext() )
+        {
+          $sessionModel->delete();
+        }
+      }
+      catch(qcl_data_model_RecordNotFoundException $e ) 
+      {
+        //
+      }
+      return; 
+    }
     $sessionId = $this->getSessionId();
     $this->log("Unregistering session #$sessionId.", QCL_LOG_ACCESS );
     $this->getSessionModel()->unregisterSession( $sessionId );

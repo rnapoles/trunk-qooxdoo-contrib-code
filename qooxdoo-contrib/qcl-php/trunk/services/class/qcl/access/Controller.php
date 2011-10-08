@@ -589,48 +589,67 @@ class qcl_access_Controller
   /**
    * Logs out the the active user. If the user is anonymous, delete its record
    * in the user table.
+   * @param int $userId Optional user id
+   * @param bool $deleteAnonymous Optional flag to delete anonymous users
+   * after logout, defaults to true
    * @return bool success
    */
-  public function logout()
+  public function logout( $userId, $deleteAnonymous=true )
   {
-
     /*
-     * check whether anyone is logged in
+     * get user instance
      */
-    $activeUser = $this->getActiveUser();
-
-    if ( ! $activeUser )
+    if ( $userId )
     {
-      $this->log("No need to log out, nobody is logged in.", QCL_LOG_ACCESS);
-      return false;
+      $activeUser = $this->getUserModel()->load( $userId );
     }
+    else
+    {
+      $activeUser = $this->getActiveUser();
+      if ( ! $activeUser )
+      {
+        $this->warn("Cannot log out, nobody is logged in.");
+        return false;
+      }      
+    }  
 
     $username  = $activeUser->username();
     $userId    = $activeUser->getId();
-    $sessionId = $this->getSessionId();
-
-    $this->log("Logging out: user '$username' user #$userId, session #$sessionId.",QCL_LOG_ACCESS );
     
     /*
      * delete user data if anonymous guest
      */
-    if ( $activeUser->isAnonymous() )
+    if ( $deleteAnonymous and $activeUser->isAnonymous() )
     {
       $activeUser->delete();
     }
 
     /*
-     * unset active user
+     * if active user is concerned
      */
-    $this->log("Deleting active user ...",QCL_LOG_ACCESS );
-    $this->setActiveUser(null);
-
-    /*
-     * destroy php session
-     */
-    $this->log("Destroying session ...",QCL_LOG_ACCESS );
-    $this->destroySession();
-
+    if ( is_null( $userId) or $userId == $this->getActiveUser()->id() )
+    {
+      
+      $sessionId = $this->getSessionId();
+      $this->log("Logging out: user '$username' user #$userId, session #$sessionId.",QCL_LOG_ACCESS );
+          
+      /*
+       * unset active user
+       */      
+      $this->log("Deleting active user ...",QCL_LOG_ACCESS );
+      $this->setActiveUser(null);
+      
+      /*
+       * destroy php session
+       */
+      $this->log("Destroying session ...",QCL_LOG_ACCESS );
+      $this->destroySession();      
+    }
+    else
+    {
+      $this->log("Logging out: user '$username' user #$userId",QCL_LOG_ACCESS );      
+    }
+    
     return true;
   }
 
@@ -685,7 +704,7 @@ class qcl_access_Controller
       if ( $activeUser->getId() != $userId )
       {
         $this->warn(sprintf(
-          "User %s (#%s) is already logged in, although we're about to login in user with id #%s. This should normally not be the case",
+          "User %s (#%s) is logged in, although we're about to login in user #%s. This should normally not be the case, log out previous user first!",
           $activeUser, $activeUser->id(), $userId
         ) );
       }
