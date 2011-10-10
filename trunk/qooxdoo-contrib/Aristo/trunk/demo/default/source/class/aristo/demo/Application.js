@@ -16,30 +16,14 @@
 
 #asset(aristo.demo/*)
 
-#asset(qx/icon/Oxygen/16/actions/*)
-#asset(qx/icon/Oxygen/16/apps/*)
-#asset(qx/icon/Oxygen/16/categories/*)
-#asset(qx/icon/Oxygen/16/devices/*)
-#asset(qx/icon/Oxygen/16/mimetypes/*)
-#asset(qx/icon/Oxygen/16/places/*)
-#asset(qx/icon/Oxygen/16/status/*)
-#asset(qx/icon/Oxygen/22/actions/*)
-#asset(qx/icon/Oxygen/22/apps/*)
-#asset(qx/icon/Oxygen/22/mimetypes/*)
-#asset(qx/icon/Oxygen/22/places/*)
-#asset(qx/icon/Oxygen/32/actions/*)
-#asset(qx/icon/Oxygen/32/apps/*)
-#asset(qx/icon/Oxygen/32/devices/*)
-#asset(qx/icon/Oxygen/32/status/*)
-#asset(qx/icon/Oxygen/48/actions/*)
-#asset(qx/icon/Oxygen/48/devices/*)
-#asset(qx/icon/Oxygen/48/places/*)
+#asset(qx/icon/*)
 
 ************************************************************************ */
 
 /**
  * This is a demo of the Aristo contribution
  */
+
 qx.Class.define("aristo.demo.Application",
 {
   extend : qx.application.Standalone,
@@ -66,7 +50,7 @@ qx.Class.define("aristo.demo.Application",
       this.base(arguments);
 
       // Enable logging in debug variant
-      if (qx.core.Variant.isSet("qx.debug", "on"))
+      if (qx.core.Environment.get("qx.debug"))
       {
         // support native logging capabilities, e.g. Firebug for Firefox
         qx.log.appender.Native;
@@ -458,7 +442,7 @@ qx.Class.define("aristo.demo.Application",
       var label = new qx.ui.basic.Atom("Aristo Demo");
       label.set({alignY: "middle", font: "bold"});
 
-      var version = new qx.ui.basic.Atom(qx.core.Setting.get("qx.version"), "aristo.demo/logo.png");
+      var version = new qx.ui.basic.Atom(qx.core.Environment.get("qx.version"), "aristo.demo/logo.png");
       version.set({alignY: "middle", font: "bold"});
 
       header.add(label);

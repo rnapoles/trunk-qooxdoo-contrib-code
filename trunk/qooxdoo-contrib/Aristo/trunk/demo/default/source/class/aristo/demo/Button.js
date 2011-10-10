@@ -46,12 +46,12 @@ qx.Class.define("aristo.demo.Button",
       container.add(btn2);
     },
 
-    addRedButton : function(container)
+    /*addRedButton : function(container)
     {
       var btn1 = new qx.ui.form.Button("Red Button", "icon/22/apps/preferences-locale.png");
       btn1.setAppearance("button-red");
       container.add(btn1);
-    },
+    },*/
 
     addToggleButton : function(container)
     {
