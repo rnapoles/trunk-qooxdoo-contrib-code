@@ -88,9 +88,10 @@ qx.Class.define("aristo.demo.FormWindow",
       var btn0 = new qx.ui.form.Button("Button");
       btn0.set({width: 100});
 
-      var btnLabel1 = new qx.ui.basic.Label("Red Button:");
+      /*var btnLabel1 = new qx.ui.basic.Label("Red Button:");
       var btn1 = new qx.ui.form.Button("Red Button");
       btn1.setAppearance("button-red");
+      */
 
       var btnLabel2 = new qx.ui.basic.Label("ToggleButton:");
       var btn2 = this.btn2 = new qx.ui.form.ToggleButton("ToggleButton");
@@ -116,8 +117,8 @@ qx.Class.define("aristo.demo.FormWindow",
       btnBox.set({layout: btnBoxLayout, margin: 5});
       btnBox.add(btnLabel0, {row: 0, column: 0});
       btnBox.add(btn0, {row: 0, column: 1});
-      btnBox.add(btnLabel1, {row: 1, column: 0});
-      btnBox.add(btn1, {row: 1, column: 1});
+      //btnBox.add(btnLabel1, {row: 1, column: 0});
+      //btnBox.add(btn1, {row: 1, column: 1});
       btnBox.add(btnLabel2, {row: 2, column: 0});
       btnBox.add(btn2, {row: 2, column: 1});
       btnBox.add(btnLabel3, {row: 3, column: 0});
@@ -264,7 +265,7 @@ qx.Class.define("aristo.demo.FormWindow",
       okButton.addListener("execute", this.close, this);
 
       var cancelButton = new qx.ui.form.Button("Cancel");
-      cancelButton.set({width: 100, appearance: "button-red"});
+      cancelButton.set({width: 100 /*, appearance: "button-red"*/ });
       cancelButton.addListener("execute", this.close, this);
 
       var layout = new qx.ui.layout.HBox(10);
