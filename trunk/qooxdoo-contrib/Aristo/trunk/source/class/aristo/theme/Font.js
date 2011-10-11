@@ -60,6 +60,13 @@ qx.Theme.define("aristo.theme.Font",
       size : 11,
       lineHeight : 1.4,
       family : [ "Courier New", "DejaVu Sans Mono", "monospace" ]
+    },
+    
+    "headline" :
+    {
+      size : 24,
+      family : ["sans-serif", "arial"]
     }
+
   }
 });

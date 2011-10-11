@@ -33,7 +33,7 @@ qx.Theme.define("aristo.theme.Color",
 {
   colors :
   {
-		"text-label": "#4f4f4f",
+		"text-label": "#333333",
 		"text-disabled": "#A7A7A7",
 		"text-hovered": "#4f4f4f",
 		"text-placeholder" : "#A7A7A7",
@@ -64,6 +64,13 @@ qx.Theme.define("aristo.theme.Color",
 		"background-pane" 				: "#F3F3F3",
 		"background-splitpane"		: "#AFAFAF",
 		"background-odd" 					: "#E4E4E4",
+	    "background-selected-dark" : "#333333",
+		
+		
+		"button-active-grad-from": "#bce2f8",
+		"button-active-grad-to": "#80adc7",
+		"button-inactive-grad-from": "#f0f0f0",
+		"button-inactive-grad-to": "#b0b0b0",
 		
 		
     /*
