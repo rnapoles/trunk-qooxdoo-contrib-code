@@ -305,7 +305,6 @@ simulation.Simulation.prototype.runTest = function()
   }
 
   this.checkButtons();
-  return;
   
   var toolbarEnabled = String(this.__sel.getQxObjectFunction(this.locators.inspectorToolBar, "getEnabled"));
   if (toolbarEnabled == "false") {
