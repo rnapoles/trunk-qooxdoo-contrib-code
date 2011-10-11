@@ -51,6 +51,7 @@ mySim.locators = {
   buttonProperties : "qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/[@label=Properties]",
   buttonConsole : "qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/[@label=Console]",
   buttonSelenium : "qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/[@label=Selenium]",
+  toolbarButtonOverflow : "qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/[@icon=media-seek-forward\.png]",
   windowConsoleHtml : "qxh=[@classname=inspector.console.ConsoleWindow]/[@classname=inspector.console.View]/qx.ui.container.Stack/[@classname=inspector.console.ConsoleView]/qx.ui.embed.Html",
   windowConsoleTextField : "qxh=[@classname=inspector.console.ConsoleWindow]/[@classname=inspector.console.View]/qx.ui.container.Stack/[@classname=inspector.console.ConsoleView]/qx.ui.container.Composite/qx.ui.form.TextField",
   windowObjectsTable : "qxh=[@classname=inspector.objects.Window]/[@classname=inspector.objects.View]/qx.ui.table.Table",
@@ -115,21 +116,60 @@ simulation.Simulation.prototype.checkConsole = function()
 
 simulation.Simulation.prototype.checkButtons = function()
 {
+  var overflowActive = this.__sel.isElementPresent(this.locators.toolbarButtonOverflow);
   for (locName in this.locators) {
     if (locName.indexOf("button") == 0) {
       var loc = this.locators[locName];
-      var buttonValue = null;
-      try {
-        buttonValue = this.__sel.getQxObjectFunction(loc, "getValue");
-      } catch(ex) {
-        this.log("Error checking button value: " + ex, "error");
+      var buttonPresent = this.__sel.isElementPresent(loc);
+      if (buttonPresent) {
+        var buttonValue = null;
+        try {
+          buttonValue = this.__sel.getQxObjectFunction(loc, "getValue");
+        } catch(ex) {
+          this.log("Error checking button value: " + ex, "error");
+        }
+        
+        if (buttonValue == "false") {
+          this.qxClick(loc, "", "Clicking button");
+          Packages.java.lang.Thread.sleep(2000);
+        }
       }
-      
-      if (buttonValue == "false") {
-        this.qxClick(loc, "", "Clicking button");
-        Packages.java.lang.Thread.sleep(3000);
+      else {
+        if (!overflowActive) {
+          this.log("Button " + locName + " is not present and overflow handling is inactive!", "error");
+        }
+        else {
+          // check if there's an entry in the overflow menu
+          this.qxClick(this.locators.toolbarButtonOverflow, "", "Opening toolbar overflow menu");
+          var overflowMenuLocator = this.locators.toolbarButtonOverflow + "/qx.ui.menu.Menu";
+          var overflowMenuScript = 'selenium.getQxWidgetByLocator(\'' + overflowMenuLocator + '\')';
+          var isOverflowMenuVisible = overflowMenuScript + ".getVisibility() == 'visible'";
+          try {
+            this.__sel.waitForCondition(isOverflowMenuVisible, 2000);
+          } catch(ex) {
+            this.log("Toolbar overflow menu didn't open!", "error");
+            continue;
+          }
+          var buttonLabel = locName.substr(6);
+          var menuButtonLocator = overflowMenuLocator + "/[@label=" + buttonLabel + "]";
+          var buttonPresent = this.__sel.isElementPresent(menuButtonLocator);
+          if (!buttonPresent) {
+            this.log("Button " + buttonLabel + " not present in toolbar overflow menu!", "error");
+            continue;
+          }
+          var buttonValue = null;
+          try {
+            buttonValue = this.__sel.getQxObjectFunction(menuButtonLocator, "getValue");
+          } catch(ex) {
+            this.log("Error checking overlow menu button value: " + ex, "error");
+            continue;
+          }
+          if (buttonValue == "false") {
+            this.qxClick(menuButtonLocator, "", "Clicking overflow menu button " + buttonLabel);
+            Packages.java.lang.Thread.sleep(2000);
+          }
+        }
       }
-     
     }
   }
 };
@@ -265,6 +305,7 @@ simulation.Simulation.prototype.runTest = function()
   }
 
   this.checkButtons();
+  return;
   
   var toolbarEnabled = String(this.__sel.getQxObjectFunction(this.locators.inspectorToolBar, "getEnabled"));
   if (toolbarEnabled == "false") {
