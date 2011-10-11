@@ -21,7 +21,8 @@ var testCount = selWin + "." + qxAppInst + ".runner.getTestCount()";
 
 var locators = {
   toolbarButtonRun : "qxhv=*/[@icon=media-playback-start]",
-  toolbarButtonStackTrace : "qxhv=*/[@icon=document-properties]"
+  toolbarButtonStackTrace : "qxhv=*/[@icon=document-properties]",
+  toolbarButtonReload : "qxhv=*/[@icon=view-refresh]"
 };
 
 simulation.Simulation.prototype.getSuiteState = function()
@@ -76,7 +77,8 @@ simulation.Simulation.prototype.runTest = function()
   
   var tests = [
     this.testRunTests,
-    this.testToggleStackTrace
+    this.testToggleStackTrace,
+    this.testReload
   ];
   
   for (var i=0, l=tests.length; i<l; i++) {
@@ -146,6 +148,24 @@ simulation.Simulation.prototype.testToggleStackTrace = function()
     (!stackTraceActiveAfter && this.__sel.isVisible("css=.trace")) )
   {
     throw new Error("Stack trace display toggle did not work!");
+  }
+};
+
+simulation.Simulation.prototype.testReload = function()
+{
+  this.qxClick(locators.toolbarButtonReload, "", "Clicking Reload button");
+  var state = this.getSuiteState();
+
+  var loaded = this.waitForSuiteState("ready", 10000);
+  if (!loaded) {
+    throw new Error("Test suite did not finish reloading within 10s!");
+  }
+
+  if (this.__sel.isElementPresent("css=.success") || 
+    this.__sel.isElementPresent("css=.skip") || 
+    this.__sel.isElementPresent("css=.error"))
+  {
+    throw new Error("Results view was not cleared after reload!");
   }
 };
 
