@@ -303,8 +303,9 @@ simulation.Simulation.prototype.isFileMenuActive = function()
 
 simulation.Simulation.prototype.runTest = function()
 {
-  this.__savedSampleFileName;
+  this.__savedSampleFileName = null;
   
+  this.__sel.windowMaximize();
   this.initLocators();
   this.setLocaleEn();
   // Log any errors caught during startup
