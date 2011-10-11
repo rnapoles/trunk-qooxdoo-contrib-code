@@ -58,7 +58,7 @@ qx.Theme.define("aristo.theme.Appearance",
       style : function(states)
       {
         return {
-          textColor : states.disabled ? "text-disabled" : undefined
+          textColor : states.disabled ? "text-disabled" : "text-label"
         };
       }
     },
@@ -174,7 +174,7 @@ qx.Theme.define("aristo.theme.Appearance",
         return {
           decorator : decorator,
           textColor : textColor,
-          shadow : shadow? shadow : states.invalid && !states.disabled ? "button-invalid-shadow" : undefined
+          shadow : shadow? shadow : states.invalid && !states.disabled ? "shadow" : undefined
         };
       }
     },
@@ -476,7 +476,7 @@ qx.Theme.define("aristo.theme.Appearance",
 		    } else if (disabled) {
 		      decorator = "input";
 		    } else if (!focused && invalid && !disabled) {
-		      decorator = "border-invalid";
+		      decorator = "red-shadow";
 		    } else {
 		      decorator = "input";
 		    }
@@ -496,7 +496,8 @@ qx.Theme.define("aristo.theme.Appearance",
 		    return {
 		      marginRight: 2,
 		      padding: [2, 4, 1],
-		      textColor: states.disabled ? "text-disabled" : "text-input"
+		      textColor: states.disabled ? "text-disabled" : "text-input",
+		    		  decorator: "spinner-input"
 		    };
 		  }
 		},
@@ -859,6 +860,35 @@ qx.Theme.define("aristo.theme.Appearance",
     },
 		
 		
+    /*
+    ---------------------------------------------------------------------------
+      PROGRESSBAR
+    ---------------------------------------------------------------------------
+    */
+    "progressbar":
+    {
+      style: function(states) {
+        return {
+          decorator: "progressbar",
+          padding: 1,
+          backgroundColor: "background-light"
+        };
+      }
+    },
+
+    "progressbar/progress":
+    {
+      style: function(states) {
+        return {
+          backgroundColor: states.disabled ?
+            "text-disabled" :
+            "button-active-grad-to"
+        };
+      }
+    },
+
+
+
     /*
     ---------------------------------------------------------------------------
       TOOLBAR
@@ -2667,10 +2697,20 @@ qx.Theme.define("aristo.theme.Appearance",
      style : function(states)
      {
        return {
-         font : "bold",
+         font : "headline",
          textColor : "text-selected",
-         padding : [8, 12],
-         decorator : "app-header"
+         backgroundColor: "background-selected-dark",
+         padding : [8, 12]
+       };
+     }
+   },
+
+   "app-header-label" :
+   {
+     style : function(states)
+     {
+       return {
+         paddingTop : 5
        };
      }
    },
@@ -2697,6 +2737,50 @@ qx.Theme.define("aristo.theme.Appearance",
    },
 
    "column-layer" : "widget",
+
+   "group-item" :
+   {
+     include : "label",
+     alias : "label",
+
+     style : function(states)
+     {
+       return {
+         padding : 4,
+         backgroundColor : "#BABABA",
+         textColor : "white",
+         font: "bold"
+       };
+     }
+   },
+
+   "virtual-selectbox" : "selectbox",
+   "virtual-selectbox/dropdown" : "popup",
+   "virtual-selectbox/dropdown/list" : {
+     alias : "virtual-list"
+   },
+
+   "virtual-combobox" : "combobox",
+   "virtual-combobox/dropdown" : "popup",
+   "virtual-combobox/dropdown/list" : {
+     alias : "virtual-list"
+   },
+
+   "virtual-tree" :
+   {
+     include : "tree",
+     alias : "tree",
+
+     style : function(states)
+     {
+       return {
+         itemHeight : 21
+       };
+     }
+   },
+
+   "virtual-tree-folder" : "tree-folder",
+   "virtual-tree-file" : "tree-file",
 
    "cell" :
    {

@@ -52,6 +52,18 @@ qx.Theme.define("aristo.theme.Decoration",
 	      color : "border-main"
 	    }
 	  },
+	  
+	    "border-invalid" :
+	    {
+	      decorator: qx.ui.decoration.Uniform,
+
+	      style :
+	      {
+	        width : 2,
+	        color : "invalid"
+	      }
+	    },
+	    
   	/*
     ---------------------------------------------------------------------------
       BUTTON
@@ -191,6 +203,16 @@ qx.Theme.define("aristo.theme.Decoration",
         innerOpacity : 0.5,
         backgroundImage : "aristo/decoration/form/input.png",
         backgroundRepeat : "repeat-x",
+        backgroundColor : "white"
+      }
+    },
+    
+    "spinner-input" :
+    {
+      decorator : [ qx.ui.decoration.MBackgroundColor ],
+
+      style :
+      {
         backgroundColor : "white"
       }
     },
@@ -464,6 +486,26 @@ qx.Theme.define("aristo.theme.Decoration",
     
     
     
+    /*
+    ---------------------------------------------------------------------------
+      PROGRESSBAR
+    ---------------------------------------------------------------------------
+    */
+
+    "progressbar" :
+    {
+      decorator: qx.ui.decoration.Single,
+
+      style:
+      {
+        backgroundColor: "#FFF",
+        width: 1,
+        color: "border-separator"
+      }
+    },
+
+
+
     /*
     ---------------------------------------------------------------------------
       TOOLBAR
@@ -926,7 +968,6 @@ qx.Theme.define("aristo.theme.Decoration",
         style      : "solid"
       }
     }
-    
-    
+
   }
 });
