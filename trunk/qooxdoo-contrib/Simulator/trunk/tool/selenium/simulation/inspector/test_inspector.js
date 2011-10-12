@@ -116,6 +116,14 @@ simulation.Simulation.prototype.checkConsole = function()
 
 simulation.Simulation.prototype.checkButtons = function()
 {
+  var ua = String(this.getEval("navigator.userAgent"));
+  if (ua.indexOf("Linux") && ua.indexOf("Firefox/7")) {
+    // FF 7 on the Linux test machine has a strange issue where windowMaximize 
+    // resizes the viewport (scroll bars disappear) but not the browser window.
+    // The toolbar overflow button is outside the visible part of the viewport
+    // and clicking it does not open the menu.
+    return;
+  }
   var overflowActive = this.__sel.isElementPresent(this.locators.toolbarButtonOverflow);
   for (locName in this.locators) {
     if (locName.indexOf("button") == 0) {
