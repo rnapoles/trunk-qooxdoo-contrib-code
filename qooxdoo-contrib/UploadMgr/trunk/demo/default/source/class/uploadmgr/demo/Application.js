@@ -179,6 +179,27 @@ qx.Class.define("uploadmgr.demo.Application", {
       		btn = new com.zenesis.qx.upload.UploadButton("Add File(s)", "com/zenesis/qx/upload/test.png");
       		uploader.addWidget(btn);
       		doc.add(btn, { left: 400, top: 460 });
+      		
+      		var tb = new qx.ui.toolbar.ToolBar();
+      		doc.add(tb, { left: 100, top: 510 });
+      		var part = new qx.ui.toolbar.Part();
+      		tb.add(part);
+      		
+      		btn = new qx.ui.toolbar.Button("Do Nothing 1");
+      		btn.addListener("execute", function(evt) {
+      			alert("Do Nothing 1 pressed");
+      		});
+      		part.add(btn);
+      		
+      		btn = new com.zenesis.qx.upload.UploadToolbarButton("Add File(s)", "com/zenesis/qx/upload/test.png");
+      		uploader.addWidget(btn);
+      		part.add(btn);
+      		
+      		btn = new qx.ui.toolbar.Button("Do Nothing 2");
+      		btn.addListener("execute", function(evt) {
+      			alert("Do Nothing 2 pressed");
+      		});
+      		part.add(btn);
 		}
 	}
 });

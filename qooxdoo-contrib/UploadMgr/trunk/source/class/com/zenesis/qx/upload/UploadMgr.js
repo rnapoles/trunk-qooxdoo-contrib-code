@@ -132,10 +132,16 @@ qx.Class.define("com.zenesis.qx.upload.UploadMgr", {
 				var data = this.__widgetsData[widget.toHashCode()];
 				if (data) {
 					data.listenerId = null;
-					widget.getContainerElement().addAt(this._createInputElement(widget), 0);
+					var container = widget.getContainerElement();
+					container.setStyle("overflow", "hidden");
+					container.addAt(this._createInputElement(widget), 0);
+					this.__fixupSize(widget);
 				}
 			}, this);
 			this.__widgetsData[widget.toHashCode()] = { listenerId: id, widget: widget, inputElement: null };
+			widget.addListener("resize", function(evt) {
+				this.__fixupSize(widget);
+			}, this);
 		},
 		
 		/**
@@ -148,6 +154,17 @@ qx.Class.define("com.zenesis.qx.upload.UploadMgr", {
 				if (data.listenerId)
 					widget.removeListener(data.listenerId);
 				delete this.__widgetsData[widget.toHashCode()];
+			}
+		},
+		
+		__fixupSize: function(widget) {
+			var data = this.__widgetsData[widget.toHashCode()];
+			if (data && data.inputElement) {
+				var bounds = widget.getBounds();
+				data.inputElement.setStyles({
+					width: bounds.width + "px",
+					height: bounds.height + "px"
+				});
 			}
 		},
 		

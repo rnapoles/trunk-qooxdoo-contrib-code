@@ -111,11 +111,16 @@ qx.Class.define("com.zenesis.qx.upload.FormHandler", {
 		 * @return {String}
 		 */
 		_getIframeContent: function(iframe){
-		    // iframe.contentWindow.document - for IE<7
-		    var doc = iframe.contentDocument ? iframe.contentDocument: iframe.contentWindow.document,
-		        response = doc.body.innerHTML;
-		    //this.debug("response=" + response);
-		    return response;
+			try {
+			    // iframe.contentWindow.document - for IE<7
+			    var doc = iframe.contentDocument ? iframe.contentDocument: iframe.contentWindow.document,
+			        response = doc.body.innerHTML;
+			    //this.debug("response=" + response);
+			    return response;
+			}catch(e) {
+				// IE will throw an exception if the upload is cross domain and we try to access the iframe's content
+				return null;
+			}
 		},
 		
 		/**
