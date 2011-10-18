@@ -106,27 +106,26 @@ qx.Class.define("com.zenesis.qx.upload.XhrHandler", {
 		        xhr.send(fd);
 		        
 	        } else {
-		        // build query string
-		        var action = this._getUploader().getUploadUrl(),
-		        	params = this.getParams(),
-		        	pos = action.indexOf('?'),
-		        	addAmpersand = true;
-		        if (pos < 0) {
-		        	action += "?";
-		        	addAmpersand = false;
-		        }
+	        	var boundary = "--------FormData" + Math.random(),
+	        		body = "",
+	        		action = this._getUploader().getUploadUrl(),
+		        	params = this.getParams();
 		        for (var name in params) {
-		        	if (addAmpersand)
-		        		action += "&";
-		        	else
-		        		addAmpersand = true;
-		        	action += name + "=" + encodeURIComponent(params[name]);
+		        	body += "--" + boundary + "\r\n";
+		        	body += "Content-Disposition: form-data; name=\""+ name +"\";\r\n\r\n";
+	                body += params[name] + "\r\n";
 		        }
+	        	body += "--" + boundary + "\r\n";
+                body += "Content-Disposition: form-data; name=\"file\"; filename=\"" + file.getFilename() + "\"\r\n";
+                body += "Content-Type: "+ (file.getBrowserObject().type||"application/octet-stream") +"\r\n\r\n";
+                body += file.getBrowserObject().getAsBinary() + "\r\n";
+                body += "--" + boundary + "--";
+                
 		        xhr.open("POST", action, true);
 		        xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
 		        xhr.setRequestHeader("X-File-Name", encodeURIComponent(file.getFilename()));
-		        xhr.setRequestHeader("Content-Type", "application/octet-stream");
-		        xhr.send(file.getBrowserObject());
+		        xhr.setRequestHeader("Content-Type", "multipart/form-data; boundary=" + boundary);
+		        xhr.send(body);
 	        }
 		},
 		
@@ -154,8 +153,7 @@ qx.Class.define("com.zenesis.qx.upload.XhrHandler", {
 		    var isSupported =
 		        'multiple' in input &&
 		        typeof File != "undefined" &&
-		        typeof (new XMLHttpRequest()).upload != "undefined" &&
-		        (!requireMultipartFormData || typeof FormData == "function");
+		        typeof (new XMLHttpRequest()).upload != "undefined";
 		    
 		    return isSupported;
 		}
