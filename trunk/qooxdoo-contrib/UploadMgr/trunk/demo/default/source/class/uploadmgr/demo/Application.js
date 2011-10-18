@@ -76,7 +76,7 @@ qx.Class.define("uploadmgr.demo.Application", {
       		// attached, and "/demoupload" is the path files will be uploaded to (i.e. it's the value used
       		// for the form's action attribute)
       		//
-      		var uploader = new com.zenesis.qx.upload.UploadMgr(btn, "http://www.zenesis.com/demoupload");
+      		var uploader = new com.zenesis.qx.upload.UploadMgr(btn, "http://my.katiemoore.me.uk:8080/demoupload");//"http://www.zenesis.com/demoupload");
       		uploader.getUploadHandler().addParam("myParam", "test");
       		uploader.addListener("addFile", function(evt) {
       			var file = evt.getData(),

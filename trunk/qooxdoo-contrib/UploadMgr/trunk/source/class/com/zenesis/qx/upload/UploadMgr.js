@@ -44,10 +44,6 @@ qx.Class.define("com.zenesis.qx.upload.UploadMgr", {
 			this.addWidget(widget);
 		if (uploadUrl)
 			this.setUploadUrl(uploadUrl);
-		if (com.zenesis.qx.upload.XhrHandler.isSupported())
-			this.__uploadHandler = new com.zenesis.qx.upload.XhrHandler(this);
-		else
-			this.__uploadHandler = new com.zenesis.qx.upload.FormHandler(this);
 	},
 	
 	events: {
@@ -114,6 +110,17 @@ qx.Class.define("com.zenesis.qx.upload.UploadMgr", {
 			init: "uploadMgrInput",
 			nullable: false,
 			event: "changeInputNamePrefix"
+		},
+		
+		/**
+		 * Whether the server can only handle multipart/form-data content type
+		 */
+		requireMultipartFormData: {
+			check: "Boolean",
+			init: true,
+			nullable: false,
+			event: "changeRequireMultipartFormData",
+			apply: "_applyRequireMultipartFormData"
 		}
 	},
 	
@@ -174,7 +181,7 @@ qx.Class.define("com.zenesis.qx.upload.UploadMgr", {
 		 * @param oldValue
 		 */
 		_applyAutoUpload: function(value, oldValue) {
-			this.__uploadHandler.beginUploads();
+			this.getUploadHandler().beginUploads();
 		},
 		
 		/**
@@ -191,11 +198,19 @@ qx.Class.define("com.zenesis.qx.upload.UploadMgr", {
 		},
 		
 		/**
+		 * Callback for changes to the requireMultipartFormData property
+		 */
+		_applyRequireMultipartFormData: function(value, oldValue) {
+			if (this.__uploadHandler)
+				throw new Error("Changing the requireMultipartFormData property of " + this + " has no effect once uploads have started");
+		},
+		
+		/**
 		 * Cancels a file being uploaded
 		 * @param file
 		 */
 		cancel: function(file) {
-			this.__uploadHandler.cancel(file);
+			this.getUploadHandler().cancel(file);
 		},
 		
 		/**
@@ -203,7 +218,7 @@ qx.Class.define("com.zenesis.qx.upload.UploadMgr", {
 		 * @param file
 		 */
 		cancelAll: function() {
-			this.__uploadHandler.cancelAll();
+			this.getUploadHandler().cancelAll();
 		},
 		
 		/**
@@ -241,9 +256,9 @@ qx.Class.define("com.zenesis.qx.upload.UploadMgr", {
 		_onInputChange: function(elem, evt) {
 			var widget = elem.getWidget();
 			
-			this.__uploadHandler.addFile(elem.getDomElement());
+			this.getUploadHandler().addFile(elem.getDomElement());
 			if (this.getAutoUpload())
-				this.__uploadHandler.beginUploads();
+				this.getUploadHandler().beginUploads();
 			this._resetInputElement(widget);
 		},
 		
@@ -252,6 +267,12 @@ qx.Class.define("com.zenesis.qx.upload.UploadMgr", {
 		 * @returns
 		 */
 		getUploadHandler: function() {
+			if (!this.__uploadHandler) {
+				if (com.zenesis.qx.upload.XhrHandler.isSupported(this.isRequireMultipartFormData()))
+					this.__uploadHandler = new com.zenesis.qx.upload.XhrHandler(this);
+				else
+					this.__uploadHandler = new com.zenesis.qx.upload.FormHandler(this);
+			}
 			return this.__uploadHandler;
 		}
 	}

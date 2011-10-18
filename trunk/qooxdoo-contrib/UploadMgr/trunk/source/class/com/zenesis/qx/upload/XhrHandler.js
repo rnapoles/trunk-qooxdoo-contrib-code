@@ -143,25 +143,21 @@ qx.Class.define("com.zenesis.qx.upload.XhrHandler", {
 	},
 	
 	statics: {
-		__isSupported: null,
-
 		/**
 		 * Detects whether this handler is support on the current browser
 		 * @returns {Boolean}
 		 */
-		isSupported: function() {
-			if (this.__isSupported !== null)
-				return this.__isSupported;
-			
+		isSupported: function(requireMultipartFormData) {
 		    var input = document.createElement('input');
 		    input.type = 'file';        
 		    
-		    this.__isSupported =
+		    var isSupported =
 		        'multiple' in input &&
 		        typeof File != "undefined" &&
-		        typeof (new XMLHttpRequest()).upload != "undefined";
+		        typeof (new XMLHttpRequest()).upload != "undefined" &&
+		        (!requireMultipartFormData || typeof FormData == "function");
 		    
-		    return this.__isSupported;
+		    return isSupported;
 		}
 	}
 });
