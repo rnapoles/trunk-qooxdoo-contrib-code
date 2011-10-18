@@ -63,11 +63,15 @@ qx.Class.define("com.zenesis.qx.upload.FormHandler", {
 		            return;
 		
 		        // fixing Opera 10.53
-		        if (iframe.contentDocument && iframe.contentDocument.body &&
-		            iframe.contentDocument.body.innerHTML == "false") {
-		            // In Opera event is fired second time when body.innerHTML changed from false
-		            // to server response approx. after 1 sec when we upload file with iframe
-		            return;
+		        try {
+			        if (iframe.contentDocument && iframe.contentDocument.body &&
+			            iframe.contentDocument.body.innerHTML == "false") {
+			            // In Opera event is fired second time when body.innerHTML changed from false
+			            // to server response approx. after 1 sec when we upload file with iframe
+			            return;
+			        }
+		        }catch(e) {
+		        	// IE fix
 		        }
 		        
 		        //self.debug('iframe loaded');
