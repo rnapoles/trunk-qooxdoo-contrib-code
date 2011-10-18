@@ -89,28 +89,45 @@ qx.Class.define("com.zenesis.qx.upload.XhrHandler", {
 	                self._onCompleted(file, response);
 	            }                    
 	        };
+	        
+	        if (typeof FormData == "function") {
+	        	var fd = new FormData();
+	        	
+		        // build query string
+		        var action = this._getUploader().getUploadUrl(),
+		        	params = this.getParams();
+		        for (var name in params)
+		        	fd.append(name, encodeURIComponent(params[name]));
+		        fd.append("file", file.getBrowserObject());
 
-	        // build query string
-	        var action = this._getUploader().getUploadUrl(),
-	        	params = this.getParams(),
-	        	pos = action.indexOf('?'),
-	        	addAmpersand = true;
-	        if (pos < 0) {
-	        	action += "?";
-	        	addAmpersand = false;
+		        xhr.open("POST", action, true);
+		        xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+		        xhr.setRequestHeader("X-File-Name", encodeURIComponent(file.getFilename()));
+		        xhr.send(fd);
+		        
+	        } else {
+		        // build query string
+		        var action = this._getUploader().getUploadUrl(),
+		        	params = this.getParams(),
+		        	pos = action.indexOf('?'),
+		        	addAmpersand = true;
+		        if (pos < 0) {
+		        	action += "?";
+		        	addAmpersand = false;
+		        }
+		        for (var name in params) {
+		        	if (addAmpersand)
+		        		action += "&";
+		        	else
+		        		addAmpersand = true;
+		        	action += name + "=" + encodeURIComponent(params[name]);
+		        }
+		        xhr.open("POST", action, true);
+		        xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+		        xhr.setRequestHeader("X-File-Name", encodeURIComponent(file.getFilename()));
+		        xhr.setRequestHeader("Content-Type", "application/octet-stream");
+		        xhr.send(file.getBrowserObject());
 	        }
-	        for (var name in params) {
-	        	if (addAmpersand)
-	        		action += "&";
-	        	else
-	        		addAmpersand = true;
-	        	action += name + "=" + encodeURIComponent(params[name]);
-	        }
-	        xhr.open("POST", action, true);
-	        xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-	        xhr.setRequestHeader("X-File-Name", encodeURIComponent(file.getFilename()));
-	        xhr.setRequestHeader("Content-Type", "application/octet-stream");
-	        xhr.send(file.getBrowserObject());
 		},
 		
 		/*
