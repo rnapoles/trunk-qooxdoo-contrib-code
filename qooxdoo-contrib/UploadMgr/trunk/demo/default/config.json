@@ -32,7 +32,7 @@
     "translation"
   ],
   
-  "default-job" : "source",
+  "default-job" : "source-hybrid",
 
   "let" :
   {
@@ -59,6 +59,7 @@
         {
           "manifest" : "../../Manifest.json"
         }
+        
       ]
     },
 
@@ -70,6 +71,13 @@
           "add-nocache-param" : false
         }
       }
-    }
+    },
+	"source-hybrid" : {
+		"compile-options": {
+			"code": {
+				"=except": [ "uploadmgr.demo.*", "com.zenesis.*" ]
+			}
+		}
+	}
   }
 }
