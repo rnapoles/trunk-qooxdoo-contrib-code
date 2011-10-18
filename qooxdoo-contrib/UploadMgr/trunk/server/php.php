@@ -1,162 +1,116 @@
 <?php
 
-/**
- * Handle file uploads via XMLHttpRequest
- */
-class qqUploadedFileXhr {
-    /**
-     * Save the file to the specified path
-     * @return boolean TRUE on success
-     */
-    function save($path) {    
-        $input = fopen("php://input", "r");
-        $temp = tmpfile();
-        $realSize = stream_copy_to_stream($input, $temp);
-        fclose($input);
-        
-        if ($realSize != $this->getSize()){            
-            return false;
-        }
-        
-        $target = fopen($path, "w");        
-        fseek($temp, 0, SEEK_SET);
-        stream_copy_to_stream($temp, $target);
-        fclose($target);
-        
-        return true;
-    }
-    function getName() {
-        return $_GET['qqfile'];
-    }
-    function getSize() {
-        if (isset($_SERVER["CONTENT_LENGTH"])){
-            return (int)$_SERVER["CONTENT_LENGTH"];            
-        } else {
-            throw new Exception('Getting content length is not supported.');
-        }      
-    }   
-}
+/* ***********************************************************************
 
-/**
- * Handle file uploads via regular form post (uses the $_FILES array)
- */
-class qqUploadedFileForm {  
-    /**
-     * Save the file to the specified path
-     * @return boolean TRUE on success
-     */
-    function save($path) {
-        if(!move_uploaded_file($_FILES['qqfile']['tmp_name'], $path)){
-            return false;
-        }
-        return true;
-    }
-    function getName() {
-        return $_FILES['qqfile']['name'];
-    }
-    function getSize() {
-        return $_FILES['qqfile']['size'];
-    }
-}
+   QxUploadMgr - provides an API for uploading one or multiple files
+   with progress feedback (on modern browsers), does not block the user 
+   interface during uploads, supports cancelling uploads.
 
-class qqFileUploader {
-    private $allowedExtensions = array();
-    private $sizeLimit = 10485760;
-    private $file;
+   http://qooxdoo.org
 
-    function __construct(array $allowedExtensions = array(), $sizeLimit = 10485760){        
-        $allowedExtensions = array_map("strtolower", $allowedExtensions);
+   Copyright:
+     2011 Zenesis Limited, http://www.zenesis.com
+
+   License:
+     LGPL: http://www.gnu.org/licenses/lgpl.html
+     EPL: http://www.eclipse.org/org/documents/epl-v10.php
+     
+     This software is provided under the same licensing terms as Qooxdoo,
+     please see the LICENSE file in the Qooxdoo project's top-level directory 
+     for details.
+
+     Parts of this code is based on the work by Andrew Valums (andrew@valums.com)
+     and is covered by the GNU GPL and GNU LGPL2 licenses; please see
+     http://valums.com/ajax-upload/.
+
+   Authors:
+     * John Spackman (john.spackman@zenesis.com)
+
+************************************************************************/
+
+class QxUploadMgr {
+
+	/**
+	 * Handles the upload
+	 * @param $uploadDirectory {String} the path to upload to
+	 * @param $replaceOldFile {Boolean} whether to replace existing files
+	 */
+	public static function handleUpload($uploadDirectory, $replaceOldFile = FALSE) {
+        if (!is_writable($uploadDirectory))
+            throw new Exception("Server error. Upload directory isn't writable.");
             
-        $this->allowedExtensions = $allowedExtensions;        
-        $this->sizeLimit = $sizeLimit;
-        
-        $this->checkServerSettings();       
+        /*if ($_SERVER['CONTENT_TYPE'] == "application/octet-stream")
+            return QxUploadMgr::handleApplicationOctet($uploadDirectory, $replaceOldFile);
+        else*/
+            return QxUploadMgr::handleMultipartFormData($uploadDirectory, $replaceOldFile);
+	}
+	
+	/**
+	 * Determins the filename for the upload
+	 * @param $uploadDirectory {String} the path to upload to
+	 * @param $originalName {String} the filename as given by the browser
+	 * @param $replaceOldFile {Boolean} whether to replace existing files
+	 */
+	public static function getFilename($uploadDirectory, $originalName, $replaceOldFile) {
+        $pathinfo = pathinfo($originalName);
+        $filename = $uploadDirectory . '/' . $pathinfo['filename'] . '.' . $pathinfo['extension'];
 
-        if (isset($_GET['qqfile'])) {
-            $this->file = new qqUploadedFileXhr();
-        } elseif (isset($_FILES['qqfile'])) {
-            $this->file = new qqUploadedFileForm();
-        } else {
-            $this->file = false; 
-        }
-    }
-    
-    private function checkServerSettings(){        
-        $postSize = $this->toBytes(ini_get('post_max_size'));
-        $uploadSize = $this->toBytes(ini_get('upload_max_filesize'));        
-        
-        if ($postSize < $this->sizeLimit || $uploadSize < $this->sizeLimit){
-            $size = max(1, $this->sizeLimit / 1024 / 1024) . 'M';             
-            die("{'error':'increase post_max_size and upload_max_filesize to $size'}");    
-        }        
-    }
-    
-    private function toBytes($str){
-        $val = trim($str);
-        $last = strtolower($str[strlen($str)-1]);
-        switch($last) {
-            case 'g': $val *= 1024;
-            case 'm': $val *= 1024;
-            case 'k': $val *= 1024;        
-        }
-        return $val;
-    }
-    
-    /**
-     * Returns array('success'=>true) or array('error'=>'error message')
-     */
-    function handleUpload($uploadDirectory, $replaceOldFile = FALSE){
-        if (!is_writable($uploadDirectory)){
-            return array('error' => "Server error. Upload directory isn't writable.");
-        }
-        
-        if (!$this->file){
-            return array('error' => 'No files were uploaded.');
-        }
-        
-        $size = $this->file->getSize();
-        
-        if ($size == 0) {
-            return array('error' => 'File is empty');
-        }
-        
-        if ($size > $this->sizeLimit) {
-            return array('error' => 'File is too large');
-        }
-        
-        $pathinfo = pathinfo($this->file->getName());
-        $filename = $pathinfo['filename'];
-        //$filename = md5(uniqid());
-        $ext = $pathinfo['extension'];
-
-        if($this->allowedExtensions && !in_array(strtolower($ext), $this->allowedExtensions)){
-            $these = implode(', ', $this->allowedExtensions);
-            return array('error' => 'File has an invalid extension, it should be one of '. $these . '.');
-        }
-        
-        if(!$replaceOldFile){
-            /// don't overwrite previous files that were uploaded
-            while (file_exists($uploadDirectory . $filename . '.' . $ext)) {
-                $filename .= rand(10, 99);
+        if (!$replaceOldFile){
+        	$index = 1;
+            while (file_exists($filename)) {
+		        $filename = $uploadDirectory . '/' . $pathinfo['filename'] . '-' . $index . '.' . $pathinfo['extension'];
+		        $index++;
             }
         }
+        return $filename;
+	}
+	
+	/**
+	 * Handles the upload where content type is "application/octet-stream"
+	 * @param $uploadDirectory {String} the path to upload to
+	 * @param $replaceOldFile {Boolean} whether to replace existing files
+	 */
+	public static function handleApplicationOctet($uploadDirectory, $replaceOldFile) {
+		$filename = QxUploadMgr::getFilename($uploadDirectory, $_SERVER['HTTP_X_FILE_NAME'], $replaceOldFile);
+        error_log("Receiving application/octet-stream into $filename");
         
-        if ($this->file->save($uploadDirectory . $filename . '.' . $ext)){
-            return array('success'=>true);
-        } else {
-            return array('error'=> 'Could not save uploaded file.' .
-                'The upload was cancelled, or server error encountered');
+        $input = fopen("php://input", "r");
+        $target = fopen($filename, "w");        
+        $realSize = stream_copy_to_stream($input, $target);
+        fclose($input);
+        fclose($target);
+        
+        if (isset($_SERVER["CONTENT_LENGTH"])) {
+            $expectedSize = (int)$_SERVER["CONTENT_LENGTH"];
+            if ($realSize != $expectedSize)
+            	return array('error' => 'File is the wrong size');
         }
         
-    }    
+        return array('success'=>true);
+    }
+	
+	/**
+	 * Handles the upload where content type is "multipart/form-data"
+	 * @param $uploadDirectory {String} the path to upload to
+	 * @param $replaceOldFile {Boolean} whether to replace existing files
+	 */
+    public static function handleMultipartFormdata($uploadDirectory, $replaceOldFile) {
+    error_log("hello, count()=" . $_FILES.count());
+    	foreach ($_FILES as $file) {
+    		error_log("$file=" . $file);
+    		$filename = QxUploadMgr::getFilename($uploadDirectory, $file['name'], $replaceOldFile);
+	        error_log("Receiving multipart/formdata into $filename");
+    		if (!move_uploaded_file($file['tmp_name'], $filename)) {
+    			error_log("Failed to move uploaded file from ". $file['tmp_name']. " to $filename");
+    			return array('error' => 'Failed to move uploaded file');
+    		}
+    	}
+        
+        return array('success'=>true);
+    }
 }
 
-// list of valid extensions, ex. array("jpeg", "xml", "bmp")
-$allowedExtensions = array();
-// max file size in bytes
-$sizeLimit = 10 * 1024 * 1024;
+$result = QxUploadMgr::handleUpload('uploads');
 
-$uploader = new qqFileUploader($allowedExtensions, $sizeLimit);
-$result = $uploader->handleUpload('uploads/');
 // to pass data through iframe you will need to encode all html tags
 echo htmlspecialchars(json_encode($result), ENT_NOQUOTES);
