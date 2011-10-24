@@ -135,17 +135,27 @@ qx.Class.define("com.zenesis.qx.upload.UploadMgr", {
 		 * for implementing for other widgets)
 		 */
 		addWidget: function(widget) {
-			var id = widget.addListenerOnce("appear", function(evt) {
+			var appearId = widget.addListenerOnce("appear", function(evt) {
 				var data = this.__widgetsData[widget.toHashCode()];
 				if (data) {
-					data.listenerId = null;
+					data.appearId = null;
 					var container = widget.getContainerElement();
 					container.setStyle("overflow", "hidden");
 					container.addAt(this._createInputElement(widget), 0);
 					this.__fixupSize(widget);
 				}
 			}, this);
-			this.__widgetsData[widget.toHashCode()] = { listenerId: id, widget: widget, inputElement: null };
+			var keydownId = widget.addListener("keydown", function(evt) {
+				var data = this.__widgetsData[widget.toHashCode()];
+				if (data && data.inputElement) {
+					var dom = data.inputElement.getDomElement();
+					if (dom && typeof dom.click == "function") {
+						dom.focus();
+						dom.click();
+					}
+				}
+			}, this);
+			this.__widgetsData[widget.toHashCode()] = { appearId: appearId, keydownId: keydownId, widget: widget, inputElement: null };
 			widget.addListener("resize", function(evt) {
 				this.__fixupSize(widget);
 			}, this);
@@ -158,8 +168,10 @@ qx.Class.define("com.zenesis.qx.upload.UploadMgr", {
 		removeWidget: function(widget) {
 			var data = this.__widgetsData[widget.toHashCode()];
 			if (data) {
-				if (data.listenerId)
-					widget.removeListener(data.listenerId);
+				if (data.appearId)
+					widget.removeListener(data.appearId);
+				if (data.keydownId)
+					widget.removeListener(data.keydownId);
 				delete this.__widgetsData[widget.toHashCode()];
 			}
 		},
