@@ -27,6 +27,7 @@
 ************************************************************************/
 /*
 #ignore(File)
+#ignore(FormData)
  */
 /**
  * Implementation of AbstractHandler that uses XMLHttpRequest; this is based on work 
