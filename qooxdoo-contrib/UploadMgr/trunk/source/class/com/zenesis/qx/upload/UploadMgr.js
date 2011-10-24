@@ -145,16 +145,19 @@ qx.Class.define("com.zenesis.qx.upload.UploadMgr", {
 					this.__fixupSize(widget);
 				}
 			}, this);
-			var keydownId = widget.addListener("keydown", function(evt) {
-				var data = this.__widgetsData[widget.toHashCode()];
-				if (data && data.inputElement) {
-					var dom = data.inputElement.getDomElement();
-					if (dom && typeof dom.click == "function") {
-						dom.focus();
-						dom.click();
+			var keydownId = null;
+			if (qx.core.Environment.get("engine.name") != "gecko") {
+				keydownId = widget.addListener("keydown", function(evt) {
+					var data = this.__widgetsData[widget.toHashCode()];
+					if (data && data.inputElement) {
+						var dom = data.inputElement.getDomElement();
+						if (dom && typeof dom.click == "function") {
+							//dom.focus();
+							dom.click();
+						}
 					}
-				}
-			}, this);
+				}, this);
+			}
 			this.__widgetsData[widget.toHashCode()] = { appearId: appearId, keydownId: keydownId, widget: widget, inputElement: null };
 			widget.addListener("resize", function(evt) {
 				this.__fixupSize(widget);
