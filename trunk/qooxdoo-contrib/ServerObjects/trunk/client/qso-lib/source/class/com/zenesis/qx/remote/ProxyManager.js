@@ -75,7 +75,7 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 				isDate: function(value) {
 				      // Added "value !== null" because IE throws an exception "Object expected"
 				      // by executing "value instanceof Array" if value is a DOM element that
-				      // doesn't exist. It seems that there is a internal different between a
+				      // doesn't exist. It seems that there is a internal difference between a
 				      // JavaScript null and a null returned from calling DOM.
 				      // e.q. by document.getElementById("ReturnedNull").
 				      return (
@@ -523,7 +523,7 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 						// Create an apply method
 						var applyName = "_apply" + qx.lang.String.firstUp(propName);
 						toDef.apply = applyName;
-						def.members[applyName] = new Function('value', 'this._applyProperty("' + propName + '", value);');
+						def.members[applyName] = new Function('value', 'oldValue', 'name', 'this._applyProperty("' + propName + '", value, oldValue, name);');
 							
 						// onDemand properties - patch it later
 						if (fromDef.onDemand)
@@ -736,6 +736,10 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 		 */
 		setPropertyValue: function(serverObject, propertyName, value, oldValue) {
 			if (this.isSettingProperty(serverObject, propertyName))
+				return;
+			
+			// Skip changing date instances if they are equivalent
+			if (value instanceof Date && oldValue instanceof Date && value.getTime() == oldValue.getTime())
 				return;
 			
 			var data = {
