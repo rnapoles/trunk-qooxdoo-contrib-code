@@ -23,7 +23,7 @@
   {
     "common" :
     {
-      "settings" :
+      "environment" :
       {
         "qx.ioRemoteDebug" : "on",
         "rpcexample.URL" : "../../RpcPhp/1.2.0/services/index.php"
