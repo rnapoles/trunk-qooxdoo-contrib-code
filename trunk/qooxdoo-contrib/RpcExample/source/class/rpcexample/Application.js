@@ -399,12 +399,19 @@ qx.Class.define("rpcexample.Application",
     {
       // This is an old application that still requires qooxdoo-specific
       // formatting and parsing of dates.
+      //
+      // FIXME: THIS CODE IS BORKED. qx.util.Json is gone. It was the class
+      // that contained the CONVERT_DATES flag and had code to handle the old
+      // qooxdoo-specific formatting and parsing of dates. qx.lang.Json has no
+      // such flag. It does provide reviver functions that could be used for
+      // the purpose, so this code should either be eliminated or converted to
+      // use reviver functions.
       var convertDates = new qx.ui.form.CheckBox("Old-style 'qooxdoo' dates?");
-      convertDates.setValue(qx.util.Json.CONVERT_DATES);
+      convertDates.setValue(qx.lang.Json.CONVERT_DATES);
       convertDates.addListener("changeValue",
                                function(e)
                                {
-                                 qx.util.Json.CONVERT_DATES = e.getData();
+                                 qx.lang.Json.CONVERT_DATES = e.getData();
                                });
       page.add(convertDates);
 
