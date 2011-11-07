@@ -229,7 +229,7 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 				// Init or Function return
 				if (type == "bootstrap" || type == "return") {
 					qx.core.Assert.assertNull(result, "Multiple function returns in data from server");
-					result = this._readProxyObject(elem.data);
+					result = this.readProxyObject(elem.data);
 					
 				// An exception was thrown
 				} else if (type == "exception") {
@@ -248,9 +248,9 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 					
 				// Setting a property failed with an exception - change the value back and handle the exception 
 				} else if (type == "restore") {
-					var obj = this._readProxyObject(elem.object);
+					var obj = this.readProxyObject(elem.object);
 					try {
-						var value = this._readProxyObject(elem.data.oldValue);
+						var value = this.readProxyObject(elem.data.oldValue);
 						this.setPropertyValueFromServer(obj, elem.name, value);
 					} catch(e) {
 						// Ignore it - we were only trying to recover from a server exception
@@ -259,13 +259,13 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 
 				// A server property value changed, update the client
 				} else if (type == "set") {
-					var obj = this._readProxyObject(elem.object);
-					var value = this._readProxyObject(elem.data);
+					var obj = this.readProxyObject(elem.object);
+					var value = this.readProxyObject(elem.data);
 					this.setPropertyValueFromServer(obj, elem.name, value);
 					
 				// An on demand server property value changed, clear the cache
 				} else if (type == "expire") {
-					var obj = this._readProxyObject(elem.object);
+					var obj = this.readProxyObject(elem.object);
 					var upname = qx.lang.String.firstUp(elem.name);
 					obj["expire" + upname](false);
 					
@@ -275,8 +275,8 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 					
 				// An event was fired on the server
 				} else if (type == "fire") {
-					var obj = this._readProxyObject(elem.object);
-					var eventData = elem.data ? this._readProxyObject(elem.data) : null;
+					var obj = this.readProxyObject(elem.object);
+					var eventData = elem.data ? this.readProxyObject(elem.data) : null;
 					obj.fireDataEvent(elem.name, eventData);
 					
 				// Explicitly load a type onto the client
@@ -310,7 +310,7 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 		 * Reads a proxy object from the server and either creates a new
 		 * object (creating classes as required) or returns an existing one
 		 */
-		_readProxyObject: function(data) {
+		readProxyObject: function(data) {
 			if (typeof data == "undefined" || data === null)
 				return null;
 			var result = null;
@@ -331,7 +331,7 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 				else {
 					result = [];
 					for (var i = 0; i < data.length; i++)
-						result[i] = this._readProxyObject(data[i]);
+						result[i] = this.readProxyObject(data[i]);
 				}
 				
 			// Object - is it a server object or a map?
@@ -356,7 +356,7 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 //							if (propName == "resources" || propName == "questions")
 //								debugger;
 							if (propValue)
-								propValue = this._readProxyObject(propValue);
+								propValue = this.readProxyObject(propValue);
 							this.setPropertyValueFromServer(result, propName, propValue);
 						}
 					}
@@ -368,7 +368,7 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 						for (var propName in data.values) {
 							var propValue = data.values[propName];
 							if (propValue)
-								propValue = this._readProxyObject(propValue);
+								propValue = this.readProxyObject(propValue);
 							this.setPropertyValueFromServer(result, propName, propValue);
 						}
 					}
@@ -381,7 +381,7 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 							if (!result.$$proxy.cachedResults)
 								result.$$proxy.cachedResults = {};
 							if (value)
-								value = this._readProxyObject(value);
+								value = this.readProxyObject(value);
 							result.$$proxy.cachedResults[methodName] = value;
 						}
 					}
@@ -409,7 +409,7 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 						for (var propName in data) {
 							var propValue = data[propName];
 							if (propValue)
-								propValue = this._readProxyObject(propValue);
+								propValue = this.readProxyObject(propValue);
 							result[propName] = propValue;
 						}
 					}
