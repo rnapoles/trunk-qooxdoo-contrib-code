@@ -211,16 +211,8 @@ simulation.Simulation.prototype.testAddFeed = function()
   }
   
   // Enter new feed details
-  if (this.getConfigSetting("branch") == "branch_1_1_x") {
-    var setFeedTitle = feedWindowScript + ".getChildren()[0].getChildren()[1].setValue('Golem')";  
-    this.getEval(setFeedTitle, "Setting feed title");
-    var setFeedUrl = feedWindowScript + ".getChildren()[0].getChildren()[3].setValue('http://rss.golem.de/rss.php?feed=ATOM1.0')";  
-    this.getEval(setFeedUrl, "Setting feed URL");
-  }
-  else {
-    this.qxType(locators.feedWindow + "/qx.ui.form.renderer.SinglePlaceholder/child[1]", "Golem");
-    this.qxType(locators.feedWindow + "/qx.ui.form.renderer.SinglePlaceholder/child[2]", "http://rss.golem.de/rss.php?feed=ATOM1.0");
-  }
+  this.qxType(locators.feedWindow + "/qx.ui.form.renderer.SinglePlaceholder/child[1]", "Heise");
+  this.qxType(locators.feedWindow + "/qx.ui.form.renderer.SinglePlaceholder/child[2]", "http://www.heise.de/newsticker/heise-atom.xml");
   
   this.qxClick(locators.feedWindowButton, "", "Clicking 'Add'.");
   Packages.java.lang.Thread.sleep(2000);
