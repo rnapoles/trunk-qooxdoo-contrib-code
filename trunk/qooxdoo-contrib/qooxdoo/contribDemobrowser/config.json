@@ -41,7 +41,6 @@
     "QXTHEME"      : "contribdemobrowser.theme.Theme",
     "API_EXCLUDE"  : ["qx.test.*", "${APPLICATION}.theme.*", "${APPLICATION}.test.*"],
     "LOCALES"      : [ "en" ],
-    "CACHE"        : "${TMPDIR}/cache",
     "ROOT"         : "."
   },
 
