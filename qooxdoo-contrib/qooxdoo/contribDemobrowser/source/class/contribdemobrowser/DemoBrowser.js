@@ -133,6 +133,7 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
         this.__versionSelect.add(li);
       }
       
+      /*
       if (this.__versionSelect.getSelection()[0].getLabel().indexOf("-pre")) {
         var items = this.__versionSelect.getChildren();
         for (var i=0,l=items.length; i<l; i++) {
@@ -142,13 +143,14 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
           }
         }
       }
-      
+      */
     },
     
     treeGetSelection : function(e)
     {
       this._apiButton.setEnabled(false);
       var treeNode = this.tree.getSelection()[0];
+      this._runbutton.setEnabled(!treeNode.hasChildren());
       var modelNode = treeNode.getUserData("modelLink");
       this.tests.selected = this.tests.handler.getFullName(modelNode);
       if (modelNode) {
@@ -221,9 +223,6 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
     runSample : function(e)
     {
       this.setActiveView("demo");
-      
-      this._runbutton.setVisibility("excluded");
-      this._stopbutton.setVisibility("visible");
       
       if (this.tests.selected &&
           this.tests.selected.indexOf(".html") > 0) {
