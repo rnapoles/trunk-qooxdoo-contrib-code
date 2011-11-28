@@ -71,18 +71,32 @@ qx.Class.define("uploadmgr.demo.Application", {
 
       		var btn = new com.zenesis.qx.upload.UploadButton("Add File(s)", "com/zenesis/qx/upload/test.png");
       		var lst = new qx.ui.form.List();
+      		var uploadCount = 0;
       		
       		// Uploader controls the upload process; btn is the widget that will have the input[type=file]
       		// attached, and "/demoupload" is the path files will be uploaded to (i.e. it's the value used
       		// for the form's action attribute)
       		//
       		var uploader = new com.zenesis.qx.upload.UploadMgr(btn, "http://www.zenesis.com/demoupload");
-      		uploader.getUploadHandler().addParam("myParam", "test");
+      		
+      		// Parameter tp be added to all uploads (can be overridden by individual files)
+      		uploader.setParam("myGlobalParam", "global123");
+      		
+      		// Optionally restrict the max number of simultaneous uploads (default is 5)
+      		//uploader.getUploadHandler().setMaxConnections(1);
+      		
       		uploader.addListener("addFile", function(evt) {
       			var file = evt.getData(),
       				item = new qx.ui.form.ListItem(file.getFilename() + " (queued for upload)", null, file);
       			lst.add(item);
-      			
+
+      			// Set a parameter - each uploaded file has their own set, which can override those set
+      			//	globally against the upload manager
+      			++uploadCount;
+          		file.setParam("myParam_" + uploadCount, "test");
+          		if (uploadCount % 2 == 0)
+              		file.setParam("myGlobalParam", "overridden-global-value");
+          		
       			// On modern browsers (ie not IE) we will get progress updates
       			var progressListenerId = file.addListener("changeProgress", function(evt) {
       				this.debug("Upload " + file.getFilename() + ": " + evt.getData() + " / " + file.getSize() + " - " +
@@ -123,13 +137,13 @@ qx.Class.define("uploadmgr.demo.Application", {
       			var sel = evt.getData(),
       				item = sel.length ? sel[0] : null,
       				file = item ? item.getModel() : null;
-      			btnCancel.setEnabled(file != null && file.getState() == "uploading");
+      			btnCancel.setEnabled(file != null && (file.getState() == "uploading" || file.getState() == "not-started"));
       		}, this);
       		btnCancel.addListener("execute", function(evt) {
       			var sel = lst.getSelection(),
       				item = sel[0],
       				file = item.getModel();
-      			if (file.getState() == "uploading")
+      			if (file.getState() == "uploading" || file.getState() == "not-started")
       				uploader.cancel(file);
       		}, this);
       		

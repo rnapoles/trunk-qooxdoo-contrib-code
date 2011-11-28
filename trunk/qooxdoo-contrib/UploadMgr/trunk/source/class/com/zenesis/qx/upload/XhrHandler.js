@@ -96,7 +96,7 @@ qx.Class.define("com.zenesis.qx.upload.XhrHandler", {
 	        	
 		        // build query string
 		        var action = this._getUploader().getUploadUrl(),
-		        	params = this.getParams();
+		        	params = this._getMergedParams(file);
 		        for (var name in params)
 		        	fd.append(name, encodeURIComponent(params[name]));
 		        fd.append("file", file.getBrowserObject());
@@ -110,7 +110,7 @@ qx.Class.define("com.zenesis.qx.upload.XhrHandler", {
 	        	var boundary = "--------FormData" + Math.random(),
 	        		body = "",
 	        		action = this._getUploader().getUploadUrl(),
-		        	params = this.getParams();
+		        	params = this._getMergedParams(file);
 		        for (var name in params) {
 		        	body += "--" + boundary + "\r\n";
 		        	body += "Content-Disposition: form-data; name=\""+ name +"\";\r\n\r\n";

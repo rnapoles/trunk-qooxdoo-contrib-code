@@ -109,7 +109,42 @@ qx.Class.define("com.zenesis.qx.upload.File", {
 	
 	members: {
 		__browserObject: null,
-	
+		__params: null,
+		
+		/**
+		 * Sets a parameter value to be sent with the file
+		 * @param name {String} name of the parameter
+		 * @param value {String} the value of the parameter, or null to delete a previous parameter
+		 */
+		setParam: function(name, value) {
+			if (value !== null && typeof value != "string")
+				value ="" + value;
+			if (!this.__params)
+				this.__params = {};
+			this.__params[name] = value;
+		},
+		
+		/**
+		 * Returns a parameter value to be sent with the file
+		 * @param name
+		 * @returns {Boolean}
+		 */
+		getParam: function(name) {
+			return this.__params && this.__params[name];
+		},
+		
+		/**
+		 * Returns a list of parameter names
+		 * @returns {Array}
+		 */
+		getParamNames: function() {
+			var result = [];
+			if (this.__params)
+				for (var name in this.__params)
+					result.push(name);
+			return result;
+		},
+		
 		/**
 		 * Returns the browser object
 		 * @returns {DOM}
@@ -126,7 +161,7 @@ qx.Class.define("com.zenesis.qx.upload.File", {
 		_applyState: function(value, oldValue) {
 			qx.core.Assert.assertTrue(
 					(!oldValue && value == "not-started") ||
-					(oldValue == "not-started" && value == "uploading") ||
+					(oldValue == "not-started" && (value == "cancelled" || value == "uploading")) ||
 					(oldValue == "uploading" && (value == "cancelled" || value == "uploaded"))
 					);
 		}
