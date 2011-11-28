@@ -128,6 +128,7 @@ qx.Class.define("com.zenesis.qx.upload.UploadMgr", {
 		__widgetsData: null,
 		__inputSerial: 0,
 		__uploadHandler: null,
+		__params: null,
 		
 		/**
 		 * Adds a widget which is to have an input[type=file] attached; this would typically be an 
@@ -179,6 +180,44 @@ qx.Class.define("com.zenesis.qx.upload.UploadMgr", {
 			}
 		},
 		
+		/**
+		 * Sets a parameter value to be sent with the file
+		 * @param name {String} name of the parameter
+		 * @param value {String} the value of the parameter, or null to delete a previous parameter
+		 */
+		setParam: function(name, value) {
+			if (value !== null && typeof value != "string")
+				value ="" + value;
+			if (!this.__params)
+				this.__params = {};
+			this.__params[name] = value;
+		},
+		
+		/**
+		 * Returns a parameter value to be sent with the file
+		 * @param name
+		 * @returns {Boolean}
+		 */
+		getParam: function(name) {
+			return this.__params && this.__params[name];
+		},
+		
+		/**
+		 * Returns a list of parameter names
+		 * @returns {Array}
+		 */
+		getParamNames: function() {
+			var result = [];
+			if (this.__params)
+				for (var name in this.__params)
+					result.push(name);
+			return result;
+		},
+		
+		/**
+		 * Helper method that corrects the size of the input element to match the size of the widget
+		 * @param widget
+		 */
 		__fixupSize: function(widget) {
 			var data = this.__widgetsData[widget.toHashCode()];
 			if (data && data.inputElement) {

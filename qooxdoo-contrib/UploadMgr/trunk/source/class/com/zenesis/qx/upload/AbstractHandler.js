@@ -111,24 +111,11 @@ qx.Class.define("com.zenesis.qx.upload.AbstractHandler", {
 		 * @param file {com.zenesis.qx.upload.File} the file to cancel
 		 */
 		cancel: function(file) {
+			var wasUploading = this.__current.length > 0;
 			this.debug("cancelled: id=" + file.getId() + ", fileName=" + file.getFilename());
-			var inCurrent = false;
-			for (var current = this.__current, i = 0; i < current.length; i++)
-				if (current[i] == file) {
-					current.splice(i, 1);
-					inCurrent = true;
-					break;
-				}
-			if (inCurrent) {
-				this._cancel(file);
-			} else {
-				for (var queue = this.__queue, i = 0; i < queue.length; i++)
-					if (queue[i] == file) {
-						queue.splice(i, 1);
-						break;
-					}
-			}
-			this.beginUploads();
+			this._cancel(file);
+			if (wasUploading && this.__uploader.getAutoUpload())
+				this.beginUploads();
 		},
 		
 		/**
@@ -146,8 +133,21 @@ qx.Class.define("com.zenesis.qx.upload.AbstractHandler", {
 		 * @param file {com.zenesis.qx.upload.File} the file to cancel
 		 */
 		_cancel: function(file) {
+			var inCurrent = false;
+			for (var current = this.__current, i = 0; i < current.length; i++)
+				if (current[i] == file) {
+					current.splice(i, 1);
+					inCurrent = true;
+					break;
+				}
+			for (var queue = this.__queue, i = 0; i < queue.length; i++)
+				if (queue[i] == file) {
+					queue.splice(i, 1);
+					break;
+				}
 			file.setState("cancelled");
-			this._doCancel(file);
+			if (inCurrent)
+				this._doCancel(file);
 			this.__uploader.fireDataEvent("cancelUpload", file);
 		},
 		
@@ -197,17 +197,55 @@ qx.Class.define("com.zenesis.qx.upload.AbstractHandler", {
 		 * Adds a parameter to send to the client
 		 * @param key {String} the name of the parameter
 		 * @param value {String} the value of the parameter
+		 * @deprecated see com.zenesis.qx.upload.UploadMgr.setParam or com.zenesis.qx.upload.File.setParam
 		 */
 		addParam: function(key, value) {
+			qx.log.Logger.deprecatedMethodWarning(arguments.callee, "see com.zenesis.qx.upload.UploadMgr.setParam or com.zenesis.qx.upload.File.setParam");
 			this.__params[key] = value;
 		},
 		
 		/**
 		 * Returns the paramaters map
 		 * @returns {Map}
+		 * @deprecated see com.zenesis.qx.upload.File.getParam
 		 */
 		getParams: function() {
+			qx.log.Logger.deprecatedMethodWarning(arguments.callee, "see com.zenesis.qx.upload.UploadMgr.getParam or com.zenesis.qx.upload.File.getParam");
 			return this.__params;
+		},
+		
+		/**
+		 * Helper method that produces a final list of parameter values, by merging those
+		 * set in this with those in the file.
+		 * @param file {File} the file object
+		 * @returns {Map} map of parameters to sent to the server
+		 */
+		_getMergedParams: function(file) {
+			var result = {};
+			for (var name in this.__params) {
+				var value = this.__params[name];
+				if (value !== null)
+					result[name] = value;
+			}
+			var names = this.__uploader.getParamNames();
+			for (var i = 0; i < names.length; i++) {
+				var name = names[i],
+					value = this.__uploader.getParam(name);
+				if (value !== null)
+					result[name] = value;
+				else
+					delete result[name];
+			}
+			var names = file.getParamNames();
+			for (var i = 0; i < names.length; i++) {
+				var name = names[i],
+					value = file.getParam(name);
+				if (value !== null)
+					result[name] = value;
+				else
+					delete result[name];
+			}
+			return result;
 		},
 		
 		/**

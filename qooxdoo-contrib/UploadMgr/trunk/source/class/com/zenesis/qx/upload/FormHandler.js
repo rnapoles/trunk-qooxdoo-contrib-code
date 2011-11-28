@@ -174,7 +174,7 @@ qx.Class.define("com.zenesis.qx.upload.FormHandler", {
 		    qx.bom.element.Style.setStyles(form, {
 		    	display: 'none'
 		    });
-		    var params = this.getParams();
+		    var params = this._getMergedParams(file);
 		    for (var name in params) {
 		    	var el = qx.bom.Element.create('input', {
 		    		type: "hidden",
