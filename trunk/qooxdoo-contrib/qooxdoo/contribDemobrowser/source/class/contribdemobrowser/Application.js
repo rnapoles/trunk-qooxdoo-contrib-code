@@ -27,8 +27,8 @@ qx.Class.define("contribdemobrowser.Application",
     this.base(arguments);
 
     // Include CSS files
-    qx.bom.Stylesheet.includeFile("demobrowser/css/style.css");
-    qx.bom.Stylesheet.includeFile("demobrowser/css/sourceview.css");
+    qx.bom.Stylesheet.includeFile(
+      qx.util.ResourceManager.getInstance().toUri("demobrowser/css/style.css"));
   },
 
   /*
