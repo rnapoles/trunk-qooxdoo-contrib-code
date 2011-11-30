@@ -10,7 +10,7 @@ var baseConf = {
   'simulatorSvn' : '/home/dwagner/workspace/qooxdoo.contrib/Simulator',
   'debug' : true,
   'logAll' : false,
-  'ignore' : 'showcase:Browser,widget:Iframe,test:Serialize,bom:Iframe,progressive:*',
+  'ignore' : 'showcase:Browser,widget:Iframe,test:Serialize,bom:Iframe,progressive:*,data:Github',
   'sampleGlobalErrorLogging' : false,
   'shutdownSample' : false,
   'reloadBrowser' : false,
