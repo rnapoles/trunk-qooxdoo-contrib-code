@@ -51,7 +51,7 @@ qx.Class.define("com.zenesis.qx.upload.FormHandler", {
 		 */
 		_doUpload: function(file) {
 		    var iframe = this._createIframe(file.getId()),
-		    	form = this._createForm(iframe, file.getId());
+		    	form = this._createForm(iframe, file);
 		    
 		    form.appendChild(file.getBrowserObject());
 		    
@@ -156,7 +156,7 @@ qx.Class.define("com.zenesis.qx.upload.FormHandler", {
 		 * Creates form, that will be submitted to iframe
 		 * @return {DOMElement} the form
 		 */
-		_createForm: function(iframe, id){
+		_createForm: function(iframe, file){
 		    // We can't use the following code in IE6
 		    // var form = document.createElement('form');
 		    // form.setAttribute('method', 'post');
@@ -168,7 +168,7 @@ qx.Class.define("com.zenesis.qx.upload.FormHandler", {
 		    	action: this._getUploader().getUploadUrl(),
 		    	method: "POST",
 		    	target: iframe.name,
-		    	id: "upload-form-" + id
+		    	id: "upload-form-" + file.getId()
 			});
 		
 		    qx.bom.element.Style.setStyles(form, {
