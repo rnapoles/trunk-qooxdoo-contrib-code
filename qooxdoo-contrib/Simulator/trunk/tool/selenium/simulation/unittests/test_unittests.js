@@ -142,7 +142,7 @@ simulation.Simulation.prototype.runTest = function()
         var msg = "Unexpected suite state: " + suiteState + " View status: " + 
         viewStatus;
         this.log(msg, "warn");
-        print(msg);
+        return;
     }
   }
 };
