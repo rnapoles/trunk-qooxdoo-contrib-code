@@ -41,12 +41,6 @@ var locators = {
   feedWindowButton : 'qxh=app:[@caption=".*feed.*"]/qx.ui.form.renderer.SinglePlaceholder/qx.ui.container.Composite/qx.ui.form.Button'
 };
 
-if (mySim.getConfigSetting("branch") == "branch_1_2_x") {
-  locators.reloadButton = 'qxh=app:[@classname="feedreader.view.desktop.ToolBar"]/qx.ui.toolbar.Part/child[3]';
-  locators.preferencesButton = 'qxh=qx.ui.container.Composite/child[1]/qx.ui.toolbar.Part/child[5]';
-  locators.addFeedButton = 'qxh=qx.ui.container.Composite/child[1]/qx.ui.toolbar.Part/child[0]';
-}
-
 simulation.Simulation.prototype.waitForFeeds = function()
 {
   var feedsLoaded = function(treeLocator) {
@@ -81,9 +75,6 @@ simulation.Simulation.prototype.checkArticle = function()
   var article = this.getEval(articleScript, "Checking for article");
 
   var modelClassName = "qx.data.model";
-  if (this.getConfigSetting("branch") == "branch_1_1_x") {
-    modelClassName = "feedreader.model.Article"
-  }
   if (String(article).indexOf(modelClassName) >= 0) {
     this.log("Article found.", "info");
   }
