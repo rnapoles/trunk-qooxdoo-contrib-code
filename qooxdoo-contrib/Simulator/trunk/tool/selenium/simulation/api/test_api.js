@@ -134,6 +134,7 @@ simulation.Simulation.prototype.logDocErrors = function()
   }
 
   try {
+    mySim.setupApplicationLogging();
     mySim.runTest();
   }
   catch(ex) {

@@ -347,10 +347,6 @@ simulation.Simulation.prototype.setupEnvironment = function()
 
     this.prepareNameSpace();
     this.addSanitizer();
-    if (this.getConfigSetting("applicationLog")) {
-      this.addRingBuffer();
-      this.addRingBufferGetter();
-    }
   }
   catch(ex) {
     this.log("Error while setting up test environment: " + ex, "error");
@@ -1016,6 +1012,15 @@ simulation.Simulation.prototype.logResults = function()
   }
   
   this.logTestDuration();
+};
+
+/**
+ * Makes the necessary preparations to allow AUT log access.
+ */
+simulation.Simulation.prototype.setupApplicationLogging = function()
+{
+  this.addRingBuffer();
+  this.addRingBufferGetter();
 };
 
 /**

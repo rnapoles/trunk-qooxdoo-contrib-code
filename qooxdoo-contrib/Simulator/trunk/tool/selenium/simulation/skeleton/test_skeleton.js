@@ -95,6 +95,7 @@ simulation.Simulation.prototype.runTest = function()
   //Packages.java.lang.Thread.sleep(4000);
 
   try {
+    mySim.setupApplicationLogging();
     mySim.runTest();
   }
   catch(ex) {

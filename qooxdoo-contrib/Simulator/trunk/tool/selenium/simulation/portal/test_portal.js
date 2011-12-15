@@ -100,6 +100,7 @@ simulation.Simulation.prototype.runTest = function()
   }
 
   try {
+    mySim.setupApplicationLogging();
     mySim.addGlobalErrorHandler();
     mySim.runTest();
   }
