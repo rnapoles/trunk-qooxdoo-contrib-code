@@ -192,6 +192,7 @@ simulation.Simulation.prototype.checkUrlParameter = function()
   }
 
   try {
+    mySim.setupApplicationLogging();
     mySim.addGlobalErrorHandler();
     mySim.runTest();
   }

@@ -73,8 +73,7 @@ simulation.Simulation.prototype.addQxStuff = function()
     this.addSanitizer();
     this.logEnvironment();
     this.logUserAgent();
-    this.addRingBuffer();
-    this.addRingBufferGetter();
+    this.setupApplicationLogging();
   }
   catch (ex) {
     this.logEnvironment("file");

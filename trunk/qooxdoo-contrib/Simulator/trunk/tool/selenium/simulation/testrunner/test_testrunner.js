@@ -191,6 +191,7 @@ simulation.Simulation.prototype.testReload = function()
   }
 
   try {
+    mySim.setupApplicationLogging();
     mySim.addGlobalErrorHandler();
     mySim.runTest();
   }

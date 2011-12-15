@@ -130,6 +130,7 @@ var mySim = new simulation.Simulation(baseConf,args);
   }
 
   try {
+    mySim.setupApplicationLogging();
     mySim.addGlobalErrorHandler();
     mySim.runTest();    
   }

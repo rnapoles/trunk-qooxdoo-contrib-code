@@ -277,6 +277,7 @@ simulation.Simulation.prototype.replaceStrings = function(line)
   }
 
   try {
+    mySim.setupApplicationLogging();
     mySim.addGlobalErrorHandler();
     mySim.runTest();
   }

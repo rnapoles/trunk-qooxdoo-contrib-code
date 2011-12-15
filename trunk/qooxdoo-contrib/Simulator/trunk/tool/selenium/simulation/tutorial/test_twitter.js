@@ -40,6 +40,7 @@ var qxAppInst = simulation.Simulation.QXAPPINSTANCE;
     return;
   }
 
+  mySim.setupApplicationLogging();
   mySim.addGlobalErrorHandler();
   java.lang.Thread.sleep(5000);
   mySim.logGlobalErrors();
