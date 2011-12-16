@@ -65,6 +65,7 @@ simulation.Simulation.prototype.checkUrlParameter = function()
   }
   
   this.addGlobalErrorHandler();
+  this.setupApplicationLogging();
   
   var environmentTheme = "";
   var themeGetter = selWin + ".qx.core.Environment.get(\"qx.theme\")";

@@ -429,6 +429,7 @@ simulation.Simulation.prototype.runTest = function()
           this.log("New category " + this.currentCategory + ", reloading application", "debug");
           this.qxOpen();
           this.addGlobalErrorHandler();
+          this.setupApplicationLogging();
           this.addOwnFunction("chooseDemo", chooseDemo);
           this.getEval(selWin + ".qx.Simulation.chooseDemo('" + this.currentCategory + "','" + this.currentSample + "');");
         }
@@ -487,6 +488,7 @@ simulation.Simulation.prototype.runTest = function()
           this.log("New category " + this.currentCategory + ", reloading application", "debug");
           this.qxOpen();
           this.addGlobalErrorHandler();
+          this.setupApplicationLogging();
           this.addOwnFunction("chooseDemo", chooseDemo);
           this.addOwnFunction("getDemosByCategory", getDemosByCategory);
         }
