@@ -137,8 +137,8 @@ simulation.Simulation.prototype.testTab = function(tabName)
   }
 
   try {
-    mySim.setupApplicationLogging();
     mySim.addGlobalErrorHandler();
+    mySim.setupApplicationLogging();
     mySim.runTest();
   }
   catch(ex) {
