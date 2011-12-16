@@ -548,6 +548,7 @@ simulation.Simulation.prototype.openLog = function()
 
   try {
     mySim.addGlobalErrorHandler();
+    mySim.setupApplicationLogging();
     mySim.runTest();
   }
   catch(ex) {

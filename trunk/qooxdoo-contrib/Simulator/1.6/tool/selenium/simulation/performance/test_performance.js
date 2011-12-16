@@ -134,6 +134,7 @@ simulation.Simulation.prototype.runTest = function()
   
   try {
     mySim.addQxStuff();
+    mySim.setupApplicationLogging();
     mySim.runTest();
   }
   catch(ex) {

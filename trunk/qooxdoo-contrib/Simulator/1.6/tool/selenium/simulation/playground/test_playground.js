@@ -362,6 +362,7 @@ simulation.Simulation.prototype.runTestsWrapped = function(tests)
 
   try {
     mySim.addGlobalErrorHandler();
+    mySim.setupApplicationLogging();
     mySim.runTest();
   }
   catch(ex) {
