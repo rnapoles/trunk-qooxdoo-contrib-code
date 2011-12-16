@@ -323,7 +323,8 @@ mySim.runTest = function()
 
   try {
     mySim.addGlobalErrorHandler();
-    mySim.runTest();    
+    mySim.setupApplicationLogging();
+    mySim.runTest();
   }
   catch(ex) {
     mySim.testFailed = true;

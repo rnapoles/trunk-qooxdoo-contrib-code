@@ -136,10 +136,10 @@ simulation.Simulation.prototype.testTab = function(tabName)
     return;
   }
 
-  //try {
+  try {
     mySim.addGlobalErrorHandler();
+    mySim.setupApplicationLogging();
     mySim.runTest();
-  /*
   }
   catch(ex) {
     mySim.testFailed = true;
@@ -149,7 +149,6 @@ simulation.Simulation.prototype.testTab = function(tabName)
     }
     mySim.log(msg + "<br/>" + ex, "error");
   }
-  */
 
   mySim.logGlobalErrors();
   mySim.logResults();
