@@ -10,20 +10,14 @@ qooxdoo-titanium is a branch of qooxdoo implementing qooxdoo framework for Titan
 The javascript framework following Titanium is very rudimentary and is not as complete as
 qooxdoo and therefore qooxdoo mechanics have been implemented for Titanium.
 
-Additionally, qooxdoo mobile is only a desktop mobile framework and therefor hardware
+Additionally, qooxdoo mobile is only a desktop mobile framework and therefore hardware
 native functions can not be called other than supported by CSS.
 
 Please follow the instructions below to manage setting up qooxdoo-titanium.
 
+qooxdoo-titanium resides in github now.
 
-==== Windows ====
+branch: master (trunk)
 
-
-
-==== Linux ====
-
-
-==== Mac ====
-
-Link handling should be equivalent to Linux.
+git clone -b master git@github.com:stefanand/qooxdoo-titanium.git
 
