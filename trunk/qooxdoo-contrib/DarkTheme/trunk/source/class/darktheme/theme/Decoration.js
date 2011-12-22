@@ -1038,6 +1038,23 @@ qx.Theme.define("darktheme.theme.Decoration",
         insets    : [ 2, 5, 5, 2 ]
       }
     },
+    
+    /*
+    ---------------------------------------------------------------------------
+      VIRTUAL WIDGETS
+    ---------------------------------------------------------------------------
+    */
+
+    "group-item" :
+    {
+      decorator : qx.ui.decoration.Background,
+
+      style :
+      {
+        backgroundImage  : "decoration/group-item.png",
+        backgroundRepeat : "scale"
+      }
+    },
 	
 	/*
     ---------------------------------------------------------------------------

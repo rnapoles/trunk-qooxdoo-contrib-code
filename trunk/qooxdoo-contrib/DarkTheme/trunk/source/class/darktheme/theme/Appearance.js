@@ -155,41 +155,95 @@ qx.Theme.define("darktheme.theme.Appearance",
     ---------------------------------------------------------------------------
     */
 
-    "checkbox":
-    {
-      alias : "atom",
+    // "checkbox":
+    // {
+      // alias : "atom",
 
-      style : function(states)
-      {
+      // style : function(states)
+      // {
         // "disabled" state is not handled here with purpose. The image widget
         // does handle this already by replacing the current image with a
         // disabled version (if available). If no disabled image is found the
         // opacity style is used.
+        // var icon;
+        // if (states.checked && states.focused) {
+          // icon = "checkbox-checked-focused";
+        // } else if (states.checked && states.disabled) {
+          // icon = "checkbox-checked-disabled";
+        // } else if (states.checked && states.pressed) {
+          // icon = "checkbox-checked-pressed";
+        // } else if (states.checked && states.hovered) {
+          // icon = "checkbox-checked-hovered";
+        // } else if (states.checked) {
+          // icon = "checkbox-checked";
+        // } else if (states.focused) {
+          // icon = "checkbox-focused";
+        // } else if (states.pressed) {
+          // icon = "checkbox-pressed";
+        // } else if (states.hovered) {
+          // icon = "checkbox-hovered";
+        // } else {
+          // icon = "checkbox";
+        // }
+
+        // var invalid = states.invalid && !states.disabled ? "-invalid" : "";
+
+        // return {
+          // icon: "decoration/form/" + icon + invalid + ".png",
+          // gap: 6
+        // };
+      // }
+    // },
+    
+    "checkbox":
+    {
+      alias: "atom",
+
+      style: function(states)
+      {
         var icon;
-        if (states.checked && states.focused) {
-          icon = "checkbox-checked-focused";
-        } else if (states.checked && states.disabled) {
-          icon = "checkbox-checked-disabled";
-        } else if (states.checked && states.pressed) {
-          icon = "checkbox-checked-pressed";
-        } else if (states.checked && states.hovered) {
-          icon = "checkbox-checked-hovered";
-        } else if (states.checked) {
-          icon = "checkbox-checked";
-        } else if (states.focused) {
-          icon = "checkbox-focused";
-        } else if (states.pressed) {
-          icon = "checkbox-pressed";
-        } else if (states.hovered) {
-          icon = "checkbox-hovered";
-        } else {
-          icon = "checkbox";
+
+    // Checked
+        if (states.checked) {
+          if (states.disabled) {
+            icon = "checkbox-checked";
+          } else if (states.focused) {
+            icon = states.hovered ? "checkbox-checked-hovered-focused" : "checkbox-checked-focused";
+          } else if (states.hovered) {
+            icon = "checkbox-checked-hovered";
+          } else {
+            icon = "checkbox-checked";
+          }
+
+        // Undetermined
+        } else if (states.undetermined) {
+          if (states.disabled) {
+            icon = "checkbox-undetermined";
+          } else if (states.focused) {
+            icon = "checkbox-undetermined-focused";
+          } else if (states.hovered) {
+            icon = "checkbox-undetermined-hovered";
+          } else {
+            icon = "checkbox-undetermined";
+          }
+
+        // Focused & Hovered (when enabled)
+        } else if (!states.disabled) {
+          if (states.focused) {
+            icon = states.hovered ? "checkbox-hovered-focused" : "checkbox-focused";
+          } else if (states.hovered ) {
+            icon = "checkbox-hovered";
+          }
         }
 
+        // Unchecked
+        icon = icon || "checkbox";
+        
         var invalid = states.invalid && !states.disabled ? "-invalid" : "";
+        icon = "decoration/form/" + icon + invalid + ".png";
 
         return {
-          icon: "decoration/form/" + icon + invalid + ".png",
+          icon: icon,
           gap: 6
         };
       }
@@ -735,7 +789,7 @@ qx.Theme.define("darktheme.theme.Appearance",
       style : function(states)
       {
         return {
-          padding   : [1, 0, 1, 4],
+          padding   : [1, 0, 3, 4],
           textColor : states.invalid ? "invalid" : "text-title",
           font      : "bold"
         };
@@ -1635,7 +1689,7 @@ qx.Theme.define("darktheme.theme.Appearance",
       }
     },
 
-    "table-scroller" : "widget",
+    "table-scroller": "widget",
 
     "table-scroller/scrollbar-x": "scrollbar",
     "table-scroller/scrollbar-y": "scrollbar",
@@ -1690,7 +1744,6 @@ qx.Theme.define("darktheme.theme.Appearance",
         return {
           minWidth  : 13,
           minHeight : 20,
-          // padding   : states.hovered ? [ 3, 4, 3, 4 ] : [ 3, 4 ],
           padding   : states.hovered ? [ 1, 3, 3, 5 ] : [ 0, 4, 4, 4 ],
           decorator : states.hovered ? "table-header-cell-selected" : "table-header-cell",
           sortIcon  : states.sorted ?
@@ -2542,6 +2595,34 @@ qx.Theme.define("darktheme.theme.Appearance",
     "virtual-list" : "list",
     "virtual-list/row-layer" : "row-layer",
 
+    "virtual-selectbox" : "selectbox",
+    "virtual-selectbox/dropdown" : "popup",
+    "virtual-selectbox/dropdown/list" : {
+      alias : "virtual-list"
+    },
+
+    "virtual-combobox" : "combobox",
+    "virtual-combobox/dropdown" : "popup",
+    "virtual-combobox/dropdown/list" : {
+      alias : "virtual-list"
+    },
+    
+    "virtual-tree":
+    {
+      include: "tree",
+      alias: "tree",
+
+      style: function(states)
+      {
+        return {
+          itemHeight: 20
+        };
+      }
+    },
+
+    "virtual-tree-folder" : "tree-folder",
+    "virtual-tree-file" : "tree-file",
+
     "row-layer" :
     {
       style : function(states)
@@ -2552,7 +2633,7 @@ qx.Theme.define("darktheme.theme.Appearance",
         };
       }
     },
-
+    
     "column-layer" : "widget",
 
     "cell" :
@@ -2594,13 +2675,29 @@ qx.Theme.define("darktheme.theme.Appearance",
     "cell-atom" : "cell",
     "cell-date" : "cell",
     "cell-html" : "cell",
-	
-	/*
+    
+    "group-item" :
+    {
+      include : "label",
+      alias : "label",
+
+      style : function(states)
+      {
+        return {
+          padding : 4,
+          decorator : "group-item",
+          textColor : "groupitem-text",
+          font: "bold"
+        };
+      }
+    },
+    
+    /*
     ---------------------------------------------------------------------------
       WINDOW
     ---------------------------------------------------------------------------
     */
-	"window":
+    "window":
     {
       style: function(states)
       {
@@ -2613,7 +2710,7 @@ qx.Theme.define("darktheme.theme.Appearance",
       }
     },
 	
-	"window/pane": "widget",
+    "window/pane": "widget",
     
     "window/captionbar":
     {
@@ -2638,7 +2735,7 @@ qx.Theme.define("darktheme.theme.Appearance",
       }
     },
 	
-	"window/title" :
+    "window/title" :
     {
       style : function(states)
       {
@@ -2652,34 +2749,34 @@ qx.Theme.define("darktheme.theme.Appearance",
       }
     },
 	
-	"window/close-button":
+    "window/close-button":
     {
       alias: "atom",
 
       style: function(states)
       {
-	    var icon;
-		switch (true)
-		{
-		  case states.pressed:
-		    icon = "decoration/window/close-button-pressed.png";
-			break;
+        var icon;
+        switch (true)
+        {
+          case states.pressed:
+            icon = "decoration/window/close-button-pressed.png";
+            break;
 			
-		  case states.hovered:
-		    icon = "decoration/window/close-button-hovered.png";
-			break;
+          case states.hovered:
+            icon = "decoration/window/close-button-hovered.png";
+            break;
 			
-		  default:
-		    icon = "decoration/window/close-button.png";
-		}
+          default:
+            icon = "decoration/window/close-button.png";
+        }
         return {
           icon: icon,
-          margin : [ 2, 2, 2, 1 ]
+          margin : [ 1, 3, 3, 1 ]
         };
       }
     },
 	
-	"window/maximize-button":
+    "window/maximize-button":
     {
       alias: "atom",
 
@@ -2701,12 +2798,12 @@ qx.Theme.define("darktheme.theme.Appearance",
 		}
         return {
           icon: icon,
-          margin: [ 2, 2, 2, 2 ]  
+          margin : [ 1, 3, 3, 1 ]  
         };
       }
     },
 	
-	"window/minimize-button":
+    "window/minimize-button":
     {
       alias: "atom",
 
@@ -2728,7 +2825,7 @@ qx.Theme.define("darktheme.theme.Appearance",
 		}
         return {
           icon: icon,
-          margin : [ 2, 2, 2, 1 ] 
+          margin : [ 1, 3, 3, 1 ] 
         };
       }
     },
@@ -2755,7 +2852,7 @@ qx.Theme.define("darktheme.theme.Appearance",
 		}
         return {
           icon: icon,
-          margin : [ 2, 2, 2, 1 ] 
+          margin : [ 1, 3, 3, 1 ]
         };
       }
     },
@@ -2772,7 +2869,7 @@ qx.Theme.define("darktheme.theme.Appearance",
       }
     },
     
-	"window/statusbar-text": {}
+    "window/statusbar-text": {}
 	
   }
 });

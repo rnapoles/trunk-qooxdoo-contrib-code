@@ -19,7 +19,7 @@ qx.Theme.define("darktheme.DarkTheme",
     color : darktheme.theme.Color,
     decoration : darktheme.theme.Decoration,
     font : darktheme.theme.Font,
-    icon : qx.theme.icon.Oxygen,
+    icon : qx.theme.icon.Tango,
     appearance : darktheme.theme.Appearance
   }
 });

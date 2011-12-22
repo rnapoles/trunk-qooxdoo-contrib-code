@@ -24,6 +24,7 @@
     "profiling",
     "source",
     "source-all",
+    "source-hybrid",
     "test",
     "test-source",
     "translation"
@@ -32,7 +33,7 @@
   "let" :
   {
     "APPLICATION"  : "darktheme.demo",
-    "QOOXDOO_PATH" : "../../../../qooxdoo/1.5",
+    "QOOXDOO_PATH" : "../../../../qooxdoo/1.6",
     "QXTHEME"      : "darktheme.DarkTheme",
     "API_EXCLUDE"  : ["qx.test.*", "${APPLICATION}.theme.*", "${APPLICATION}.test.*"],
     "LOCALES"      : [ "en" ],

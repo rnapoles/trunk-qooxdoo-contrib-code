@@ -14,9 +14,9 @@
 
 qx.Theme.define("darktheme.theme.Color",
 {
-  extend: qx.theme.modern.Color,
+  // extend: qx.theme.modern.Color,
   
-  colors :
+  colors:
   {
     /*
     ---------------------------------------------------------------------------
@@ -74,6 +74,7 @@ qx.Theme.define("darktheme.theme.Color",
 
     // group boxes
 	"text-title": "white",
+    "groupitem-text": "white",
 
     // text fields
 	"text-input": "yellow",
@@ -140,7 +141,7 @@ qx.Theme.define("darktheme.theme.Color",
     // own table colors
     "table-focus-indicator": "#80B4EF",
     "table-row-background-focused-selected": "#3E646E",
-    "table-row-background-focused": "transparent",
+    "table-row-background-focused": "#CCD7E4",
     "table-row-background-selected": "#3E646E",
 
     // equal to "background-pane" and "background-odd"
