@@ -281,22 +281,22 @@ qx.Class.define("darktheme.demo.EditorWindow",
       return menu;
     },
 
-  getToolbarEntries : function()
+    getToolbarEntries : function()
     {
       return [
         {
-          bold:                { text: "Format Bold", image: "qx/icon/Oxygen/16/actions/format-text-bold.png", action: this.editor.setBold },
-          italic:              { text: "Format Italic", image: "qx/icon/Oxygen/16/actions/format-text-italic.png", action: this.editor.setItalic },
-          underline:           { text: "Format Underline", image: "qx/icon/Oxygen/16/actions/format-text-underline.png", action: this.editor.setUnderline },
-          strikethrough:       { text: "Format Strikethrough", image: "qx/icon/Oxygen/16/actions/format-text-strikethrough.png", action: this.editor.setStrikeThrough },
-          removeFormat:        { text: "Remove Format", image: "qx/icon/Oxygen/16/actions/edit-clear.png", action: this.editor.removeFormat }
+          bold:                { text: "Format Bold", image: "icon/16/actions/format-text-bold.png", action: this.editor.setBold },
+          italic:              { text: "Format Italic", image: "icon/16/actions/format-text-italic.png", action: this.editor.setItalic },
+          underline:           { text: "Format Underline", image: "icon/16/actions/format-text-underline.png", action: this.editor.setUnderline },
+          strikethrough:       { text: "Format Strikethrough", image: "icon/16/actions/format-text-strikethrough.png", action: this.editor.setStrikeThrough },
+          removeFormat:        { text: "Remove Format", image: "icon/16/actions/edit-clear.png", action: this.editor.removeFormat }
         },
 
         {
-          alignLeft:           { text: "Align Left", image: "qx/icon/Oxygen/16/actions/format-justify-left.png", action: this.editor.setJustifyLeft },
-          alignCenter:         { text: "Align Center", image: "qx/icon/Oxygen/16/actions/format-justify-center.png", action: this.editor.setJustifyCenter },
-          alignRight:          { text: "Align Right", image: "qx/icon/Oxygen/16/actions/format-justify-right.png", action: this.editor.setJustifyRight },
-          alignJustify:        { text: "Align Justify", image: "qx/icon/Oxygen/16/actions/format-justify-fill.png", action: this.editor.setJustifyFull }
+          alignLeft:           { text: "Align Left", image: "icon/16/actions/format-justify-left.png", action: this.editor.setJustifyLeft },
+          alignCenter:         { text: "Align Center", image: "icon/16/actions/format-justify-center.png", action: this.editor.setJustifyCenter },
+          alignRight:          { text: "Align Right", image: "icon/16/actions/format-justify-right.png", action: this.editor.setJustifyRight },
+          alignJustify:        { text: "Align Justify", image: "icon/16/actions/format-justify-fill.png", action: this.editor.setJustifyFull }
         },
 
         {
@@ -307,15 +307,15 @@ qx.Class.define("darktheme.demo.EditorWindow",
         },
 
         {
-          indent:              { text: "Indent More", image: "qx/icon/Oxygen/16/actions/format-indent-more.png", action: this.editor.insertIndent },
-          outdent:             { text: "Indent Less", image: "qx/icon/Oxygen/16/actions/format-indent-less.png", action: this.editor.insertOutdent }
+          indent:              { text: "Indent More", image: "icon/16/actions/format-indent-more.png", action: this.editor.insertIndent },
+          outdent:             { text: "Indent Less", image: "icon/16/actions/format-indent-less.png", action: this.editor.insertOutdent }
         },
 
 
         {
-          insertImage:         { text: "Insert Image", image: "qx/icon/Oxygen/16/actions/insert-image.png", action: this.__insertImageHandler },
+          insertImage:         { text: "Insert Image", image: "icon/16/actions/insert-image.png", action: this.__insertImageHandler },
           insertTable:         { text: "Insert Table", image: "darktheme.demo/editor/insert-table.png", action: this.__insertTableHandler },
-          insertLink:          { text: "Insert Link", image: "qx/icon/Oxygen/16/actions/insert-link.png", action: this.__insertLinkHandler },
+          insertLink:          { text: "Insert Link", image: "icon/16/actions/insert-link.png", action: this.__insertLinkHandler },
           insertHTML:          { text: "Insert HTML Code", image: "darktheme.demo/editor/insert-text.png", action: this.__insertHTMLHandler },
           insertHR:            { text: "Insert Horizontal Ruler", image: "darktheme.demo/editor/insert-horizontal-rule.png", action: this.editor.insertHorizontalRuler }
         },
@@ -326,8 +326,8 @@ qx.Class.define("darktheme.demo.EditorWindow",
         },
 
         {
-          undo:                { text: "Undo Last Change", image: "qx/icon/Oxygen/16/actions/edit-undo.png", action: this.editor.undo },
-          redo:                { text: "Redo Last Undo Step", image: "qx/icon/Oxygen/16/actions/edit-redo.png", action: this.editor.redo }
+          undo:                { text: "Undo Last Change", image: "icon/16/actions/edit-undo.png", action: this.editor.undo },
+          redo:                { text: "Redo Last Undo Step", image: "icon/16/actions/edit-redo.png", action: this.editor.redo }
         }
       ];
     },
@@ -553,18 +553,18 @@ qx.Class.define("darktheme.demo.EditorWindow",
     {
       return [
         {
-          bold:                { text: "Format Bold", image: "qx/icon/Oxygen/16/actions/format-text-bold.png", action: this.editor.setBold },
-          italic:              { text: "Format Italic", image: "qx/icon/Oxygen/16/actions/format-text-italic.png", action: this.editor.setItalic },
-          underline:           { text: "Format Underline", image: "qx/icon/Oxygen/16/actions/format-text-underline.png", action: this.editor.setUnderline },
-          strikethrough:       { text: "Format Strikethrough", image: "qx/icon/Oxygen/16/actions/format-text-strikethrough.png", action: this.editor.setStrikeThrough },
-          removeFormat:        { text: "Remove Format", image: "qx/icon/Oxygen/16/actions/edit-clear.png", action: this.editor.removeFormat }
+          bold:                { text: "Format Bold", image: "icon/16/actions/format-text-bold.png", action: this.editor.setBold },
+          italic:              { text: "Format Italic", image: "icon/16/actions/format-text-italic.png", action: this.editor.setItalic },
+          underline:           { text: "Format Underline", image: "icon/16/actions/format-text-underline.png", action: this.editor.setUnderline },
+          strikethrough:       { text: "Format Strikethrough", image: "icon/16/actions/format-text-strikethrough.png", action: this.editor.setStrikeThrough },
+          removeFormat:        { text: "Remove Format", image: "icon/16/actions/edit-clear.png", action: this.editor.removeFormat }
         },
 
         {
-          alignLeft:           { text: "Align Left", image: "qx/icon/Oxygen/16/actions/format-justify-left.png", action: this.editor.setJustifyLeft },
-          alignCenter:         { text: "Align Center", image: "qx/icon/Oxygen/16/actions/format-justify-center.png", action: this.editor.setJustifyCenter },
-          alignRight:          { text: "Align Right", image: "qx/icon/Oxygen/16/actions/format-justify-right.png", action: this.editor.setJustifyRight },
-          alignJustify:        { text: "Align Justify", image: "qx/icon/Oxygen/16/actions/format-justify-fill.png", action: this.editor.setJustifyFull }
+          alignLeft:           { text: "Align Left", image: "icon/16/actions/format-justify-left.png", action: this.editor.setJustifyLeft },
+          alignCenter:         { text: "Align Center", image: "icon/16/actions/format-justify-center.png", action: this.editor.setJustifyCenter },
+          alignRight:          { text: "Align Right", image: "icon/16/actions/format-justify-right.png", action: this.editor.setJustifyRight },
+          alignJustify:        { text: "Align Justify", image: "icon/16/actions/format-justify-fill.png", action: this.editor.setJustifyFull }
         },
 
         {
@@ -575,15 +575,15 @@ qx.Class.define("darktheme.demo.EditorWindow",
         },
 
         {
-          indent:              { text: "Indent More", image: "qx/icon/Oxygen/16/actions/format-indent-more.png", action: this.editor.insertIndent },
-          outdent:             { text: "Indent Less", image: "qx/icon/Oxygen/16/actions/format-indent-less.png", action: this.editor.insertOutdent }
+          indent:              { text: "Indent More", image: "icon/16/actions/format-indent-more.png", action: this.editor.insertIndent },
+          outdent:             { text: "Indent Less", image: "icon/16/actions/format-indent-less.png", action: this.editor.insertOutdent }
         },
 
 
         {
-          insertImage:         { text: "Insert Image", image: "qx/icon/Oxygen/16/actions/insert-image.png", action: this.__insertImageHandler },
+          insertImage:         { text: "Insert Image", image: "icon/16/actions/insert-image.png", action: this.__insertImageHandler },
           insertTable:         { text: "Insert Table", image: "darktheme.demo/editor/insert-table.png", action: this.__insertTableHandler },
-          insertLink:          { text: "Insert Link", image: "qx/icon/Oxygen/16/actions/insert-link.png", action: this.__insertLinkHandler },
+          insertLink:          { text: "Insert Link", image: "icon/16/actions/insert-link.png", action: this.__insertLinkHandler },
           insertHTML:          { text: "Insert HTML Code", image: "darktheme.demo/editor/insert-text.png", action: this.__insertHTMLHandler },
           insertHR:            { text: "Insert Horizontal Ruler", image: "darktheme.demo/editor/insert-horizontal-rule.png", action: this.editor.insertHorizontalRuler }
         },
@@ -594,16 +594,16 @@ qx.Class.define("darktheme.demo.EditorWindow",
         },
 
         {
-          undo:                { text: "Undo Last Change", image: "qx/icon/Oxygen/16/actions/edit-undo.png", action: this.editor.undo },
-          redo:                { text: "Redo Last Undo Step", image: "qx/icon/Oxygen/16/actions/edit-redo.png", action: this.editor.redo }
+          undo:                { text: "Undo Last Change", image: "icon/16/actions/edit-undo.png", action: this.editor.undo },
+          redo:                { text: "Redo Last Undo Step", image: "icon/16/actions/edit-redo.png", action: this.editor.redo }
         }
       ];
     },
 
-  getToolBar : function()
+    getToolBar : function()
     {
-    var toolbar = new qx.ui.toolbar.ToolBar;
-
+      var toolbar = new qx.ui.toolbar.ToolBar;
+    
       // Put together toolbar entries
       var button;
       var toolbarEntries = this.getToolbarEntries();
@@ -611,11 +611,11 @@ qx.Class.define("darktheme.demo.EditorWindow",
       {
         var part = new qx.ui.toolbar.Part;
         toolbar.add(part);
-
+    
         for (var entry in toolbarEntries[i])
         {
           var infos = toolbarEntries[i][entry];
-
+    
           if(infos.custom) {
             button = infos.custom.call(this);
           }
@@ -631,7 +631,7 @@ qx.Class.define("darktheme.demo.EditorWindow",
           part.add(button);
         }
       }
-    return toolbar;
-  }
+      return toolbar;
+    }
   }
 });
