@@ -213,9 +213,13 @@ qx.Class.define("silverbluetheme.demo.FormWindow",
     {
       var boolLabel1 = new qx.ui.basic.Label("CheckBox:");
       var bool1 = new qx.ui.form.CheckBox("CheckBox");
+      
+      var boolLabel2 = new qx.ui.basic.Label("Tri-State:");
+      var bool2 = new qx.ui.form.CheckBox("CheckBox");
+      bool2.set({triState: true, value: null});
     
-      var boolLabel2 = new qx.ui.basic.Label("RadioButtons:");
-      var bool2 = new qx.ui.form.RadioButton("RadioButton");
+      var boolLabel3 = new qx.ui.basic.Label("RadioButton:");
+      var bool3 = new qx.ui.form.RadioButton("RadioButton");
     
       var boolBoxLayout = new qx.ui.layout.Grid(5, 8);
       boolBoxLayout.setColumnAlign(0, "right", "middle");
@@ -226,6 +230,8 @@ qx.Class.define("silverbluetheme.demo.FormWindow",
       boolBox.add(bool1, {row: 0, column: 1});
       boolBox.add(boolLabel2, {row: 1, column: 0});
       boolBox.add(bool2, {row: 1, column: 1});
+      boolBox.add(boolLabel3, {row: 2, column: 0});
+      boolBox.add(bool3, {row: 2, column: 1});
     
       return boolBox;
     },

@@ -2482,26 +2482,54 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
       VIRTUAL WIDGETS
     ---------------------------------------------------------------------------
     */
+    
+    "virtual-list" : "list",
+    "virtual-list/row-layer" : "row-layer",
 
-    "virtual-list": "list",
-    "virtual-list/row-layer": "row-layer",
+    "virtual-selectbox" : "selectbox",
+    "virtual-selectbox/dropdown" : "popup",
+    "virtual-selectbox/dropdown/list" : {
+      alias : "virtual-list"
+    },
 
-    "row-layer":
+    "virtual-combobox" : "combobox",
+    "virtual-combobox/dropdown" : "popup",
+    "virtual-combobox/dropdown/list" : {
+      alias : "virtual-list"
+    },
+    
+    "virtual-tree":
     {
+      include: "tree",
+      alias: "tree",
+
       style: function(states)
       {
         return {
-          colorEven: "white",
-          colorOdd: "white"
+          itemHeight: 20
         };
       }
     },
 
-    "column-layer": "widget",
+    "virtual-tree-folder" : "tree-folder",
+    "virtual-tree-file" : "tree-file",
 
-    "cell":
+    "row-layer" :
     {
-      style: function(states)
+      style : function(states)
+      {
+        return {
+          colorEven : "white",
+          colorOdd : "white"
+        };
+      }
+    },
+    
+    "column-layer" : "widget",
+
+    "cell" :
+    {
+      style : function(states)
       {
         return {
           textColor: states.selected ? "text-selected" : "text-label",
@@ -2511,36 +2539,51 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
       }
     },
 
-    "cell-string": "cell",
-    "cell-number":
+    "cell-string" : "cell",
+    "cell-number" :
     {
-      include: "cell",
-      style: function(states)
+      include : "cell",
+      style : function(states)
       {
         return {
-          textAlign: "right"
+          textAlign : "right"
         };
       }
     },
-    "cell-image": "cell",
-    "cell-boolean":
+    "cell-image" : "cell",
+    "cell-boolean" :
     {
-      include: "cell",
-
-      style: function(states)
+      include : "cell",
+      style : function(states)
       {
         return {
-          iconTrue: "decoration/table/boolean-true.png",
-          iconFalse: "decoration/table/boolean-false.png"
+          iconTrue : "decoration/table/boolean-true.png",
+          iconFalse : "decoration/table/boolean-false.png"
         };
       }
     },
-    "cell-atom": "cell",
-    "cell-date": "cell",
-    "cell-html": "cell",
+    
+    "cell-atom" : "cell",
+    "cell-date" : "cell",
+    "cell-html" : "cell",
+    
+    "group-item" :
+    {
+      include : "label",
+      alias : "label",
 
-
-  /*
+      style : function(states)
+      {
+        return {
+          padding : 4,
+          decorator : "group-item",
+          textColor : "groupitem-text",
+          font: "bold"
+        };
+      }
+    },
+    
+    /*
     ---------------------------------------------------------------------------
       WINDOW
     ---------------------------------------------------------------------------
