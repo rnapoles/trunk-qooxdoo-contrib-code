@@ -159,7 +159,7 @@ qx.Theme.define("silverbluetheme.theme.Decoration",
 
     style:
     {
-      baseImage: "decoration/button/button-red2.png",
+      baseImage: "decoration/button/button-red.png",
     insets: [3]
     }
   },
