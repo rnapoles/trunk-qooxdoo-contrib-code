@@ -75,13 +75,8 @@ simulation.Simulation.prototype.reload = function()
 
 mySim.runTest = function()
 {
-  var predefinedItemLabel = "My first ToDo";
   var customItemLabel = "Pass the Test";
   this.waitForElementPresent("add");
-  
-  this.log("Clearing predefined item " + predefinedItemLabel, "info");
-  this.testClearItem(predefinedItemLabel);
-  this.log("Predefined item " + predefinedItemLabel + " cleared", "info");
   
   this.log("Adding custom item " + customItemLabel, "info");
   this.testAddItem(customItemLabel);
