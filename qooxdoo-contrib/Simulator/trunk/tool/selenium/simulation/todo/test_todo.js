@@ -41,7 +41,7 @@ simulation.Simulation.prototype.testClearItem = function(itemLabel)
 {
   var labelLocator = '//label[contains(text(), "' + itemLabel + '")]';
   this.assertElementPresent(labelLocator);
-  this.__sel.click(labelLocator);
+  this.__sel.qxClick(labelLocator);
   this.__sel.click("clear");
   this.assertNotElementPresent(labelLocator);
 };
