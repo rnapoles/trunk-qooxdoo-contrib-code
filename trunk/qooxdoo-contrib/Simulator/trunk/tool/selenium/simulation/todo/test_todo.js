@@ -79,8 +79,14 @@ mySim.runTest = function()
   this.waitForElementPresent("add");
   
   this.log("Adding custom item " + customItemLabel, "info");
-  this.testAddItem(customItemLabel);
-  this.log("Custom item " + customItemLabel + " added", "info");
+  try {
+    this.testAddItem(customItemLabel);
+    this.log("Custom item " + customItemLabel + " added", "info");
+  }
+  catch(ex) {
+    this.log("Could not create custom item: " + ex.message, "error");
+    return;
+  }
   
   this.log("Reloading application", "info");
   if (!this.reload()) {
@@ -88,8 +94,13 @@ mySim.runTest = function()
   }
   
   this.log("Clearing custom item " + customItemLabel, "info");
-  this.testClearItem(customItemLabel);
-  this.log("Custom item " + customItemLabel + " cleared", "info");
+  try {
+    this.testClearItem(customItemLabel);
+    this.log("Custom item " + customItemLabel + " cleared", "info");
+  }
+  catch(ex) {
+    this.log("Could not clear custom item: " + ex.message, "error");
+  }
 };
 
 // - Main --------------------------------------------------------------------
