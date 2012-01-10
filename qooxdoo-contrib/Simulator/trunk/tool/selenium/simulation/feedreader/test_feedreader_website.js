@@ -116,23 +116,24 @@ simulation.Simulation.prototype.checkFeeds = function(titles)
 simulation.Simulation.prototype.checkRandomArticle = function(titles)
 {
   var index = Math.floor(Math.random() * (titles.length));
+  var title = titles[index].replace(/([^a-z0-9\ -'"])/gi, "");
   var labelLoc = "//label[text() = '" + titles[index] + "']";
   
   try {
     this.__sel.click(labelLoc);
   }
   catch(ex) {
-    this.log("Error while clicking article '" + titles[index] + "': " + ex.message, "error");
+    this.log("Error while clicking article '" + title + "': " + ex.message, "error");
     return;
   }
   Packages.java.lang.Thread.sleep(1500);
   
   var visible = this.__sel.isVisible(labelLoc + "/following-sibling::div[@class='article-content']");
   if (!visible) {
-    this.log("Content of article '" + titles[index] + "' is not displayed!", "error");
+    this.log("Content of article '" + title + "' is not displayed!", "error");
   }
   else {
-    this.log("Content of article '" + titles[index] + "' displayed correctly.", "info");
+    this.log("Content of article '" + title + "' displayed correctly.", "info");
   }
 };
 
