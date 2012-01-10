@@ -41,7 +41,9 @@ simulation.Simulation.prototype.testClearItem = function(itemLabel)
 {
   var labelLocator = '//label[contains(text(), "' + itemLabel + '")]';
   this.assertElementPresent(labelLocator);
-  this.__sel.qxClick(labelLocator);
+  //Synthetic click events on the label will not trigger checkbox selection
+  //changes in Opera, so we need to click the checkbox itself
+  this.__sel.qxClick(labelLocator + "/preceding-sibling::input");
   this.__sel.click("clear");
   this.assertNotElementPresent(labelLocator);
 };
