@@ -35,26 +35,6 @@ simulation.Simulation.prototype.checkArticle = function()
   }  
 };
 
-simulation.Simulation.prototype.getInnerHtmlFromCollection = function(query)
-{
-  var getter="var titles = [];" +
-  "var coll = selenium.browserbot.getCurrentWindow().qx.bom.Collection.query('" + query + "');" +
-  "for (var i=0, l=coll.length; i<l; i++) {" +
-    "titles.push(coll[i].innerHTML)" +
-  "}" +
-  "selenium.browserbot.getCurrentWindow().qx.lang.Json.stringify(titles);";
-  
-  try {
-    var stringResult = "var temp=" + String(this.__sel.getEval(getter));
-  }
-  catch(ex) {
-    this.log("Couldn't get innerHTML for selector " + query + ": " + ex.message);
-    return [];
-  }
-  eval(stringResult);
-  return temp;
-};
-
 
 simulation.Simulation.prototype.getFeedTitles = function()
 {
@@ -137,12 +117,6 @@ simulation.Simulation.prototype.checkRandomArticle = function(titles)
   }
 };
 
-
-simulation.Simulation.prototype.waitForElementPresent = function(locator, timeout)
-{
-  var condition = 'selenium.isElementPresent("' + locator + '")';
-  this.__sel.waitForCondition(condition, timeout || 5000);
-};
 
 mySim.runTest = function()
 {
