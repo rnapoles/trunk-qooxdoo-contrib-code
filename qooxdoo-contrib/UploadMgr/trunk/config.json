@@ -29,8 +29,7 @@
   {
     "APPLICATION"  : "com.zenesis.qx.upload",
     "APPLICATION_MAIN_CLASS" : "${APPLICATION}.demo.Demo",
-    "QOOXDOO_PATH" : "../../qooxdoo/1.5",
-    //"QXTHEME"      : "uploadmgr.theme.modern.Theme",
+    "QOOXDOO_PATH" : "../../qooxdoo/1.6",
     "QXTHEME"      : "qx.theme.Modern",
     "API_EXCLUDE"  : ["qx.test.*", "uploadmgr.demo.*", "${APPLICATION}.theme.*", "${APPLICATION}.test.*", "${APPLICATION}.simulation.*"],
     "LOCALES"      : [ "en" ],

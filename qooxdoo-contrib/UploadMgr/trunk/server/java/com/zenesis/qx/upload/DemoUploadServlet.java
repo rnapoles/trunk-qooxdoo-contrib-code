@@ -16,6 +16,7 @@ import org.apache.log4j.Logger;
 
 import com.oreilly.servlet.multipart.FilePart;
 import com.oreilly.servlet.multipart.MultipartParser;
+import com.oreilly.servlet.multipart.ParamPart;
 import com.oreilly.servlet.multipart.Part;
 
 /**
@@ -40,12 +41,39 @@ public class DemoUploadServlet extends HttpServlet {
         super.init(config);
         String strUploadFilesTo = config.getInitParameter("uploadFilesTo");
         if (strUploadFilesTo == null || strUploadFilesTo.trim().length() == 0)
-        	strUploadFilesTo = getServletContext().getRealPath("uploaded-files");
-        uploadFilesToDir = new File(strUploadFilesTo);
+            uploadFilesToDir = (File)config.getServletContext().getAttribute("javax.servlet.context.tempdir");
+        else
+        	uploadFilesToDir = new File(strUploadFilesTo);
         uploadFilesToDir.mkdirs();
     }
 
-    /** 
+    /* (non-Javadoc)
+	 * @see javax.servlet.http.HttpServlet#doOptions(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+	 */
+	@Override
+	protected void doOptions(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		super.doOptions(request, response);
+		
+		/*
+		 * NOTE:: This is used to allow posts from ANY website to this server - this is so that the demo browser
+		 * (http://demo.qooxdoo.org/contrib/demobrowser/) is able to have something to upload to, but it's likely
+		 * that you won't want this in your code because it's a security risk.
+		 */
+		if (request.getHeader("Access-Control-Request-Method").equals("POST")) {
+			String origin = request.getHeader("Origin");
+			log.info("Received request for Origin: " + origin + " from " + request.getRemoteAddr());
+			response.setHeader("Access-Control-Allow-Origin", "*");
+			response.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+			response.setHeader("Access-Control-Allow-Headers", "content-type,x-file-name,x-requested-with");
+			response.setHeader("Access-Control-Max-Age", "100");
+			response.setHeader("Vary", "Accept-Encoding");
+			response.setHeader("Accept-Encoding", "gzip");
+			response.setHeader("Connection", "Keep-Alive");
+			response.setHeader("Content-Type", "text/plain");
+		}
+	}
+
+	/** 
      * Handles the HTTP <code>POST</code> method.
      * @param request servlet request
      * @param response servlet response
@@ -55,6 +83,9 @@ public class DemoUploadServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException {
     	PrintWriter writer = null;
+
+    	// Requored only for cross-origin requests (@see doOptions())
+		response.setHeader("Access-Control-Allow-Origin", "*");
 
         try {
             writer = response.getWriter();
@@ -100,16 +131,18 @@ public class DemoUploadServlet extends HttpServlet {
 		MultipartParser parser = new MultipartParser(request, Integer.MAX_VALUE, true, true, null);
 		Part part;
 		while ((part = parser.readNextPart()) != null) {
-			if (!part.isFile())
-				continue;
-			
-			// Get the file details
-			FilePart filePart = (FilePart) part;
-			filePart.setRenamePolicy(null);
-			String filename = filePart.getFileName();
-			
-			// Save the file
-            receiveFile(filePart.getInputStream(), new File(uploadFilesToDir, filename));
+			if (part.isFile()) {
+				// Get the file details
+				FilePart filePart = (FilePart) part;
+				filePart.setRenamePolicy(null);
+				String filename = filePart.getFileName();
+				
+				// Save the file
+	            receiveFile(filePart.getInputStream(), new File(uploadFilesToDir, filename));
+			} else {
+				ParamPart paramPart = (ParamPart) part;
+				log.info("received param " + paramPart.getName() + "=" + paramPart.getStringValue());
+			}
 		}
     }
     
