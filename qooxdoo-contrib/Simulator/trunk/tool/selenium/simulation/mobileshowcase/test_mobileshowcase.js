@@ -20,6 +20,30 @@ var mySim = new simulation.Simulation(baseConf,args);
 //var selWin = simulation.Simulation.SELENIUMWINDOW;
 //var qxAppInst = simulation.Simulation.QXAPPINSTANCE;
 
+simulation.Simulation.prototype.addListItemLabelGetter = function()
+{
+  var titleGetter = function() {
+    var labels = [];
+    var items = selenium.browserbot.getCurrentWindow().document.getElementsByClassName("list-itemlabel");
+    for (var i=0,l=items.length; i<l; i++) {
+      labels.push(items[i].textContent);
+    }
+    return selenium.browserbot.getCurrentWindow().JSON.stringify(labels);
+  };
+  
+  this.addOwnFunction("getTitles", titleGetter);
+};
+
+simulation.Simulation.prototype.getListItemLabels = function()
+{
+  var selWin = simulation.Simulation.SELENIUMWINDOW;
+  //var qxAppInst = simulation.Simulation.QXAPPINSTANCE;
+  var titlesJson = this.getEval(selWin + ".qx.Simulation.getTitles();", "Getting feed titles");
+  eval("var titles = " + titlesJson);
+  
+  return titles;
+};
+
 simulation.Simulation.prototype.selectItem = function(itemName) {
   this.qxClick("//div[text() = '" + itemName + "']");
   this.waitForElementPresent("//div[@class='navigationbar-backbutton']");
@@ -32,9 +56,10 @@ simulation.Simulation.prototype.goBack = function() {
 
 mySim.runTest = function()
 {
-  var listItems = ["Form Elements", "List", "Tab Bar", "Toolbar", "Events", "Page Transitions"];
+  this.waitForElementPresent("//h1[text() = 'Overview']");
   
-  this.waitForElementPresent("//div[text() = 'Page Transitions']");
+  this.addListItemLabelGetter();
+  var listItems = this.getListItemLabels();
   
   for (var i=0, l=listItems.length; i<l; i++) {
     var testMethodName = "test" + listItems[i].replace(/ /i, "");
