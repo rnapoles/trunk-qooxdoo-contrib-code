@@ -93,7 +93,7 @@ simulation.Simulation.prototype.testEvents = function()
   this.waitForElementPresent("//div[contains(text(), 'touchstart touchend tap')]");
 };
 
-simulation.Simulation.prototype.testToolbar = function()
+simulation.Simulation.prototype.testToolbarX = function()
 {
   this.log("Testing Toolbar", "info");
   this.waitForElementPresent("//div[contains(@class, 'toolbar')]");
@@ -119,7 +119,6 @@ simulation.Simulation.prototype.testToolbar = function()
   }
   
   //click load button
-  /*
   this.qxClick("//div[contains(@class, 'toolbar-button')]/descendant::div[text() = 'Load']");
   var loadingDialogLocator = "//div[text() = 'Loading...']";
   this.waitForElementPresent(loadingDialogLocator);
@@ -128,7 +127,6 @@ simulation.Simulation.prototype.testToolbar = function()
   if (this.__sel.isVisible(loadingDialogLocator)) {
     throw new Error("Loading Dialog did not disappear!");
   }
-  */
 };
 
 mySim.runTest = function()
@@ -143,14 +141,12 @@ mySim.runTest = function()
     this.log("Selecting item " + listItems[i], "info");
     this.selectItem(listItems[i]);
     if (this[testMethodName] && typeof this[testMethodName] == "function") {
-      //try {
+      try {
         this[testMethodName]();
-      /*
       }
       catch(ex) {
         this.log("Error while testing " + listItems[i] + ": " + ex.message, "error");
       }
-      */
     }
     this.log("Going back " + i, "info");
     this.goBack("Overview");
