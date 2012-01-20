@@ -9,6 +9,7 @@
 
    Authors:
      * Guilherme R. Aiolfi (guilhermeaiolfi)
+     * John Spackman (john.spackman@zenesis.com)
 
    ======================================================================
 
@@ -67,10 +68,11 @@ qx.Theme.define("aristo.theme.Color",
 	    "background-selected-dark" : "#333333",
 		
 		
-		"button-active-grad-from": "#bce2f8",
-		"button-active-grad-to": "#80adc7",
-		"button-inactive-grad-from": "#f0f0f0",
-		"button-inactive-grad-to": "#b0b0b0",
+		"button-gradient-start": "#ededed",
+		"button-gradient-end": "#c4c4c4",
+		"button-active-gradient-start": "#b7def4",
+		"button-active-gradient-end": "#83b0ca",
+		"button-focused-shadow": "#a1cae2",
 		
 		
     /*

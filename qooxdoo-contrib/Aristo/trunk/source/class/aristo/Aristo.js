@@ -9,6 +9,7 @@
 
    Authors:
      * Guilherme R. Aiolfi (guilhermeaiolfi)
+     * John Spackman (john.spackman@zenesis.com)
 
    ======================================================================
 
