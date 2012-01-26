@@ -34,19 +34,19 @@ simulation.Simulation.prototype.runTest = function()
     this.checkUrlParameter();
   }
   
-  // Add a function that finds span tags with the given content
-  var getSpanByContent = function(content) {
+  // Add a function that finds tags with the given content
+  var hasElementWithContent = function(tagName, content) {
     var found = false;
-    var spans = selenium.browserbot.getCurrentWindow().document.getElementsByTagName("span");
-    for (var i=0,l=spans.length; i<l; i++) {
-      if (spans[i].innerHTML.indexOf(content) == 0) {
+    var elements = selenium.browserbot.getCurrentWindow().document.getElementsByTagName(tagName);
+    for (var i=0,l=elements.length; i<l; i++) {
+      if (elements[i].innerHTML.indexOf(content) == 0) {
         found = true;
       }
     }
     return found;
   };
   
-  this.addOwnFunction("getSpanByContent", getSpanByContent);
+  this.addOwnFunction("hasElementWithContent", hasElementWithContent);
   
   var getInnerHtml = function(locator) {
     var widget = selenium.getQxWidgetByLocator(locator);
@@ -112,7 +112,7 @@ simulation.Simulation.prototype.checkSearch = function()
   // Check if the HTML embed's content has changed.
   var classViewerHtml = this.checkViewerContent();
   if (!(classViewerHtml.indexOf("qx.ui.window") > 0)) {
-    this.log("Unexpected class viewer HTML content", "error");
+    this.log("checkSearch: Unexpected class viewer HTML content", "error");
   }
   else {
     this.log("Successfully opened search result", "info");
@@ -148,7 +148,7 @@ simulation.Simulation.prototype.checkView = function(newMethodName, buttonLabel)
     this.qxClick('qxh=app:viewer/qx.ui.toolbar.ToolBar/child[2]/[@label="' + buttonLabel + '"]', "", "Clicking " + buttonLabel);
     Packages.java.lang.Thread.sleep(3000);
   }
-  var foundNewMethod = this.getEval(selWin + ".qx.Simulation.getSpanByContent('" + newMethodName + "');", "Checking for " + buttonLabel + " documentation");
+  var foundNewMethod = this.getEval(selWin + ".qx.Simulation.hasElementWithContent('a', '" + newMethodName + "');", "Checking for " + buttonLabel + " documentation");
   
   if (String(foundNewMethod) != "true") {
     this.log("Documentation for " + newMethodName + " not found, possible problem with " + buttonLabel, "error");
