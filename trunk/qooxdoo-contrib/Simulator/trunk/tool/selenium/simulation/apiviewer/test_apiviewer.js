@@ -35,11 +35,17 @@ simulation.Simulation.prototype.runTest = function()
   }
   
   // Add a function that finds tags with the given content
-  var hasElementWithContent = function(tagName, content) {
+  var hasElementWithContent = function(tagNames, content) {
     var found = false;
-    var elements = selenium.browserbot.getCurrentWindow().document.getElementsByTagName(tagName);
-    for (var i=0,l=elements.length; i<l; i++) {
-      if (elements[i].innerHTML.indexOf(content) == 0) {
+    var elements = [];
+    for (var i=0,l=tagNames.length; i<l; i++) {
+      var tags = selenium.browserbot.getCurrentWindow().document.getElementsByTagName(tagNames[i]);
+      for (var j=0,m=tags.length; j<m; j++) {
+        elements.push(tags[j]);
+      }
+    }
+    for (var x=0,y=elements.length; x<y; x++) {
+      if (elements[x].innerHTML.indexOf(content) == 0) {
         found = true;
       }
     }
@@ -148,7 +154,7 @@ simulation.Simulation.prototype.checkView = function(newMethodName, buttonLabel)
     this.qxClick('qxh=app:viewer/qx.ui.toolbar.ToolBar/child[2]/[@label="' + buttonLabel + '"]', "", "Clicking " + buttonLabel);
     Packages.java.lang.Thread.sleep(3000);
   }
-  var foundNewMethod = this.getEval(selWin + ".qx.Simulation.hasElementWithContent('a', '" + newMethodName + "');", "Checking for " + buttonLabel + " documentation");
+  var foundNewMethod = this.getEval(selWin + ".qx.Simulation.hasElementWithContent(['a', 'span'], '" + newMethodName + "');", "Checking for " + buttonLabel + " documentation");
   
   if (String(foundNewMethod) != "true") {
     this.log("Documentation for " + newMethodName + " not found, possible problem with " + buttonLabel, "error");
