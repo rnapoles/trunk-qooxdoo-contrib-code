@@ -29,6 +29,9 @@ var qxAppInst = simulation.Simulation.QXAPPINSTANCE;
   if (!sessionStarted) {
     return;
   }
+  
+  mySim.__sel.click("//a[contains(text(), 'Launch Configuration Editor')]");
+  mySim.setupEnvironment();
 
   var isAppReady = mySim.waitForCondition(simulation.Simulation.ISQXAPPREADY, 60000, 
     "Waiting for qooxdoo application");
