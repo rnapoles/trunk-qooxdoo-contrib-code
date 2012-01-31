@@ -1,4 +1,5 @@
 var baseConf = {
+  'autName' : 'TestRunner',
   'debug' : true
 };
 
