@@ -29,6 +29,7 @@ package com.zenesis.qx.remote;
 
 import java.io.IOException;
 
+import org.apache.log4j.Logger;
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.map.JsonSerializer;
@@ -40,18 +41,29 @@ import org.codehaus.jackson.map.SerializerProvider;
  *
  */
 public class ProxiedSerializer extends JsonSerializer<Proxied> {
+	
+	private static final Logger log = Logger.getLogger(ProxiedSerializer.class);
 
 	/* (non-Javadoc)
 	 * @see org.codehaus.jackson.map.JsonSerializer#serialize(java.lang.Object, org.codehaus.jackson.JsonGenerator, org.codehaus.jackson.map.SerializerProvider)
 	 */
 	@Override
 	public void serialize(Proxied value, JsonGenerator jgen, SerializerProvider provider) throws IOException, JsonProcessingException {
-		ProxySessionTracker tracker = ProxyManager.getTracker();
-		Object obj = tracker.getProxy(value);
-		if (obj == null)
+		if (value == null)
 			jgen.writeNull();
-		else
-			jgen.writeObject(obj);
+		else {
+			ProxySessionTracker tracker = ProxyManager.getTracker();
+			if (tracker == null) {
+				log.fatal("No tracker when trying to write object " + value);
+				jgen.writeNull();
+			} else {
+				Object obj = tracker.getProxy(value);
+				if (obj == null)
+					jgen.writeNull();
+				else
+					jgen.writeObject(obj);
+			}
+		}
 	}
 
 }

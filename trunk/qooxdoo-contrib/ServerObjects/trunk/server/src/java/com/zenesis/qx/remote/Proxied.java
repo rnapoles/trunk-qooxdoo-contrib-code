@@ -38,8 +38,10 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
  * @author John Spackman
  *
  */
+/*
 @JsonSerialize(using=ProxiedSerializer.class)
 @JsonDeserialize(using=ProxiedDeserializer.class)
+*/
 public interface Proxied {
 	
 }

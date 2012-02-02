@@ -29,8 +29,11 @@ package com.zenesis.qx.remote;
 
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.JsonGenerator;
+import org.codehaus.jackson.Version;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.SerializationConfig;
+import org.codehaus.jackson.map.module.SimpleModule;
+
 import com.zenesis.qx.json.JsonSerialiserFactory;
 
 /**
@@ -58,6 +61,12 @@ public class ProxyObjectMapper extends ObjectMapper {
 		//setQuoteFieldNames(false);
 		setIndent(indent);
 		configure(SerializationConfig.Feature.WRITE_DATES_AS_TIMESTAMPS, false);
+		configure(SerializationConfig.Feature.FAIL_ON_EMPTY_BEANS, false);
+		
+		SimpleModule module = new SimpleModule("ProxyObjectMapper", Version.unknownVersion());
+		module.addSerializer(Proxied.class, new ProxiedSerializer());
+		module.addDeserializer(Proxied.class, new ProxiedDeserializer());
+		registerModule(module);
 	}
 
 	/**

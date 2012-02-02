@@ -1,5 +1,4 @@
-/**
- * ************************************************************************
+/* ************************************************************************
  * 
  *    server-objects - a contrib to the Qooxdoo project that makes server 
  *    and client objects operate seamlessly; like Qooxdoo, server objects 
@@ -23,7 +22,7 @@
  *    Authors:
  *      * John Spackman (john.spackman@zenesis.com)
  * 
- * ************************************************************************
+ *
  */
 package com.zenesis.qx.utils;
 

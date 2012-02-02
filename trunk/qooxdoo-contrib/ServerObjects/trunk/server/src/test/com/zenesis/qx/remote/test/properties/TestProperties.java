@@ -29,6 +29,7 @@ package com.zenesis.qx.remote.test.properties;
 
 import com.zenesis.qx.event.EventManager;
 import com.zenesis.qx.remote.ProxyManager;
+import com.zenesis.qx.remote.annotations.Property;
 
 public class TestProperties implements ITestProperties {
 	
@@ -38,6 +39,9 @@ public class TestProperties implements ITestProperties {
 	private String changeLog = "";
 	private String watchedString;
 	private int triggers = 0;
+	
+	@Property(onDemand=true)
+	private String onDemandPreload = "MyOnDemandPreload";
 	
 	@Override
 	public String getImmediate() {
@@ -67,8 +71,22 @@ public class TestProperties implements ITestProperties {
 	}
 	
 	@Override
-	public void setOnDemandString(String value) {
-		this.onDemandString = value;
+	public void setOnDemandString(String onDemandString) {
+		this.onDemandString = ProxyManager.changeProperty(this, "onDemandString", onDemandString, onDemandString);
+	}
+
+	/**
+	 * @return the onDemandPreload
+	 */
+	public String getOnDemandPreload() {
+		return onDemandPreload;
+	}
+
+	/**
+	 * @param onDemandPreload the onDemandPreload to set
+	 */
+	public void setOnDemandPreload(String onDemandPreload) {
+		this.onDemandPreload = ProxyManager.changeProperty(this, "onDemandPreload", onDemandPreload, onDemandPreload);
 	}
 
 	@Override

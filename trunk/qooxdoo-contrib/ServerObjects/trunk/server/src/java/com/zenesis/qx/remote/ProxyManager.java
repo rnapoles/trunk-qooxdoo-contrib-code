@@ -252,7 +252,7 @@ public class ProxyManager implements EventListener {
 		ProxyType type = ProxyTypeManager.INSTANCE.getProxyType(keyObject.getClass());
 		ProxyProperty property = getProperty(type, propertyName);
 		if (property == null) {
-			log.warn("Cannot find a property called " + propertyName);
+			log.warn("Cannot find a property called " + propertyName + " in " + keyObject);
 			return;
 		}
 		if (!tracker.doesClientHaveObject(keyObject))
@@ -264,6 +264,26 @@ public class ProxyManager implements EventListener {
 		if (property.getEvent() != null) {
 			EventManager.fireDataEvent(keyObject, property.getEvent().getName(), newValue);
 		}
+	}
+	
+	public static void preloadProperty(Proxied keyObject, String propertyName, Object value) {
+		ProxySessionTracker tracker = getTracker();
+		if (tracker == null)
+			return;
+		CommandQueue queue = tracker.getQueue();
+		/* can't do this because we don't want to stop server events firing
+		RequestHandler handler = tracker.getRequestHandler();
+		if (handler != null && handler.isSettingProperty(keyObject, propertyName))
+			return;*/
+		ProxyType type = ProxyTypeManager.INSTANCE.getProxyType(keyObject.getClass());
+		ProxyProperty property = getProperty(type, propertyName);
+		if (property == null) {
+			log.warn("Cannot find a property called " + propertyName + " in " + keyObject);
+			return;
+		}
+		if (!property.isOnDemand())
+			return;
+		queue.queueCommand(CommandId.CommandType.SET_VALUE, keyObject, propertyName, property.serialize(keyObject, value));
 	}
 	
 	/**
@@ -289,7 +309,7 @@ public class ProxyManager implements EventListener {
 		ProxyType type = ProxyTypeManager.INSTANCE.getProxyType(keyObject.getClass());
 		ProxyProperty property = getProperty(type, propertyName);
 		if (property == null) {
-			log.warn("Cannot find a property called " + propertyName);
+			log.warn("Cannot find a property called " + propertyName + " in " + keyObject);
 			return;
 		}
 		if (property.isOnDemand() && tracker.doesClientHaveValue(keyObject, property))
