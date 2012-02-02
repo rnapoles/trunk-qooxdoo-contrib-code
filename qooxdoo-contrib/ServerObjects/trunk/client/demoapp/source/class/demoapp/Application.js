@@ -136,6 +136,8 @@ qx.Class.define("demoapp.Application", {
 			qx.core.Assert.assertEquals(numCalls + 1, manager.getNumberOfCalls());
 			qx.core.Assert.assertEquals("MyOnDemandString", tp.getOnDemandString());
 			qx.core.Assert.assertEquals(numCalls + 1, manager.getNumberOfCalls());
+			qx.core.Assert.assertEquals("MyOnDemandPreload", tp.getOnDemandPreload());
+			qx.core.Assert.assertEquals(numCalls + 1, manager.getNumberOfCalls());
 			
 			tp.setOnDemandString("Hello World");
 			qx.core.Assert.assertEquals(numChangeDemandString, 1);

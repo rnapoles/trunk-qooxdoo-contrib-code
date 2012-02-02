@@ -30,7 +30,6 @@ package com.zenesis.qx.json;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Iterator;
 
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonProcessingException;
@@ -38,6 +37,8 @@ import org.codehaus.jackson.map.BeanProperty;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.JsonSerializer;
 import org.codehaus.jackson.map.SerializationConfig;
+import org.codehaus.jackson.map.SerializerFactory;
+import org.codehaus.jackson.map.SerializerFactory.Config;
 import org.codehaus.jackson.map.SerializerProvider;
 import org.codehaus.jackson.map.ser.BeanSerializerFactory;
 import org.codehaus.jackson.type.JavaType;
@@ -46,7 +47,7 @@ public class JsonSerialiserFactory extends BeanSerializerFactory {
 	
 	private static final SimpleDateFormat DF = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 	
-	public static final JsonSerialiserFactory INSTANCE = new JsonSerialiserFactory();
+	public static final JsonSerialiserFactory INSTANCE = new JsonSerialiserFactory(null);
 	
 	private static final JsonSerializer SER_DATE = new JsonSerializer<Date>() {
 
@@ -76,58 +77,6 @@ public class JsonSerialiserFactory extends BeanSerializerFactory {
 		}
 	};
 
-	private static final ThreadLocal<Integer> s_recursion = new ThreadLocal<Integer>();
-	private static final JsonSerializer SER_ITERABLE = new JsonSerializer<Iterable>() {
-
-		/* (non-Javadoc)
-		 * @see org.codehaus.jackson.map.JsonSerializer#serialize(java.lang.Object, org.codehaus.jackson.JsonGenerator, org.codehaus.jackson.map.SerializerProvider)
-		 */
-		@Override
-		public void serialize(Iterable iterable, JsonGenerator jgen, SerializerProvider provider) throws IOException, JsonProcessingException {
-			if (iterable == null)
-				jgen.writeNull();
-			else {
-				jgen.writeStartArray();
-				for (Object obj : iterable)
-					if (obj == null)
-						jgen.writeNull();
-					else {
-						Integer rec = s_recursion.get();
-						if (rec == null)
-							s_recursion.set(1);
-						else {
-							s_recursion.set(rec + 1);
-						}
-						jgen.writeObject(obj);
-					}
-				jgen.writeEndArray();
-			}
-		}
-	};
-
-	private static final JsonSerializer SER_ITERATOR = new JsonSerializer<Iterator>() {
-
-		/* (non-Javadoc)
-		 * @see org.codehaus.jackson.map.JsonSerializer#serialize(java.lang.Object, org.codehaus.jackson.JsonGenerator, org.codehaus.jackson.map.SerializerProvider)
-		 */
-		@Override
-		public void serialize(Iterator iter, JsonGenerator jgen, SerializerProvider provider) throws IOException, JsonProcessingException {
-			if (iter == null)
-				jgen.writeNull();
-			else {
-				jgen.writeStartArray();
-				while (iter.hasNext()) {
-					Object obj = iter.next();
-					if (obj == null)
-						jgen.writeNull();
-					else
-						jgen.writeObject(obj);
-				}
-				jgen.writeEndArray();
-			}
-		}
-	};
-
 	/* (non-Javadoc)
 	 * @see org.codehaus.jackson.map.ser.BeanSerializerFactory#createSerializer(org.codehaus.jackson.map.SerializationConfig, org.codehaus.jackson.type.JavaType, org.codehaus.jackson.map.BeanProperty)
 	 */
@@ -139,14 +88,25 @@ public class JsonSerialiserFactory extends BeanSerializerFactory {
 			return SER_DATE;
 		if (origType.isEnumType())
 			return SER_ENUM;
-		/*
-		if (Iterator.class.isAssignableFrom(origType.getRawClass()))
-			return SER_ITERATOR;
-		if (Iterable.class.isAssignableFrom(origType.getRawClass()))
-			return SER_ITERABLE;
-		*/
 
 		return super.createSerializer(config, origType, property);
+	}
+
+	public JsonSerialiserFactory(Config config) {
+		super(config);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.codehaus.jackson.map.ser.BeanSerializerFactory#withConfig(org.codehaus.jackson.map.SerializerFactory.Config)
+	 */
+	@Override
+	public SerializerFactory withConfig(Config config) {
+        if (getClass() != JsonSerialiserFactory.class) {
+            throw new IllegalStateException("Subtype of CustomSerializerFactory ("+getClass().getName()
+                    +") has not properly overridden method 'withAdditionalSerializers': can not instantiate subtype with "
+                    +"additional serializer definitions");
+        }
+        return new JsonSerialiserFactory(config);
 	}
 
 	private static String enumToCamelCase(Enum e) {

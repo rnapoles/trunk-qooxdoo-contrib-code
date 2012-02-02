@@ -433,7 +433,11 @@ public class RequestHandler {
 		String action = getFieldValue(jp, "type", String.class);
 		Integer start = null;
 		Integer end = null;
-		Object[] items = null;
+		
+		// NOTE: items is an Array!!  But because it may be an array of primitive types, we have
+		//	to use java.lang.reflect.Array to access members because we cannot cast arrays of
+		//	primitives to Object[]
+		Object items = null;
 		
 		if (!action.equals("replaceAll")) {
 			start = getFieldValue(jp, "start", Integer.class);
@@ -452,13 +456,14 @@ public class RequestHandler {
 			
 			items = readArray(jp, prop.getPropertyClass().getJavaType());
 		}
+		int itemsLength = Array.getLength(items);
 		
 		// Quick logging
 		if (log.isInfoEnabled()) {
 			String str = "";
 			if (items != null)
-				for (int i = 0; i < items.length; i++)
-					str += ", " + items[i];
+				for (int i = 0; i < itemsLength; i++)
+					str += ", " + Array.get(items, i);
 			log.info("edit-array: property=" + prop + ", type=" + action + ", start=" + start + ", end=" + end + str);
 		}
 		
@@ -466,8 +471,8 @@ public class RequestHandler {
 			if (prop.getPropertyClass().isCollection()) {
 				Collection list = (Collection)prop.getValue(serverObject);
 				list.clear();
-				for (Object obj : items)
-					list.add(obj);
+				for (int i = 0; i < itemsLength; i++)
+					list.add(Array.get(items, i));
 			} else {
 				prop.setValue(serverObject, items);
 			}
@@ -719,13 +724,19 @@ public class RequestHandler {
 			Class type = null;
 			if (types != null && paramIndex < types.length)
 				type = types[paramIndex];
-			if (type != null && Proxied.class.isAssignableFrom(type)) {
+			
+			if (type != null && type.isArray()) {
+				Object obj = readArray(jp, type.getComponentType());
+				result.add(obj);
+				
+			} else if (type != null && Proxied.class.isAssignableFrom(type)) {
 				Integer id = jp.readValueAs(Integer.class);
 				if (id != null) {
 					Proxied obj = getProxied(id);
 					result.add(obj);
 				} else
 					result.add(null);
+				
 			} else {
 				Object obj = jp.readValueAs(type != null ? type : Object.class);
 				result.add(obj);
@@ -735,16 +746,18 @@ public class RequestHandler {
 	}
 	
 	/**
-	 * Reads an array from JSON, where each value is of the class clazz
+	 * Reads an array from JSON, where each value is of the class clazz.  Note that while the result
+	 * is an array, you cannot assume that it is an array of Object, or use generics because generics
+	 * are always Objects - this is because arrays of primitive types are not arrays of Objects
 	 * @param jp
 	 * @param clazz
 	 * @return
 	 * @throws IOException
 	 */
-	private <T> T[] readArray(JsonParser jp, Class<T> clazz) throws IOException {
+	private Object readArray(JsonParser jp, Class clazz) throws IOException {
 		boolean isProxyClass = Proxied.class.isAssignableFrom(clazz);
 		ArrayList result = new ArrayList();
-		for (int paramIndex = 0; jp.nextToken() != JsonToken.END_ARRAY; paramIndex++) {
+		for (; jp.nextToken() != JsonToken.END_ARRAY;) {
 			if (isProxyClass) {
 				Integer id = jp.readValueAs(Integer.class);
 				if (id != null) {
@@ -759,7 +772,12 @@ public class RequestHandler {
 				result.add(obj);
 			}
 		}
-		return (T[])result.toArray((T[])Array.newInstance(clazz, result.size()));
+		
+		Object arr = Array.newInstance(clazz, result.size());
+		for (int i = 0; i < result.size(); i++)
+			Array.set(arr, i, result.get(i));
+		return arr;
+		//return result.toArray(Array.newInstance(clazz, result.size()));
 	}
 	
 	/**

@@ -30,6 +30,7 @@ package com.zenesis.qx.remote.test.simple;
 import java.util.Calendar;
 import java.util.Date;
 
+import com.zenesis.qx.remote.ProxyManager;
 import com.zenesis.qx.remote.annotations.Method;
 import com.zenesis.qx.remote.test.properties.ITestArrays;
 import com.zenesis.qx.remote.test.properties.ITestExceptions;
@@ -59,6 +60,7 @@ public class TestBootstrap implements ITestBootstrap {
 
 	@Override
 	public ITestProperties getTestProperties() {
+		ProxyManager.preloadProperty(testProperties, "onDemandPreload", testProperties.getOnDemandPreload());
 		return testProperties;
 	}
 
