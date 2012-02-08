@@ -29,7 +29,7 @@ qx.Mixin.define("qxe.application.Components",
     this.addListenerOnce("appear", function() {
       this.constructComponent();
       this.layoutComponent();
-//      this.loadData();
+      this.loadData();
     }, this);
   }
 });

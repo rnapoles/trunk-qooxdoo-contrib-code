@@ -20,8 +20,30 @@
  */
 qx.Interface.define("qxe.application.IComponents",
 {
-  constructComponent : function();
-  layoutComponent : function();
-//  loadData : function();
+  /*
+  *****************************************************************************
+     MEMBERS
+  *****************************************************************************
+  */
+
+  members :
+  {
+    /**
+     * Constructs the UI component.
+     */
+    constructComponent : function() {
+    },
+
+    /**
+     * Layouts the UI component.
+     */
+    layoutComponent : function() {
+    },
+
+    /**
+     * Loads data into the UI component.
+     */
+    loadData : function() {
+    }
 });
 
