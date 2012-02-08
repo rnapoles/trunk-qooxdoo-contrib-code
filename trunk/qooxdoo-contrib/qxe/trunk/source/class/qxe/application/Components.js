@@ -22,8 +22,6 @@ qx.Mixin.define("qxe.application.Components",
 {
   construct : function()
   {
-    this.base(arguments);
-
     this.addListenerOnce("appear", function() {
       this.constructComponent();
       this.layoutComponent();
