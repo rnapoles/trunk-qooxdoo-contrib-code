@@ -20,8 +20,6 @@
  */
 qx.Mixin.define("qxe.application.Components",
 {
-  implement : qxe.application.IComponents,
-
   construct : function()
   {
     this.base(arguments);
