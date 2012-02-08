@@ -75,7 +75,7 @@ simulation.Simulation.prototype.checkFeeds = function(titles)
       continue;
     }
     if (articleTitles.length == 0) {
-      this.log("Feed " + feedTitles[i] + " has no articles!", "error");
+      this.log("Feed " + feedTitles[i] + " has no articles!", "warn");
       var firstArticleTitle = null;
     }
     else if (articleTitles[0] == firstArticleTitle) {
