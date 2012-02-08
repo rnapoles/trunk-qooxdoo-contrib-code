@@ -45,5 +45,6 @@ qx.Interface.define("qxe.application.IComponents",
      */
     loadData : function() {
     }
+  }
 });
 
