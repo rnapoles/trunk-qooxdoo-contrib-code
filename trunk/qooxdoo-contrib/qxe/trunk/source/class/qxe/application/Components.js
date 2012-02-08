@@ -20,7 +20,7 @@
  */
 qx.Mixin.define("qxe.application.Components",
 {
-  include : qxe.application.IComponents,
+  implement : qxe.application.IComponents,
 
   construct : function()
   {
