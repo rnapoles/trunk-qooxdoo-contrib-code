@@ -29,10 +29,13 @@
     "translation"
   ],
 
+  "default-job" : "source-hybrid",
+  
   "let" :
   {
     "APPLICATION"  : "aristo.demo",
-    "QOOXDOO_PATH" : "../../../../qooxdoo/1.2",
+    "QOOXDOO_PATH" : "../../../../../../../../../../../os/qooxdoo-1.6-sdk",
+    //"QOOXDOO_PATH" : "../../../../qooxdoo/1.6",
     "QXTHEME"      : "aristo.Aristo",
     "API_EXCLUDE"  : ["qx.test.*", "${APPLICATION}.theme.*", "${APPLICATION}.test.*"],
     "LOCALES"      : [ "en" ],
