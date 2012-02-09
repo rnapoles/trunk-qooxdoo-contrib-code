@@ -647,6 +647,8 @@ qx.Theme.define("aristo.theme.Appearance", {
 					textColor = "text-disabled";
 				} else if (states.showingPlaceholder) {
 					textColor = "text-placeholder";
+				} else if (states.readonly) {
+					textColor = "text-readonly";
 				} else {
 					textColor = "text-input";
 				}
