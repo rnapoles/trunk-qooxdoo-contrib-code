@@ -44,6 +44,7 @@ qx.Theme.define("aristo.theme.Color",
 		"text-title" : "#2a4d60",
 		"text-active" : "#4f4f4f",
 		"text-inactive" : "#4f4f4f",
+		"text-readonly" : "#4f4f4f",
 		
 		"invalid" : "#c82c2c",
 
