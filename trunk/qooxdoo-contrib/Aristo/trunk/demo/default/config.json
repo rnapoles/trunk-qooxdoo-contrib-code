@@ -34,8 +34,8 @@
   "let" :
   {
     "APPLICATION"  : "aristo.demo",
-    "QOOXDOO_PATH" : "../../../../../../../../../../../os/qooxdoo-1.6-sdk",
-    //"QOOXDOO_PATH" : "../../../../qooxdoo/1.6",
+    "QOOXDOO_PATH" : "../../../../qooxdoo/1.6",
+    //"QOOXDOO_PATH" : "../../../../../../../../../../../os/qooxdoo-1.6-sdk",
     "QXTHEME"      : "aristo.Aristo",
     "API_EXCLUDE"  : ["qx.test.*", "${APPLICATION}.theme.*", "${APPLICATION}.test.*"],
     "LOCALES"      : [ "en" ],
