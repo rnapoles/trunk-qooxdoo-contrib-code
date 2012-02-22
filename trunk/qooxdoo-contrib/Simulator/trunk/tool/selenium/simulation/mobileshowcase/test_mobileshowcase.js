@@ -93,7 +93,7 @@ simulation.Simulation.prototype.testEvents = function()
   this.waitForElementPresent("//div[contains(text(), 'touchstart touchend tap')]");
 };
 
-simulation.Simulation.prototype.testToolbarX = function()
+simulation.Simulation.prototype.testToolbar = function()
 {
   this.log("Testing Toolbar", "info");
   this.waitForElementPresent("//div[contains(@class, 'toolbar')]");
@@ -101,7 +101,7 @@ simulation.Simulation.prototype.testToolbarX = function()
   //click search button
   this.qxClick("//div[contains(@class, 'toolbar-button')]/descendant::div[text() = 'Search']");
   this.waitForElementPresent("//div[contains(@class, 'dialog')]");
-  var searchDialogButtonLocator = "//div[contains(@class, 'button')]";
+  var searchDialogButtonLocator = "//div[contains(@class, 'dialog')]/descendant::div[contains(@class, 'button')]";
   this.qxClick(searchDialogButtonLocator);
   Packages.java.lang.Thread.sleep(500);
   if (this.__sel.isVisible(searchDialogButtonLocator)) {
@@ -109,7 +109,8 @@ simulation.Simulation.prototype.testToolbarX = function()
   }
   
   //click 'left arrow' button
-  var noButtonLocator = "//div[text() = 'no']";
+  var noButtonLocator = "//div[text() = 'No']";
+  var yesButtonLocator = "//div[text() = 'Yes']";
   this.qxClick("//img[contains(@src, 'arrowleft')]");
   this.waitForElementPresent(noButtonLocator);
   this.qxClick(yesButtonLocator);
@@ -126,6 +127,14 @@ simulation.Simulation.prototype.testToolbarX = function()
   Packages.java.lang.Thread.sleep(5500);
   if (this.__sel.isVisible(loadingDialogLocator)) {
     throw new Error("Loading Dialog did not disappear!");
+  }
+};
+
+simulation.Simulation.prototype.testTabBar = function()
+{
+  for (var i=1; i<5; i++) {
+    this.qxClick("//div[text() = 'Tab " + i + "']/ancestor::div[contains(@class, 'tabButton')]");
+    this.waitForElementVisible("//div[text() = 'View " + i + "']");
   }
 };
 
