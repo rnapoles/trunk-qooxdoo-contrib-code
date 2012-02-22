@@ -754,6 +754,13 @@ simulation.Simulation.prototype.waitForElementPresent = function(locator, timeou
 };
 
 
+simulation.Simulation.prototype.waitForElementVisible = function(locator, timeout)
+{
+  var condition = 'selenium.isVisible("' + locator + '")';
+  this.__sel.waitForCondition(condition, timeout || 5000);
+};
+
+
 simulation.Simulation.prototype.getInnerHtmlFromCollection = function(query)
 {
   var getter="var titles = [];" +
