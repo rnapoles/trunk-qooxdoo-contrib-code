@@ -38,7 +38,7 @@
   {
     "APPLICATION"  : "uploadmgr.demo",
     "QOOXDOO_PATH" : "../../../../qooxdoo/1.6",
-    "XXXQOOXDOO_PATH" : "../../../../../../../../Local/WebContent/public/grasshopper/qooxdoo-1.6-sdk/",
+    "XXXQOOXDOO_PATH" : "../../../../../../../../Local/WebContent/public/grasshopper/qooxdoo-trunk",
     "QXTHEME"      : "uploadmgr.demo.theme.Theme",
     "API_EXCLUDE"  : ["qx.test.*", "${APPLICATION}.theme.*", "${APPLICATION}.test.*", "${APPLICATION}.simulation.*"],
     "LOCALES"      : [ "en" ],
