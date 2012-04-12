@@ -29,7 +29,7 @@ var mySim = new simulation.Simulation(baseConf,args);
 mySim.locators = {
   inspectorToolBar : "qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar",
   inspectButton : "qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/[@label='Inspect']",
-  inspectedWidgetLabel : "qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/child[9]",
+  inspectedWidgetLabel : "qxh=qx.ui.container.Composite/qx.ui.toolbar.ToolBar/child[5]",
   inspectedAppRoot : "qxh=qx.ui.container.Composite/qx.ui.embed.Iframe/qx.ui.root.Application",
   windowWidgets : "qxh=[@classname=inspector.widgets.WidgetsWindow]",
   windowWidgetsTree : "qxh=[@classname=inspector.widgets.WidgetsWindow]/[@classname=inspector.widgets.View]/qx.ui.tree.Tree",
