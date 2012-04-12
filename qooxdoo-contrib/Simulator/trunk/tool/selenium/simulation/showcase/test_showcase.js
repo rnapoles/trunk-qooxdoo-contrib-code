@@ -27,7 +27,7 @@ var selWin = simulation.Simulation.SELENIUMWINDOW;
 var qxAppInst = simulation.Simulation.QXAPPINSTANCE;
 var locators = {
   previewList : 'qxh=inline:showcase//[@classname="showcase.ui.PreviewList"]',
-  virtualListContactsWindow : 'qxhybrid=showcase&&qxhv=qx.ui.container.Stack/qx.ui.container.Composite/qx.ui.window.Desktop/[@caption=Contacts]'
+  virtualListContactsWindow : 'qxhv=inline:showcase//qx.ui.container.Stack/qx.ui.container.Composite/qx.ui.window.Desktop/[@caption=Contacts]'
 };
 
 simulation.Simulation.prototype.runTest = function()
