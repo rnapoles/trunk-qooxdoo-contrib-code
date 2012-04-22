@@ -61,7 +61,7 @@ public class TestEventManager extends AbstractTestCase {
 	 * @throws Exception
 	 */
 	public void test1() throws Exception {
-		EventManager mgr = new EventManager();
+		new EventManager();
 		
 		StringWriter sw = new StringWriter();
 		PrintWriter pw = new PrintWriter(sw);
@@ -73,12 +73,12 @@ public class TestEventManager extends AbstractTestCase {
 		for (int i = 0; i < testObjects.length; i++) {
 			EventListener listener = new MyEventListener(pw, i);
 			for (int j = 1; j <= i; j++) {
-				mgr.addListener(testObjects[j], "helloWorldEvent", listener);
+				EventManager.addListener(testObjects[j], "helloWorldEvent", listener);
 			}
 		}
 		
 		for (int i = 0; i < testObjects.length; i++) {
-			mgr.fireDataEvent(testObjects[i], "helloWorldEvent", i);
+			EventManager.fireDataEvent(testObjects[i], "helloWorldEvent", i);
 		}
 		
 		assertFromFile(sw.toString(), "TestEventManager.test1");
@@ -102,15 +102,29 @@ public class TestEventManager extends AbstractTestCase {
 		for (int i = 0; i < listeners.length; i++)
 			listeners[i] = new MyEventListener(pw, i);
 		
-		for (int i = 0; i < testObjects.length; i++)
-			for (int j = 1; j <= i; j++)
-				mgr.addListener(testObjects[j], "helloWorldEvent" + i, listeners[j]);
+		EventManager.addListener(testObjects[0], "myEvent0", listeners[0]);
+		EventManager.addListener(testObjects[0], "myEvent1", listeners[1]);
+		EventManager.addListener(testObjects[0], "myEvent2", listeners[2]);
+		EventManager.addListener(testObjects[0], "myEvent3", listeners[3]);
+		EventManager.addListener(testObjects[0], "myEvent4", listeners[4]);
+		EventManager.addListener(testObjects[0], "myEvent5", listeners[5]);
+		EventManager.removeListener(testObjects[0], "myEvent5", listeners[5]);
+		EventManager.removeListener(testObjects[0], "myEvent4", listeners[4]);
+		EventManager.removeListener(testObjects[0], "myEvent3", listeners[3]);
+		EventManager.removeListener(testObjects[0], "myEvent2", listeners[2]);
+		EventManager.removeListener(testObjects[0], "myEvent1", listeners[1]);
+		EventManager.removeListener(testObjects[0], "myEvent0", listeners[0]);
+		assertTrue(mgr.compact());
 		
 		for (int i = 0; i < testObjects.length; i++)
 			for (int j = 1; j <= i; j++)
-				assertTrue(mgr.removeListener(testObjects[j], "helloWorldEvent" + i, listeners[j]));
+				EventManager.addListener(testObjects[j], "helloWorldEvent" + i, listeners[j]);
 		
-		assertTrue(mgr.isEmpty());
+		for (int i = 0; i < testObjects.length; i++)
+			for (int j = 1; j <= i; j++)
+				assertTrue(EventManager.removeListener(testObjects[j], "helloWorldEvent" + i, listeners[j]));
+		
+		assertTrue(mgr.compact());
 	}
 	
 	/**
@@ -118,19 +132,19 @@ public class TestEventManager extends AbstractTestCase {
 	 * @throws Exception
 	 */
 	public void test3() throws Exception {
-		EventManager mgr = new EventManager();
+		new EventManager();
 		TestObject testObject = new TestObject();
 		
 		EventListener listener = new MyEventListener(null, 0);
-		mgr.addListener(testObject, "helloWorld", listener);
+		EventManager.addListener(testObject, "helloWorld", listener);
 		try {
-			mgr.addListener(testObject, "helloWorld", listener);
+			EventManager.addListener(testObject, "helloWorld", listener);
 			assertTrue(false);
 		} catch(IllegalArgumentException e) {
 			// Nothing - test passed
 		}
 		
-		assertFalse(mgr.addListener(testObject, "noSuchEvent", listener));
+		assertFalse(EventManager.addListener(testObject, "noSuchEvent", listener));
 	}
 }
 

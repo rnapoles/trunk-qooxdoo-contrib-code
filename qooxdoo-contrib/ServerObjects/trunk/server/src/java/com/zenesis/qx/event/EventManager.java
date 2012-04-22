@@ -27,8 +27,10 @@
  */
 package com.zenesis.qx.event;
 
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.WeakHashMap;
 
 import org.apache.log4j.Logger;
@@ -59,16 +61,17 @@ public class EventManager {
 	
 	/*
 	 * Links an event name with a listener; the listener is actually either a) null,
-	 * b) an EventListener, c) and array of EventListeners, or d) a LinkedHashSet of EventListeners.
+	 * b) an EventListener, c) and array of EventListeners, or d) a ArrayList of EventListeners.
+	 * In all cases, EventListeners are referenced via WeakReference
 	 */
 	private static final class NamedEventListener {
 		public final String eventName;
 		public Object listener;
 
-		public NamedEventListener(String eventName, Object listener) {
+		public NamedEventListener(String eventName, EventListener listener) {
 			super();
 			this.eventName = eventName;
-			this.listener = listener;
+			this.listener = new WeakReference<EventListener>(listener);
 		}
 		
 		/**
@@ -79,7 +82,7 @@ public class EventManager {
 		public void addListener(EventListener newListener) throws IllegalArgumentException{
 			// Nothing so far? Easy.
 			if (listener == null) {
-				listener = newListener;
+				listener = new WeakReference<EventListener>(newListener);
 				return;
 			}
 			
@@ -87,41 +90,51 @@ public class EventManager {
 			
 			// It's an array - try and use an empty slot
 			if (clazz.isArray()) {
-				EventListener[] list = (EventListener[])listener;
+				WeakReference<EventListener>[] list = (WeakReference<EventListener>[])listener;
+				for (int i = 0; i < TINY_ARRAY_SIZE; i++)
+					if (list[i] != null && list[i].get() == newListener)
+						throw new IllegalArgumentException("Cannot add the same listener to the same object and eventName twice");
+				
 				for (int i = 0; i < TINY_ARRAY_SIZE; i++) {
 					// Free slot?  Use it
-					if (list[i] == null) {
-						list[i] = newListener;
+					if (list[i] == null || list[i].get() == null) {
+						list[i] = new WeakReference<EventListener>(newListener);
 						return;
-						
-					// Cater for using the same listener twice
-					} else if (list[i] == newListener)
-						throw new IllegalArgumentException("Cannot add the same listener to the same object and eventName twice");
+					}
 				}
 				
-				// No room so upgrade to a LinkedHashSet
-				LinkedHashSet<EventListener> set = new LinkedHashSet<EventListener>();
+				// No room so upgrade to a ArrayList
+				ArrayList<WeakReference<EventListener>> set = new ArrayList<WeakReference<EventListener>>();
 				for (int i = 0; i < TINY_ARRAY_SIZE; i++)
 					set.add(list[i]);
-				set.add(newListener);
+				set.add(new WeakReference<EventListener>(newListener));
 				listener = set;
 				
-			// Already a LinkedHashSet - add to it
-			} else if (clazz == LinkedHashSet.class) {
-				LinkedHashSet<EventListener> set = (LinkedHashSet<EventListener>)listener;
-				if (set.contains(newListener))
-					throw new IllegalArgumentException("Cannot add the same listener to the same object and eventName twice");
-				set.add(newListener);
+			// Already a ArrayList - add to it
+			} else if (clazz == ArrayList.class) {
+				ArrayList<WeakReference<EventListener>> set = (ArrayList<WeakReference<EventListener>>)listener;
+				int pos = -1;
+				for (int i = 0;i < set.size(); i++) {
+					WeakReference<EventListener> tmp = set.get(i);
+					if (tmp == null && pos == -1)
+						pos = i;
+					else if (tmp != null && tmp.get() == newListener)
+						throw new IllegalArgumentException("Cannot add the same listener to the same object and eventName twice");
+				}
+				if (pos != -1)
+					set.set(pos, new WeakReference<EventListener>(newListener));
+				else
+					set.add(new WeakReference<EventListener>(newListener));
 				
 			// Must be an EventListener instance, convert to an array 
 			} else {
-				assert(clazz == EventListener.class);
-				if (listener == newListener)
+				assert(clazz == WeakReference.class);
+				if (((WeakReference<EventListener>)listener).get() == newListener)
 					throw new IllegalArgumentException("Cannot add the same listener to the same object and eventName twice");
-				EventListener[] list = new EventListener[TINY_ARRAY_SIZE];
-				list[0] = (EventListener)listener;
-				list[1] = newListener;
-				listener = list;
+				WeakReference<EventListener>[] list = new WeakReference[TINY_ARRAY_SIZE];
+				list[0] = (WeakReference<EventListener>)listener;
+				list[1] = new WeakReference<EventListener>(newListener);
+				this.listener = list;
 			}
 		}
 		
@@ -138,9 +151,9 @@ public class EventManager {
 			
 			// It's an array - find it and remove it
 			if (clazz.isArray()) {
-				EventListener[] list = (EventListener[])listener;
+				WeakReference<EventListener>[] list = (WeakReference<EventListener>[])listener;
 				for (int i = 0; i < TINY_ARRAY_SIZE; i++) {
-					if (list[i] == oldListener) {
+					if (list[i].get() == oldListener) {
 						list[i] = null;
 						return true;
 					}
@@ -148,16 +161,24 @@ public class EventManager {
 				return false;
 			}
 				
-			// Already a LinkedHashSet
-			if (clazz == LinkedHashSet.class) {
-				LinkedHashSet<EventListener> set = (LinkedHashSet<EventListener>)listener;
-				return set.remove(oldListener);
+			// Already a ArrayList
+			if (clazz == ArrayList.class) {
+				ArrayList<WeakReference<EventListener>> set = (ArrayList<WeakReference<EventListener>>)listener;
+				for (int i = 0; i < set.size(); i++) {
+					WeakReference<EventListener> tmp = set.get(i);
+					if (tmp != null && tmp.get() == oldListener) {
+						set.set(i, null);
+						return true;
+					}
+				}
+				return false;
 			}
 				
 			// Must be an EventListener instance, convert to an array 
-			assert(clazz == EventListener.class);
-			if (listener != oldListener)
+			assert(clazz == WeakReference.class);
+			if (((WeakReference<EventListener>)listener).get() != oldListener)
 				return false;
+			
 			listener = null;
 			return true;
 		}
@@ -175,22 +196,25 @@ public class EventManager {
 			
 			// It's an array - find it and remove it
 			if (clazz.isArray()) {
-				EventListener[] list = (EventListener[])listener;
+				WeakReference<EventListener>[] list = (WeakReference<EventListener>[])listener;
 				for (int i = 0; i < TINY_ARRAY_SIZE; i++)
-					if (list[i] == oldListener)
+					if (list[i].get() == oldListener)
 						return true;
 				return false;
 			}
 				
-			// Already a LinkedHashSet
-			if (clazz == LinkedHashSet.class) {
-				LinkedHashSet<EventListener> set = (LinkedHashSet<EventListener>)listener;
-				return set.contains(oldListener);
+			// Already a ArrayList
+			if (clazz == ArrayList.class) {
+				ArrayList<WeakReference<EventListener>> set = (ArrayList<WeakReference<EventListener>>)listener;
+				for (WeakReference<EventListener> tmp : set)
+					if (tmp != null && tmp.get() == oldListener)
+						return true;
+				return false;
 			}
 				
-			// Must be an EventListener instance, convert to an array 
-			assert(clazz == EventListener.class);
-			if (listener != oldListener)
+			// Must be an EventListener instance 
+			assert(clazz == WeakReference.class);
+			if (((WeakReference<EventListener>)listener).get() != oldListener)
 				return false;
 			return true;
 		}
@@ -206,24 +230,34 @@ public class EventManager {
 			
 			// It's an array - find it and remove it
 			if (clazz.isArray()) {
-				EventListener[] list = (EventListener[])listener;
+				WeakReference<EventListener>[] list = (WeakReference<EventListener>[])listener;
 				for (int i = 0; i < TINY_ARRAY_SIZE; i++)
-					if (list[i] != null)
-						list[i].handleEvent(event);
+					if (list[i] != null) {
+						EventListener listener = list[i].get();
+						if (listener != null)
+							listener.handleEvent(event);
+					}
 				return;
 			}
 				
-			// Already a LinkedHashSet
-			if (clazz == LinkedHashSet.class) {
-				LinkedHashSet<EventListener> set = (LinkedHashSet<EventListener>)listener;
-				for (EventListener listener : set)
-					listener.handleEvent(event);
+			// Already a ArrayList
+			if (clazz == ArrayList.class) {
+				ArrayList<WeakReference<EventListener>> set = (ArrayList<WeakReference<EventListener>>)listener;
+				for (WeakReference<EventListener> ref : set) {
+					if (ref != null) {
+						EventListener listener = ref.get();
+						if (listener != null)
+							listener.handleEvent(event);
+					}
+				}
 				return;
 			}
 				
 			// Must be an EventListener instance, convert to an array 
 			assert(clazz == EventListener.class);
-			((EventListener)listener).handleEvent(event);
+			EventListener listener = ((WeakReference<EventListener>)this.listener).get();
+			if (listener != null)
+				listener.handleEvent(event);
 		}
 		
 		public boolean isEmpty() {
@@ -234,22 +268,25 @@ public class EventManager {
 			
 			// It's an array
 			if (clazz.isArray()) {
-				EventListener[] list = (EventListener[])listener;
+				WeakReference<EventListener>[] list = (WeakReference<EventListener>[])listener;
 				for (int i = 0; i < TINY_ARRAY_SIZE; i++)
-					if (list[i] != null)
+					if (list[i] != null && list[i].get() != null)
 						return false;
 				return true;
 			}
 				
-			// Already a LinkedHashSet
-			if (clazz == LinkedHashSet.class) {
-				LinkedHashSet<EventListener> set = (LinkedHashSet<EventListener>)listener;
-				return set.isEmpty();
+			// Already a ArrayList
+			if (clazz == ArrayList.class) {
+				ArrayList<WeakReference<EventListener>> set = (ArrayList<WeakReference<EventListener>>)listener;
+				for (WeakReference<EventListener> ref : set)
+					if (ref != null && ref.get() != null)
+						return false;
+				return true;
 			}
 				
 			// Must be an EventListener instance 
-			assert(clazz == EventListener.class);
-			return true;
+			assert(clazz == WeakReference.class);
+			return ((WeakReference<EventListener>)listener).get() == null;
 		}
 	}
 	
@@ -298,7 +335,7 @@ public class EventManager {
 	 * @throws {@link IllegalArgumentException} if a listener is added twice
 	 * @return true if the event was added
 	 */
-	protected boolean _addListener(Object keyObject, String eventName, EventListener listener) throws IllegalArgumentException{
+	protected synchronized boolean _addListener(Object keyObject, String eventName, EventListener listener) throws IllegalArgumentException{
 		if (!supportsEvent(keyObject, eventName))
 			return false;
 		
@@ -399,7 +436,10 @@ public class EventManager {
 	 * @param listener
 	 * @return
 	 */
-	protected boolean _removeListener(Object keyObject, String eventName, EventListener listener) {
+	protected synchronized boolean _removeListener(Object keyObject, String eventName, EventListener listener) {
+		if (eventName == null && listener == null)
+			return listeners.remove(keyObject) != null;
+		
 		Object current = listeners.get(keyObject);
 		if (current == null)
 			return false;
@@ -409,26 +449,47 @@ public class EventManager {
 		// A NamedEventListener?  Then check the eventName 
 		if (clazz == NamedEventListener.class) {
 			NamedEventListener nel = (NamedEventListener)current;
-			if (!nel.eventName.equals(eventName))
+			if (eventName != null && !nel.eventName.equals(eventName))
 				return false;
+			if (listener == null) {
+				listeners.remove(keyObject);
+				return true;
+			}
 			return nel.removeListener(listener);
 		}
 
 		// If there is an array, it's an array of NamedEventListeners
 		if (clazz.isArray()){
 			NamedEventListener[] nels = (NamedEventListener[])current;
+			boolean removed = false;
 			
 			// Look for a NamedEventListener for the eventName
 			for (int i = 0; i < TINY_ARRAY_SIZE; i++)
-				if (nels[i].eventName.equals(eventName))
-					return nels[i].removeListener(listener);
+				if (nels[i] != null)
+					if (eventName == null || nels[i].eventName.equals(eventName)) {
+						if (listener == null) {
+							nels[i] = null;
+							removed = true;
+						} else if (nels[i].removeListener(listener))
+							removed = true;
+					}
 			
-			return false;
+			return removed;
 		}
 		
 		// By elimination, it must be a HashMap
 		assert(current.getClass() == HashMap.class);
 		HashMap<String, NamedEventListener> map = (HashMap<String, NamedEventListener>)current;
+		if (eventName == null) {
+			boolean removed = false;
+			for (NamedEventListener nel : map.values())
+				if (nel.removeListener(listener))
+					removed = true;
+			return removed;
+		}
+		if (listener == null)
+			return map.remove(eventName) != null;
+		
 		NamedEventListener nel = map.get(eventName);
 		if (nel == null)
 			return false;
@@ -453,7 +514,7 @@ public class EventManager {
 	 * @param listener
 	 * @return
 	 */
-	protected boolean _hasListener(Object keyObject, String eventName, EventListener listener) {
+	protected synchronized boolean _hasListener(Object keyObject, String eventName, EventListener listener) {
 		Object current = listeners.get(keyObject);
 		if (current == null)
 			return false;
@@ -579,43 +640,57 @@ public class EventManager {
 	}
 
 	/**
-	 * Tests whether there are any event listeners on any object
+	 * Compacts the lists, removing everything that has empty references and returns whether
+	 * there are any event listeners on any object
 	 * @return
 	 */
-	public boolean isEmpty() {
-		if (listeners.isEmpty())
-			return true;
-		for (Object current : listeners.values()) {
+	public synchronized boolean compact() {
+		Map.Entry[] values = listeners.entrySet().toArray(new Map.Entry[listeners.entrySet().size()]);
+		for (int i = 0; i < values.length; i++) {
+			Object current = values[i].getValue();
 			final Class clazz = current.getClass();
 			
 			// A NamedEventListener?  Then check the eventName 
 			if (clazz == NamedEventListener.class) {
 				NamedEventListener nel = (NamedEventListener)current;
-				if (!nel.isEmpty())
-					return false;
-				continue;
+				if (nel.isEmpty())
+					current = null;
 			}
 
 			// If there is an array, it's an array of NamedEventListeners
-			if (clazz.isArray()){
+			else if (clazz.isArray()){
 				NamedEventListener[] nels = (NamedEventListener[])current;
+				boolean nelsEmpty = true;
 				
 				// Look for a NamedEventListener for the eventName
-				for (int i = 0; i < TINY_ARRAY_SIZE; i++)
-					if (nels[i] != null && !nels[i].isEmpty())
-						return false;
+				for (int j = 0; j < TINY_ARRAY_SIZE; j++)
+					if (nels[j] != null) {
+						if (nels[j].isEmpty())
+							nels[j] = null;
+						else
+							nelsEmpty = false;
+					}
+				if (nelsEmpty)
+					current = null;
 				
-				continue;
-			}
-			
 			// By elimination, it must be a HashMap
-			assert(current.getClass() == HashMap.class);
-			HashMap<String, NamedEventListener> map = (HashMap<String, NamedEventListener>)current;
-			for (NamedEventListener nel : map.values())
-				if (!nel.isEmpty())
-					return false;
+			} else {
+				assert(current.getClass() == HashMap.class);
+				HashMap<String, NamedEventListener> map = (HashMap<String, NamedEventListener>)current;
+				Object [] onels = map.values().toArray();
+				for (int j = 0; j < onels.length; j++) {
+					NamedEventListener nel = (NamedEventListener)onels[j];
+					if (nel.isEmpty())
+						map.remove(nel.eventName);
+				}
+				if (map.isEmpty())
+					current = null;
+			}
+			if (current == null)
+				listeners.remove(values[i].getKey());
 		}
-		return true;
+		values = listeners.entrySet().toArray(new Map.Entry[listeners.entrySet().size()]);
+		return listeners.isEmpty();
 	}
 	
 	/**
