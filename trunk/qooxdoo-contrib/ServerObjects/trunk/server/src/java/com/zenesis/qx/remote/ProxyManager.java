@@ -152,6 +152,7 @@ public class ProxyManager implements EventListener {
 				new UploadHandler(tracker).processUpload(request, response);
 			else {
 				String enc = request.getHeader("Accept-Encoding");
+				response.setContentType("text/json; charset=UTF-8");
 				OutputStream os = response.getOutputStream();
 				
 				if (enc != null) {
