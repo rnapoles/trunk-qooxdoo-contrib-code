@@ -112,7 +112,7 @@ qx.Class.define("com.zenesis.qx.upload.AbstractHandler", {
 		 */
 		cancel: function(file) {
 			var wasUploading = this.__current.length > 0;
-			this.debug("cancelled: id=" + file.getId() + ", fileName=" + file.getFilename());
+			//this.debug("cancelled: id=" + file.getId() + ", fileName=" + file.getFilename());
 			this._cancel(file);
 			if (wasUploading && this.__uploader.getAutoUpload())
 				this.beginUploads();
@@ -157,7 +157,7 @@ qx.Class.define("com.zenesis.qx.upload.AbstractHandler", {
 		 * @param response {String} text received
 		 */
 		_onCompleted: function(file, response) {
-			this.debug("completed: id=" + file.getId() + ", fileName=" + file.getFilename() + ", response=" + response);
+			//this.debug("completed: id=" + file.getId() + ", fileName=" + file.getFilename() + ", response=" + response);
 			var current = this.__current;
 			for (var i = 0; i < current.length; i++)
 				if (current[i] == file) {
