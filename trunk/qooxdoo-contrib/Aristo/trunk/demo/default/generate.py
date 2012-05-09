@@ -22,26 +22,45 @@
 # This is a stub proxy for the real generator.py
 ##
 
-import sys, os, re, subprocess
+import sys, os, re, subprocess, optparse
 
 CMD_PYTHON = 'python'
 QOOXDOO_PATH = '../../qooxdoo/1.2'
 
-def getQxPath():
-    path = QOOXDOO_PATH
-    # try updating from config file
-    if os.path.exists('config.json'):
+def scanConfig(filename):
+    if os.path.exists(filename):
         # "using QOOXDOO_PATH from config.json"
         qpathr=re.compile(r'"QOOXDOO_PATH"\s*:\s*"([^"]*)"\s*,?')
-        conffile = open('config.json')
+        conffile = open(filename)
         aconffile = conffile.readlines()
         for line in aconffile:
             mo = qpathr.search(line)
             if mo:
                 path = mo.group(1)
-                break # assume first occurrence is ok
-    path = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), path))
+                return path
 
+def getQxPath():
+    path = QOOXDOO_PATH
+    parser = optparse.OptionParser();
+    parser.add_option("-m", "--macro", dest="letmacros", metavar="KEY:VAL", type="string", default={}, help="define/overwrite a global 'let' macro KEY with value VAL")
+    (options, args) = parser.parse_args();
+    if options.letmacros:
+        print "key=%s" % options.letmacros
+        qpathr = re.compile(r'QOOXDOO_PATH\s*:\s*(.*)')
+        mo = qpathr.search(options.letmacros)
+        if mo:
+            path = mo.group(1)
+            path = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), path))
+            return path
+
+    # try updating from config file
+    tmp = scanConfig('local.json')
+    if not tmp:
+        tmp = scanConfig('config.json')
+    if tmp:
+        path = tmp
+
+    path = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), path))
     return path
 
 os.chdir(os.path.dirname(os.path.abspath(sys.argv[0])))  # switch to skeleton dir

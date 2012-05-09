@@ -36,14 +36,14 @@ qx.Theme.define("aristo.theme.Font",
   {
     "default" :
     {
-      size : 12,
+      size : 11,
       lineHeight : 1.4,
       family : [ "Arial", "Tahoma", "Verdana", "Bitstream Vera Sans", "Liberation Sans" ]
     },
 
     "bold" :
     {
-      size : 12,
+      size : 11,
       lineHeight : 1.4,
       family : [ "Arial", "Tahoma", "Verdana", "Bitstream Vera Sans", "Liberation Sans" ],
       bold : true
@@ -51,14 +51,14 @@ qx.Theme.define("aristo.theme.Font",
 
     "small" :
     {
-      size : 11,
+      size : 10,
       lineHeight : 1.4,
       family : [ "Arial", "Tahoma", "Verdana", "Bitstream Vera Sans", "Liberation Sans" ]
     },
 
     "monospace" :
     {
-      size : 12,
+      size : 11,
       lineHeight : 1.4,
       family : [ "Courier New", "DejaVu Sans Mono", "monospace" ]
     },

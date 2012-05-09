@@ -45,9 +45,7 @@ qx.Theme.define("aristo.theme.Appearance", {
 				return {
 					backgroundColor : "background-application",
 					textColor : "text-label",
-					font : "default",
-					blockerColor: "black",
-					blockerOpacity: 0.2
+					font : "default"
 				};
 			}
 		},
@@ -289,17 +287,6 @@ qx.Theme.define("aristo.theme.Appearance", {
 				};
 			}
 		},
-		
-		"listitem/label": {
-			style : function(states) {
-				return {
-					textColor :
-						states.selected ? "text-selected" :
-						states.disabled ? "text-disabled"
-							: "text-label"
-				};
-			}
-		},
 
 		/*
 		 * ---------------------------------------------------------------------------
@@ -341,8 +328,8 @@ qx.Theme.define("aristo.theme.Appearance", {
 
 				return {
 					maxWidth : states.horizontal ? undefined
-							: 13,
-					maxHeight : states.horizontal ? 13
+							: 17,
+					maxHeight : states.horizontal ? 17
 							: undefined,
 					decorator : states.horizontal ? "scrollbar-horizontal"
 							: "scrollbar-vertical",
@@ -425,15 +412,15 @@ qx.Theme.define("aristo.theme.Appearance", {
 								states.left ? 6 : 16 ],
 						icon : icon,
 						width : 29,
-						height : 13,
+						height : 17,
 						decorator : decorator
 					};
 				} else {
 					return {
 						padding : [ states.up ? -10 : 12, 0, 0,
-								2 ],
+								4 ],
 						icon : icon,
-						width : 13,
+						width : 17,
 						height : 29,
 						decorator : decorator
 					};
@@ -1615,7 +1602,7 @@ qx.Theme.define("aristo.theme.Appearance", {
 				};
 
 				if (states.barTop || states.barBottom) {
-					result.paddingLeft = 0;
+					result.paddingLeft = 5;
 					result.paddingRight = 7;
 				} else {
 					result.paddingTop = 5;
@@ -1693,7 +1680,7 @@ qx.Theme.define("aristo.theme.Appearance", {
 					if (states.barTop) {
 						decorator = "tabview-page-button-top-active";
 						padding = [ 6, 14 ];
-						marginLeft = states.firstTab ? -1 : -5;
+						marginLeft = states.firstTab ? 0 : -5;
 						marginRight = states.lastTab ? 0 : -5;
 					} else if (states.barBottom) {
 						decorator = "tabview-page-button-bottom-active";
@@ -2279,8 +2266,7 @@ qx.Theme.define("aristo.theme.Appearance", {
 		"table-scroller/header" : {
 			style : function(states) {
 				return {
-					decorator : "table-scroller-header",
-					font: "bold"
+					decorator : "table-scroller-header"
 				};
 			}
 		},
@@ -2315,9 +2301,9 @@ qx.Theme.define("aristo.theme.Appearance", {
 			style : function(states) {
 				return {
 					minWidth : 13,
-					minHeight : 33,
-					padding : states.hovered ? [ 3, 6, 2, 6 ]
-							: [ 3, 6 ],
+					minHeight : 20,
+					padding : states.hovered ? [ 3, 4, 2, 4 ]
+							: [ 3, 4 ],
 					decorator : states.hovered ? "table-header-cell-hovered"
 							: "table-header-cell",
 					sortIcon : states.sorted ? (states.sortedAscending ? "aristo/decoration/table/ascending.png"
