@@ -627,14 +627,6 @@ qx.Theme.define("aristo.theme.Decoration", {
 			}
 		},
 
-		"transparent" : {
-			decorator : qx.ui.decoration.Single,
-
-			style : {
-				backgroundColor : "transparent"
-			}
-		},
-
 		/*
 		 * ---------------------------------------------------------------------------
 		 * TOOLTIP
@@ -859,7 +851,7 @@ qx.Theme.define("aristo.theme.Decoration", {
 			decorator : qx.ui.decoration.Single,
 
 			style : {
-				width : 1,
+				width : 2,
 				color : "table-focus-indicator",
 				style : "solid"
 			}

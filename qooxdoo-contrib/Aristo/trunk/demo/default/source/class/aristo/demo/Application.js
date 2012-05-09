@@ -188,7 +188,6 @@ qx.Class.define("aristo.demo.Application",
       stack.resetSelection();
 
       var widgetButton = this.widgetButton = new qx.ui.form.SelectBox();
-      var selWidgetButton = null;
       widgetButton.set({font: "bold"});
       widgetButton.add(new qx.ui.form.ListItem("<not selected>"));
       widgetButton.add(new qx.ui.form.ListItem("Atom"));
@@ -431,9 +430,6 @@ qx.Class.define("aristo.demo.Application",
       var colorWindow = this.colorWindow = new aristo.demo.ColorWindow();
       colorWindow.addListener("changeActive", this.resetShowcase, this);
 
-      
-      if (selWidgetButton)
-    	  widgetButton.setSelection([selWidgetButton]);
     },
 
     createHeader : function()
