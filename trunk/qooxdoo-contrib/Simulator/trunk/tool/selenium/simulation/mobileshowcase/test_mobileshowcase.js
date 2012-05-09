@@ -62,6 +62,9 @@ simulation.Simulation.prototype.testPageTransitions = function()
   this.waitForElementPresent("//h1[text() = 'Animation']");
   var listItems = this.getListItemLabels();
   for (var i=0, l=listItems.length; i<l; i++) {
+    if (listItems[i].indexOf("Action") == 0) {
+      continue;
+    }
     this.selectItem(listItems[i]);
     Packages.java.lang.Thread.sleep(1500);
     this.waitForElementPresent("//strong[contains(text(), 'reverse animation')]");
@@ -120,7 +123,7 @@ simulation.Simulation.prototype.testToolbar = function()
   }
   
   //click load button
-  this.qxClick("//div[contains(@class, 'toolbar-button')]/descendant::div[text() = 'Load']");
+  this.qxClick("//div[contains(@class, 'toolbar-button')]/descendant::div[text() = 'Take a new picture']");
   var loadingDialogLocator = "//div[text() = 'Loading...']";
   this.waitForElementPresent(loadingDialogLocator);
   //the loading dialog disappears after 5sec
