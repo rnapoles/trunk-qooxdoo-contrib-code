@@ -185,23 +185,23 @@ qx.Theme.define("aristo.theme.Decoration", {
 	      }
 	    },
 
-		"shadow-window-inactive" : {
-			decorator : qx.ui.decoration.Grid,
+    "shadow-window-inactive" : {
+      decorator : qx.ui.decoration.Grid,
 
-			style : {
-				baseImage : "aristo/decoration/shadow/shadow-window.png",
-				insets : [ 4, 9, 12, 8 ]
-			}
-		},
+      style : {
+        baseImage : "aristo/decoration/shadow/shadow-window.png",
+        insets : [ 6, 8, 8, 6 ]
+      }
+    },
 
-		"shadow-window-active" : {
-			decorator : qx.ui.decoration.Grid,
+    "shadow-window-active" : {
+      decorator : qx.ui.decoration.Grid,
 
-			style : {
-				baseImage : "aristo/decoration/shadow/shadow-window-active.png",
-				insets : [ 4, 8, 12, 8 ]
-			}
-		},
+      style : {
+        baseImage : "aristo/decoration/shadow/shadow-window-active.png",
+        insets : [ 8, 10, 10, 8 ]
+      }
+    },
 
 		"red-shadow" : {
 			decorator : qx.ui.decoration.Grid,
@@ -442,6 +442,14 @@ qx.Theme.define("aristo.theme.Decoration", {
 				baseImage : "aristo/decoration/window/captionbar.png"
 			}
 		},
+
+    "window-captionbar-active" : {
+      decorator : qx.ui.decoration.Grid,
+
+      style : {
+        baseImage : "aristo/decoration/window/captionbar-active.png"
+      }
+    },
 
 		"window-statusbar" : {
 			decorator : qx.ui.decoration.Single,

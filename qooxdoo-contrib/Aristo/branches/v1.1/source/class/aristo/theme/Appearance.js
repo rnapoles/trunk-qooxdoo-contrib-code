@@ -696,10 +696,7 @@ qx.Theme.define("aristo.theme.Appearance", {
 		"window" : {
 			style : function(states) {
 				return {
-					shadow : "shadow-window-inactive", // states.focused?
-														// "shadow-window"
-														// :
-														// "gray-shadow",
+          shadow : states.active ? "shadow-window-active" : "shadow-window-inactive",
 					contentPadding : [ 10, 10, 10, 10 ]
 				};
 			}
@@ -716,7 +713,7 @@ qx.Theme.define("aristo.theme.Appearance", {
 		"window/captionbar" : {
 			style : function(states) {
 				return {
-					decorator : "window-captionbar",
+          decorator : states.active ? "window-captionbar-active" : "window-captionbar",
 					textColor : states.active ? "text-label"
 							: "text-disabled",
 					minHeight : 28,

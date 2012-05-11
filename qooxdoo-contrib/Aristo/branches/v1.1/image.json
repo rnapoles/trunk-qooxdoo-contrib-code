@@ -7,7 +7,7 @@
       "let" :
       {
         "RESPATH" : "./source/resource",
-        "ARISTO" : "aristo"
+        "ARISTO" : "aristo/decoration"
       },
 
       "cache" :
@@ -44,12 +44,12 @@
           "${RESPATH}/source/aristo/shadow-window.png" :
           {
             "prefix" : "../../${ARISTO}/shadow/shadow-window",
-            "border-width" : 5
+            "border-width" : [ 6, 8, 8, 6 ]
           },
           "${RESPATH}/source/aristo/shadow-window-active.png" :
           {
             "prefix" : "../../${ARISTO}/shadow/shadow-window-active",
-            "border-width" : 5
+            "border-width" : [ 8, 10, 10, 8 ]
           },
           "${RESPATH}/source/aristo/red-shadow.png" :
           {
@@ -92,10 +92,16 @@
             "prefix" : "../../${ARISTO}/form/button",
             "border-width" : 2
           },
-          // window captionbar active split
+          // window captionbar split
           "${RESPATH}/source/aristo/window-captionbar.png" :
           {
             "prefix" : "../../${ARISTO}/window/captionbar",
+            "border-width" : 4
+          },
+          // window captionbar active split
+          "${RESPATH}/source/aristo/window-captionbar-active.png" :
+          {
+            "prefix" : "../../${ARISTO}/window/captionbar-active",
             "border-width" : 4
           },
 
@@ -291,7 +297,7 @@
              "layout" : "horizontal"
           },
 
-          // window captionbar-active - top and bottom
+          // window captionbar - top and bottom
           "${RESPATH}/${ARISTO}/window-captionbar-tb-combined.png":
           {
             "prefix" : [ "${RESPATH}" ],
@@ -309,7 +315,7 @@
              "layout" : "vertical"
           },
 
-          // window captionbar-active - left and right
+          // window captionbar - left and right
           "${RESPATH}/${ARISTO}/window-captionbar-lr-combined.png":
           {
             "prefix" : [ "${RESPATH}" ],
@@ -321,6 +327,42 @@
                   [
                     "${RESPATH}/${ARISTO}/window/captionbar-l.png",
                     "${RESPATH}/${ARISTO}/window/captionbar-r.png"
+                  ]
+                }
+              ],
+             "layout" : "horizontal"
+          },
+
+          // window captionbar-active - top and bottom
+          "${RESPATH}/${ARISTO}/window-captionbar-active-tb-combined.png":
+          {
+            "prefix" : [ "${RESPATH}" ],
+            "input"  :
+              [
+                {
+                  "prefix" : [ "${RESPATH}" ],
+                  "files"  :
+                  [
+                    "${RESPATH}/${ARISTO}/window/captionbar-active-b*.png",
+                    "${RESPATH}/${ARISTO}/window/captionbar-active-t*.png"
+                  ]
+                }
+              ],
+             "layout" : "vertical"
+          },
+
+          // window captionbar-active - left and right
+          "${RESPATH}/${ARISTO}/window-captionbar-active-lr-combined.png":
+          {
+            "prefix" : [ "${RESPATH}" ],
+            "input"  :
+              [
+                {
+                  "prefix" : [ "${RESPATH}" ],
+                  "files"  :
+                  [
+                    "${RESPATH}/${ARISTO}/window/captionbar-active-l.png",
+                    "${RESPATH}/${ARISTO}/window/captionbar-active-r.png"
                   ]
                 }
               ],
@@ -481,6 +523,38 @@
                 "files"  :
                 [
                   "${RESPATH}/${ARISTO}/shadow/shadow-window-[lr].png"
+                ]
+              }
+            ],
+            "layout" : "horizontal"
+          },
+
+          "${RESPATH}/${ARISTO}/shadow-window-active-tb-combined.png":
+          {
+            "prefix" : [ "${RESPATH}" ],
+            "input"  :
+            [
+              {
+                "prefix" : [ "${RESPATH}" ],
+                "files"  :
+                [
+                  "${RESPATH}/${ARISTO}/shadow/shadow-window-active-[tb]*.png"
+                ]
+              }
+            ],
+            "layout" : "vertical"
+          },
+
+          "${RESPATH}/${ARISTO}/shadow-window-active-lr-combined.png":
+          {
+            "prefix" : [ "${RESPATH}" ],
+            "input"  :
+            [
+              {
+                "prefix" : [ "${RESPATH}" ],
+                "files"  :
+                [
+                  "${RESPATH}/${ARISTO}/shadow/shadow-window-active-[lr].png"
                 ]
               }
             ],
