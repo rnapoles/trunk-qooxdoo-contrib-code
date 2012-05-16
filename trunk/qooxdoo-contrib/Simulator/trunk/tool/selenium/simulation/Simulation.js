@@ -342,7 +342,9 @@ simulation.Simulation.prototype.setupEnvironment = function()
      * Store the AUT window object to avoid calling 
      * selenium.browserbot.getCurrentWindow() repeatedly.
      */
-    this.__sel.getEval('selenium.qxStoredVars = {}');    
+    this.__sel.getEval('selenium.qxStoredVars = {}');
+    // IE6/7 sometimes freeze if the next command is executed immediately
+    Packages.java.lang.Thread.sleep(1000);
     this.storeEval('selenium.browserbot.getCurrentWindow()', 'autWindow');
 
     this.prepareNameSpace();
