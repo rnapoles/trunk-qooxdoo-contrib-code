@@ -153,7 +153,7 @@ public class EventManager {
 			if (clazz.isArray()) {
 				WeakReference<EventListener>[] list = (WeakReference<EventListener>[])listener;
 				for (int i = 0; i < TINY_ARRAY_SIZE; i++) {
-					if (list[i].get() == oldListener) {
+					if (list[i] != null && list[i].get() == oldListener) {
 						list[i] = null;
 						return true;
 					}
@@ -198,7 +198,7 @@ public class EventManager {
 			if (clazz.isArray()) {
 				WeakReference<EventListener>[] list = (WeakReference<EventListener>[])listener;
 				for (int i = 0; i < TINY_ARRAY_SIZE; i++)
-					if (list[i].get() == oldListener)
+					if (list[i] != null && list[i].get() == oldListener)
 						return true;
 				return false;
 			}
