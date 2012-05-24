@@ -60,7 +60,7 @@ simulation.Simulation.prototype.testPageTransitions = function()
 {
   this.log("Testing Animations", "info");
   this.waitForElementPresent("//h1[text() = 'Animation']");
-  var listItems = this.getListItemLabels();
+  var listItems = ["Slide", "Pop", "Fade", "Dissolve", "Slide up", "Flip", "Swap", "Cube"];
   for (var i=0, l=listItems.length; i<l; i++) {
     if (listItems[i].indexOf("Action") == 0) {
       continue;
@@ -103,8 +103,8 @@ simulation.Simulation.prototype.testToolbar = function()
   
   //click search button
   this.qxClick("//div[contains(@class, 'toolbar-button')]/descendant::div[text() = 'Search']");
-  this.waitForElementPresent("//div[contains(@class, 'dialog')]");
   var searchDialogButtonLocator = "//div[contains(@class, 'dialog')]/descendant::div[contains(@class, 'button')]";
+  this.waitForElementPresent(searchDialogButtonLocator);
   this.qxClick(searchDialogButtonLocator);
   Packages.java.lang.Thread.sleep(500);
   if (this.__sel.isVisible(searchDialogButtonLocator)) {
