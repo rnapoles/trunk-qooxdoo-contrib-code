@@ -726,8 +726,13 @@ public class RequestHandler {
 				type = types[paramIndex];
 			
 			if (type != null && type.isArray()) {
-				Object obj = readArray(jp, type.getComponentType());
-				result.add(obj);
+				if (jp.getCurrentToken() == JsonToken.VALUE_NULL)
+					result.add(null);
+				else if (jp.getCurrentToken() == JsonToken.START_ARRAY) {
+					Object obj = readArray(jp, type.getComponentType());
+					result.add(obj);
+				} else
+					throw new IllegalStateException("Expected array but found " + jp.getCurrentToken());
 				
 			} else if (type != null && Proxied.class.isAssignableFrom(type)) {
 				Integer id = jp.readValueAs(Integer.class);
