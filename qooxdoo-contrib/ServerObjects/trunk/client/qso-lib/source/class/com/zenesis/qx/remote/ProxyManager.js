@@ -604,6 +604,9 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 			if (!value)
 				return value;
 			
+			if (qx.Class.isSubClassOf(value.constructor, qx.data.Array))
+				value = value.toArray();
+				
 			if (qx.lang.Type.isArray(value)) {
 				var send = [];
 				for (var j = 0; j < value.length; j++) {
@@ -624,9 +627,6 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 			
 			if (qx.Class.isSubClassOf(value.constructor, com.zenesis.qx.remote.Proxy))
 				return value.getServerId();
-				
-			if (qx.Class.isSubClassOf(value.constructor, qx.data.Array))
-				return value.toArray();
 				
 			if (qx.Class.isSubClassOf(value.constructor, qx.core.Object)) {
 				this.debug("Cannot serialize a Qooxdoo object to the server unless it implements com.zenesis.qx.remote.Proxied");
