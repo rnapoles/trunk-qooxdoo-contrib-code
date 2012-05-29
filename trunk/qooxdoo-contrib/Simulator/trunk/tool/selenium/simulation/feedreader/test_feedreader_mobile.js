@@ -23,7 +23,9 @@ simulation.Simulation.prototype.addListItemLabelGetter = function()
     var labels = [];
     var items = selenium.browserbot.getCurrentWindow().document.getElementsByClassName("list-itemlabel");
     for (var i=0,l=items.length; i<l; i++) {
-      labels.push(items[i].textContent);
+      if (selenium.browserbot.getCurrentWindow().qx.dom.Hierarchy.isRendered(items[i])) {
+        labels.push(items[i].textContent);
+      }
     }
     return selenium.browserbot.getCurrentWindow().JSON.stringify(labels);
   };
