@@ -39,6 +39,7 @@ for (var i=0; i<args.length; i++) {
 }
 
 load([simSvn + "/trunk/tool/selenium/simulation/Simulation.js"]);
+load([simSvn + "/trunk/tool/selenium/simulation/unittests/unittests.js"]);
 
 var mySim = new simulation.Simulation(baseConf,args);
 
@@ -147,50 +148,6 @@ simulation.Simulation.prototype.runTest = function()
   }
 };
 
-
-simulation.Simulation.prototype.logErrors = function()
-{
-  var prefix = selWin + "." + qxAppInst;
-  
-  var errorGetter = selWin + ".qx.lang.Json.stringify(" + prefix + ".runner.view.getFailedResults())";
-  var resultsString;
-  try {
-    resultsString = this.__sel.getEval(errorGetter);
-    resultsString = String(resultsString);
-    eval("var results=" + resultsString);
-  }
-  catch(ex) {
-    this.log("Couldn't get results: " + ex.message, "error");
-    return;
-  }
-  
-    
-  for (var testName in results) {
-    var result = results[testName];
-    
-    var message = "";
-    for (var i=0,l=result.messages.length; i<l; i++) {
-      var msg = result.messages[i];
-      msg = this.replaceStrings(msg);
-      message += msg + "<br/><br/>";
-    }
-    
-    var level = "info";
-    switch(result.state) {
-      case "skip":
-        level = "info";
-        break;
-      default:
-        level = "error";
-    };
-    
-    var html = '<div class="testResult ' + level + '">'
-      + '<h3>' + testName + '</h3>' + message + '</div>';
-    
-    this.log(html, level);
-  }
-};
-
 simulation.Simulation.prototype.logAutErrors = function()
 {
   var autErrorGetter = function()
@@ -222,7 +179,8 @@ simulation.Simulation.prototype.logAutErrors = function()
 simulation.Simulation.prototype.logResult = function()
 {
   try {
-    this.logErrors();
+    var results = this.getFailedTests() || {};
+    this.logFailedTests(results);
     this.logAutErrors();
   }
   catch(ex) {
@@ -240,20 +198,6 @@ simulation.Simulation.prototype.ignoreMessage = function(msg) {
   return false;
 };
 
-simulation.Simulation.prototype.replaceStrings = function(line)
-{
-  try {
-    line = line.replace(/\<br\>/gi, "<br/>");
-    line = line.replace(/\'/g, "\\'");
-    line = line.replace(/\n/g, "");
-    line = line.replace(/\r/g, "");
-  }
-  catch(ex) {
-    print("Error while replacing: " + ex);
-    line = "LINE REPLACED DUE TO ILLEGAL CHARACTER";
-  }
-  return line;
-};
 
 // - Main --------------------------------------------------------------------
 
