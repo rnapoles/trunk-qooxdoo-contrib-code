@@ -36,7 +36,8 @@ qx.Class.define("com.zenesis.qx.upload.InputElement", {
         
 		this.base(arguments, 'input', css, {
     			type : 'file',
-		      	name : name
+		      	name : name,
+		      	title: ' '
 	        });
 		this.__widget = widget;
 		this.setMultiple(!!multiple);
