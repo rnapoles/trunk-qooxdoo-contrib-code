@@ -1,0 +1,39 @@
+// Simulator - config json
+{
+  "name" : "Simulator config.json",
+  
+  "include" :
+  [
+    {
+      "path" : "${QOOXDOO_PATH}/tool/data/config/application.json"
+    }
+  ],
+  
+  "export" :
+  [
+    "api",
+    "build",
+    "clean",
+    "distclean",
+    "fix",
+    "lint",
+    "migration",
+    "pretty",
+    "profiling",
+    "source",
+    "source-all",
+    "test",
+    "test-source",
+    "translation"
+  ],
+
+  "let" :
+  {
+    "APPLICATION"  : "custom",
+    "QOOXDOO_PATH" : "../../qooxdoo/trunk",
+    "QXTHEME"      : "custom.theme.Theme",
+    "API_EXCLUDE"  : ["qx.legacy.*","qx.test.*"],
+    "LOCALES"      : [ "en" ],
+    "ROOT"         : "."
+  }
+}
