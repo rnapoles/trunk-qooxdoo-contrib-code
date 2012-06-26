@@ -31,7 +31,7 @@
   {
     "APPLICATION"  : "cropper",
     "APPLICATION_MAIN_CLASS" : "${APPLICATION}.demo.Demo",
-    "QOOXDOO_PATH" : "../../qooxdoo/1.4",
+    "QOOXDOO_PATH" : "../../qooxdoo/2.0",
     "QXTHEME"      : "qx.theme.Modern",
     "API_EXCLUDE"  : ["qx.*", "cropper.test.*", "${APPLICATION}.theme.*", "${APPLICATION}.test.*"],
     "LOCALES"      : [ "en" ],
