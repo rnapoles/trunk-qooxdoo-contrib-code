@@ -20,6 +20,11 @@ var mySim = new simulation.Simulation(baseConf,args);
 //var selWin = simulation.Simulation.SELENIUMWINDOW;
 //var qxAppInst = simulation.Simulation.QXAPPINSTANCE;
 
+var buttonToTitle = {
+  "Form Elements" : "Form",
+  "Tab Bar" : "Tabs"
+};
+
 simulation.Simulation.prototype.addListItemLabelGetter = function()
 {
   var titleGetter = function() {
@@ -46,17 +51,12 @@ simulation.Simulation.prototype.getListItemLabels = function()
 
 simulation.Simulation.prototype.selectItem = function(itemName) {
   this.qxClick("//div[text() = '" + itemName + "']");
-  this.waitForElementPresent("//div[@class='navigationbar-backbutton']");
+  itemName = buttonToTitle[itemName] || itemName; 
+  this.waitForElementPresent("//h1[text() = '" + itemName + "']");
 };
 
-simulation.Simulation.prototype.goBack = function(parentPageTitle) {
-  this.qxClick("//div[@class='navigationbar-backbutton']");
-  if (parentPageTitle) {
-    this.waitForElementPresent("//h1[text() = '" + parentPageTitle + "']");
-  }
-};
-
-simulation.Simulation.prototype.testPageTransitions = function()
+//TODO: Update
+simulation.Simulation.prototype.testPageTransitionsOLD = function()
 {
   this.log("Testing Animations", "info");
   this.waitForElementPresent("//h1[text() = 'Animation']");
@@ -68,7 +68,7 @@ simulation.Simulation.prototype.testPageTransitions = function()
     this.selectItem(listItems[i]);
     Packages.java.lang.Thread.sleep(1500);
     this.waitForElementPresent("//strong[contains(text(), 'reverse animation')]");
-    this.goBack("Animation");
+    this.selectItem("Animation");
   }
 };
 
@@ -77,14 +77,8 @@ simulation.Simulation.prototype.testList = function()
   this.log("Testing List", "info");
   this.waitForElementPresent("//h1[text() = 'List']");
   this.qxClick("//div[text() = 'Selectable Item2']");
-  if (!this.__sel.isAlertPresent()) {
-    throw new Error("Clicking Selectable Item2 did not open an alert box!");
-  }
-  var expectedText = "Item Selected #2";
-  var foundText = String(this.__sel.getAlert());
-  if (foundText !== expectedText) {
-    throw new Error("Expected alert box text " + expectedText + " but found " + foundText);
-  }
+  this.waitForElementPresent("//div[contains(text(), 'You selected Item')]");
+  this.qxClick("//div[text() = 'OK']");
 };
 
 simulation.Simulation.prototype.testEvents = function()
@@ -103,7 +97,7 @@ simulation.Simulation.prototype.testToolbar = function()
   
   //click search button
   this.qxClick("//div[contains(@class, 'toolbar-button')]/descendant::div[text() = 'Search']");
-  var searchDialogButtonLocator = "//div[contains(@class, 'dialog')]/descendant::div[contains(@class, 'button')]";
+  var searchDialogButtonLocator = "//div[text() = 'Search']/ancestor::div[@class= 'button']";
   this.waitForElementPresent(searchDialogButtonLocator);
   this.qxClick(searchDialogButtonLocator);
   Packages.java.lang.Thread.sleep(500);
@@ -133,7 +127,8 @@ simulation.Simulation.prototype.testToolbar = function()
   }
 };
 
-simulation.Simulation.prototype.testTabBar = function()
+//TODO: Update for new demo
+simulation.Simulation.prototype.testTabBarOLD = function()
 {
   for (var i=1; i<5; i++) {
     this.qxClick("//div[text() = 'Tab " + i + "']/ancestor::div[contains(@class, 'tabButton')]");
@@ -160,8 +155,6 @@ mySim.runTest = function()
         this.log("Error while testing " + listItems[i] + ": " + ex.message, "error");
       }
     }
-    this.log("Going back " + i, "info");
-    this.goBack("Overview");
   }
 };
 
