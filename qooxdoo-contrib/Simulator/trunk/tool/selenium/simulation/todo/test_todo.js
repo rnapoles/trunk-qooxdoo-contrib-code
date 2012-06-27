@@ -2,7 +2,9 @@ var baseConf = {
   autName : 'ToDo',
   globalTimeout : 300000,
   stepSpeed : '250',
-  debug : true
+  debug : true,
+  applicationLog : false,
+  disposerDebug : false
 };
 
 var args = arguments ? arguments : "";
@@ -59,20 +61,8 @@ simulation.Simulation.prototype.testAddItem = function(itemLabel)
 
 simulation.Simulation.prototype.reload = function()
 {
-  this.qxOpen();
-  var isAppReady = this.waitForCondition(simulation.Simulation.ISQXAPPREADY, 60000, 
-                                          "Waiting for qooxdoo application");
-
-  if (!isAppReady) {
-    this.testFailed = true;
-    this.log("Application was not reloaded correctly!", "error");
-    return false;
-  }
-  
-  this.addGlobalErrorHandler();
-  this.setupApplicationLogging();
-  
-  return true;
+  var openUri = this.getConfigSetting("autHost") + "" + this.getConfigSetting("autPath");
+  this.__sel.open(openUri);
 };
 
 mySim.runTest = function()
@@ -91,9 +81,7 @@ mySim.runTest = function()
   }
   
   this.log("Reloading application", "info");
-  if (!this.reload()) {
-    return;
-  }
+  this.reload();
   
   this.log("Clearing custom item " + customItemLabel, "info");
   try {
@@ -103,6 +91,43 @@ mySim.runTest = function()
   catch(ex) {
     this.log("Could not clear custom item: " + ex.message, "error");
   }
+};
+
+simulation.Simulation.prototype.startSession = function()
+{
+  if (this.getConfigSetting("debug")) {
+    print("Starting " + this.getConfigSetting("autName") + " session with browser " + this.getConfigSetting("testBrowser"));
+  }
+  
+  // Create QxSelenium instance.
+  try {
+    this.__sel = new QxSelenium(this.getConfigSetting("selServer"),this.getConfigSetting("selPort"),
+                                this.getConfigSetting("testBrowser"),this.getConfigSetting("autHost"));
+  }
+  catch(ex) {
+    throw new Error("Unable to create QxSelenium instance: " + ex);
+  }
+
+  try {
+    this.__sel.start();
+    if (this.getConfigSetting("windowMaximize", false)) {
+      this.__sel.windowMaximize();
+    }
+    this.__sel.setTimeout(this.getConfigSetting("globalTimeout"));
+    this.__sel.open(this.getConfigSetting("autHost") + "" + this.getConfigSetting("autPath"));
+    this.__sel.setSpeed(this.getConfigSetting("stepSpeed"));
+    this.logEnvironment();
+    this.logUserAgent();
+  }
+  catch (ex) {
+    this.logEnvironment("file");
+    this.log("User agent: " + this.getConfigSetting("browserId"), "none", "file");
+    var msg = "ERROR: Unable to start test session: " + ex;
+    print(msg);
+    this.log(msg, "error", "file");
+    return false;
+  }
+  return true;
 };
 
 // - Main --------------------------------------------------------------------
@@ -116,18 +141,7 @@ mySim.runTest = function()
     return;
   }
 
-  var isAppReady = mySim.waitForCondition(simulation.Simulation.ISQXAPPREADY, 60000, 
-                                          "Waiting for qooxdoo application");
-
-  if (!isAppReady) {
-    mySim.testFailed = true;
-    mySim.stop();
-    return;
-  }
-
   try {
-    mySim.setupApplicationLogging();
-    mySim.addGlobalErrorHandler();
     mySim.runTest();
   }
   catch(ex) {
@@ -139,7 +153,6 @@ mySim.runTest = function()
     mySim.log(msg, "error");
   }
 
-  mySim.logGlobalErrors();
   mySim.logResults();
 
   mySim.stop();
