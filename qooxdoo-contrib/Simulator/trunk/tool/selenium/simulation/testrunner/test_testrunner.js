@@ -78,9 +78,12 @@ simulation.Simulation.prototype.runTest = function()
   
   var tests = [
     this.testRunTests,
-    this.testToggleStackTrace,
-    this.testReload
+    this.testToggleStackTrace
   ];
+  
+  if (this.getEnvironment("browser.name") != "safari") {
+    tests.push(this.testReload);
+  }
   
   for (var i=0, l=tests.length; i<l; i++) {
     try {
