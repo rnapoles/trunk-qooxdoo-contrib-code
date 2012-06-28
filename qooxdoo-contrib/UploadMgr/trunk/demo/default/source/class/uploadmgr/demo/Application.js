@@ -214,6 +214,11 @@ qx.Class.define("uploadmgr.demo.Application", {
       			alert("Do Nothing 2 pressed");
       		});
       		part.add(btn);
+      		
+      		// Create an atom
+      		var atom = new qx.ui.basic.Atom("<span style='cursor: pointer'>qx.ui.basic.Atom upload button</span>").set({ rich: true });
+      		doc.add(atom, { left: 100, top: 575 });
+      		uploader.addWidget(atom);
 		}
 	}
 });
