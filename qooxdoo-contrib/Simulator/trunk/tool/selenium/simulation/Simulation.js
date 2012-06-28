@@ -1229,3 +1229,17 @@ simulation.Simulation.prototype.clearGlobalErrorStore = function(win)
   var targetWin = win || "selenium.qxStoredVars['autWindow']";
   this.getEval(targetWin + ".qx.Simulation.errorStore = [];", "Clearing errorStore");
 };
+
+/**
+ * Returns the value of an environment key from a qooxdoo application.
+ * 
+ * @param key {String} Environment key name
+ * @param win {window?} Optional browser window. Default: The AUT's window
+ * @return {var} The environment value for the given key
+ */
+simulation.Simulation.prototype.getEnvironment = function(key, win)
+{
+  var targetWin = win || "selenium.qxStoredVars['autWindow']";
+  var getter = targetWin + '.qx.core.Environment.get("'  + key + '")';
+  return this.getEval(getter);
+};

@@ -297,6 +297,11 @@ simulation.Simulation.prototype.runTest = function()
     this.log("Loading application " + inspectedAppPath + " in Inspector", "debug");
   }
   this.qxType("xpath=//input", inspectedAppPath);
+  
+  if (this.getEnvironment("browser.name") == "safari") {
+    this.qxClick("//div[contains(@style, 'view-refresh')]");
+  }
+  
   Packages.java.lang.Thread.sleep(10000);
 
   var inspectedAppLoaded = "selenium.qxStoredVars['autWindow'].qx.core.Init.getApplication()._loadedWindow.qx.core.Init.getApplication()";
