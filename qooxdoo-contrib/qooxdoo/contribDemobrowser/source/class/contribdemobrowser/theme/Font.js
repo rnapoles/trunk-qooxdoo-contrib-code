@@ -10,7 +10,7 @@
 
 qx.Theme.define("contribdemobrowser.theme.Font",
 {
-  extend : qx.theme.modern.Font,
+  extend : qx.theme.indigo.Font,
 
   fonts :
   {
