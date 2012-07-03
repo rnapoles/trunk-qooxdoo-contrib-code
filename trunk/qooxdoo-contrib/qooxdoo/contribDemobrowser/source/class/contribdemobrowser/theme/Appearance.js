@@ -10,7 +10,7 @@
 
 qx.Theme.define("contribdemobrowser.theme.Appearance",
 {
-  extend : qx.theme.modern.Appearance,
+  extend : qx.theme.indigo.Appearance,
   
   include : demobrowser.Appearance,
 

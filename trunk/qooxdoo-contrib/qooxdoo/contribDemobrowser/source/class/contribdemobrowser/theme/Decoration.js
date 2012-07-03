@@ -10,7 +10,7 @@
 
 qx.Theme.define("contribdemobrowser.theme.Decoration",
 {
-  extend : qx.theme.modern.Decoration,
+  extend : qx.theme.indigo.Decoration,
 
   decorations :
   {
