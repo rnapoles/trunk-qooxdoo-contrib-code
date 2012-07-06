@@ -93,50 +93,12 @@ mySim.runTest = function()
   }
 };
 
-simulation.Simulation.prototype.startSession = function()
-{
-  if (this.getConfigSetting("debug")) {
-    print("Starting " + this.getConfigSetting("autName") + " session with browser " + this.getConfigSetting("testBrowser"));
-  }
-  
-  // Create QxSelenium instance.
-  try {
-    this.__sel = new QxSelenium(this.getConfigSetting("selServer"),this.getConfigSetting("selPort"),
-                                this.getConfigSetting("testBrowser"),this.getConfigSetting("autHost"));
-  }
-  catch(ex) {
-    throw new Error("Unable to create QxSelenium instance: " + ex);
-  }
-
-  try {
-    this.__sel.start();
-    if (this.getConfigSetting("windowMaximize", false)) {
-      this.__sel.windowMaximize();
-    }
-    this.__sel.setTimeout(this.getConfigSetting("globalTimeout"));
-    this.__sel.open(this.getConfigSetting("autHost") + "" + this.getConfigSetting("autPath"));
-    this.__sel.setSpeed(this.getConfigSetting("stepSpeed"));
-    this.logEnvironment();
-    this.logUserAgent();
-  }
-  catch (ex) {
-    this.logEnvironment("file");
-    this.log("User agent: " + this.getConfigSetting("browserId"), "none", "file");
-    var msg = "ERROR: Unable to start test session: " + ex;
-    print(msg);
-    this.log(msg, "error", "file");
-    return false;
-  }
-  return true;
-};
-
 // - Main --------------------------------------------------------------------
 
 (function() { 
   mySim.testFailed = false;
 
   var sessionStarted = mySim.startSession();
-  
   if (!sessionStarted) {
     return;
   }
