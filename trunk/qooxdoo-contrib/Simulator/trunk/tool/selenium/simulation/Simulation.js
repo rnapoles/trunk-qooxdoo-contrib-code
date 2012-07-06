@@ -380,6 +380,11 @@ simulation.Simulation.prototype.qxOpen = function(uri)
 simulation.Simulation.prototype.prepareNameSpace = function(win)
 {
   var targetWin = win || 'selenium.qxStoredVars["autWindow"]';
+  var qx = String(this.getEval(targetWin + '.qx', 'Checking for qx namespace'));
+  if (qx == "null" || ns == "undefined") {
+    this.getEval(targetWin + '.qx = {};', 'Creating qx namespace');
+  }
+  
   var ns = String(this.getEval(targetWin + '.qx.Simulation', 'Checking for qx.Simulation namespace'));
   if (ns == "null" || ns == "undefined") {
     this.getEval(targetWin + '.qx.Simulation = {};', 'Creating qx.Simulation namespace');
