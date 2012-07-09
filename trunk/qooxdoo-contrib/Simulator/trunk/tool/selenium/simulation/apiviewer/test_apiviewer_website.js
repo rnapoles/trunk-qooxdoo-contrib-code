@@ -1,5 +1,5 @@
 var baseConf = {
-  autName : 'ToDo',
+  autName : 'WebsiteAPIViewer',
   globalTimeout : 300000,
   stepSpeed : '250',
   debug : true,
