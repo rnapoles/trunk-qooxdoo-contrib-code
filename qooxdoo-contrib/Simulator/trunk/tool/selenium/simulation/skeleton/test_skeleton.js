@@ -9,6 +9,7 @@ var baseConf = {
   'autHost' : 'http://localhost',
   'autPath' : '/~dwagner/workspace/qooxdoo.trunk/framework/api/index.html',
   'simulatorSvn' : '/home/dwagner/workspace/qooxdoo.contrib/Simulator',
+  'applicationLog' : false,
   'debug' : true
 };
 
@@ -27,15 +28,37 @@ var mySim = new simulation.Simulation(baseConf,args);
 var selWin = 'selenium.qxStoredVars["autWindow"]';
 var qxAppInst = simulation.Simulation.QXAPPINSTANCE;
 
-simulation.Simulation.prototype.bomTest = function(nativeApp)
+simulation.Simulation.prototype.websiteTest = function()
+{
+  var collectionMethods = ["animate", "getAttribute", "setStyle", "emit", "insertAfter", "getChildren"];
+  var statics = ["env.get", "array.remove", "string.hyphenate", "type.get"];
+  var snippet = "typeof " + simulation.Simulation.SELENIUMWINDOW + ".q.";
+
+  var typeCheck;
+  this.log("Checking Collection methods", "info");
+  for (var i=0, l=collectionMethods.length; i<l; i++) {
+    typeCheck = snippet + "prototype." + collectionMethods[i] + " == 'function'";
+    if (String(this.getEval(typeCheck)) != "true") {
+      this.log("Collection method " + collectionMethods[i] + " is not a function!", "error");
+    }
+  }
+
+  this.log("Checking static methods", "info");
+  for (i=0, l=statics.length; i<l; i++) {
+    typeCheck = snippet + statics[i] + " == 'function'";
+    if (String(this.getEval(typeCheck)) != "true") {
+      this.log("Collection method " + statics[i] + " is not a function!", "error");
+    }
+  }
+};
+
+simulation.Simulation.prototype.nativeTest = function()
 {
   var eventDivLocator = '//html/body/div[@id="logger"]';
   var eventDivElem = '.document.getElementById("logger")';
-  if (nativeApp) {
-    eventDivLocator = '//html/body/div';
-    eventDivElem = '.document.getElementsByTagName("div")[0]';
-  }
-  
+  eventDivLocator = '//html/body/div';
+  eventDivElem = '.document.getElementsByTagName("div")[0]';
+
   this.__sel.focus(eventDivLocator);
   this.__sel.typeKeys(eventDivLocator, 'A');
   var divContent = this.getEval(selWin + eventDivElem + '.innerHTML', "Getting logger div content.");
@@ -47,55 +70,52 @@ simulation.Simulation.prototype.bomTest = function(nativeApp)
   }
 };
 
-simulation.Simulation.prototype.inlineTest = function()
+simulation.Simulation.prototype.guiTest = function()
 {
   this.log("Clicking qooxdoo button - should open an alert box", "info");
   this.qxClick("qxh=qx.ui.form.Button");
-  this.killBoxes();  
+  this.killBoxes();
 };
 
 simulation.Simulation.prototype.runTest = function()
-{ 
-  if (this.getConfigSetting("autPath").indexOf("/bomapplication") >= 0) {
-    this.bomTest();
-  }
-  else if (this.getConfigSetting("autPath").indexOf("/nativeapplication") >= 0) {
-    this.bomTest("native");
-  }
-  else if (this.getConfigSetting("autPath").indexOf("/inlineapplication") >= 0) {
-    this.inlineTest();
-  }
-  else if (this.getConfigSetting("autPath").indexOf("/guiapplication") >= 0) {
-    //this.guiTest();
-    this.inlineTest();
-  }
+{
+  var appType = this.getApplicationType();
+  switch(appType) {
+    case "website":
+      this.websiteTest();
+      break;
+    case "native":
+      this.nativeTest();
+      break;
+    case "inline":
+    case "standalone":
+      this.guiTest();
+      break;
+    default:
+      this.log("No test case for application type " + appType, "warn");
+  };
 };
 
 // - Main --------------------------------------------------------------------
-(function() { 
+(function() {
   mySim.testFailed = false;
 
   var sessionStarted = mySim.startSession();
-  
+
   if (!sessionStarted) {
     return;
   }
 
-  if (mySim.getConfigSetting("autPath").indexOf("/bomapplication") < 0
-      && mySim.getConfigSetting("autPath").indexOf("/nativeapplication") < 0) {
+  if (mySim.getConfigSetting("autPath").indexOf("websiteapplication") == -1) {
     var isAppReady = mySim.waitForCondition(simulation.Simulation.ISQXAPPREADY, 60000, "Waiting for qooxdoo application");
-    
     if (!isAppReady) {
       mySim.testFailed = true;
       mySim.stop();
       return;
     }
   }
- 
-  //Packages.java.lang.Thread.sleep(4000);
 
   try {
-    mySim.setupApplicationLogging();
     mySim.runTest();
   }
   catch(ex) {
