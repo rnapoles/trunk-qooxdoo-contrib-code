@@ -1250,6 +1250,20 @@ simulation.Simulation.prototype.getEnvironment = function(key, win)
 };
 
 /**
+ * Returns the value of an environment key from a qx.Website application.
+ *
+ * @param key {String} Environment key name
+ * @param win {window?} Optional browser window. Default: The AUT's window
+ * @return {var} The environment value for the given key
+ */
+simulation.Simulation.prototype.getWebsiteEnvironment = function(key, win)
+{
+  var targetWin = win || "selenium.qxStoredVars['autWindow']";
+  var getter = targetWin + '.q.env.get("'  + key + '")';
+  return this.getEval(getter);
+};
+
+/**
  * Returns the type of the qooxdoo application under test.
  *
  * @return {String|null} One of "website", "desktop", "mobile", "native", "basic"
