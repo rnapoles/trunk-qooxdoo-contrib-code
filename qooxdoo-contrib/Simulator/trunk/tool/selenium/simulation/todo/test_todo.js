@@ -45,7 +45,22 @@ simulation.Simulation.prototype.testClearItem = function(itemLabel)
   this.assertElementPresent(labelLocator);
   //Synthetic click events on the label will not trigger checkbox selection
   //changes in Opera, so we need to click the checkbox itself
-  this.__sel.qxClick(labelLocator + "/preceding-sibling::input");
+  // "qxClick" will have no effect in IE
+  if (this.getWebsiteEnvironment("browser.name") == "ie"
+    && this.getWebsiteEnvironment("browser.documentmode") < 9)
+  {
+    try {
+      this.__sel.click(labelLocator + "/preceding-sibling::input");
+    } catch(ex) {
+      if (ex.message.indexOf("Unbekannter Fehler") == -1) {
+        this.log(ex.message, "warn");
+      }
+    }
+  }
+  else {
+    this.__sel.qxClick(labelLocator + "/preceding-sibling::input");
+  }
+  //Packages.java.lang.Thread.sleep(999999);
   this.__sel.click("clear");
   this.assertNotElementPresent(labelLocator);
 };
@@ -54,7 +69,7 @@ simulation.Simulation.prototype.testAddItem = function(itemLabel)
 {
   this.__sel.answerOnNextPrompt(itemLabel);
   this.__sel.click("add");
-  
+
   var labelLocator = '//label[contains(text(), "' + itemLabel + '")]';
   this.assertElementPresent(labelLocator);
 };
@@ -69,7 +84,7 @@ mySim.runTest = function()
 {
   var customItemLabel = "Pass the Test";
   this.waitForElementPresent("add");
-  
+
   this.log("Adding custom item " + customItemLabel, "info");
   try {
     this.testAddItem(customItemLabel);
@@ -79,10 +94,10 @@ mySim.runTest = function()
     this.log("Could not create custom item: " + ex.message, "error");
     return;
   }
-  
+
   this.log("Reloading application", "info");
   this.reload();
-  
+
   this.log("Clearing custom item " + customItemLabel, "info");
   try {
     this.testClearItem(customItemLabel);
@@ -95,7 +110,7 @@ mySim.runTest = function()
 
 // - Main --------------------------------------------------------------------
 
-(function() { 
+(function() {
   mySim.testFailed = false;
 
   var sessionStarted = mySim.startSession();
