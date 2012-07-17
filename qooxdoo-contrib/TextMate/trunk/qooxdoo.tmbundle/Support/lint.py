@@ -45,14 +45,17 @@ def lint(file, popup):
 
 def main(argv=None):
     if argv is None:
-		    argv = sys.argv	
+        argv = sys.argv	
 
     if len(argv) == 3:
         popup = argv[2] == "popup"
     else:
         popup = False
 
-    lint(argv[1], popup)
+    try:
+        lint(argv[1], popup)
+    except:
+        pass
 
 if __name__ == "__main__":
 	sys.exit(main())
