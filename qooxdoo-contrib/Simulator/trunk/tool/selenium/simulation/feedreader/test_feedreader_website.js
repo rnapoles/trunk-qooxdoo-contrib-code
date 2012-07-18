@@ -31,8 +31,8 @@ simulation.Simulation.prototype.checkArticle = function()
     this.log("Article found.", "info");
   }
   else {
-    this.log("ERROR: No Article found.", "error");    
-  }  
+    this.log("ERROR: No Article found.", "error");
+  }
 };
 
 
@@ -51,7 +51,7 @@ simulation.Simulation.prototype.getArticleTitles = function()
 simulation.Simulation.prototype.checkFeeds = function(titles)
 {
   var firstArticleTitle = null;
-  
+
   // Ignore IEBlog since it frequently contains enclosed elements like video
   // that cause older browsers to bug out.
   var feedTitles = [];
@@ -60,7 +60,7 @@ simulation.Simulation.prototype.checkFeeds = function(titles)
       feedTitles.push(titles[i]);
     }
   }
-  
+
   for (var i=0,l=feedTitles.length; i<l; i++) {
     try {
       this.__sel.click('//div[contains(text(),"' +  feedTitles[i] + '")]');
@@ -98,7 +98,7 @@ simulation.Simulation.prototype.checkRandomArticle = function(titles)
   var index = Math.floor(Math.random() * (titles.length));
   var title = titles[index].replace(/([^a-z0-9\ -'"])/gi, "");
   var labelLoc = "//label[text() = '" + titles[index] + "']";
-  
+
   try {
     this.__sel.click(labelLoc);
   }
@@ -107,7 +107,7 @@ simulation.Simulation.prototype.checkRandomArticle = function(titles)
     return;
   }
   Packages.java.lang.Thread.sleep(1500);
-  
+
   var visible = this.__sel.isVisible(labelLoc + "/following-sibling::div[@class='article-content']");
   if (!visible) {
     this.log("Content of article '" + title + "' is not displayed!", "error");
@@ -120,8 +120,8 @@ simulation.Simulation.prototype.checkRandomArticle = function(titles)
 
 mySim.runTest = function()
 {
-  this.feedLoadTimeout = 30000;  
-  
+  this.feedLoadTimeout = 30000;
+
   this.waitForElementPresent("//div[contains(text(), 'User Feeds')]");
   var titles = this.getFeedTitles();
   this.checkFeeds(titles);
@@ -129,16 +129,16 @@ mySim.runTest = function()
 
 // - Main --------------------------------------------------------------------
 
-(function() { 
+(function() {
   mySim.testFailed = false;
 
   var sessionStarted = mySim.startSession();
-  
+
   if (!sessionStarted) {
     return;
   }
 
-  var isAppReady = mySim.waitForCondition(simulation.Simulation.ISQXAPPREADY, 60000, 
+  var isAppReady = mySim.waitForCondition(simulation.Simulation.ISQXAPPREADY, 60000,
                                           "Waiting for qooxdoo application");
 
   if (!isAppReady) {
@@ -150,11 +150,11 @@ mySim.runTest = function()
   try {
     mySim.setupApplicationLogging();
     mySim.addGlobalErrorHandler();
-    mySim.runTest();    
+    mySim.runTest();
   }
   catch(ex) {
     mySim.testFailed = true;
-    var msg = "Unexpected error while running test!";
+    var msg = "Unexpected error while running test: " + ex.message;
     if (mySim.getConfigSetting("debug")) {
       print(msg + "\n" + ex);
     }
