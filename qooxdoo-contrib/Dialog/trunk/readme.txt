@@ -1,6 +1,6 @@
 Dialog contrib
 ==============
 
-The Dialog project provides many often-used widgets required in user
-interaction, such as alert, confirm, prompt, and others that simplify
-the web developer's daily work. 
+The contrib's repository is now on github:
+
+https://github.com/cboulanger/qx-contrib-Dialog
