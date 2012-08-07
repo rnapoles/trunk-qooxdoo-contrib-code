@@ -1,0 +1,333 @@
+# Portuguese translations for qooxdoo-legacy package.
+# Copyright (C) 2008 THE qooxdoo-legacy'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the qooxdoo-legacy package.
+# Automatically generated, 2008.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: qooxdoo-legacy 0_7_x\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-10-06 14:48+0100\n"
+"PO-Revision-Date: 2008-12-04 20:00-0000\n"
+"Last-Translator: Helder Magalhães <helder.magalhaes@gmail.com>\n"
+"Language-Team: none\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. TRANSLATION: short representation of key names
+#: class/qx/locale/Key.js:77
+msgid "key_short_Backspace"
+msgstr "Apagar"
+
+#: class/qx/locale/Key.js:78
+msgid "key_short_Tab"
+msgstr "Tab"
+
+#: class/qx/locale/Key.js:79
+msgid "key_short_Space"
+msgstr "Espaço"
+
+#: class/qx/locale/Key.js:80
+msgid "key_short_Enter"
+msgstr "Enter"
+
+#: class/qx/locale/Key.js:81
+msgid "key_short_Shift"
+msgstr "Shift"
+
+#: class/qx/locale/Key.js:82
+msgid "key_short_Control"
+msgstr "Ctrl"
+
+#: class/qx/locale/Key.js:83
+msgid "key_short_Alt"
+msgstr "Alt"
+
+#: class/qx/locale/Key.js:84
+msgid "key_short_CapsLock"
+msgstr "Caps Lock"
+
+#: class/qx/locale/Key.js:85
+msgid "key_short_Meta"
+msgstr "Meta"
+
+#: class/qx/locale/Key.js:86
+msgid "key_short_Escape"
+msgstr "Esc"
+
+#: class/qx/locale/Key.js:87
+msgid "key_short_Left"
+msgstr "Esquerda"
+
+#: class/qx/locale/Key.js:88
+msgid "key_short_Up"
+msgstr "Cima"
+
+#: class/qx/locale/Key.js:89
+msgid "key_short_Right"
+msgstr "Direita"
+
+#: class/qx/locale/Key.js:90
+msgid "key_short_Down"
+msgstr "Baixo"
+
+#: class/qx/locale/Key.js:91
+msgid "key_short_PageUp"
+msgstr "Page Up"
+
+#: class/qx/locale/Key.js:92
+msgid "key_short_PageDown"
+msgstr "Page Dn"
+
+#: class/qx/locale/Key.js:93
+msgid "key_short_End"
+msgstr "End"
+
+#: class/qx/locale/Key.js:94
+msgid "key_short_Home"
+msgstr "Home"
+
+#: class/qx/locale/Key.js:95
+msgid "key_short_Insert"
+msgstr "Ins"
+
+#: class/qx/locale/Key.js:96
+msgid "key_short_Delete"
+msgstr "Del"
+
+#: class/qx/locale/Key.js:97
+msgid "key_short_NumLock"
+msgstr "Num Lock"
+
+#: class/qx/locale/Key.js:98
+msgid "key_short_PrintScreen"
+msgstr "Print Screen"
+
+#: class/qx/locale/Key.js:99
+msgid "key_short_Scroll"
+msgstr "Scroll Lock"
+
+#: class/qx/locale/Key.js:100
+msgid "key_short_Pause"
+msgstr "Pause"
+
+#: class/qx/locale/Key.js:101
+msgid "key_short_Win"
+msgstr "Win"
+
+#: class/qx/locale/Key.js:102
+msgid "key_short_Apps"
+msgstr "Apps"
+
+#. TRANSLATION: full/long representation of key names
+#: class/qx/locale/Key.js:105
+msgid "key_full_Backspace"
+msgstr "Tecla de retrocesso"
+
+#: class/qx/locale/Key.js:106
+msgid "key_full_Tab"
+msgstr "Tabulação"
+
+#: class/qx/locale/Key.js:107
+msgid "key_full_Space"
+msgstr "Barra de espaços"
+
+#: class/qx/locale/Key.js:108
+msgid "key_full_Enter"
+msgstr "Enter"
+
+#: class/qx/locale/Key.js:109
+msgid "key_full_Shift"
+msgstr "Shift"
+
+#: class/qx/locale/Key.js:110
+msgid "key_full_Control"
+msgstr "Ctrl"
+
+#: class/qx/locale/Key.js:111
+msgid "key_full_Alt"
+msgstr "Alt"
+
+#: class/qx/locale/Key.js:112
+msgid "key_full_CapsLock"
+msgstr "Caps Lock"
+
+#: class/qx/locale/Key.js:113
+msgid "key_full_Meta"
+msgstr "Tecla Meta"
+
+#: class/qx/locale/Key.js:114
+msgid "key_full_Escape"
+msgstr "Escape"
+
+#: class/qx/locale/Key.js:115
+msgid "key_full_Left"
+msgstr "Seta para esquerda"
+
+#: class/qx/locale/Key.js:116
+msgid "key_full_Up"
+msgstr "Seta para cima"
+
+#: class/qx/locale/Key.js:117
+msgid "key_full_Right"
+msgstr "Seta para direita"
+
+#: class/qx/locale/Key.js:118
+msgid "key_full_Down"
+msgstr "Seta para baixo"
+
+#: class/qx/locale/Key.js:119
+msgid "key_full_PageUp"
+msgstr "Página acima"
+
+#: class/qx/locale/Key.js:120
+msgid "key_full_PageDown"
+msgstr "Página abaixo"
+
+#: class/qx/locale/Key.js:121
+msgid "key_full_End"
+msgstr "Fim"
+
+#: class/qx/locale/Key.js:122
+msgid "key_full_Home"
+msgstr "Início"
+
+#: class/qx/locale/Key.js:123
+msgid "key_full_Insert"
+msgstr "Inserir"
+
+#: class/qx/locale/Key.js:124
+msgid "key_full_Delete"
+msgstr "Eliminar"
+
+#: class/qx/locale/Key.js:125
+msgid "key_full_NumLock"
+msgstr "Num Lock"
+
+#: class/qx/locale/Key.js:126
+msgid "key_full_PrintScreen"
+msgstr "Print Screen"
+
+#: class/qx/locale/Key.js:127
+msgid "key_full_Scroll"
+msgstr "Scroll Lock"
+
+#: class/qx/locale/Key.js:128
+msgid "key_full_Pause"
+msgstr "Pause"
+
+#: class/qx/locale/Key.js:129
+msgid "key_full_Win"
+msgstr "Tecla do Windows"
+
+#: class/qx/locale/Key.js:130
+msgid "key_full_Apps"
+msgstr "Tecla Apps"
+
+#: class/qx/ui/component/ColorPopup.js:161
+msgid "Automatic"
+msgstr "Automático"
+
+#: class/qx/ui/component/ColorPopup.js:229
+#: class/qx/ui/component/ColorSelector.js:413
+msgid "Preview (Old/New)"
+msgstr "Pré-visualização (Anterior/Novo)"
+
+#: class/qx/ui/component/ColorPopup.js:262
+msgid "Open ColorSelector"
+msgstr "Abrir selector de côr"
+
+#: class/qx/ui/component/ColorPopup.js:283
+msgid "Color Selector"
+msgstr "Selector de côr"
+
+#: class/qx/ui/component/ColorSelector.js:229
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: class/qx/ui/component/ColorSelector.js:230
+msgid "OK"
+msgstr "OK"
+
+#: class/qx/ui/component/ColorSelector.js:343
+msgid "Presets"
+msgstr "Predefinições"
+
+#: class/qx/ui/component/ColorSelector.js:394
+msgid "Details"
+msgstr "Detalhes"
+
+#: class/qx/ui/component/ColorSelector.js:448
+msgid "Hex"
+msgstr "Hex"
+
+#: class/qx/ui/component/ColorSelector.js:477
+msgid "RGB"
+msgstr "RGB"
+
+#: class/qx/ui/component/ColorSelector.js:512
+msgid "HSB"
+msgstr "HSB"
+
+#: class/qx/ui/component/DateChooser.js:82
+msgid "Last year"
+msgstr "Ano anterior"
+
+#: class/qx/ui/component/DateChooser.js:83
+msgid "Last month"
+msgstr "Mês anterior"
+
+#: class/qx/ui/component/DateChooser.js:84
+msgid "Next month"
+msgstr "Próximo mês"
+
+#: class/qx/ui/component/DateChooser.js:85
+msgid "Next year"
+msgstr "Próximo ano"
+
+#: class/qx/ui/component/DateChooserButton.js:115
+msgid "Choose a date"
+msgstr "Seleccione uma data"
+
+#: class/qx/ui/form/ComboBoxEx.js:270
+msgid "Description"
+msgstr "Descrição"
+
+#: class/qx/ui/form/ComboBoxEx.js:270
+msgid "ID"
+msgstr "Identificador"
+
+#: class/qx/ui/form/ComboBoxEx.js:956
+msgid "Search"
+msgstr "Procurar"
+
+#: class/qx/ui/form/ComboBoxEx.js:1072
+msgid "Case sensitive"
+msgstr "Sensível à capitalização"
+
+#: class/qx/ui/form/ComboBoxEx.js:1115
+msgid "Search next occurrence"
+msgstr "Procurar próxima ocorrência"
+
+#: class/qx/ui/form/ComboBoxEx.js:1159
+msgid "Search items in list"
+msgstr "Procurar itens na lista"
+
+#: class/qx/ui/table/Table.js:1617
+msgid "one row"
+msgid_plural "%1 rows"
+msgstr[0] "uma linha"
+msgstr[1] "%1 linhas"
+
+#: class/qx/ui/table/Table.js:1619
+msgid "one of one row"
+msgid_plural "%1 of %2 rows"
+msgstr[0] "uma de uma linha"
+msgstr[1] "%1 de %2 linhas"
+
+#: class/qx/ui/table/columnmodel/Resize.js:207
+msgid "Reset column widths"
+msgstr "Repor a largura das colunas"
