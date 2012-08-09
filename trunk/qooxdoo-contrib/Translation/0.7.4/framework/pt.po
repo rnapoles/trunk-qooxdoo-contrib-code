@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: qooxdoo-legacy 0_7_x\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-01-23 09:43+0000\n"
-"PO-Revision-Date: 2008-12-04 20:00-0000\n"
+"PO-Revision-Date: 2012-08-09 12:10-0000\n"
 "Last-Translator: Helder Magalhães <helder.magalhaes@gmail.com>\n"
 "Language-Team: none\n"
 "MIME-Version: 1.0\n"
@@ -237,11 +237,11 @@ msgstr "Pré-visualização (Anterior/Novo)"
 
 #: class/qx/ui/component/ColorPopup.js:262
 msgid "Open ColorSelector"
-msgstr "Abrir selector de côr"
+msgstr "Abrir Seletor de Cor"
 
 #: class/qx/ui/component/ColorPopup.js:283
 msgid "Color Selector"
-msgstr "Selector de côr"
+msgstr "Seletor de Cor"
 
 #: class/qx/ui/component/ColorSelector.js:229
 msgid "Cancel"
@@ -289,7 +289,7 @@ msgstr "Próximo ano"
 
 #: class/qx/ui/component/DateChooserButton.js:115
 msgid "Choose a date"
-msgstr "Seleccione uma data"
+msgstr "Selecione uma data"
 
 #: class/qx/ui/form/ComboBoxEx.js:270
 msgid "Description"
