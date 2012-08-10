@@ -28,6 +28,23 @@ qx.Theme.define("darktheme.theme.Decoration",
   {
     /*
     ---------------------------------------------------------------------------
+      APPLICATION
+    ---------------------------------------------------------------------------
+    */
+
+    "app-header":
+    {
+      decorator: qx.ui.decoration.Grid,
+
+      style:
+      {
+        baseImage: "decoration/window/captionbar-active.png"
+      }
+
+    },
+    
+    /*
+    ---------------------------------------------------------------------------
       CORE
     ---------------------------------------------------------------------------
     */
@@ -444,6 +461,41 @@ qx.Theme.define("darktheme.theme.Decoration",
         color: "black",
         style: "solid"
       }
+    },
+    
+    /*
+    ---------------------------------------------------------------------------
+      PROGRESSBAR
+    ---------------------------------------------------------------------------
+    */
+
+    "progressbar" :
+    {
+      decorator: qx.ui.decoration.Single,
+
+      style:
+      {
+        width: 1,
+        color: "border-input"
+      }
+    },
+    
+    /*
+    ---------------------------------------------------------------------------
+      PROGRESSIVE
+    ---------------------------------------------------------------------------
+    */
+
+    "progressive-table-header" :
+    {
+       decorator : qx.ui.decoration.Single,
+
+       style :
+       {
+         width       : 1,
+         color       : "border-main",
+         style       : "solid"
+       }
     },
     
     /*
@@ -1036,6 +1088,42 @@ qx.Theme.define("darktheme.theme.Decoration",
       style : {
         baseImage : "decoration/tooltip/tooltip.png",
         insets    : [ 2, 5, 5, 2 ]
+      }
+    },
+    
+    "tooltip-error" :
+    {
+      decorator : qx.ui.decoration.Grid,
+
+      style : {
+        baseImage : "decoration/tooltip/tooltip-error.png",
+        insets    : [ 2, 5, 5, 2 ]
+      }
+    },
+    
+    "tooltip-error-arrow" :
+    {
+      decorator: qx.ui.decoration.Background,
+
+      style: {
+        backgroundImage: "decoration/tooltip/tooltip-error-arrow.png",
+        backgroundPositionY: "top",
+        backgroundRepeat: "no-repeat",
+        insets: [-4, 0, 0, 13]
+      }
+    },
+
+
+    "tooltip-error-arrow-left" :
+    {
+      decorator: qx.ui.decoration.Background,
+
+      style: {
+        backgroundImage: "decoration/tooltip/tooltip-error-arrow-right.png",
+        backgroundPositionY: "top",
+        backgroundPositionX: "right",
+        backgroundRepeat: "no-repeat",
+        insets: [-4, -13, 0, 0]
       }
     },
     

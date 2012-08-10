@@ -25,16 +25,16 @@ qx.Theme.define("darktheme.theme.Color",
     */
 
     // application, desktop, ...
-	"background-application": "#626262",
+    "background-application": "#626262",
 
     // pane color for windows, splitpanes, ...
     "background-pane" : "#525252",
 
     // textfields, ...
-	"background-light" : "#929292",
+    "background-light" : "#929292",
 
     // headers, ...
-	"background-medium" : "#727272",
+    "background-medium" : "#727272",
 
     // splitpane
     "background-splitpane" : "#525252",
@@ -47,15 +47,18 @@ qx.Theme.define("darktheme.theme.Color",
 
     // tables, ...
     "background-odd" : "yellow",
-	
-	// datechooser
-	"background-datechooser": "#424242",
-	
-	// window
-	"background-window": "#525252",
-	
-	// selection
-	"background-selected": "#3E646E",
+    
+    // datechooser
+    "background-datechooser": "#424242",
+    
+    // window
+    "background-window": "#525252",
+    
+    // selection
+    "background-selected": "#3E646E",
+    
+     // progress bar
+    "progressbar-background" : "#727272",
 
     /*
     ---------------------------------------------------------------------------
@@ -67,34 +70,34 @@ qx.Theme.define("darktheme.theme.Color",
     "text-gray": "teal",
 
     // labels
-	"text-label": "white",
-	
-	// buttons
-	"text-button": "white",
+    "text-label": "white",
+    
+    // buttons
+    "text-button": "white",
 
     // group boxes
-	"text-title": "white",
+    "text-title": "white",
     "groupitem-text": "white",
 
     // text fields
-	"text-input": "yellow",
-	"text-textfield": "black",
+    "text-input": "yellow",
+    "text-textfield": "black",
 
     // states
-	"text-hovered": "white",
-	"text-disabled": "silver",
-	"text-selected": "white",
-	"text-active": "black",
-	"text-inactive": "silver",
+    "text-hovered": "white",
+    "text-disabled": "silver",
+    "text-selected": "white",
+    "text-active": "black",
+    "text-inactive": "silver",
     "text-placeholder": "gray",
-	
-	//trees
-	"text-tree": "black",
+    
+    //trees
+    "text-tree": "black",
 
-	//windows
+    //windows
     "text-window": "white",
-	"text-caption": "white",
-	
+    "text-caption": "white",
+    
     /*
     ---------------------------------------------------------------------------
       BORDER COLORS
@@ -102,7 +105,7 @@ qx.Theme.define("darktheme.theme.Color",
     */
 
     // menus, tables, scrollbars, list, etc.
-	"border-main": "black",
+    "border-main": "black",
 
     // between toolbars
     "border-separator": "#808080",

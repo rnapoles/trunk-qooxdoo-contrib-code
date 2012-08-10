@@ -77,7 +77,7 @@ qx.Class.define("darktheme.demo.Application",
         ToolBarTop
       -------------------------------------------------------------------------
       */
-      var showcaseButton = this.showcaseButton = new qx.ui.form.SelectBox();
+      var showcaseButton = this.showcaseButton = new qx.ui.form.SelectBox().set({width: 150});
       showcaseButton.set({font: "bold"});
       var emptyItem = this.emptyItem = new qx.ui.form.ListItem("<not selected>");
       var calcItem = this.calcItem = new qx.ui.form.ListItem("Calculator");
@@ -201,7 +201,7 @@ qx.Class.define("darktheme.demo.Application",
       
       stack.resetSelection();
       
-      var widgetButton = this.widgetButton = new qx.ui.form.SelectBox();
+      var widgetButton = this.widgetButton = new qx.ui.form.SelectBox().set({width: 150});
       widgetButton.set({font: "bold"});
       widgetButton.add(new qx.ui.form.ListItem("<not selected>"));
       widgetButton.add(new qx.ui.form.ListItem("Atom"));
