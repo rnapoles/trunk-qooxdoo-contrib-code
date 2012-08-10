@@ -20,7 +20,8 @@ qx.Class.define("graydienttheme.demo.ProgressBar",
       var container = new qx.ui.container.Composite(box);
 
       var pb = new qx.ui.indicator.ProgressBar(0, 200);
-      pb.set({height: 16});
+      pb.set({height: 16, width: 200});
+      
       var slider = new qx.ui.form.Slider().set({minimum:0, maximum: 200});
       var info = new qx.ui.basic.Label();
 
