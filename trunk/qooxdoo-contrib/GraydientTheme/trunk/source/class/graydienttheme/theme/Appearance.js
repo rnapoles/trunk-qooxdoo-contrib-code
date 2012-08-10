@@ -688,6 +688,23 @@ qx.Theme.define("graydienttheme.theme.Appearance",
         };
       }
     },
+    
+    /*
+    ---------------------------------------------------------------------------
+      FORM FIELDS
+    ---------------------------------------------------------------------------
+    */
+    "form-renderer-label" : 
+    {
+      include : "label",
+      
+      style : function() 
+      {
+        return {
+          paddingTop: 4
+        };
+      }
+    },
 
     /*
     ---------------------------------------------------------------------------
@@ -2680,7 +2697,9 @@ qx.Theme.define("graydienttheme.theme.Appearance",
       }
     },
 
-    "window/statusbar-text": "label"
+    "window/statusbar-text": "label",
+    
+    "window-resize-frame" : "move-frame"
     
   }
 });
