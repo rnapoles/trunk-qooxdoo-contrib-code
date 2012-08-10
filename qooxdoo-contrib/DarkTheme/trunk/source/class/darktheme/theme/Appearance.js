@@ -26,6 +26,32 @@ qx.Theme.define("darktheme.theme.Appearance",
 
   appearances:
   {
+    /*
+    ---------------------------------------------------------------------------
+      APPLICATION
+    ---------------------------------------------------------------------------
+    */
+    "app-header" :
+    {
+      style : function(states)
+      {
+        return {
+          font : "bold",
+          textColor : "text-selected",
+          padding : [8, 12],
+          decorator : "app-header"
+        };
+      }
+    },
+
+    "app-header-label": "label",
+    
+    /*
+    ---------------------------------------------------------------------------
+      BUTTON
+    ---------------------------------------------------------------------------
+    */
+    
     "button":
     {
       style: function(states)
@@ -135,6 +161,16 @@ qx.Theme.define("darktheme.theme.Appearance",
       }
     },
     
+    "button-frame/image" :
+    {
+      style : function(states)
+      {
+        return {
+          opacity : !states.replacement && states.disabled ? 0.5 : 1
+        };
+      }
+    },
+    
     "hover-button":
     {
       alias: "button",
@@ -209,6 +245,8 @@ qx.Theme.define("darktheme.theme.Appearance",
       }
     },
     
+    "checkbox/icon" : "image",
+        
     /*
     ---------------------------------------------------------------------------
       COLOR POPUP
@@ -599,6 +637,8 @@ qx.Theme.define("darktheme.theme.Appearance",
       }
     },
     
+    "datechooser/navigation-bar" : {},
+    
     "datechooser/nav-button"  :
     {
       include : "button-simple",
@@ -711,6 +751,24 @@ qx.Theme.define("darktheme.theme.Appearance",
       {
         return {
           decorator : undefined
+        };
+      }
+    },
+    
+    /*
+    ---------------------------------------------------------------------------
+      FORM FIELDS
+    ---------------------------------------------------------------------------
+    */
+
+    "form-renderer-label" : 
+    {
+      include : "label",
+      
+      style : function() 
+      {
+        return {
+          paddingTop: 4
         };
       }
     },
@@ -1087,6 +1145,55 @@ qx.Theme.define("darktheme.theme.Appearance",
       }
     },
     
+    /*
+    ---------------------------------------------------------------------------
+      PROGRESSBAR
+    ---------------------------------------------------------------------------
+    */
+    "progressbar":
+    {
+      style: function(states) {
+        return {
+          decorator: "progressbar",
+          padding: [1],
+          backgroundColor: "progressbar-background",
+          width : 200,
+          height: 20
+        }
+      }
+    },
+
+    "progressbar/progress":
+    {
+      style: function(states)
+      {
+        var decorator = states.disabled ? "group-item" : "selected";
+
+        return {
+          decorator: decorator
+        }
+      }
+    },
+    
+    /*
+    ---------------------------------------------------------------------------
+      PROGRESSIVE
+    ---------------------------------------------------------------------------
+    */
+
+    "progressive-table-header" :
+    {
+      alias : "widget",
+
+      style : function(states)
+      {
+        return {
+          decorator : "progressive-table-header"
+        };
+      }
+    },
+
+    "progressive-table-header-cell" : "table-header-cell",
     
     /*
     ---------------------------------------------------------------------------
@@ -1132,6 +1239,8 @@ qx.Theme.define("darktheme.theme.Appearance",
         };
       }
     },
+    
+    "radiobutton/icon" : "image",
     
     /*
     ---------------------------------------------------------------------------
@@ -2352,6 +2461,46 @@ qx.Theme.define("darktheme.theme.Appearance",
       }
     },
     
+    "tooltip/atom" : "atom",
+    
+    "tooltip-error" :
+    {
+      include : "tooltip",
+
+      style : function(states)
+      {
+        var shadow = "tooltip-error";
+        var decorator = "tooltip-error-arrow";
+        if (states.placementLeft) {
+          decorator = "tooltip-error-arrow-left";
+        }
+        // padding
+        if (states.placementLeft) {
+          var padding = [6, 20, 3, 4];
+        } else {
+          var padding = [6, 4, 3, -5];
+        }
+
+        return {
+          textColor: "text-selected",
+          backgroundColor : undefined,
+          placeMethod: "widget",
+          offset: [0, 14, 0, 14],
+          marginTop: -2,
+          position: "right-top",
+          showTimeout: 100,
+          hideTimeout: 10000,
+          shadow: shadow,
+          decorator: decorator,
+          font: "bold",
+          padding: padding,
+          maxWidth: 333
+        };
+      }
+    },
+
+    "tooltip-error/atom" : "atom",
+    
     /*
     ---------------------------------------------------------------------------
       TREE
@@ -2834,7 +2983,17 @@ qx.Theme.define("darktheme.theme.Appearance",
       }
     },
     
-    "window/statusbar-text": {}
+    "window/statusbar-text": {},
+    
+    "window-resize-frame" :
+    {
+      style : function(states)
+      {
+        return {
+          decorator : "main"
+        };
+      }
+    }
     
   }
 });
