@@ -31,54 +31,54 @@ qx.Theme.define("darktheme.theme.Appearance",
       style: function(states)
       {
         return {
-		  padding: states.pressed || states.checked 
-		           || (states.checked && states.disabled) ? [4, 4, 0, 6] : [2, 6, 2, 4], 
+          padding: states.pressed || states.checked 
+                   || (states.checked && states.disabled) ? [4, 4, 0, 6] : [2, 6, 2, 4], 
           decorator: states.pressed || states.checked ?
                         "button-checked" :
                      states.hovered && !states.disabled ?
                         "button-hovered" : "button",
-		  textColor: "text-button",
-		  center: true
+          textColor: "text-button",
+          center: true
         };
       }
-	},
-	
-	"button-red":
+    },
+    
+    "button-red":
     {
       style: function(states)
       {
         return {
-		  padding: states.pressed || states.checked 
-		           || (states.checked && states.disabled) ? [4, 4, 0, 6] : [2, 6, 2, 4], 
+          padding: states.pressed || states.checked 
+                   || (states.checked && states.disabled) ? [4, 4, 0, 6] : [2, 6, 2, 4], 
           decorator: states.pressed || states.checked ?
                         "button-red-checked" :
                      states.hovered && !states.disabled ?
                         "button-red-hovered" : "button",
-		  textColor: "text-button",
-		  center: true
+          textColor: "text-button",
+          center: true
         };
       }
-	},
-	
-	"button-simple":
+    },
+    
+    "button-simple":
     {
       alias: "atom",
 
       style: function(states)
       {
         return {
-		  padding: states.pressed || states.checked 
-		           || (states.checked && states.disabled) ? [4, 2, 2, 4] : [3], 
+          padding: states.pressed || states.checked 
+                   || (states.checked && states.disabled) ? [4, 2, 2, 4] : [3], 
           decorator: states.pressed || states.checked ?
                         "button-simple-checked" :
                      states.hovered && !states.disabled ?
                         "button-simple-hovered" : "button-simple",
-		  textColor: "text-button"
+          textColor: "text-button"
         };
       }
-	},
-	
-	"button-frame" :
+    },
+    
+    "button-frame" :
     {
       alias : "atom",
 
@@ -134,8 +134,8 @@ qx.Theme.define("darktheme.theme.Appearance",
         }
       }
     },
-	
-	"hover-button":
+    
+    "hover-button":
     {
       alias: "button",
       include: "button",
@@ -155,46 +155,6 @@ qx.Theme.define("darktheme.theme.Appearance",
     ---------------------------------------------------------------------------
     */
 
-    // "checkbox":
-    // {
-      // alias : "atom",
-
-      // style : function(states)
-      // {
-        // "disabled" state is not handled here with purpose. The image widget
-        // does handle this already by replacing the current image with a
-        // disabled version (if available). If no disabled image is found the
-        // opacity style is used.
-        // var icon;
-        // if (states.checked && states.focused) {
-          // icon = "checkbox-checked-focused";
-        // } else if (states.checked && states.disabled) {
-          // icon = "checkbox-checked-disabled";
-        // } else if (states.checked && states.pressed) {
-          // icon = "checkbox-checked-pressed";
-        // } else if (states.checked && states.hovered) {
-          // icon = "checkbox-checked-hovered";
-        // } else if (states.checked) {
-          // icon = "checkbox-checked";
-        // } else if (states.focused) {
-          // icon = "checkbox-focused";
-        // } else if (states.pressed) {
-          // icon = "checkbox-pressed";
-        // } else if (states.hovered) {
-          // icon = "checkbox-hovered";
-        // } else {
-          // icon = "checkbox";
-        // }
-
-        // var invalid = states.invalid && !states.disabled ? "-invalid" : "";
-
-        // return {
-          // icon: "decoration/form/" + icon + invalid + ".png",
-          // gap: 6
-        // };
-      // }
-    // },
-    
     "checkbox":
     {
       alias: "atom",
@@ -203,7 +163,7 @@ qx.Theme.define("darktheme.theme.Appearance",
       {
         var icon;
 
-    // Checked
+        // Checked
         if (states.checked) {
           if (states.disabled) {
             icon = "checkbox-checked";
@@ -434,13 +394,13 @@ qx.Theme.define("darktheme.theme.Appearance",
     "colorselector/hue-saturation-handle" : "widget",
     "colorselector/brightness-pane": "widget",
     "colorselector/brightness-handle" : "widget",
-	
-	/*
+    
+    /*
     ---------------------------------------------------------------------------
       COMBOBOX
     ---------------------------------------------------------------------------
     */
-	"combobox" :
+    "combobox" :
     {
       style : function(states)
       {
@@ -468,7 +428,7 @@ qx.Theme.define("darktheme.theme.Appearance",
       }
     },
     
-	"combobox/button":
+    "combobox/button":
     {
       include: "button-simple",
       alias: "button-simple",
@@ -487,8 +447,8 @@ qx.Theme.define("darktheme.theme.Appearance",
     "combobox/list" : {
       alias : "list"
     },
-	
-	"combobox/popup" : "popup",
+    
+    "combobox/popup" : "popup",
     
     "combobox/textfield" :
     {
@@ -579,7 +539,7 @@ qx.Theme.define("darktheme.theme.Appearance",
     "atom" : {},
     
     "atom/label": 
-	{
+    {
       style : function(states)
       {
         return {
@@ -596,20 +556,20 @@ qx.Theme.define("darktheme.theme.Appearance",
       {
         return {
           decorator: "menu",
-		  textColor: "white",
-		  backgroundColor: "background-light",
+          textColor: "white",
+          backgroundColor: "background-light",
           shadow: "shadow-window"
         }
       }
     },
-	
-	/*
+    
+    /*
     ---------------------------------------------------------------------------
       DATE CHOOSER
     ---------------------------------------------------------------------------
     */
-	
-	"datechooser" :
+    
+    "datechooser" :
     {
       style : function(states)
       {
@@ -638,8 +598,8 @@ qx.Theme.define("darktheme.theme.Appearance",
         };
       }
     },
-	
-	"datechooser/nav-button"  :
+    
+    "datechooser/nav-button"  :
     {
       include : "button-simple",
       alias : "button-simple",
@@ -666,8 +626,8 @@ qx.Theme.define("darktheme.theme.Appearance",
         return result;
       }
     },
-	
-	"datechooser/date-pane" :
+    
+    "datechooser/date-pane" :
     {
       style : function(states)
       {
@@ -677,8 +637,8 @@ qx.Theme.define("darktheme.theme.Appearance",
         };
       }
     },
-	
-	"datechooser/day" :
+    
+    "datechooser/day" :
     {
       style : function(states)
       {
@@ -691,8 +651,8 @@ qx.Theme.define("darktheme.theme.Appearance",
         };
       }
     },
-	
-	"datechooser/week" :
+    
+    "datechooser/week" :
     {
       style : function(states)
       {
@@ -703,8 +663,8 @@ qx.Theme.define("darktheme.theme.Appearance",
         };
       }
     },
-	
-	"datechooser/weekday" :
+    
+    "datechooser/weekday" :
     {
       style : function(states)
       {
@@ -754,8 +714,8 @@ qx.Theme.define("darktheme.theme.Appearance",
         };
       }
     },
-	
-	/*
+    
+    /*
     ---------------------------------------------------------------------------
       GROUPBOX
     ---------------------------------------------------------------------------
@@ -771,7 +731,7 @@ qx.Theme.define("darktheme.theme.Appearance",
       }
     },
 
-	"groupbox/frame" :
+    "groupbox/frame" :
     {
       style : function(states)
       {
@@ -829,8 +789,8 @@ qx.Theme.define("darktheme.theme.Appearance",
         };
       }
     },
-	
-	/*
+    
+    /*
     ---------------------------------------------------------------------------
       HTMLAREA
     ---------------------------------------------------------------------------
@@ -844,7 +804,7 @@ qx.Theme.define("darktheme.theme.Appearance",
       {
         return {
           backgroundColor : "white",
-		  decorator: "input"
+          decorator: "input"
         }
       }
     },
@@ -864,14 +824,14 @@ qx.Theme.define("darktheme.theme.Appearance",
         };
       }
     },
-	
-	/*
+    
+    /*
     ---------------------------------------------------------------------------
       LIST
     ---------------------------------------------------------------------------
     */
-	
-	"list" :
+    
+    "list" :
     {
       alias : "scrollarea",
 
@@ -897,14 +857,14 @@ qx.Theme.define("darktheme.theme.Appearance",
 
         return {
           decorator: decorator,
-		  textColor: "text-active"
+          textColor: "text-active"
         };
       }
     },
-	
+    
     "list/pane" : "widget",
     
-	"listitem" :
+    "listitem" :
     {
       style : function(states)
       {
@@ -922,8 +882,8 @@ qx.Theme.define("darktheme.theme.Appearance",
         };
       }
     },
-	
-	/*
+    
+    /*
     ---------------------------------------------------------------------------
       MENU
     ---------------------------------------------------------------------------
@@ -935,7 +895,7 @@ qx.Theme.define("darktheme.theme.Appearance",
         var result =
         {
           decorator : "menu",
-          shadow : "shadow-popup",
+          shadow : "shadow-window",
           spacingX : 6,
           spacingY : 1,
           iconColumnWidth : 16,
@@ -1005,32 +965,7 @@ qx.Theme.define("darktheme.theme.Appearance",
       }
     },
     
-	"menubar" :
-    {
-      style : function(states)
-      {
-        return {
-          decorator : "menubar",
-		  shadow: "shadow-window"
-        }
-      }
-    },
-    
-    "menubar-button" :
-    {
-      alias : "atom",
-
-      style : function(states)
-      {
-        return {
-          decorator : states.pressed || states.hovered ? "menubar-selected" : undefined,
-          textColor : states.pressed || states.hovered ? "text-selected" : "text-button",
-          padding   : [ 3, 8 ]
-        }
-      }
-    },
-	
-	"menu-button":
+    "menu-button":
     {
       alias : "atom",
 
@@ -1038,7 +973,7 @@ qx.Theme.define("darktheme.theme.Appearance",
       {
         return {
           textColor: "text-button",
-		  decorator: states.selected ? "menu-button-selected" : undefined,
+          decorator: states.selected ? "menu-button-selected" : undefined,
           padding   : [ 3, 5 ]
         };
       }
@@ -1082,8 +1017,8 @@ qx.Theme.define("darktheme.theme.Appearance",
         };
       }
     },
-	
-	"menu-button/arrow" :
+    
+    "menu-button/arrow" :
     {
       include : "image",
 
@@ -1095,8 +1030,8 @@ qx.Theme.define("darktheme.theme.Appearance",
         };
       }
     },
-	
-	"menu-checkbox":
+    
+    "menu-checkbox":
     {
       alias: "menu-button",
       include: "menu-button",
@@ -1108,8 +1043,8 @@ qx.Theme.define("darktheme.theme.Appearance",
         }
       }
     },
-	
-	"menu-radiobutton" :
+    
+    "menu-radiobutton" :
     {
       alias : "menu-button",
       include : "menu-button",
@@ -1121,7 +1056,38 @@ qx.Theme.define("darktheme.theme.Appearance",
         }
       }
     },
-	
+    
+    /*
+    ---------------------------------------------------------------------------
+      MENU BAR
+    ---------------------------------------------------------------------------
+    */
+    "menubar" :
+    {
+      style : function(states)
+      {
+        return {
+          decorator : "menubar",
+          shadow: "shadow-window"
+        }
+      }
+    },
+    
+    "menubar-button" :
+    {
+      alias : "atom",
+
+      style : function(states)
+      {
+        return {
+          decorator : states.pressed || states.hovered ? "menubar-selected" : undefined,
+          textColor : states.pressed || states.hovered ? "text-selected" : "text-button",
+          padding   : [ 3, 8 ]
+        }
+      }
+    },
+    
+    
     /*
     ---------------------------------------------------------------------------
       RADIOBUTTON
@@ -1215,8 +1181,8 @@ qx.Theme.define("darktheme.theme.Appearance",
     "scrollarea/pane" : "widget",
     "scrollarea/scrollbar-x" : "scrollbar",
     "scrollarea/scrollbar-y" : "scrollbar",
-	
-	/*
+    
+    /*
     ---------------------------------------------------------------------------
       SCROLLBAR
     ---------------------------------------------------------------------------
@@ -1250,29 +1216,29 @@ qx.Theme.define("darktheme.theme.Appearance",
       }
     },
     
-	"scrollbar/slider/knob" :
+    "scrollbar/slider/knob" :
     {
       include : "button-frame",
 
       style : function(states)
       {
         var decorator;
-		if (states.horizontal) 
-		{
-		  if (states.hovered) 
-		  {
-		    decorator = "scrollbar-slider-horizontal-hovered";
-		  } else {
-		    decorator = "scrollbar-slider-horizontal";
-		  }
-		} else {
-		  if (states.hovered) 
-		  {
+        if (states.horizontal) 
+        {
+          if (states.hovered) 
+          {
+            decorator = "scrollbar-slider-horizontal-hovered";
+          } else {
+            decorator = "scrollbar-slider-horizontal";
+          }
+        } else {
+          if (states.hovered) 
+          {
             decorator = "scrollbar-slider-vertical-hovered";
-		  } else {
-		    decorator = "scrollbar-slider-vertical";
-		  }
-		}
+          } else {
+            decorator = "scrollbar-slider-vertical";
+          }
+        }
         return {
           decorator : decorator,
           minHeight : states.horizontal ? undefined : 9,
@@ -1280,37 +1246,37 @@ qx.Theme.define("darktheme.theme.Appearance",
         };
       }
     },
-	
-	"scrollbar/button" :
+    
+    "scrollbar/button" :
     {
       style : function(states)
       {
         var icon = "decoration/scrollbar/";
-		var decorator;
+        var decorator;
         if (states.left) {
           icon += "left";
-		  decorator = "scrollbar-slider-horizontal";
+          decorator = "scrollbar-slider-horizontal";
         } else if (states.right) {
           icon += "right";
-		  decorator = "scrollbar-slider-horizontal";
+          decorator = "scrollbar-slider-horizontal";
         } else if (states.up) {
           icon += "up";
-		  decorator = "scrollbar-slider-vertical";
+          decorator = "scrollbar-slider-vertical";
         } else {
           icon += "down";
-		  decorator = "scrollbar-slider-vertical";
+          decorator = "scrollbar-slider-vertical";
         }
-		icon += "-invert.png";
-		
-		if (states.hovered)
-		{
-		  decorator += "-hovered";
-		}
+        icon += "-invert.png";
+        
+        if (states.hovered)
+        {
+          decorator += "-hovered";
+        }
 
         if (states.left || states.right)
         {
           return {
-		    decorator: decorator,
+            decorator: decorator,
             padding : [0, 0, 0, states.left ? 3 : 4],
             icon : icon,
             width: 15,
@@ -1320,7 +1286,7 @@ qx.Theme.define("darktheme.theme.Appearance",
         else
         {
           return {
-		    decorator: decorator,
+            decorator: decorator,
             padding : [0, 2, 0, 1],
             icon : icon,
             width: 14,
@@ -1332,8 +1298,8 @@ qx.Theme.define("darktheme.theme.Appearance",
     
     "scrollbar/button-begin" : "scrollbar/button",
     "scrollbar/button-end" : "scrollbar/button",
-	
-	/*-------------------------------------------------------------------------
+    
+    /*-------------------------------------------------------------------------
       SELECTBOX
     ---------------------------------------------------------------------------
     */
@@ -1357,7 +1323,7 @@ qx.Theme.define("darktheme.theme.Appearance",
       alias : "list"
     },
     
-	"selectbox/arrow" :
+    "selectbox/arrow" :
     {
       include : "image",
 
@@ -1369,8 +1335,8 @@ qx.Theme.define("darktheme.theme.Appearance",
         };
       }
     },
-	
-	/*-------------------------------------------------------------------------
+    
+    /*-------------------------------------------------------------------------
       SLIDEBAR
     ---------------------------------------------------------------------------
     */
@@ -1412,13 +1378,13 @@ qx.Theme.define("darktheme.theme.Appearance",
         };
       }
     },
-	
-	/*-------------------------------------------------------------------------
+    
+    /*-------------------------------------------------------------------------
       SLIDER
     ---------------------------------------------------------------------------
     */
-	
-	"slider" :
+    
+    "slider" :
     {
       style : function(states)
       {
@@ -1431,13 +1397,13 @@ qx.Theme.define("darktheme.theme.Appearance",
         if (focused && invalid && !disabled) {
           decorator = "input-focused-invalid";
         } else if (focused && !invalid && !disabled) {
-		  decorator = "group-focused";
+          decorator = "group-focused";
         } else if (disabled) {
           decorator = "input-disabled";
         } else if (!focused && invalid && !disabled) {
           decorator = "border-invalid";
         } else {
-		  decorator = "group";
+          decorator = "group";
         }
 
         return {
@@ -1445,8 +1411,8 @@ qx.Theme.define("darktheme.theme.Appearance",
         }
       }
     },
-	
-	"slider/knob" :
+    
+    "slider/knob" :
     {
       include : "button-simple",
 
@@ -1454,14 +1420,14 @@ qx.Theme.define("darktheme.theme.Appearance",
       {
         return {
           decorator : states.disabled ? "scrollbar-slider-horizontal-disabled" :
-					  states.pressed ? "button-simple-hovered" : "button-simple",
+                      states.pressed ? "button-simple-hovered" : "button-simple",
           shadow: undefined,
           height : 14,
           width : 14
         };
       }
     },
-	/*
+    /*
     ---------------------------------------------------------------------------
       SPINNER
     ---------------------------------------------------------------------------
@@ -1494,7 +1460,7 @@ qx.Theme.define("darktheme.theme.Appearance",
       }
     },
     
-	"spinner/upbutton" :
+    "spinner/upbutton" :
     {
       alias : "button-simple",
       include : "button-simple",
@@ -1523,8 +1489,8 @@ qx.Theme.define("darktheme.theme.Appearance",
         };
       }
     },
-	
-	"spinner/textfield" :
+    
+    "spinner/textfield" :
     {
       style : function(states)
       {
@@ -1535,34 +1501,34 @@ qx.Theme.define("darktheme.theme.Appearance",
         };
       }
     },
-	
-	/*
+    
+    /*
     ---------------------------------------------------------------------------
       SPLITBUTTON
     ---------------------------------------------------------------------------
     */
     "splitbutton" : {},
     
-	"splitbutton/button": 
+    "splitbutton/button": 
     {
       alias: "atom",
 
       style: function(states)
       {
         return {
-		  padding: states.pressed || states.checked 
-		           || (states.checked && states.disabled) ? [4, 2, 2, 4] : [3], 
+          padding: states.pressed || states.checked 
+                   || (states.checked && states.disabled) ? [4, 2, 2, 4] : [3], 
           decorator: states.pressed || states.checked ?
                         "splitbutton-checked" :
                      states.hovered && !states.disabled ?
                         "splitbutton-hovered" : "splitbutton",
-		  textColor: "text-button",
-		  center: true
+          textColor: "text-button",
+          center: true
         };
       }
-	},
-	
-	"splitbutton/arrow":
+    },
+    
+    "splitbutton/arrow":
     {
       alias : "button",
       include : "button",
@@ -1571,18 +1537,18 @@ qx.Theme.define("darktheme.theme.Appearance",
       {
         return {
           icon : "decoration/arrows/down-small-invert.png",
-		  decorator: states.pressed || states.checked ?
+          decorator: states.pressed || states.checked ?
                         "splitbutton-right-checked" :
                      states.hovered && !states.disabled ?
                         "splitbutton-right-hovered" : "splitbutton-right",
           // padding : 2,
           marginLeft : 1,
-		  marginRight: 1
+          marginRight: 1
         };
       }
     },
-	
-	/*
+    
+    /*
     ---------------------------------------------------------------------------
       SPLITPANE
     ---------------------------------------------------------------------------
@@ -1609,7 +1575,7 @@ qx.Theme.define("darktheme.theme.Appearance",
       }
     },
     
-	"splitpane/splitter/knob" :
+    "splitpane/splitter/knob" :
     {
       style : function(states)
       {
@@ -1630,14 +1596,14 @@ qx.Theme.define("darktheme.theme.Appearance",
         };
       }
     },
-	
-	/*
+    
+    /*
     ---------------------------------------------------------------------------
       TABLE
     ---------------------------------------------------------------------------
     */
-	
-	"table":
+    
+    "table":
     {
       alias: "widget",
 
@@ -1649,8 +1615,6 @@ qx.Theme.define("darktheme.theme.Appearance",
       }
     },
     
-    "table-header": {},
-
     "table/statusbar" :
     {
       style : function(states)
@@ -1661,8 +1625,8 @@ qx.Theme.define("darktheme.theme.Appearance",
         };
       }
     },
-	
-	"table/column-button" :
+    
+    "table/column-button" :
     {
       alias : "button-frame",
 
@@ -1734,11 +1698,11 @@ qx.Theme.define("darktheme.theme.Appearance",
         };
       }
     },
-	
-	"table-header-cell" :
+    
+    "table-header-cell" :
     {
       alias : "atom",
-	  
+      
       style : function(states)
       {
         return {
@@ -1892,24 +1856,24 @@ qx.Theme.define("darktheme.theme.Appearance",
             marginTop: 4
           }
         }
-		else if (states.barBottom)
+        else if (states.barBottom)
         {
-		  return {
+          return {
             marginBottom: 4
           }
         }
-		else if (states.barLeft)
+        else if (states.barLeft)
         {
-		  return {
+          return {
             marginLeft: 4,
-			marginTop: 2
+            marginTop: 2
           }
         }
         else
         {
           return {
             marginRight: 4,
-			marginTop: 2
+            marginTop: 2
           }
         }
       }
@@ -1928,24 +1892,24 @@ qx.Theme.define("darktheme.theme.Appearance",
             marginTop: 4
           }
         }
-		else if (states.barBottom)
+        else if (states.barBottom)
         {
-		  return {
+          return {
             marginBottom: 4
           }
         }
-		else if (states.barLeft)
+        else if (states.barLeft)
         {
-		  return {
+          return {
             marginLeft: 4,
-			marginBottom: 2
+            marginBottom: 2
           }
         }
         else
         {
           return {
             marginRight: 4,
-			marginBottom: 2
+            marginBottom: 2
           }
         }
       }
@@ -1958,7 +1922,7 @@ qx.Theme.define("darktheme.theme.Appearance",
       style : function(states)
       {
         return {
-		  decorator : "group",
+          decorator : "group",
           minHeight : 100,
           marginBottom : states.barBottom ? -1 : 0,
           marginTop : states.barTop ? -1 : 0,
@@ -1981,102 +1945,102 @@ qx.Theme.define("darktheme.theme.Appearance",
 
         if (states.checked)
         {
-		  padding = [ 4, 12 ];
+          padding = [ 4, 12 ];
           if (states.barTop)
           {
-		    decorator = "tabview-button-top-hovered";
+            decorator = "tabview-button-top-hovered";
             marginLeft = states.firstTab ? 0 : -4;
             marginRight = states.lastTab ? 0 : -4;
           }
           else if (states.barBottom)
           {
-		    decorator = "tabview-button-bottom-hovered";
+            decorator = "tabview-button-bottom-hovered";
             marginLeft = states.firstTab ? 0 : -4;
             marginRight = states.lastTab ? 0 : -4;
           }
           else if (states.barRight)
           {
-		    decorator = "tabview-button-right-hovered";
+            decorator = "tabview-button-right-hovered";
           }
           else
           {
-		    decorator = "tabview-button-left-hovered";
+            decorator = "tabview-button-left-hovered";
           }
         }
-		else
+        else
         {
           if (states.barTop)
           {
-		    if (states.hovered)
-			{
-		      decorator = "tabview-button-top-hovered";
-			}
+            if (states.hovered)
+            {
+              decorator = "tabview-button-top-hovered";
+            }
             else if (states.disabled)
-			{
-			  decorator = "tabview-button-top-disabled";
-			}			
-			else 
-			{
-		      decorator = "tabview-button-top";
-			}
-		    padding = [ 2, 8 ];
+            {
+              decorator = "tabview-button-top-disabled";
+            }            
+            else 
+            {
+              decorator = "tabview-button-top";
+            }
+            padding = [ 2, 8 ];
             marginTop = 4;
             marginLeft = states.firstTab ? 4 : 0;
           }
           else if (states.barBottom)
           {
-		    if (states.hovered)
-			{
-		      decorator = "tabview-button-bottom-hovered";
-			}
+            if (states.hovered)
+            {
+              decorator = "tabview-button-bottom-hovered";
+            }
             else if (states.disabled)
-			{
-			  decorator = "tabview-button-bottom-disabled";
-			}			
-			else 
-			{
-		      decorator = "tabview-button-bottom";
-			}
-		    padding = [ 2, 8 ];
+            {
+              decorator = "tabview-button-bottom-disabled";
+            }            
+            else 
+            {
+              decorator = "tabview-button-bottom";
+            }
+            padding = [ 2, 8 ];
             marginBottom = 4;
             marginLeft = states.firstTab ? 4 : 0;
           }
           else if (states.barRight)
           {
-		    if (states.hovered)
-			{
-		      decorator = "tabview-button-right-hovered";
-			}
-			else if (states.disabled)
-			{
-			  decorator = "tabview-button-right-disabled";
-			}
-			else 
-			{
-		      decorator = "tabview-button-right";
-			}
-		    padding = [ 4, 12 ];
+            if (states.hovered)
+            {
+              decorator = "tabview-button-right-hovered";
+            }
+            else if (states.disabled)
+            {
+              decorator = "tabview-button-right-disabled";
+            }
+            else 
+            {
+              decorator = "tabview-button-right";
+            }
+            padding = [ 4, 12 ];
             marginRight = 5;
           }
           else
           {
-		    if (states.hovered)
-			{
-		      decorator = "tabview-button-left-hovered";
-			}
+            if (states.hovered)
+            {
+              decorator = "tabview-button-left-hovered";
+            }
             else if (states.disabled)
-			{
-			  decorator = "tabview-button-left-disabled";
-			}
-			else 
-			{
-		      decorator = "tabview-button-left";
-			}
-		    padding = [ 4, 12 ];
+            {
+              decorator = "tabview-button-left-disabled";
+            }
+            else 
+            {
+              decorator = "tabview-button-left";
+            }
+            padding = [ 4, 12 ];
             marginLeft = 5;
           }
         }
-		
+        
         return {
           zIndex : states.checked ? 10 : 5,
           decorator : decorator,
@@ -2085,7 +2049,7 @@ qx.Theme.define("darktheme.theme.Appearance",
           marginBottom : marginBottom,
           marginLeft : marginLeft,
           marginRight : marginRight,
-		  textColor: states.disabled ? "text-inactive" : "text-label"
+          textColor: states.disabled ? "text-inactive" : "text-label"
         };
       }
     },
@@ -2109,13 +2073,13 @@ qx.Theme.define("darktheme.theme.Appearance",
       alias: "atom",
       style: function(states)
       {
-	    var icon;
-	    if (states.hovered)
-		{
-		  icon = "decoration/tabview/close-button-hovered.png";
-		} else {
-		  icon = "decoration/tabview/close-button.png";
-		}
+        var icon;
+        if (states.hovered)
+        {
+          icon = "decoration/tabview/close-button-hovered.png";
+        } else {
+          icon = "decoration/tabview/close-button.png";
+        }
         return {
           icon: icon
         };
@@ -2138,13 +2102,13 @@ qx.Theme.define("darktheme.theme.Appearance",
         };
       }
     },
-	
-	/*
+    
+    /*
     ---------------------------------------------------------------------------
       TEXTFIELD
     ---------------------------------------------------------------------------
     */
-	"textfield" :
+    "textfield" :
     {
       style : function(states)
       {
@@ -2182,8 +2146,8 @@ qx.Theme.define("darktheme.theme.Appearance",
         };
       }
     },
-	
-	/*
+    
+    /*
     ---------------------------------------------------------------------------
       TOOLBAR
     ---------------------------------------------------------------------------
@@ -2199,8 +2163,8 @@ qx.Theme.define("darktheme.theme.Appearance",
       }
     },
     
-	"toolbar/part": "widget",
-	
+    "toolbar/part": "widget",
+    
     "toolbar/part/container" :
     {
       style : function(states)
@@ -2212,7 +2176,7 @@ qx.Theme.define("darktheme.theme.Appearance",
       }
     },
 
-	"toolbar/part/handle":
+    "toolbar/part/handle":
     {
       style: function(states)
       {
@@ -2223,43 +2187,43 @@ qx.Theme.define("darktheme.theme.Appearance",
         };
       }
     },
-	
-	"toolbar-button":
+    
+    "toolbar-button":
     {
       alias: "atom",
 
       style: function(states)
       {
         return {
-		  padding: states.pressed || states.checked ? [6, 4, 4, 6] : [6, 6, 6, 6],
-		  margin: states.pressed || states.checked ? [0] : [0],
+          padding: states.pressed || states.checked ? [6, 4, 4, 6] : [6, 6, 6, 6],
+          margin: states.pressed || states.checked ? [0] : [0],
           decorator: states.pressed || states.checked ?
                         "toolbar-button-checked" :
                       states.hovered && !states.disabled ?
                         "toolbar-button-hovered" : undefined,
-		  textColor: "text-button"
+          textColor: "text-button"
         };
       }
     },
-	
-	"toolbar-button-light":
+    
+    "toolbar-button-light":
     {
       alias: "atom",
 
       style: function(states)
       {
         return {
-		  padding: states.pressed || states.checked ? [6, 4, 4, 6] : [6, 6, 6, 6],
-		  margin: states.pressed || states.checked ? [0] : [0],
+          padding: states.pressed || states.checked ? [6, 4, 4, 6] : [6, 6, 6, 6],
+          margin: states.pressed || states.checked ? [0] : [0],
           decorator: states.pressed || states.checked ?
                         "toolbar-button-light-checked" :
                       states.hovered && !states.disabled ?
                         "toolbar-button-light-hovered" : undefined,
-		  textColor: "text-button"
+          textColor: "text-button"
         };
       }
     },
-	
+    
     "toolbar-menubutton" :
     {
       alias : "toolbar-button",
@@ -2273,7 +2237,7 @@ qx.Theme.define("darktheme.theme.Appearance",
       }
     },
     
-	"toolbar-menubutton/arrow" :
+    "toolbar-menubutton/arrow" :
     {
       alias : "image",
       include : "image",
@@ -2296,60 +2260,60 @@ qx.Theme.define("darktheme.theme.Appearance",
         };
       }
     },
-	
-	"toolbar-splitbutton/button" :
+    
+    "toolbar-splitbutton/button" :
     {
       style : function(states)
       {
         return {
-		  padding: states.pressed || states.checked ? [6, 5, 4, 6] : [6, 6, 6, 6],
-		  decorator: states.pressed || (states.checked && !states.hovered) || (states.checked && states.disabled) ?
+          padding: states.pressed || states.checked ? [6, 5, 4, 6] : [6, 6, 6, 6],
+          decorator: states.pressed || (states.checked && !states.hovered) || (states.checked && states.disabled) ?
                         "toolbar-button-checked" :
                       states.hovered && !states.disabled ?
                         "toolbar-splitbutton-hovered" : undefined
         };
       }
     },
-	
-	"toolbar-splitbutton/arrow" :
+    
+    "toolbar-splitbutton/arrow" :
     {
       style : function(states)
       {
         return {
           icon : "decoration/arrows/down-invert.png",
-		  padding: states.pressed || states.checked ? [6, 4, 4, 5] :
-		           states.hovered && !states.disabled ? [6, 5, 6, 5] : [6, 5, 6, 7],
-		  decorator: states.pressed || (states.checked && !states.hovered) || (states.checked && states.disabled) ?
+          padding: states.pressed || states.checked ? [6, 4, 4, 5] :
+                   states.hovered && !states.disabled ? [6, 5, 6, 5] : [6, 5, 6, 7],
+          decorator: states.pressed || (states.checked && !states.hovered) || (states.checked && states.disabled) ?
                         "toolbar-button-checked" :
                       states.hovered && !states.disabled ?
                         "toolbar-splitbutton-arrow-hovered" : undefined
         };
       }
     },
-	
-	"toolbar-splitbutton-light/button" :
+    
+    "toolbar-splitbutton-light/button" :
     {
       style : function(states)
       {
         return {
-		  padding: states.pressed || states.checked ? [6, 5, 4, 6] : [6, 6, 6, 6],
-		  decorator: states.pressed || (states.checked && !states.hovered) || (states.checked && states.disabled) ?
+          padding: states.pressed || states.checked ? [6, 5, 4, 6] : [6, 6, 6, 6],
+          decorator: states.pressed || (states.checked && !states.hovered) || (states.checked && states.disabled) ?
                         "toolbar-button-light-checked" :
                       states.hovered && !states.disabled ?
                         "toolbar-splitbutton-light-hovered" : undefined
         };
       }
     },
-	
-	"toolbar-splitbutton-light/arrow" :
+    
+    "toolbar-splitbutton-light/arrow" :
     {
       style : function(states)
       {
         return {
           icon : "decoration/arrows/down-invert.png",
-		  padding: states.pressed || states.checked ? [6, 4, 4, 5] :
-		           states.hovered && !states.disabled ? [6, 5, 6, 5] : [6, 5, 6, 7],
-		  decorator: states.pressed || (states.checked && !states.hovered) || (states.checked && states.disabled) ?
+          padding: states.pressed || states.checked ? [6, 4, 4, 5] :
+                   states.hovered && !states.disabled ? [6, 5, 6, 5] : [6, 5, 6, 7],
+          decorator: states.pressed || (states.checked && !states.hovered) || (states.checked && states.disabled) ?
                         "toolbar-button-light-checked" :
                       states.hovered && !states.disabled ?
                         "toolbar-splitbutton-light-arrow-hovered" : undefined
@@ -2367,8 +2331,8 @@ qx.Theme.define("darktheme.theme.Appearance",
         };
       }
     },
-	
-	/*
+    
+    /*
     ---------------------------------------------------------------------------
       TOOL TIP
     ---------------------------------------------------------------------------
@@ -2382,13 +2346,13 @@ qx.Theme.define("darktheme.theme.Appearance",
           backgroundColor : "background-tip",
           padding : [ 1, 3, 2, 3 ],
           offset : [ 15, 5, 5, 5 ],
-		  decorator: "tooltip",
-		  textColor: "black"
+          decorator: "tooltip",
+          textColor: "black"
         };
       }
     },
-	
-	/*
+    
+    /*
     ---------------------------------------------------------------------------
       TREE
     ---------------------------------------------------------------------------
@@ -2659,6 +2623,7 @@ qx.Theme.define("darktheme.theme.Appearance",
         };
       }
     },
+    
     "cell-image" : "cell",
     "cell-boolean" :
     {
@@ -2702,14 +2667,14 @@ qx.Theme.define("darktheme.theme.Appearance",
       style: function(states)
       {
         return {
-		  textColor: "text-window",
+          textColor: "text-window",
           decorator: "window",
           shadow: "shadow-window",
-		  contentPadding : [5]
+          contentPadding : [5]
         };
       }
     },
-	
+    
     "window/pane": "widget",
     
     "window/captionbar":
@@ -2734,7 +2699,7 @@ qx.Theme.define("darktheme.theme.Appearance",
         };
       }
     },
-	
+    
     "window/title" :
     {
       style : function(states)
@@ -2742,13 +2707,13 @@ qx.Theme.define("darktheme.theme.Appearance",
         return {
           alignY: "top",
           textColor: "text-caption",
-		  font: "bold",
-		  paddingTop: 5,
-		  paddingLeft: 8
+          font: "bold",
+          paddingTop: 5,
+          paddingLeft: 8
         };
       }
     },
-	
+    
     "window/close-button":
     {
       alias: "atom",
@@ -2761,11 +2726,11 @@ qx.Theme.define("darktheme.theme.Appearance",
           case states.pressed:
             icon = "decoration/window/close-button-pressed.png";
             break;
-			
+            
           case states.hovered:
             icon = "decoration/window/close-button-hovered.png";
             break;
-			
+            
           default:
             icon = "decoration/window/close-button.png";
         }
@@ -2775,54 +2740,54 @@ qx.Theme.define("darktheme.theme.Appearance",
         };
       }
     },
-	
+    
     "window/maximize-button":
     {
       alias: "atom",
 
       style: function(states)
       {
-	    var icon;
-		switch (true)
-		{
-		  case states.pressed:
-		    icon = "decoration/window/maximize-button-pressed.png";
-			break;
-			
-		  case states.hovered:
-		    icon = "decoration/window/maximize-button-hovered.png";
-			break;
-			
-		  default:
-		    icon = "decoration/window/maximize-button.png";
-		}
+        var icon;
+        switch (true)
+        {
+          case states.pressed:
+            icon = "decoration/window/maximize-button-pressed.png";
+            break;
+            
+          case states.hovered:
+            icon = "decoration/window/maximize-button-hovered.png";
+            break;
+            
+          default:
+            icon = "decoration/window/maximize-button.png";
+        }
         return {
           icon: icon,
           margin : [ 1, 3, 3, 1 ]  
         };
       }
     },
-	
+    
     "window/minimize-button":
     {
       alias: "atom",
 
       style: function(states)
       {
-	    var icon;
-		switch (true)
-		{
-		  case states.pressed:
-		    icon = "decoration/window/minimize-button-pressed.png";
-			break;
-			
-		  case states.hovered:
-		    icon = "decoration/window/minimize-button-hovered.png";
-			break;
-			
-		  default:
-		    icon = "decoration/window/minimize-button.png";
-		}
+        var icon;
+        switch (true)
+        {
+          case states.pressed:
+            icon = "decoration/window/minimize-button-pressed.png";
+            break;
+            
+          case states.hovered:
+            icon = "decoration/window/minimize-button-hovered.png";
+            break;
+            
+          default:
+            icon = "decoration/window/minimize-button.png";
+        }
         return {
           icon: icon,
           margin : [ 1, 3, 3, 1 ] 
@@ -2836,27 +2801,27 @@ qx.Theme.define("darktheme.theme.Appearance",
 
       style: function(states)
       {
-	    var icon;
-		switch (true)
-		{
-		  case states.pressed:
-		    icon = "decoration/window/restore-button-pressed.png";
-			break;
-			
-		  case states.hovered:
-		    icon = "decoration/window/restore-button-hovered.png";
-			break;
-			
-		  default:
-		    icon = "decoration/window/restore-button.png";
-		}
+        var icon;
+        switch (true)
+        {
+          case states.pressed:
+            icon = "decoration/window/restore-button-pressed.png";
+            break;
+            
+          case states.hovered:
+            icon = "decoration/window/restore-button-hovered.png";
+            break;
+            
+          default:
+            icon = "decoration/window/restore-button.png";
+        }
         return {
           icon: icon,
           margin : [ 1, 3, 3, 1 ]
         };
       }
     },
-	
+    
     "window/statusbar" :
     {
       style : function(states)
@@ -2870,6 +2835,6 @@ qx.Theme.define("darktheme.theme.Appearance",
     },
     
     "window/statusbar-text": {}
-	
+    
   }
 });
