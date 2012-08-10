@@ -1,0 +1,66 @@
+
+UPGRADE TO 1.6
+----------------------------------------------------------------------------
+  * Number of script input files: 44
+  * Number of HTML input files: 0
+  * Update to version: 1.6
+  * Searching for patch module...
+  * Searching for info expression data...
+    - D:\Stick\xampp\htdocs\qooxdoo-contrib\qooxdoo\1.6\tool\data\migration\1.6\info\01-main.dat
+    - Compiling expressions...
+      - 01-main.dat
+    - Number of infos: 3
+  * Searching for patch expression data...
+    - D:\Stick\xampp\htdocs\qooxdoo-contrib\qooxdoo\1.6\tool\data\migration\1.6\patches\01-main.dat
+    - Compiling expressions...
+      - 01-main.dat
+    - Number of patches: 14
+
+  FILE PROCESSING:
+----------------------------------------------------------------------------
+  * Processing script files:
+  - File: D:\Stick\xampp\htdocs\qooxdoo-contrib\DarkTheme\trunk\demo\default\source\class\darktheme\demo\TreeColumns.js
+  - File: D:\Stick\xampp\htdocs\qooxdoo-contrib\DarkTheme\trunk\demo\default\source\class\darktheme\demo\CalculatorLogic.js
+  - File: D:\Stick\xampp\htdocs\qooxdoo-contrib\DarkTheme\trunk\demo\default\source\class\darktheme\demo\Label.js
+  - File: D:\Stick\xampp\htdocs\qooxdoo-contrib\DarkTheme\trunk\demo\default\source\class\darktheme\demo\Tooltip.js
+  - File: D:\Stick\xampp\htdocs\qooxdoo-contrib\DarkTheme\trunk\demo\default\source\class\darktheme\demo\ScrollBar.js
+  - File: D:\Stick\xampp\htdocs\qooxdoo-contrib\DarkTheme\trunk\demo\default\source\class\darktheme\demo\Tree.js
+  - File: D:\Stick\xampp\htdocs\qooxdoo-contrib\DarkTheme\trunk\demo\default\source\class\darktheme\demo\CheckBox.js
+  - File: D:\Stick\xampp\htdocs\qooxdoo-contrib\DarkTheme\trunk\demo\default\source\class\darktheme\demo\MenuBar.js
+  - File: D:\Stick\xampp\htdocs\qooxdoo-contrib\DarkTheme\trunk\demo\default\source\class\darktheme\demo\Slider.js
+  - File: D:\Stick\xampp\htdocs\qooxdoo-contrib\DarkTheme\trunk\demo\default\source\class\darktheme\demo\RadioButton.js
+  - File: D:\Stick\xampp\htdocs\qooxdoo-contrib\DarkTheme\trunk\demo\default\source\class\darktheme\demo\ColorPopup.js
+  - File: D:\Stick\xampp\htdocs\qooxdoo-contrib\DarkTheme\trunk\demo\default\source\class\darktheme\demo\StackContainer.js
+  - File: D:\Stick\xampp\htdocs\qooxdoo-contrib\DarkTheme\trunk\demo\default\source\class\darktheme\demo\Desktop.js
+  - File: D:\Stick\xampp\htdocs\qooxdoo-contrib\DarkTheme\trunk\demo\default\source\class\darktheme\demo\RadioButtonGroup.js
+  - File: D:\Stick\xampp\htdocs\qooxdoo-contrib\DarkTheme\trunk\demo\default\source\class\darktheme\demo\DateField.js
+  - File: D:\Stick\xampp\htdocs\qooxdoo-contrib\DarkTheme\trunk\demo\default\source\class\darktheme\demo\Window.js
+  - File: D:\Stick\xampp\htdocs\qooxdoo-contrib\DarkTheme\trunk\demo\default\source\class\darktheme\demo\Popup.js
+  - File: D:\Stick\xampp\htdocs\qooxdoo-contrib\DarkTheme\trunk\demo\default\source\class\darktheme\demo\SlideBar.js
+  - File: D:\Stick\xampp\htdocs\qooxdoo-contrib\DarkTheme\trunk\demo\default\source\class\darktheme\demo\TextField.js
+  - File: D:\Stick\xampp\htdocs\qooxdoo-contrib\DarkTheme\trunk\demo\default\source\class\darktheme\demo\CalcWindow.js
+  - File: D:\Stick\xampp\htdocs\qooxdoo-contrib\DarkTheme\trunk\demo\default\source\class\darktheme\demo\test\DemoTest.js
+  - File: D:\Stick\xampp\htdocs\qooxdoo-contrib\DarkTheme\trunk\demo\default\source\class\darktheme\demo\BrowserWindow.js
+  - File: D:\Stick\xampp\htdocs\qooxdoo-contrib\DarkTheme\trunk\demo\default\source\class\darktheme\demo\HtmlEmbed.js
+  - File: D:\Stick\xampp\htdocs\qooxdoo-contrib\DarkTheme\trunk\demo\default\source\class\darktheme\demo\SelectBox.js
+  - File: D:\Stick\xampp\htdocs\qooxdoo-contrib\DarkTheme\trunk\demo\default\source\class\darktheme\demo\ColorWindow.js
+  - File: D:\Stick\xampp\htdocs\qooxdoo-contrib\DarkTheme\trunk\demo\default\source\class\darktheme\demo\SplitPane.js
+  - File: D:\Stick\xampp\htdocs\qooxdoo-contrib\DarkTheme\trunk\demo\default\source\class\darktheme\demo\DateChooser.js
+  - File: D:\Stick\xampp\htdocs\qooxdoo-contrib\DarkTheme\trunk\demo\default\source\class\darktheme\demo\ToolBar.js
+  - File: D:\Stick\xampp\htdocs\qooxdoo-contrib\DarkTheme\trunk\demo\default\source\class\darktheme\demo\Atom.js
+  - File: D:\Stick\xampp\htdocs\qooxdoo-contrib\DarkTheme\trunk\demo\default\source\class\darktheme\demo\EditorWindow.js
+  - File: D:\Stick\xampp\htdocs\qooxdoo-contrib\DarkTheme\trunk\demo\default\source\class\darktheme\demo\Button.js
+  - File: D:\Stick\xampp\htdocs\qooxdoo-contrib\DarkTheme\trunk\demo\default\source\class\darktheme\demo\List.js
+  - File: D:\Stick\xampp\htdocs\qooxdoo-contrib\DarkTheme\trunk\demo\default\source\class\darktheme\demo\Resizer.js
+  - File: D:\Stick\xampp\htdocs\qooxdoo-contrib\DarkTheme\trunk\demo\default\source\class\darktheme\demo\Spinner.js
+  - File: D:\Stick\xampp\htdocs\qooxdoo-contrib\DarkTheme\trunk\demo\default\source\class\darktheme\demo\TableWindow.js
+  - File: D:\Stick\xampp\htdocs\qooxdoo-contrib\DarkTheme\trunk\demo\default\source\class\darktheme\demo\FormWindow.js
+  - File: D:\Stick\xampp\htdocs\qooxdoo-contrib\DarkTheme\trunk\demo\default\source\class\darktheme\demo\Image.js
+  - File: D:\Stick\xampp\htdocs\qooxdoo-contrib\DarkTheme\trunk\demo\default\source\class\darktheme\demo\TabView.js
+  - File: D:\Stick\xampp\htdocs\qooxdoo-contrib\DarkTheme\trunk\demo\default\source\class\darktheme\demo\Application.js
+  - File: D:\Stick\xampp\htdocs\qooxdoo-contrib\DarkTheme\trunk\demo\default\source\class\darktheme\demo\GroupBox.js
+  - File: D:\Stick\xampp\htdocs\qooxdoo-contrib\DarkTheme\trunk\demo\default\source\class\darktheme\demo\Menu.js
+  - File: D:\Stick\xampp\htdocs\qooxdoo-contrib\DarkTheme\trunk\demo\default\source\class\darktheme\demo\Canvas.js
+  - File: D:\Stick\xampp\htdocs\qooxdoo-contrib\DarkTheme\trunk\demo\default\source\class\darktheme\demo\TreeVirtual.js
+  - File: D:\Stick\xampp\htdocs\qooxdoo-contrib\DarkTheme\trunk\demo\default\source\class\darktheme\demo\ComboBox.js
+  * Done
