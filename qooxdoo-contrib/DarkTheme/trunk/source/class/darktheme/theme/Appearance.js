@@ -637,9 +637,30 @@ qx.Theme.define("darktheme.theme.Appearance",
       }
     },
     
-    "datechooser/navigation-bar" : {},
+    "datechooser/navigation-bar": 
+    {
+      style: function(states)
+      {
+        return {
+          decorator: "toolbar-light",
+          textColor: states.disabled ? "text-disabled" : states.invalid ? "invalid" : undefined,
+          padding: 0
+        };
+      }
+    },
     
-    "datechooser/nav-button"  :
+    "datechooser/last-year-button-tooltip": "tooltip",
+    "datechooser/last-month-button-tooltip": "tooltip",
+    "datechooser/next-year-button-tooltip": "tooltip",
+    "datechooser/next-month-button-tooltip": "tooltip",
+
+    "datechooser/last-year-button": "datechooser/button",
+    "datechooser/last-month-button": "datechooser/button",
+    "datechooser/next-year-button": "datechooser/button",
+    "datechooser/next-month-button": "datechooser/button",
+    "datechooser/button/icon": {},
+    
+    "datechooser/button"  :
     {
       include : "button-simple",
       alias : "button-simple",
@@ -648,7 +669,9 @@ qx.Theme.define("darktheme.theme.Appearance",
       {
         var result = {
           padding : [ 2, 4 ],
-          shadow : undefined
+          shadow : undefined,
+          show: "icon",
+          cursor: "pointer"
         };
 
         if (states.lastYear) {
@@ -664,6 +687,20 @@ qx.Theme.define("darktheme.theme.Appearance",
         }
 
         return result;
+      }
+    },
+    
+    "datechooser/month-year-label":
+    {
+      style: function(states)
+      {
+        return {
+          font: "bold",
+          textAlign: "center",
+          textColor: "text-label",
+          paddingTop: 1,
+          paddingBottom: 3
+        };
       }
     },
     
