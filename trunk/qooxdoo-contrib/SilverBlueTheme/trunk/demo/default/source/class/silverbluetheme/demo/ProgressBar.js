@@ -32,17 +32,19 @@ qx.Class.define("silverbluetheme.demo.ProgressBar",
   {
     createControls: function()
     {
-	  var layout = new qx.ui.layout.Canvas();
+	    var layout = new qx.ui.layout.Canvas();
       this.set({layout: layout, contentPadding: 10});
 	  
       var box = new qx.ui.layout.VBox();
       var container = new qx.ui.container.Composite(box);
 
       var pb = new qx.ui.indicator.ProgressBar(0, 200);
+      pb.set({height: 16, width: 200});
+      
       var slider = new qx.ui.form.Slider().set({minimum:0, maximum: 200});
       var info = new qx.ui.basic.Label();
 
-      this.add(container, {left:0,top:0});
+      this.add(container, {left: 0, top: 0});
       container.add(pb);
       container.add(slider);
       container.add(info);
