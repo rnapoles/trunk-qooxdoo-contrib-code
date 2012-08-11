@@ -31,6 +31,7 @@ qx.Theme.define("silverbluetheme.theme.Decoration",
       APPLICATION
     ---------------------------------------------------------------------------
     */
+    
     "app-header":
     {
       decorator: qx.ui.decoration.Background,
@@ -575,18 +576,19 @@ qx.Theme.define("silverbluetheme.theme.Decoration",
       }
     },
 
-  /*
+    /*
     ---------------------------------------------------------------------------
       SHADOWS
     ---------------------------------------------------------------------------
     */
+    
     "shadow-window":
     {
       decorator: qx.ui.decoration.Grid,
 
       style: {
         baseImage: "decoration/shadow/shadow.png",
-        insets: [4, 8, 8, 8]
+        insets: [0, 21, 8, -7]
       }
     },
 
@@ -600,32 +602,32 @@ qx.Theme.define("silverbluetheme.theme.Decoration",
       }
     },
 
-  /*
+    /*
     ---------------------------------------------------------------------------
       SLIDER
     ---------------------------------------------------------------------------
     */
-  "slider-horizontal":
+    "slider-horizontal":
     {
-    decorator : qx.ui.decoration.HBox,
+      decorator : qx.ui.decoration.HBox,
 
-    style:
-    {
-      baseImage: "decoration/form/slider-horizontal.png"
-    }
+      style:
+      {
+        baseImage: "decoration/form/slider-horizontal.png"
+      }
     },
 
-  "slider-vertical":
+    "slider-vertical":
     {
-    decorator : qx.ui.decoration.VBox,
-
-    style:
-    {
-      baseImage: "decoration/form/slider-vertical.png"
-    }
+      decorator : qx.ui.decoration.VBox,
+      
+      style:
+      {
+        baseImage: "decoration/form/slider-vertical.png"
+      }
     },
 
-  "slider-knob" :
+    "slider-knob" :
     {
       decorator : qx.ui.decoration.Background,
 
@@ -634,7 +636,7 @@ qx.Theme.define("silverbluetheme.theme.Decoration",
       }
     },
 
-  "slider-knob-hovered" :
+    "slider-knob-hovered" :
     {
       decorator : qx.ui.decoration.Background,
 
@@ -643,7 +645,7 @@ qx.Theme.define("silverbluetheme.theme.Decoration",
       }
     },
 
-  "slider-knob-pressed" :
+    "slider-knob-pressed" :
     {
       decorator : qx.ui.decoration.Background,
 
@@ -652,59 +654,61 @@ qx.Theme.define("silverbluetheme.theme.Decoration",
       }
     },
 
-  /*
+    /*
     ---------------------------------------------------------------------------
       SPINNER
     ---------------------------------------------------------------------------
     */
-  "spinner-button":
-  {
-    decorator: qx.ui.decoration.Single,
-
-    style:
+    
+    "spinner-button":
     {
-      backgroundImage: "decoration/button/spinner-button.png",
-
-    widthLeft: 1,
+      decorator: qx.ui.decoration.Single,
+      
+      style:
+      {
+        backgroundImage: "decoration/button/spinner-button.png",
+      
+        widthLeft: 1,
         colorLeft: "border-frame",
         styleLeft: "solid"
-    }
-  },
+      }
+    },
 
-  "spinner-button-hovered":
-  {
-    decorator: qx.ui.decoration.Single,
-
-    style:
+    "spinner-button-hovered":
     {
-      backgroundImage: "decoration/button/spinner-button-hovered.png",
-
-    widthLeft: 1,
+      decorator: qx.ui.decoration.Single,
+    
+      style:
+      {
+        backgroundImage: "decoration/button/spinner-button-hovered.png",
+    
+        widthLeft: 1,
         colorLeft: "border-frame",
         styleLeft: "solid"
-    }
-  },
+      }
+    },
 
-  "spinner-button-checked":
-  {
-    decorator: qx.ui.decoration.Single,
-
-    style:
+    "spinner-button-checked":
     {
-      backgroundImage: "decoration/button/spinner-button-hovered.png",
-
-    widthLeft: 1,
+      decorator: qx.ui.decoration.Single,
+    
+      style:
+      {
+        backgroundImage: "decoration/button/spinner-button-hovered.png",
+    
+        widthLeft: 1,
         colorLeft: "border-frame",
         styleLeft: "solid"
-    }
-  },
+      }
+    },
 
-  /*
+    /*
     ---------------------------------------------------------------------------
       SPLITBUTTON
     ---------------------------------------------------------------------------
     */
-  "splitbutton":
+    
+    "splitbutton":
     {
       decorator: qx.ui.decoration.Grid,
 

@@ -24,6 +24,7 @@
     "profiling",
     "source",
     "source-all",
+    "source-hybrid",
     "test",
     "test-source",
     "translation"
@@ -32,7 +33,7 @@
   "let" :
   {
     "APPLICATION"  : "silverbluetheme.demo",
-    "QOOXDOO_PATH" : "../../../../qooxdoo/1.6",
+    "QOOXDOO_PATH" : "../../../../qooxdoo/2.0.1",
     "QXTHEME"      : "silverbluetheme.SilverBlueTheme",
     "API_EXCLUDE"  : ["qx.test.*", "${APPLICATION}.theme.*", "${APPLICATION}.test.*"],
     "LOCALES"      : [ "en" ],
