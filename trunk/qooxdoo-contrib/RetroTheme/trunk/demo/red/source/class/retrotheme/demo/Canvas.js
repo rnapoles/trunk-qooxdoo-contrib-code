@@ -82,15 +82,15 @@ qx.Class.define("retrotheme.demo.Canvas",
       win2.add(canvas2, {edge: 0});
       this.desktop.add(win2, {left:20, top:250});
 
-	  this.addListenerOnce("appear", function(e)
+      this.addListenerOnce("appear", function(e)
       {
         this.add(this.desktop);
       }, this);
-	  
+      
       this.addListener("appear", function(e)
       {
         win1.open();
-		win2.open();
+        win2.open();
       }, this);
     },
 
