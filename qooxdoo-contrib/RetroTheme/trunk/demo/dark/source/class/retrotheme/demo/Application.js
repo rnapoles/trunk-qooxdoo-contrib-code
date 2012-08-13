@@ -1,7 +1,7 @@
 /* ************************************************************************
 
    Copyright:
-     2010 Norbert Schröder
+     2010-2011 Norbert Schröder
 
    License:
      LGPL: http://www.gnu.org/licenses/lgpl.html
@@ -38,7 +38,7 @@
 ************************************************************************ */
 
 /**
- * This is a demo of the retrotheme contribution
+ * This is a demo of the silverbluetheme contribution
  */
 qx.Class.define("retrotheme.demo.Application",
 {
@@ -54,9 +54,6 @@ qx.Class.define("retrotheme.demo.Application",
 
   members :
   {
-    calcWindowRendered: false,
-	formWindowRendered: false,
-	
     /**
      * This method contains the initial application code and gets called 
      * during startup of the application
@@ -82,7 +79,7 @@ qx.Class.define("retrotheme.demo.Application",
         ToolBarTop
       -------------------------------------------------------------------------
       */
-      var showcaseButton = this.showcaseButton = new qx.ui.form.SelectBox();
+      var showcaseButton = this.showcaseButton = new qx.ui.form.SelectBox().set({width: 140});
       showcaseButton.set({font: "bold"});
       var emptyItem = this.emptyItem = new qx.ui.form.ListItem("<not selected>");
       var calcItem = this.calcItem = new qx.ui.form.ListItem("Calculator");
@@ -90,7 +87,6 @@ qx.Class.define("retrotheme.demo.Application",
       var formItem = this.formItem = new qx.ui.form.ListItem("Form");
       var editorItem = this.editorItem = new qx.ui.form.ListItem("HTML Editor");
       var tableItem = this.tableItem = new qx.ui.form.ListItem("Table");
-	  var mapsItem = this.mapsItem = new qx.ui.form.ListItem("Google Maps");
       var browserItem = this.browserItem = new qx.ui.form.ListItem("Web Browser");
       
       showcaseButton.add(emptyItem);
@@ -99,7 +95,6 @@ qx.Class.define("retrotheme.demo.Application",
       showcaseButton.add(formItem);
       showcaseButton.add(editorItem);
       showcaseButton.add(tableItem);
-	  showcaseButton.add(mapsItem);
       showcaseButton.add(browserItem);
       
       showcaseButton.addListener("changeSelection", function(e)
@@ -109,7 +104,6 @@ qx.Class.define("retrotheme.demo.Application",
         {
           case "Calculator":
             this.calcWindow.open();
-			this.calcWindowRendered = true;
             break;
         
           case "Color Selector":
@@ -118,32 +112,26 @@ qx.Class.define("retrotheme.demo.Application",
         
           case "Form":
             this.formWindow.open();
-			this.formWindowRendered = true;
+            break;
+        
+          case "Table":
+            this.tableWindow.open();
             break;
         
           case "HTML Editor":
             this.editorWindow.open();
             break;
-        
-          case "Table":
-		    this.tableWindow.open();
-            break;
-			
-		  case "Google Maps":
-		    this.mapsWindow.open();
-            break;
-        
+            
           case "Web Browser":
             this.browserWindow.open();
             break;
         }
       }, this);
       
-      var widgetButton = this.widgetButton = new qx.ui.form.SelectBox();
+      var widgetButton = this.widgetButton = new qx.ui.form.SelectBox().set({width: 140});
       widgetButton.set({font: "bold"});
-	  this.widgetButtonEmpty = new qx.ui.form.ListItem("<not selected>");
+      this.widgetButtonEmpty = new qx.ui.form.ListItem("<not selected>");
       widgetButton.add(this.widgetButtonEmpty);
-      widgetButton.add(new qx.ui.form.ListItem("Atom"));
       widgetButton.add(new qx.ui.form.ListItem("Button"));
       widgetButton.add(new qx.ui.form.ListItem("Canvas"));
       widgetButton.add(new qx.ui.form.ListItem("CheckBox"));
@@ -152,30 +140,23 @@ qx.Class.define("retrotheme.demo.Application",
       widgetButton.add(new qx.ui.form.ListItem("DateChooser"));
       widgetButton.add(new qx.ui.form.ListItem("DateField"));
       widgetButton.add(new qx.ui.form.ListItem("Desktop"));
-      widgetButton.add(new qx.ui.form.ListItem("GroupBox"));
       widgetButton.add(new qx.ui.form.ListItem("HtmlEmbed"));
-      widgetButton.add(new qx.ui.form.ListItem("Image"));
-      widgetButton.add(new qx.ui.form.ListItem("Label"));
       widgetButton.add(new qx.ui.form.ListItem("List"));
       widgetButton.add(new qx.ui.form.ListItem("Menu"));
       widgetButton.add(new qx.ui.form.ListItem("MenuBar"));
       widgetButton.add(new qx.ui.form.ListItem("Popup"));
+      widgetButton.add(new qx.ui.form.ListItem("ProgressBar"));
       widgetButton.add(new qx.ui.form.ListItem("RadioButton"));
-      widgetButton.add(new qx.ui.form.ListItem("RadioButtonGroup"));
-      widgetButton.add(new qx.ui.form.ListItem("Resizer"));
-      widgetButton.add(new qx.ui.form.ListItem("ScrollBar"));
       widgetButton.add(new qx.ui.form.ListItem("SelectBox"));
       widgetButton.add(new qx.ui.form.ListItem("SlideBar"));
       widgetButton.add(new qx.ui.form.ListItem("Slider"));
       widgetButton.add(new qx.ui.form.ListItem("Spinner"));
       widgetButton.add(new qx.ui.form.ListItem("SplitPane"));
-      widgetButton.add(new qx.ui.form.ListItem("StackContainer"));
       widgetButton.add(new qx.ui.form.ListItem("TabView"));
       widgetButton.add(new qx.ui.form.ListItem("TextField"));
       widgetButton.add(new qx.ui.form.ListItem("ToolBar"));
-      widgetButton.add(new qx.ui.form.ListItem("Tooltip"));
+      widgetButton.add(new qx.ui.form.ListItem("ToolTip"));
       widgetButton.add(new qx.ui.form.ListItem("Tree"));
-      widgetButton.add(new qx.ui.form.ListItem("Tree Columns"));
       widgetButton.add(new qx.ui.form.ListItem("TreeVirtual"));
       widgetButton.add(new qx.ui.form.ListItem("Window"));
       
@@ -183,15 +164,13 @@ qx.Class.define("retrotheme.demo.Application",
       {
         this.closeShowcase();
         var selIndex = this.widgetButton.indexOf(this.widgetButton.getSelection()[0]) - 1;
-		var selItem = this.stack.getChildren()[selIndex];
-		this.debug(selIndex);
-		this.debug(selItem);
-		if (selItem)
-		{
-		  this.stack.setSelection([selItem]);
-		} else {
-		  this.stack.resetSelection();
-		}
+        var selItem = this.stack.getChildren()[selIndex];
+        if (selItem)
+        {
+          this.stack.setSelection([selItem]);
+        } else {
+          this.stack.resetSelection();
+        }
       }, this);
       
       /*
@@ -222,12 +201,12 @@ qx.Class.define("retrotheme.demo.Application",
         Windows
       -------------------------------------------------------------------------
       */
-	  var calcWindow = this.calcWindow = new retrotheme.demo.CalcWindow();
+      var calcWindow = this.calcWindow = new retrotheme.demo.CalcWindow();
       calcWindow.addListener("changeActive", this.resetShowcase, this);
-	  
-	  var colorWindow = this.colorWindow = new retrotheme.demo.ColorWindow();
+      
+      var colorWindow = this.colorWindow = new retrotheme.demo.ColorWindow();
       colorWindow.addListener("changeActive", this.resetShowcase, this);
-	  
+      
       var formWindow = this.formWindow = new retrotheme.demo.FormWindow("Form Widgets");
       formWindow.addListener("changeActive", this.resetShowcase, this);
       
@@ -236,102 +215,95 @@ qx.Class.define("retrotheme.demo.Application",
       
       var editorWindow = this.editorWindow = new retrotheme.demo.EditorWindow("HTML Editor");
       editorWindow.addListener("changeActive", this.resetShowcase, this);
-	  
+      
       var browserWindow = this.browserWindow = new retrotheme.demo.BrowserWindow();
       browserWindow.addListener("changeActive", this.resetShowcase, this);
-	  
-	  var mapsWindow = this.mapsWindow = new retrotheme.demo.MapsWindow();
-      mapsWindow.addListener("changeActive", this.resetShowcase, this);
     },  
       
     createHeader : function()
     {
       var header = this.header = new qx.ui.toolbar.ToolBar();
-      header.setDecorator("window-captionbar-active");
-      header.setPadding([5, 10, 7, 10]);
+      header.set({padding: [5, 10, 5, 5], decorator: "window-captionbar-active"});
       
-	  var headerStr = "RetroTheme Demo &ndash; " + qx.theme.manager.Color.getInstance().getTheme();
+      var headerStr = "RetroTheme Demo &ndash; " + qx.theme.manager.Color.getInstance().getTheme(); 
       var label = new qx.ui.basic.Atom(headerStr);
       label.set({alignY: "middle", font: "bold", rich: true});
       
-      var version = new qx.ui.basic.Atom(null /*qx.core.Setting.get("qx.version")*/, "retrotheme.demo/logo.png");
-      version.set({alignY: "middle", font: "bold"});
+      var versionButton = new qx.ui.form.Button(qx.core.Setting.get("qx.version"), "retrotheme.demo/logo.png");
+      versionButton.set({font: "bold"});
+      versionButton.addListener("execute", function(e)
+      {
+        this.browserWindow.open();
+        this.showcaseButton.setSelection([this.browserItem]);
+      }, this);
       
       header.add(label);
       header.addSpacer();
-      header.add(version);
+      header.add(versionButton);
     
       return header;
     },
-	
-	getToolbar: function()
-	{
-	  var tbTop = this.tbTop = new qx.ui.toolbar.ToolBar();
+    
+    getToolbar: function()
+    {
+      var tbTop = this.tbTop = new qx.ui.toolbar.ToolBar();
       tbTop.set({padding: 5, spacing: 5});
       tbTop.add(new qx.ui.basic.Label("Showcase: ").set({alignY: "middle", font: "bold"}));
       tbTop.add(this.showcaseButton);
       tbTop.add(new qx.ui.basic.Label("Widgets: ").set({paddingLeft: 10, alignY: "middle", font: "bold"}));
       tbTop.add(this.widgetButton);
-	  
-	  return tbTop;
-	},
-	
-	getWidgetStack: function()
+      
+      return tbTop;
+    },
+    
+    getWidgetStack: function()
     {
-	  var stack = this.stack = new qx.ui.container.Stack();
-      stack.add(new retrotheme.demo.Atom());
+      var stack = this.stack = new qx.ui.container.Stack();
       stack.add(new retrotheme.demo.Button());
-	  stack.add(new retrotheme.demo.Canvas());
+      stack.add(new retrotheme.demo.Canvas());
       stack.add(new retrotheme.demo.CheckBox());
       stack.add(new retrotheme.demo.ColorPopup());
       stack.add(new retrotheme.demo.ComboBox());
       stack.add(new retrotheme.demo.DateChooser());
       stack.add(new retrotheme.demo.DateField());
       stack.add(new retrotheme.demo.Desktop());
-      stack.add(new retrotheme.demo.GroupBox());
       stack.add(new retrotheme.demo.HtmlEmbed());
-      stack.add(new retrotheme.demo.Image());
-      stack.add(new retrotheme.demo.Label());
       stack.add(new retrotheme.demo.List());
       stack.add(new retrotheme.demo.Menu());
       stack.add(new retrotheme.demo.MenuBar());
       stack.add(new retrotheme.demo.Popup());
+      stack.add(new retrotheme.demo.ProgressBar());
       stack.add(new retrotheme.demo.RadioButton());
-      stack.add(new retrotheme.demo.RadioButtonGroup());
-      stack.add(new retrotheme.demo.Resizer());
-      stack.add(new retrotheme.demo.ScrollBar());
       stack.add(new retrotheme.demo.SelectBox());
       stack.add(new retrotheme.demo.SlideBar());
       stack.add(new retrotheme.demo.Slider());
       stack.add(new retrotheme.demo.Spinner());
       stack.add(new retrotheme.demo.SplitPane());
-      stack.add(new retrotheme.demo.StackContainer());
       stack.add(new retrotheme.demo.TabView());
       stack.add(new retrotheme.demo.TextField());
       stack.add(new retrotheme.demo.ToolBar());
       stack.add(new retrotheme.demo.Tooltip());
       stack.add(new retrotheme.demo.Tree());
-      stack.add(new retrotheme.demo.TreeColumns());
       stack.add(new retrotheme.demo.TreeVirtual());
       stack.add(new retrotheme.demo.Window());
-		
-	  stack.resetSelection();
-		
-	  return stack;
-	},
+        
+      stack.resetSelection();
+        
+      return stack;
+    },
     
     resetShowcase: function()
     {
       switch (true)
       {
-	    case this.calcWindow.getActive():
+        case this.calcWindow.getActive():
           this.showcaseButton.setSelection([this.calcItem]);
           break;
-		  
-	    case this.colorWindow.getActive():
+          
+        case this.colorWindow.getActive():
           this.showcaseButton.setSelection([this.colorItem]);
           break;
-		  
+          
         case this.formWindow.getActive():
           this.showcaseButton.setSelection([this.formItem]);
           break;
@@ -347,7 +319,7 @@ qx.Class.define("retrotheme.demo.Application",
         case this.browserWindow.getActive():
           this.showcaseButton.setSelection([this.browserItem]);
           break;
-    
+          
         default:
           this.showcaseButton.setSelection([this.emptyItem]);
       }
@@ -355,7 +327,7 @@ qx.Class.define("retrotheme.demo.Application",
     
     closeShowcase: function()
     {
-	  this.calcWindow.close();
+      this.calcWindow.close();
       this.colorWindow.close();
       this.formWindow.close();
       this.tableWindow.close();

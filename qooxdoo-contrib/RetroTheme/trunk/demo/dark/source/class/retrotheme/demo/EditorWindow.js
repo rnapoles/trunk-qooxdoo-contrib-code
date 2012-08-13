@@ -28,15 +28,15 @@ qx.Class.define("retrotheme.demo.EditorWindow",
       var editor = this.editor = new qx.ui.embed.HtmlArea(demoContent, null,
       qx.util.ResourceManager.getInstance().toUri("retrotheme.demo/editor/blank.html"));
       editor.set({height: 400, width: 600});
-	  
-	  this.add(this.getMenuBar());
+      
+      this.add(this.getMenuBar());
       this.add(this.getToolBar());
       this.add(editor, {flex: 1});
 
       this.addListenerOnce("appear", function(e)
       {
-		this.center();
-	  }, this);
+        this.center();
+      }, this);
     },
 
     getMenuBar: function()
@@ -281,7 +281,7 @@ qx.Class.define("retrotheme.demo.EditorWindow",
       return menu;
     },
 
-  getToolbarEntries : function()
+    getToolbarEntries : function()
     {
       return [
         {
