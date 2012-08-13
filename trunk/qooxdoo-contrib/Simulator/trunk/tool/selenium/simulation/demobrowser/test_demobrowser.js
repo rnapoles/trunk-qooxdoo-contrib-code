@@ -42,21 +42,28 @@ var getNextSampleLabel = selWin + '.' + qxAppInst + '.tree.getNextNodeOf(' + sel
 var shutdownSample = selWin + '.' + qxAppInst + '._infosplit.getChildren()[0].getWindow().qx.core.ObjectRegistry.shutdown()';
 mySim.currentSample = "current";
 mySim.lastSample = "last";
-mySim.demoFrame = selWin + '.' + qxAppInst + '._iframe'; 
+mySim.demoFrame = selWin + '.' + qxAppInst + '._iframe';
 mySim.demoWin = mySim.demoFrame + ".getWindow()";
 mySim.demoQx = mySim.demoWin + ".qx";
 mySim.demoQxApp = mySim.demoQx + '.core.Init.getApplication()';
-mySim.checkDemoReady = 'var demoReady = false;'
-+ 'try {'
-+ '  if (' + mySim.demoQxApp +') {'
-+ '    demoReady = true;'
-+ '  }'
-+ '}'
-+ 'catch(ex) {}'
-+ 'demoReady;';
-
+mySim.checkDemoReady = 'var demoReady = false;' +
+ 'try {' +
+ '  if (' + mySim.demoQxApp +') {' +
+ '    demoReady = true;' +
+ '  }' +
+ '}' +
+ 'catch(ex) {}' +
+ 'demoReady;';
+ mySim.locators = {
+  toolbarLogButton : "qxhv=*/qx.ui.toolbar.ToolBar/*/[@label=Log File]",
+  overflowButton : "//div[contains(@style, 'media-seek-forward')]",
+  overflowMenuLogFileButton : "//div[text() = 'Log File']/parent::div",
+  //logEmbed : 'qxhv=[@classname="demobrowser.DemoBrowser"]/qx.ui.splitpane.Pane/qx.ui.splitpane.Pane/qx.ui.container.Stack/[@classname="qxc.ui.logpane.LogView"]/qx.ui.embed.Html'
+  logEmbed: '//div[@qxclass="qxc.ui.logpane.LogView"]/*/div[@qxclass="qx.ui.embed.Html"]/div'
+ };
+mySim.qxLog = "selenium.page().findElement('" + mySim.locators.logEmbed + "').innerHTML";
 /*
-*  Returns a command that selects sample number [entry] from the sample tree 
+*  Returns a command that selects sample number [entry] from the sample tree
 *  when run through Selenium's runScript() method.
 */
 function treeSelect(entry)
@@ -81,13 +88,13 @@ function getLogArray(result)
 
 /*
  * This function is added to the AUT's context using the Simulation.addOwnFunction()
- * method. It allows the selection of a specific demo using the category/demo 
+ * method. It allows the selection of a specific demo using the category/demo
  * name.
  */
-var chooseDemo = function(category, sample) 
+var chooseDemo = function(category, sample)
 {
   var viewer = selenium.browserbot.getCurrentWindow().qx.core.Init.getApplication().viewer;
-  var tree = viewer.tree; 
+  var tree = viewer.tree;
   var items = tree.getItems();
   for (var i=1; i<items.length; i++) {
     if (items[i].getParent().getLabel() == category) {
@@ -108,7 +115,7 @@ var chooseDemo = function(category, sample)
 var getDemosByCategory = function(category)
 {
   var viewer = selenium.browserbot.getCurrentWindow().qx.core.Init.getApplication().viewer;
-  var tree = viewer.tree; 
+  var tree = viewer.tree;
   var items = tree.getItems();
   var samples = [];
   for (var i=1; i<items.length; i++) {
@@ -121,7 +128,7 @@ var getDemosByCategory = function(category)
 
 simulation.Simulation.prototype.waitForDemoApp = function()
 {
-  var timeout = this.getConfigSetting("demoLoadTimeout")
+  var timeout = this.getConfigSetting("demoLoadTimeout");
   this.__sel.waitForCondition(mySim.checkDemoReady, timeout);
 };
 
@@ -132,9 +139,11 @@ simulation.Simulation.prototype.waitForDemoApp = function()
 simulation.Simulation.prototype.sampleRunner = function(script)
 {
   var scriptCode = script ? script : runSample;
-  var nextSampleCategory = "unknown category;"
+  var nextSampleCategory = "unknown category;";
   var nextSampleLabel = "unknown demo";
-  
+  var category = "Unknown category";
+  var currentSample = "Unknown demo";
+
   var skip = false;
   // If we have an ignore list, check if the next sample is in there.
   var ignore = this.ignore;
@@ -142,8 +151,8 @@ simulation.Simulation.prototype.sampleRunner = function(script)
     try {
       nextSampleCategory = this.getEval(getNextSampleCategory, "Getting category of next sample");
       nextSampleLabel = this.getEval(getNextSampleLabel, "Getting label of next sample");
-  
-      // Category "Demos" means there's a category folder selected, 
+
+      // Category "Demos" means there's a category folder selected,
       // so look at the first sample inside.
       if (nextSampleCategory == "Demos") {
         this.runScript(selectNextSample, "Selecting next sample from tree");
@@ -151,7 +160,7 @@ simulation.Simulation.prototype.sampleRunner = function(script)
         nextSampleCategory = this.getEval(getNextSampleCategory, "Getting category of next sample");
         nextSampleLabel = this.getEval(getNextSampleLabel, "Getting label of next sample");
       }
-  
+
       print("Next Sample: " + nextSampleCategory + ":" + nextSampleLabel);
       for (var i = 0; i < ignore.length; i++) {
         var ignoreCategory = ignore[i].substring(0, ignore[i].indexOf(':'));
@@ -170,7 +179,7 @@ simulation.Simulation.prototype.sampleRunner = function(script)
       print("Unable to retrieve next sample's category and/or label.");
       return;
     }
-  } 
+  }
 
   if (skip) {
     //print("Skipping sample: " + nextSampleCategory + ' - ' + nextSampleLabel);
@@ -181,7 +190,7 @@ simulation.Simulation.prototype.sampleRunner = function(script)
     this.log('Loading demo ' + nextSampleCategory + ' - ' + nextSampleLabel, "debug");
     // run the sample
     this.runScript(scriptCode, "Running sample");
-    
+
     var demoLoaded = false;
     try {
       this.waitForDemoApp();
@@ -189,14 +198,11 @@ simulation.Simulation.prototype.sampleRunner = function(script)
     } catch(ex) {
       this.log("Error while waiting for demo " + nextSampleCategory + " - " + nextSampleLabel + " to load: " + ex, "error");
     }
-    
-    var currentSample = "Unknown demo";
-    var category = "Unknown category";
-    
+
     if (!demoLoaded) {
       return [category,currentSample];
     }
-    
+
     if (this.getConfigSetting("sampleGlobalErrorLogging")) {
       try {
         this.addErrorHandlerToDemo();
@@ -204,11 +210,12 @@ simulation.Simulation.prototype.sampleRunner = function(script)
         this.log("Could not add global error handler to demo " + nextSampleCategory + ":" + nextSampleLabel);
       }
     }
-    
+
+    var sampleTemp;
     try {
-      var sampleTemp = this.getEval(getSampleLabel, "Getting current sample label");
+      sampleTemp = this.getEval(getSampleLabel, "Getting current sample label");
     } catch(ex) {}
-    
+
     if (!sampleTemp) {
       // try again
       try {
@@ -221,11 +228,12 @@ simulation.Simulation.prototype.sampleRunner = function(script)
     else {
       currentSample = sampleTemp;
     }
-    
+
+    var categoryTemp;
     try {
-      var categoryTemp = this.getEval(getSampleCategory, "Getting current sample category");
+      categoryTemp = this.getEval(getSampleCategory, "Getting current sample category");
     } catch(ex) {}
-    
+
     if (!categoryTemp) {
       // try again
       try {
@@ -242,7 +250,7 @@ simulation.Simulation.prototype.sampleRunner = function(script)
 
   // wait for the sample to finish loading, then get its log output
   Packages.java.lang.Thread.sleep(logPause);
-  
+
   // Shut down the sample application
   if (this.getConfigSetting("shutdownSample")) {
     this.getEval(shutdownSample, "Shutting down sample application");
@@ -258,24 +266,24 @@ simulation.Simulation.prototype.sampleRunner = function(script)
     this.log("Unable to get log for sample " + category + "-" + currentSample, "error");
     return [category,currentSample];
   }
-  
+
   if (this.getConfigSetting("sampleGlobalErrorLogging")) {
     try {
       this.log("Global error log contents for " + category + ":" + currentSample, "debug");
       this.logGlobalErrors();
-    } 
+    }
     catch (ex) {
       this.log("Unable to log global errors: " + ex, "error");
     }
   }
-  
+
   // we're only interested in logs containing warnings or errors
   var isErrWarn = false;
   if (sampleLog.indexOf('level-warn') > 0 || sampleLog.indexOf('level-error') > 0) {
     this.log("Sample " + category + "-" + currentSample + " has incomplete log!","warn");
     isErrWarn = true;
   }
-  
+
   if (isErrWarn || this.getConfigSetting("logAll")) {
 
     /* Selenium uses http get requests to pass messages to the server log.
@@ -290,8 +298,9 @@ simulation.Simulation.prototype.sampleRunner = function(script)
     for (var j=0, l=logArray.length; j<l; j++) {
       var line = logArray[j] + '</DIV>';
       // only log relevant lines
-      if ( (line.indexOf('level-debug') < 0 && line.indexOf('level-info') < 0) 
-          || this.getConfigSetting("logAll")) {
+      if ((line.indexOf('level-debug') < 0 && line.indexOf('level-info') < 0) ||
+           this.getConfigSetting("logAll"))
+      {
         print("Warning or Error found");
         line = line.replace(/\'/g, "\\'");
         line = line.replace(/\n/g, "<br/>");
@@ -313,12 +322,12 @@ simulation.Simulation.prototype.sampleRunner = function(script)
     }
     this.log("</div>");
 
-    this.__sel.setSpeed(this.getConfigSetting("stepSpeed"));  
+    this.__sel.setSpeed(this.getConfigSetting("stepSpeed"));
   }
   else {
     this.log("No errors/warnings found", "info");
   }
-  
+
   return [category,currentSample];
 };
 
@@ -333,28 +342,31 @@ simulation.Simulation.prototype.checkUrlParameter = function()
   if (!match) {
     return;
   }
-  
+
   this.waitForDemoApp();
-  
+
   var categoryName = match[1];
   var demoName = match[2];
-  
+  var treeCategory;
+  var treeDemo;
+  var demoApplication;
+
   try {
-    var treeCategory = this.__sel.getEval(getSampleCategory);
-    var treeDemo = this.__sel.getEval(getSampleLabel);
+    treeCategory = this.__sel.getEval(getSampleCategory);
+    treeDemo = this.__sel.getEval(getSampleLabel);
   }
   catch(ex) {
     this.log("checkUrlParameter: Unable to check tree selection: " + ex.message, "error");
     return;
   }
-  
+
   if (treeCategory != categoryName || treeDemo != demoName) {
     this.log("checkUrlParameter: Wrong tree selection: Expected " + categoryName + "." + demoName + " but found " + treeCategory + "." + treeDemo, "error");
     return;
   }
-  
+
   try {
-    var demoApplication = this.__sel.getEval(this.demoQxApp + ".classname");
+    demoApplication = this.__sel.getEval(this.demoQxApp + ".classname");
   }
   catch(ex) {
     this.log("checkUrlParameter: Unable to check demo class name: " + ex.message, "error");
@@ -365,7 +377,7 @@ simulation.Simulation.prototype.checkUrlParameter = function()
     this.log("checkUrlParameter: Wrong demo active: Expected " + expectedDemoClass + " but found " + demoApplication, "error");
     return;
   }
-  
+
   this.log("checkUrlParameter: Demo loaded OK", "info");
 };
 
@@ -373,11 +385,13 @@ simulation.Simulation.prototype.runTest = function()
 {
   this.__sel.windowMaximize();
   this.checkUrlParameter();
-  
+
   print("Starting sample playback");
 
   var ignore = [];
-  
+  var currentCatSam;
+  var runIncluded;
+
   try {
     ignore = this.getConfigSetting("ignore").split(",");
     if (this.getConfigSetting("debug")) {
@@ -389,11 +403,11 @@ simulation.Simulation.prototype.runTest = function()
       print("No ignore list configured.");
     }
   }
-  
+
   this.ignore = ignore;
 
   var include = [];
-  
+
   try {
     include = this.getConfigSetting("include").split(",");
     if (this.getConfigSetting("debug")) {
@@ -405,7 +419,7 @@ simulation.Simulation.prototype.runTest = function()
       print("No include list configured.");
     }
   }
-  
+
   // Remove the text from the search field so no demos are filtered
   this.qxType('qxh=[@classname=demobrowser.DemoBrowser]/qx.ui.splitpane.Pane/qx.ui.container.Composite/qx.ui.container.Composite/qx.ui.form.TextField', "");
 
@@ -418,10 +432,10 @@ simulation.Simulation.prototype.runTest = function()
     var finalCategoryScript = selWin + '.' + qxAppInst + '.tree.getItems()[' + selWin + '.' + qxAppInst + '.tree.getItems().length - 1].getParent().getLabel()';
     var finalCategory = this.getEval(finalCategoryScript, "Getting final category name");
     print("Final demo: " + finalCategory + ":" + finalSample);
-    var currentCatSam = this.sampleRunner(runSample);
+    currentCatSam = this.sampleRunner(runSample);
     this.currentCategory = this.lastCategory = currentCatSam[0];
     this.currentSample = currentCatSam[1];
-    
+
     while (this.currentSample != this.lastSample) {
       if (this.lastCategory) {
         if (this.currentCategory != this.lastCategory && this.getConfigSetting("reloadBrowser")) {
@@ -434,25 +448,25 @@ simulation.Simulation.prototype.runTest = function()
           this.getEval(selWin + ".qx.Simulation.chooseDemo('" + this.currentCategory + "','" + this.currentSample + "');");
         }
       }
-      
+
       if (firstSample) {
         firstSample = false;
         if (this.getConfigSetting("theme", false)) {
           var chosenTheme = this.getConfigSetting("theme");
           this.log("Switching theme to " + chosenTheme, "info");
           this.qxClick('qxhv=*/qx.ui.toolbar.ToolBar/*/[@label=Theme]', "", "Clicking Theme button");
-          this.qxClick('qxhv=*/qx.ui.toolbar.ToolBar/*/[@label=Theme]/qx.ui.menu.Menu/[@label="' + chosenTheme + '"]', "", "Selecting theme " + chosenTheme);    
+          this.qxClick('qxhv=*/qx.ui.toolbar.ToolBar/*/[@label=Theme]/qx.ui.menu.Menu/[@label="' + chosenTheme + '"]', "", "Selecting theme " + chosenTheme);
         }
       }
-      
+
       if (this.currentCategory != finalCategory || (this.currentCategory == finalCategory && this.currentSample != finalSample) ) {
         this.lastCategory = this.currentCategory;
-        this.lastSample = this.currentSample;        
+        this.lastSample = this.currentSample;
         print("Done playing " + this.lastSample + ", starting next sample");
-        
+
         this.killBoxes();
         var runNextSample = qxAppInst + '.playNext()';
-        var currentCatSam = this.sampleRunner(runNextSample);
+        currentCatSam = this.sampleRunner(runNextSample);
         this.currentCategory = currentCatSam[0];
         this.currentSample = currentCatSam[1];
       }
@@ -469,14 +483,14 @@ simulation.Simulation.prototype.runTest = function()
     for (var j=0; j<include.length; j++) {
       var cat = include[j].substring(0, include[j].indexOf(':'));
       var sam = include[j].substr(include[j].indexOf(':') + 1);
-      // If the demo name is a wildcard, run all demos from the category 
+      // If the demo name is a wildcard, run all demos from the category
       if (sam == "*") {
         var getDemos = selWin + ".qx.Simulation.getDemosByCategory('" + cat + "');";
         var categoryDemos = this.getEval(getDemos, "Getting demos in category " + cat);
         var categoryDemoArr = categoryDemos.split(",");
         for (var k=0; k<categoryDemoArr.length; k++) {
-          var runIncluded = "qx.Simulation.chooseDemo('" + cat + "','" + categoryDemoArr[k] + "');";
-          var currentCatSam = this.sampleRunner(runIncluded);
+          runIncluded = "qx.Simulation.chooseDemo('" + cat + "','" + categoryDemoArr[k] + "');";
+          currentCatSam = this.sampleRunner(runIncluded);
           this.currentCategory = currentCatSam[0];
           this.currentSample = currentCatSam[1];
           this.killBoxes();
@@ -492,9 +506,9 @@ simulation.Simulation.prototype.runTest = function()
           this.addOwnFunction("chooseDemo", chooseDemo);
           this.addOwnFunction("getDemosByCategory", getDemosByCategory);
         }
-        
-        var runIncluded = "qx.Simulation.chooseDemo('" + cat + "','" + sam + "');";
-        var currentCatSam = this.sampleRunner(runIncluded);
+
+        runIncluded = "qx.Simulation.chooseDemo('" + cat + "','" + sam + "');";
+        currentCatSam = this.sampleRunner(runIncluded);
         this.currentCategory = currentCatSam[0];
         this.currentSample = currentCatSam[1];
         this.killBoxes();
@@ -508,21 +522,17 @@ simulation.Simulation.prototype.runTest = function()
 simulation.Simulation.prototype.openLog = function()
 {
   if (!this.__logOpened) {
-    this.qxClick("qxhv=*/qx.ui.toolbar.ToolBar/*/[@label=Log File]");
-    Packages.java.lang.Thread.sleep(2000);
-    var logEmbed = "qxhv=[@classname=demobrowser.DemoBrowser]/qx.ui.splitpane.Pane/qx.ui.splitpane.Pane/qx.ui.container.Stack/[@classname=qxc.ui.logpane.LogView]/qx.ui.embed.Html";
-    var isNewLog = false;
-    try {
-      isNewLog = this.__sel.isElementPresent(logEmbed);
+    if (this.__sel.isElementPresent(this.locators.toolbarLogButton)) {
+      this.qxClick(this.locators.toolbarLogButton);
+      Packages.java.lang.Thread.sleep(2000);
     }
-    catch(ex) {}
-    if (isNewLog) {
-      this.qxLog = "selenium.page().findElement(\"" + logEmbed + "\").innerHTML";
+    else if (this.__sel.isElementPresent(this.locators.overflowButton)) {
+      this.qxClick(this.locators.overflowButton);
+      Packages.java.lang.Thread.sleep(2000);
+      this.qxClick(this.locators.overflowMenuLogFileButton);
+      Packages.java.lang.Thread.sleep(2000);
     }
-    else {
-      this.qxLog = selWin + '.' + qxAppInst + '.f2.getContentElement().getDomElement().innerHTML'; // content of log iframe
-    }
-    
+
     this.__logOpened = true;
   }
 };
@@ -533,12 +543,12 @@ simulation.Simulation.prototype.openLog = function()
   mySim.testFailed = false;
 
   var sessionStarted = mySim.startSession();
-  
+
   if (!sessionStarted) {
     return;
   }
 
-  var isAppReady = mySim.waitForCondition(simulation.Simulation.ISQXAPPREADY, 20000, 
+  var isAppReady = mySim.waitForCondition(simulation.Simulation.ISQXAPPREADY, 20000,
                                           "Waiting for qooxdoo application");
 
 
@@ -560,9 +570,9 @@ simulation.Simulation.prototype.openLog = function()
       print(msg);
     }
     mySim.log(msg, "error");
-    
+
   }
-  
+
   mySim.log("Global error log contents for Demobrowser", "debug");
   mySim.logGlobalErrors();
   mySim.logResults();
