@@ -85,6 +85,12 @@ mySim.runTest = function()
   var customItemLabel = "Pass the Test";
   this.waitForElementPresent("add");
 
+  var labelLocator = '//label[contains(text(), "' + customItemLabel + '")]';
+  // check if the custom item is already present from an aborted previous run
+  if (this.__sel.isElementPresent(labelLocator)) {
+    this.testClearItem(customItemLabel);
+  }
+
   this.log("Adding custom item " + customItemLabel, "info");
   try {
     this.testAddItem(customItemLabel);
