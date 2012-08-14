@@ -28,25 +28,25 @@ simulation.Simulation.prototype.runTest = function()
     this.log(warningContent, "error");
     return;
   }
-  
+
   // missing function(s)
   if (this.__sel.isElementPresent("//b[starts-with(text(), '!!')]")) {
     this.log("At least one documented method is missing!", "error");
   }
-  
+
   // content scrolls when clicking a list entry
   var q = simulation.Simulation.SELENIUMWINDOW + ".q";
-  this.__sel.click("//a[@href = '#Css']");
+  this.qxClick("//a[@href = '#Css']");
   var scrollTop = parseInt(String(this.getEval(q + '("#content").getScrollTop()')));
   if (scrollTop < 6500) {
     this.log("Expected content scrollTop to be > 6800 after clicking 'Css' but found " + scrollTop, "error");
   }
-  
+
   // syntax highlighting
   if (!this.__sel.isElementPresent("//pre[@class = 'javascript']/span[@class = 'string']")) {
     this.log("Syntax highlighting is not active!", "error");
   }
-  
+
   // toggle plugin API
   this.__sel.click("plugintoggle");
   if (!this.__sel.isVisible("//div[@id = 'plugintoggle']/span[text() = 'hide']")) {
@@ -55,12 +55,12 @@ simulation.Simulation.prototype.runTest = function()
   if (!this.__sel.isVisible("q.$attach")) {
     this.log("q.$attach documentation is not displayed!", "error");
   }
-  
+
   // MDN link
   if (!this.__sel.isElementPresent('//a[@href = "https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Boolean"]')) {
     this.log("MDN links not displayed!", "error");
   }
-  
+
   // Internal link
   var extendsLink = "//div[contains(@class, 'return-desc')]/p/a[@href = '#Script']";
   if (!this.__sel.isElementPresent(extendsLink)) {
@@ -68,19 +68,19 @@ simulation.Simulation.prototype.runTest = function()
   }
   else {
     var scrollTopBefore = parseInt(String(this.getEval(q + '("#content").getScrollTop()')));
-    this.__sel.click(extendsLink);
+    this.qxClick(extendsLink);
     var scrollTopAfter = parseInt(String(this.getEval(q + '("#content").getScrollTop()')));
-    
+
     if (scrollTopBefore == scrollTopAfter) {
       this.log("Clicking 'Extends' link did not change content scroll position!", "error");
     }
   }
-  
+
 };
 
 // - Main --------------------------------------------------------------------
 
-(function() { 
+(function() {
   mySim.testFailed = false;
 
   var sessionStarted = mySim.startSession();
