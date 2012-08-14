@@ -39,10 +39,9 @@ simulation.Simulation.prototype.waitForElementPresent = function(locator, timeou
   this.__sel.waitForCondition(condition, timeout || 5000);
 };
 
-simulation.Simulation.prototype.testClearItem = function(itemLabel)
+simulation.Simulation.prototype.clearItem = function(itemLabel)
 {
   var labelLocator = '//label[contains(text(), "' + itemLabel + '")]';
-  this.assertElementPresent(labelLocator);
   //Synthetic click events on the label will not trigger checkbox selection
   //changes in Opera, so we need to click the checkbox itself
   // "qxClick" will have no effect in IE
@@ -60,8 +59,14 @@ simulation.Simulation.prototype.testClearItem = function(itemLabel)
   else {
     this.__sel.qxClick(labelLocator + "/preceding-sibling::input");
   }
-  //Packages.java.lang.Thread.sleep(999999);
   this.__sel.click("clear");
+};
+
+simulation.Simulation.prototype.testClearItem = function(itemLabel)
+{
+  var labelLocator = '//label[contains(text(), "' + itemLabel + '")]';
+  this.assertElementPresent(labelLocator);
+  this.clearItem(itemLabel);
   this.assertNotElementPresent(labelLocator);
 };
 
@@ -87,8 +92,8 @@ mySim.runTest = function()
 
   var labelLocator = '//label[contains(text(), "' + customItemLabel + '")]';
   // check if the custom item is already present from an aborted previous run
-  if (this.__sel.isElementPresent(labelLocator)) {
-    this.testClearItem(customItemLabel);
+  while (this.__sel.isElementPresent(labelLocator)) {
+    this.clearItem(customItemLabel);
   }
 
   this.log("Adding custom item " + customItemLabel, "info");
