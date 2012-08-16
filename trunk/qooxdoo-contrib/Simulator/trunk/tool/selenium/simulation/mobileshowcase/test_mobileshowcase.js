@@ -35,7 +35,7 @@ simulation.Simulation.prototype.addListItemLabelGetter = function()
     }
     return selenium.browserbot.getCurrentWindow().JSON.stringify(labels);
   };
-  
+
   this.addOwnFunction("getTitles", titleGetter);
 };
 
@@ -45,13 +45,13 @@ simulation.Simulation.prototype.getListItemLabels = function()
   //var qxAppInst = simulation.Simulation.QXAPPINSTANCE;
   var titlesJson = this.getEval(selWin + ".qx.Simulation.getTitles();", "Getting feed titles");
   eval("var titles = " + titlesJson);
-  
+
   return titles;
 };
 
 simulation.Simulation.prototype.selectItem = function(itemName) {
   this.qxClick("//div[text() = '" + itemName + "']");
-  itemName = buttonToTitle[itemName] || itemName; 
+  itemName = buttonToTitle[itemName] || itemName;
   this.waitForElementPresent("//h1[text() = '" + itemName + "']");
 };
 
@@ -84,7 +84,7 @@ simulation.Simulation.prototype.testList = function()
 simulation.Simulation.prototype.testEvents = function()
 {
   this.log("Testing Events", "info");
-  var eventContainerLocator = "//div[contains(@class, 'eventcontainer')]";
+  var eventContainerLocator = "//div[contains(@class, 'container-touch-area')]";
   this.waitForElementPresent(eventContainerLocator);
   this.qxClick(eventContainerLocator);
   this.waitForElementPresent("//div[contains(text(), 'touchstart touchend tap')]");
@@ -94,7 +94,7 @@ simulation.Simulation.prototype.testToolbar = function()
 {
   this.log("Testing Toolbar", "info");
   this.waitForElementPresent("//div[contains(@class, 'toolbar')]");
-  
+
   //click search button
   this.qxClick("//div[contains(@class, 'toolbar-button')]/descendant::div[text() = 'Search']");
   var searchDialogButtonLocator = "//div[text() = 'Search']/ancestor::div[@class= 'button']";
@@ -104,7 +104,7 @@ simulation.Simulation.prototype.testToolbar = function()
   if (this.__sel.isVisible(searchDialogButtonLocator)) {
     throw new Error("Clicking Search did not close the search dialog!");
   }
-  
+
   //click 'left arrow' button
   var noButtonLocator = "//div[text() = 'No']";
   var yesButtonLocator = "//div[text() = 'Yes']";
@@ -115,7 +115,7 @@ simulation.Simulation.prototype.testToolbar = function()
   if (this.__sel.isVisible(noButtonLocator)) {
     throw new Error("Clicking No did not close the Are you sure dialog!");
   }
-  
+
   //click load button
   this.qxClick("//div[contains(@class, 'toolbar-button')]/descendant::div[text() = 'Take a new picture']");
   var loadingDialogLocator = "//div[text() = 'Loading...']";
@@ -139,10 +139,10 @@ simulation.Simulation.prototype.testTabBarOLD = function()
 mySim.runTest = function()
 {
   this.waitForElementPresent("//h1[text() = 'Overview']");
-  
+
   this.addListItemLabelGetter();
   var listItems = this.getListItemLabels();
-  
+
   for (var i=0, l=listItems.length; i<l; i++) {
     var testMethodName = "test" + listItems[i].replace(/ /i, "");
     this.log("Selecting item " + listItems[i], "info");
@@ -160,16 +160,16 @@ mySim.runTest = function()
 
 // - Main --------------------------------------------------------------------
 
-(function() { 
+(function() {
   mySim.testFailed = false;
 
   var sessionStarted = mySim.startSession();
-  
+
   if (!sessionStarted) {
     return;
   }
 
-  var isAppReady = mySim.waitForCondition(simulation.Simulation.ISQXAPPREADY, 60000, 
+  var isAppReady = mySim.waitForCondition(simulation.Simulation.ISQXAPPREADY, 60000,
                                           "Waiting for qooxdoo application");
 
   if (!isAppReady) {
@@ -181,7 +181,7 @@ mySim.runTest = function()
   try {
     mySim.setupApplicationLogging();
     mySim.addGlobalErrorHandler();
-    mySim.runTest();    
+    mySim.runTest();
   }
   catch(ex) {
     mySim.testFailed = true;
