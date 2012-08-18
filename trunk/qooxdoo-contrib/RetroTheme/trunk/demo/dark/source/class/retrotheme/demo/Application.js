@@ -1,7 +1,7 @@
 /* ************************************************************************
 
    Copyright:
-     2010-2011 Norbert Schröder
+     2010-2012 Norbert Schröder
 
    License:
      LGPL: http://www.gnu.org/licenses/lgpl.html
@@ -38,7 +38,7 @@
 ************************************************************************ */
 
 /**
- * This is a demo of the silverbluetheme contribution
+ * This is a demo of the retrotheme contribution
  */
 qx.Class.define("retrotheme.demo.Application",
 {
@@ -145,7 +145,6 @@ qx.Class.define("retrotheme.demo.Application",
       widgetButton.add(new qx.ui.form.ListItem("Menu"));
       widgetButton.add(new qx.ui.form.ListItem("MenuBar"));
       widgetButton.add(new qx.ui.form.ListItem("Popup"));
-      widgetButton.add(new qx.ui.form.ListItem("ProgressBar"));
       widgetButton.add(new qx.ui.form.ListItem("RadioButton"));
       widgetButton.add(new qx.ui.form.ListItem("SelectBox"));
       widgetButton.add(new qx.ui.form.ListItem("SlideBar"));
@@ -272,7 +271,6 @@ qx.Class.define("retrotheme.demo.Application",
       stack.add(new retrotheme.demo.Menu());
       stack.add(new retrotheme.demo.MenuBar());
       stack.add(new retrotheme.demo.Popup());
-      stack.add(new retrotheme.demo.ProgressBar());
       stack.add(new retrotheme.demo.RadioButton());
       stack.add(new retrotheme.demo.SelectBox());
       stack.add(new retrotheme.demo.SlideBar());
