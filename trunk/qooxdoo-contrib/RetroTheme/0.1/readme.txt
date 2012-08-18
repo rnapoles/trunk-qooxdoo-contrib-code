@@ -1,3 +1,6 @@
 == RetroTheme ==
 
 Additional theme for the qooxdoo framework.
+
+>> Please note: RetroTheme version 0.1 works with qooxdoo v1.0 to v1.3.
+Use the trunk if your application is generated with qooxdoo v1.4 to v1.6.

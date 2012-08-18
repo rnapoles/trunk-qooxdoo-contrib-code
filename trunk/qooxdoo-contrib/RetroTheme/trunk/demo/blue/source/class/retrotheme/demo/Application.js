@@ -66,7 +66,7 @@ qx.Class.define("retrotheme.demo.Application",
       this.base(arguments);
 
       // Enable logging in debug variant
-      if (qx.core.Variant.isSet("qx.debug", "on"))
+      if ((qx.core.Environment.get("qx.debug")))
       {
         // support native logging capabilities, e.g. Firebug for Firefox
         qx.log.appender.Native;
@@ -145,6 +145,7 @@ qx.Class.define("retrotheme.demo.Application",
       widgetButton.add(new qx.ui.form.ListItem("Menu"));
       widgetButton.add(new qx.ui.form.ListItem("MenuBar"));
       widgetButton.add(new qx.ui.form.ListItem("Popup"));
+      widgetButton.add(new qx.ui.form.ListItem("ProgressBar"));
       widgetButton.add(new qx.ui.form.ListItem("RadioButton"));
       widgetButton.add(new qx.ui.form.ListItem("SelectBox"));
       widgetButton.add(new qx.ui.form.ListItem("SlideBar"));
@@ -228,7 +229,7 @@ qx.Class.define("retrotheme.demo.Application",
       var label = new qx.ui.basic.Atom(headerStr);
       label.set({alignY: "middle", font: "bold", rich: true});
       
-      var versionButton = new qx.ui.form.Button(qx.core.Setting.get("qx.version"), "retrotheme.demo/logo.png");
+      var versionButton = new qx.ui.form.Button(qx.core.Environment.get("qx.version"), "retrotheme.demo/logo.png");
       versionButton.set({font: "bold"});
       versionButton.addListener("execute", function(e)
       {
@@ -271,6 +272,7 @@ qx.Class.define("retrotheme.demo.Application",
       stack.add(new retrotheme.demo.Menu());
       stack.add(new retrotheme.demo.MenuBar());
       stack.add(new retrotheme.demo.Popup());
+      stack.add(new retrotheme.demo.ProgressBar());
       stack.add(new retrotheme.demo.RadioButton());
       stack.add(new retrotheme.demo.SelectBox());
       stack.add(new retrotheme.demo.SlideBar());
