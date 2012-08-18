@@ -32,7 +32,7 @@
   "let" :
   {
     "APPLICATION"  : "retrotheme.demo",
-    "QOOXDOO_PATH" : "../../../../qooxdoo/1.6",
+    "QOOXDOO_PATH" : "../../../../qooxdoo/2.0.1",
     "QXTHEME"      : "retrotheme.RetroThemeDark",
     "API_EXCLUDE"  : ["qx.test.*", "${APPLICATION}.theme.*", "${APPLICATION}.test.*"],
     "LOCALES"      : [ "en" ],

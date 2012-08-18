@@ -497,7 +497,7 @@ qx.Theme.define("retrotheme.theme.Decoration",
 
       style : {
         baseImage : "decoration/shadow/shadow.png",
-        insets    : [ 4, 8, 8, 4 ]
+        insets    : [ 2, 4, 4, 2 ]
       }
     },
 
