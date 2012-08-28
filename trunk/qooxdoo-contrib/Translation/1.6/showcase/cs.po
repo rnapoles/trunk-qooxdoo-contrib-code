@@ -1,0 +1,135 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: 1.0\n"
+"Report-Msgid-Bugs-To: you@your.org\n"
+"POT-Creation-Date: 2009-12-10 14:36+0100\n"
+"PO-Revision-Date: 2012-08-27 10:37+0100\n"
+"Last-Translator: Lukáš Slánský <lukas@slansti.cz>\n"
+"Language-Team: Team <yourteam@your.org>\n"
+"Language: Czech\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+
+#: showcase/page/i18n/Content.js:167
+msgid "Form Elements"
+msgstr "Prvky formuláře"
+
+#: showcase/page/i18n/Content.js:173 showcase/page/i18n/Content.js:275
+msgid "Territory code:"
+msgstr "Kód teritórie:"
+
+#: showcase/page/i18n/Content.js:183
+msgid "Localized ComboBox:"
+msgstr "Lokalizovaný výběrový box:"
+
+#: showcase/page/i18n/Content.js:186 showcase/page/i18n/Content.js:221
+msgid "Cut"
+msgstr "Vyříznout"
+
+#: showcase/page/i18n/Content.js:187 showcase/page/i18n/Content.js:223
+msgid "Paste"
+msgstr "Vložit"
+
+#: showcase/page/i18n/Content.js:188 showcase/page/i18n/Content.js:222
+msgid "Copy"
+msgstr "Kopírovat"
+
+#: showcase/page/i18n/Content.js:195
+msgid "A date:"
+msgstr "Datum:"
+
+#: showcase/page/i18n/Content.js:218
+msgid "Undo"
+msgstr "Zpět"
+
+#: showcase/page/i18n/Content.js:219
+msgid "Redo"
+msgstr "Znovu"
+
+#: showcase/page/i18n/Content.js:224
+msgid "Delete"
+msgstr "Smazat"
+
+#: showcase/page/i18n/Content.js:225
+msgid "Select All"
+msgstr "Vybrat vše"
+
+#: showcase/page/i18n/Content.js:227
+msgid "Search"
+msgstr "Vyhledat"
+
+#: showcase/page/i18n/Content.js:228
+msgid "Search Again"
+msgstr "Vyhledat znovu"
+
+#: showcase/page/i18n/Content.js:230
+msgid "Command Menu (keyboard shortcuts)"
+msgstr "Nabídka příkazů (klávesových zkratek)"
+
+#: showcase/page/i18n/Content.js:239
+msgid "Locale Information"
+msgstr "Informace o jazyce"
+
+#: showcase/page/i18n/Content.js:272
+msgid "Locale:"
+msgstr "Jazyk:"
+
+#: showcase/page/i18n/Content.js:278
+msgid "Date format short:"
+msgstr "Krátký formát data:"
+
+#: showcase/page/i18n/Content.js:280
+msgid "Date short:"
+msgstr "Krátké datum:"
+
+#: showcase/page/i18n/Content.js:283
+msgid "Date format medium:"
+msgstr "Střední formát data:"
+
+#: showcase/page/i18n/Content.js:285
+msgid "Date medium:"
+msgstr "Střední datum:"
+
+#: showcase/page/i18n/Content.js:288
+msgid "Date format long:"
+msgstr "Dlouhý formát data:"
+
+#: showcase/page/i18n/Content.js:290
+msgid "Date long:"
+msgstr "Dlouhé datum:"
+
+#: showcase/page/i18n/Content.js:293
+msgid "Date format full:"
+msgstr "Plný formát data:"
+
+#: showcase/page/i18n/Content.js:295
+msgid "Date full:"
+msgstr "Plné datum:"
+
+#: showcase/page/i18n/Content.js:298
+msgid "Time format short:"
+msgstr "Krátký formát času:"
+
+#: showcase/page/i18n/Content.js:300
+msgid "Time short:"
+msgstr "Krátký čas:"
+
+#: showcase/page/i18n/Content.js:303
+msgid "Time format long:"
+msgstr "Dlouhý formát času:"
+
+#: showcase/page/i18n/Content.js:305
+msgid "Time long:"
+msgstr "Dlouhý čas:"
+
+#: showcase/page/i18n/Content.js:308
+msgid "Week start:"
+msgstr "Začátek týdne:"
+
+#: showcase/page/i18n/Content.js:311
+msgid "Format of %1:"
+msgstr "Formát %1:"
