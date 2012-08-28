@@ -1,0 +1,100 @@
+# Czech
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: qooxdoo feedreader\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2008-05-07 07:59+0200\n"
+"PO-Revision-Date: 2012-08-27 10:59+0100\n"
+"Last-Translator: Lukáš Slánský <lukas@slansti.cz>\n"
+"Language-Team: Lukáš Slánský <lukas@slansti.cz>\n"
+"Language: Czech\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+
+#: feedreader/Application.js:138
+msgid "Static Feeds"
+msgstr "Statické zdroje"
+
+#: feedreader/Application.js:168
+msgid "User Feeds"
+msgstr "Uživatelské zdroje"
+
+#: feedreader/Application.js:526
+msgid "FeedReader (qooxdoo powered)"
+msgstr "FeedReader (běží na qooxdoo)"
+
+#: feedreader/view/AddFeedWindow.js:49
+msgid "Add a feed"
+msgstr "Přidat zdroj"
+
+#: feedreader/view/AddFeedWindow.js:90
+msgid "Feed Information"
+msgstr "Informace o zdroji"
+
+#: feedreader/view/AddFeedWindow.js:97
+msgid "Title:"
+msgstr "Název:"
+
+#: feedreader/view/AddFeedWindow.js:100
+msgid "URL:"
+msgstr "URL:"
+
+#: feedreader/view/AddFeedWindow.js:112
+msgid "Add"
+msgstr "Přidat"
+
+#: feedreader/view/AddFeedWindow.js:136
+msgid "Please enter a title."
+msgstr "Vložte prosím název."
+
+#: feedreader/view/AddFeedWindow.js:144
+msgid "Please enter a url."
+msgstr "Vložte prosím URL."
+
+#: feedreader/view/List.js:50
+msgid "Posts"
+msgstr "Příspěvky"
+
+#: feedreader/view/PreferenceWindow.js:85
+msgid "Language"
+msgstr "Jazyk"
+
+#: feedreader/view/PreferenceWindow.js:137
+msgid "Cancel"
+msgstr "Storno"
+
+#: feedreader/view/PreferenceWindow.js:140
+msgid "OK"
+msgstr "OK"
+
+#: feedreader/view/ToolBar.js:60
+msgid "Add feed"
+msgstr "Přidat zdroj"
+
+#: feedreader/view/ToolBar.js:64
+msgid "Remove feed"
+msgstr "Odstranit zdroj"
+
+#: feedreader/view/ToolBar.js:75
+msgid "Reload"
+msgstr "Obnovit"
+
+#: feedreader/view/ToolBar.js:78
+msgid "Reload the feeds. (%1)"
+msgstr "Obnovit zdroje. (%1)"
+
+#: feedreader/view/ToolBar.js:87 feedreader/view/PreferenceWindow.js:48
+msgid "Preferences"
+msgstr "Nastavení"
+
+#: feedreader/view/ToolBar.js:89
+msgid "Open preferences window."
+msgstr "Otevřít okno nastavení."
+
+#: feedreader/view/ToolBar.js:102
+msgid "Help"
+msgstr "Nápověda"

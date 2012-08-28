@@ -1,0 +1,154 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2007-07-08 21:17+0200\n"
+"PO-Revision-Date: 2012-08-27 10:43+0100\n"
+"Last-Translator: Lukáš Slánský <lukas@slansti.cz>\n"
+"Language-Team: Team <yourteam@your.org>\n"
+"Language: Czech\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+
+#: source/class/showcase/Application.js:1361
+msgid "Choose a locale: "
+msgstr "Vyberte jazyk:"
+
+#: source/class/showcase/Application.js:1394
+#: source/class/showcase/Application.js:1448
+msgid "Cut"
+msgstr "Vyříznout"
+
+#: source/class/showcase/Application.js:1395
+#: source/class/showcase/Application.js:1450
+msgid "Paste"
+msgstr "Vložit"
+
+#: source/class/showcase/Application.js:1396
+#: source/class/showcase/Application.js:1449
+msgid "Copy"
+msgstr "Kopírovat"
+
+#: source/class/showcase/Application.js:1398
+msgid "Localized ComboBox:"
+msgstr "Lokalizovaný výběrový box:"
+
+#: source/class/showcase/Application.js:1412
+msgid "A date: "
+msgstr "Datum:"
+
+#: source/class/showcase/Application.js:1445
+msgid "Undo"
+msgstr "Zpět"
+
+#: source/class/showcase/Application.js:1446
+msgid "Redo"
+msgstr "Znovu"
+
+#: source/class/showcase/Application.js:1451
+msgid "Delete"
+msgstr "Smazat"
+
+#: source/class/showcase/Application.js:1452
+msgid "Select All"
+msgstr "Vybrat vše"
+
+#: source/class/showcase/Application.js:1454
+msgid "Search"
+msgstr "Vyhledat"
+
+#: source/class/showcase/Application.js:1455
+msgid "Search Again"
+msgstr "Vyhledat znovu"
+
+#: source/class/showcase/Application.js:1458
+msgid "Command Menu (keyboard shortcuts)"
+msgstr "Nabídka příkazů (klávesových zkratek)"
+
+#: source/class/showcase/Application.js:1483
+msgid "Open Color Popup"
+msgstr "Otevřít výběr barvy"
+
+#: source/class/showcase/Application.js:1498
+msgid "Basic Colors"
+msgstr "Základní barvy"
+
+#: source/class/showcase/Application.js:1505
+msgid "Template Colors"
+msgstr "Barvy šablony"
+
+#: source/class/showcase/Application.js:1511
+msgid "Recent Colors"
+msgstr "Nedávné barvy"
+
+#: source/class/showcase/Application.js:1535
+msgid "Locale information"
+msgstr "Informace o jazyce"
+
+#: source/class/showcase/Application.js:1569
+msgid "Locale:"
+msgstr "Jazyk:"
+
+#: source/class/showcase/Application.js:1572
+msgid "Territory code:"
+msgstr "Kód teritórie:"
+
+#: source/class/showcase/Application.js:1575
+msgid "Date format short:"
+msgstr "Krátký formát data:"
+
+#: source/class/showcase/Application.js:1577
+msgid "Date short:"
+msgstr "Krátké datum:"
+
+#: source/class/showcase/Application.js:1580
+msgid "Date format medium:"
+msgstr "Střední formát data:"
+
+#: source/class/showcase/Application.js:1582
+msgid "Date medium:"
+msgstr "Střední datum:"
+
+#: source/class/showcase/Application.js:1585
+msgid "Date format long:"
+msgstr "Dlouhý formát data:"
+
+#: source/class/showcase/Application.js:1587
+msgid "Date long:"
+msgstr "Dlouhé datum:"
+
+#: source/class/showcase/Application.js:1590
+msgid "Date format full:"
+msgstr "Plný formát data:"
+
+#: source/class/showcase/Application.js:1592
+msgid "Date full:"
+msgstr "Plné datum:"
+
+#: source/class/showcase/Application.js:1595
+msgid "Time format short:"
+msgstr "Krátký formát času:"
+
+#: source/class/showcase/Application.js:1597
+msgid "Time short:"
+msgstr "Krátký čas:"
+
+#: source/class/showcase/Application.js:1600
+msgid "Time format long:"
+msgstr "Dlouhý formát času:"
+
+#: source/class/showcase/Application.js:1602
+msgid "Time long:"
+msgstr "Dlouhý čas:"
+
+#: source/class/showcase/Application.js:1605
+msgid "Week start:"
+msgstr "Začátek týdne:"
+
+#: source/class/showcase/Application.js:1608
+msgid "Format of %1:"
+msgstr "Formát %1:"
