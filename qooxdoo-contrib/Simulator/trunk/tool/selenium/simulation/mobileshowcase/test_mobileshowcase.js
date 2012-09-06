@@ -155,6 +155,8 @@ mySim.runTest = function()
         this.log("Error while testing " + listItems[i] + ": " + ex.message, "error");
       }
     }
+    this.logGlobalErrors();
+    this.clearGlobalErrorStore();
   }
 };
 
