@@ -120,7 +120,7 @@ simulation.Simulation.prototype.testTab = function(tabName)
 
 simulation.Simulation.prototype.testStates = function(tabName)
 {
-  var states = ["Disabled", "Hovered", "Focused", "Invalid", "Hide some", "Overflow"];
+  var states = ["Disabled", "Hovered", "Focused", "Invalid", "Selected", "Hide some", "Overflow"];
   for (var i=0,l=states.length; i<l; i++) {
     var state = states[i];
     var buttonLocator = locators.stateButtonLocator.replace("STATE", state);
