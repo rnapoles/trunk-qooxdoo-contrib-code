@@ -1,8 +1,9 @@
 var baseConf = {
   'autName' : 'TutorialMobiletweets',
-  'globalTimeout' : 300000,
-  'stepSpeed' : '500',
-  'debug' : true
+  'globalTimeout' : 120000,
+  'stepSpeed' : '250',
+  'debug' : false,
+  'applicationLog' : false
 };
 
 var args = arguments ? arguments : "";
@@ -15,37 +16,64 @@ for (var i=0; i<args.length; i++) {
 
 load([simSvn + "/trunk/tool/selenium/simulation/Simulation.js"]);
 
-var mySim = new simulation.Simulation(baseConf,args);
+var sim = new simulation.Simulation(baseConf,args);
 
 var selWin = simulation.Simulation.SELENIUMWINDOW;
 var qxAppInst = simulation.Simulation.QXAPPINSTANCE;
 
-// - Main --------------------------------------------------------------------
-(function() { 
-  mySim.testFailed = false;
+simulation.Simulation.prototype.runTest = function() {
+  var backButtonLocator = "css=.navigationbar-backbutton";
 
-  var sessionStarted = mySim.startSession();
-  
+  this.__sel.type("css=.textField", "linuxfoundation");
+  this.qxClick("css=.button");
+  try {
+    this.waitForElementPresent(backButtonLocator, 3000);
+  }
+  catch(ex) {
+    this.log("Back button not displayed after clicking 'Show'!", "error");
+    return;
+  }
+
+  try {
+    this.waitForElementPresent("css=.listItem", 1000);
+  }
+  catch(ex) {
+    this.log("No list items displayed!", "error");
+  }
+
+  this.qxClick(backButtonLocator);
+  Packages.java.lang.Thread.sleep(3000);
+  if (this.isElementVisible(backButtonLocator)) {
+    this.log("Back button still visible after clicking it!", "error");
+  }
+};
+
+// - Main --------------------------------------------------------------------
+(function() {
+  sim.testFailed = false;
+
+  var sessionStarted = sim.startSession();
+
   if (!sessionStarted) {
     return;
   }
 
-  var isAppReady = mySim.waitForCondition(simulation.Simulation.ISQXAPPREADY, 60000, 
+  var isAppReady = sim.waitForCondition(simulation.Simulation.ISQXAPPREADY, 60000,
     "Waiting for qooxdoo application");
 
 
   if (!isAppReady) {
-    mySim.testFailed = true;
-    mySim.stop();
+    sim.testFailed = true;
+    sim.stop();
     return;
   }
 
-  mySim.setupApplicationLogging();
-  mySim.addGlobalErrorHandler();
-  java.lang.Thread.sleep(5000);
-  mySim.logGlobalErrors();
-  mySim.logResults();
+  //sim.setupApplicationLogging();
+  sim.addGlobalErrorHandler();
+  sim.runTest();
+  sim.logGlobalErrors();
+  sim.logResults();
 
-  mySim.stop();
+  sim.stop();
 
 })();

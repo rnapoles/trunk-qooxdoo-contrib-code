@@ -753,21 +753,63 @@ simulation.Simulation.prototype.waitForCondition = function(condition, timeout,
   }
 };
 
+/**
+ * Checks if an element is rendered (included in the DOM)
+ * @param locator {String} Element locator
+ * @return {Boolean} <code>true</code> if the element is in the DOM
+ */
+simulation.Simulation.prototype.isElementPresent = function(locator)
+{
+  var cmd = 'selenium.isElementPresent("' + locator + '")';
+  var result = String(this.__sel.getEval(cmd));
+  return result == "true";
+};
 
+/**
+ * Repeatedly checks if an element is present. If the element is not present
+ * before the timeout is reached, an exception is thrown.
+ * @param locator {String} Element locator
+ * @param timeout {Integer} Timeout in milliseconds
+ * @throws {Error} if the element was not found before the timeout was reached
+ */
 simulation.Simulation.prototype.waitForElementPresent = function(locator, timeout)
 {
   var condition = 'selenium.isElementPresent("' + locator + '")';
   this.__sel.waitForCondition(condition, timeout || 5000);
 };
 
+/**
+ * Checks if an element is visible, i.e. "display" is not "none" and "visibility"
+ * is not "hidden"
+ * @param locator {String} Element locator
+ * @return {Boolean} <code>true</code> if the element is visible
+ */
+simulation.Simulation.prototype.isElementVisible = function(locator)
+{
+  var cmd = 'selenium.isVisible("' + locator + '")';
+  var result = String(this.__sel.getEval(cmd));
+  return result == "true";
+};
 
+/**
+ * Repeatedly checks if an element is visible. If the element is not visible
+ * before the timeout is reached, an exception is thrown.
+ * @param locator {String} Element locator
+ * @param timeout {Integer} Timeout in milliseconds
+ * @throws {Error} if the element was not visible before the timeout was reached
+ */
 simulation.Simulation.prototype.waitForElementVisible = function(locator, timeout)
 {
   var condition = 'selenium.isVisible("' + locator + '")';
   this.__sel.waitForCondition(condition, timeout || 5000);
 };
 
-
+/**
+ * Creates a {@link qx.bom.Collection} and returns the innerHTML of each element
+ * in the collection in an array.
+ * @param query {String} Selector query string
+ * @return {String[]} Array of HTML strings
+ */
 simulation.Simulation.prototype.getInnerHtmlFromCollection = function(query)
 {
   var getter="var titles = [];" +
@@ -777,8 +819,9 @@ simulation.Simulation.prototype.getInnerHtmlFromCollection = function(query)
   "}" +
   "selenium.browserbot.getCurrentWindow().qx.lang.Json.stringify(titles);";
 
+  var stringResult;
   try {
-    var stringResult = "var temp=" + String(this.__sel.getEval(getter));
+    stringResult = "var temp=" + String(this.__sel.getEval(getter));
   }
   catch(ex) {
     this.log("Couldn't get innerHTML for selector " + query + ": " + ex.message);
