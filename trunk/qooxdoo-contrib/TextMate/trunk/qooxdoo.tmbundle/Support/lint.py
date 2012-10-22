@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # encoding: utf-8
 """
-untitled.py
-
 Created by Fabian Jakobs on 2007-08-01.
 Copyright (c) 2007 1&1. All rights reserved.
 """
 
-import re
+import re, codecs
 import os
 import sys
 import getopt
@@ -16,46 +14,44 @@ import util
 util.addQooxdooClassPath()
 
 from ecmascript.frontend import treegenerator
-import ecmalint
+from ecmascript.transform.check import scopes, lint
+from generator import Context as context
 
 
-def lint(file, popup):    
-    if popup: 
-        logger = util.PopupLogger()        
-    else: 
-        logger = util.TextMateLogger()        
+def do_lint(file_, popup):
+    if popup:
+        logger = util.PopupLogger()
+    else:
+        logger = util.TextMateLogger()
 
     logger.printHeader("qooxdoo JavaScript lint", "qooxdoo JavaScript lint")
     try:
-        lint = ecmalint.Lint(file, logger)
-        lint.checkMaps()
-        lint.checkUnusedVariables()
-        lint.checkUndefinedVariables(["qx", "qui"])
-        lint.checkRequiredBlocks()
-        lint.checkFields()
-        lint.checkReferenceFields()
-        
+        opts = lint.defaultOptions()
+        opts.allowed_globals = ['qx', 'qxWeb', 'q']
+
+        tree_ = treegenerator.createFileTree_from_string(
+            codecs.open(file_, "r", "utf-8").read())
+        tree_ = scopes.create_scopes(tree_)
+        if not hasattr(context,'jobconf'):
+            context.jobconf = {}
+        lint.lint_check(tree_, "", opts)
+
     except treegenerator.SyntaxException, e:
-        errorRe = re.compile("(.*file:, line:(\d+), column:(\d+))")
-        match = errorRe.match(str(e)).groups()
-        logger.log(file, match[1], match[2], match[0])
-    
+        logger.log(file_, 0, 0, str(e))
+
     logger.printFooter()
-    
+
 
 def main(argv=None):
     if argv is None:
-        argv = sys.argv	
+        argv = sys.argv
 
     if len(argv) == 3:
         popup = argv[2] == "popup"
     else:
         popup = False
 
-    try:
-        lint(argv[1], popup)
-    except:
-        pass
+    do_lint(argv[1], popup)
 
 if __name__ == "__main__":
 	sys.exit(main())
