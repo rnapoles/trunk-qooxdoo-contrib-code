@@ -3,15 +3,14 @@
 <plist version="1.0">
 <dict>
 	<key>content</key>
-	<string>
-* </string>
-	<key>keyEquivalent</key>
-	<string></string>
+	<string>@lint ignoreNoLoopBlock()</string>
 	<key>name</key>
-	<string>* in comments</string>
+	<string>ignoreNoLoopBlock</string>
 	<key>scope</key>
 	<string>comment.block</string>
+	<key>tabTrigger</key>
+	<string>lint</string>
 	<key>uuid</key>
-	<string>A46916CA-0D15-4E19-8219-5D27DF7F4C01</string>
+	<string>1E1028CC-F9A6-4052-AC49-740B8A72E7AF</string>
 </dict>
 </plist>

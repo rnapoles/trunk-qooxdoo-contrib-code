@@ -16,11 +16,11 @@ def getQooxdoo():
         if os.path.isdir(qxPath):
             return qxPath
 
-    logger = TextMateLogger()    
+    logger = TextMateLogger()
     logger.printHeader("qooxdoo SDK not found", "qooxdoo SDK not found")
     print "The path to the qooxdoo SDK could not be found. Please configure the QOOXDOO_PATH shell variable to point to the the qooxdoo SDK directory. You can do this in the Advanced tab of the Preferences dialog."
-    logger.printFooter()    
-    
+    logger.printFooter()
+
     #os.system("""CocoaDialog msgbox --title "qooxdoo SDK not found" --button1 "OK" --text "qooxdoo SDK not found" --informative-text "The path to the qooxdoo SDK could not be found. Please configure the QOOXDOO_PATH shell variable to point to the the qooxdoo SDK directory. You can do this in the Advanced tab of the Preferences dialog." """)
     sys.exit()
 
@@ -90,13 +90,13 @@ class TextMateLogger:
 
     def printFooter(self):
         print HTML_FOOTER
-        
+
 class PopupLogger:
     def printHeader(self, title, heading):
         pass
 
     def log(self, filename, row, column, msg):
-        print "row: %s, column: %s, Message: %s" % (row, column, msg.encode('ascii', 'replace'))
+        print msg.encode('ascii', 'replace')
 
     def printFooter(self):
         pass

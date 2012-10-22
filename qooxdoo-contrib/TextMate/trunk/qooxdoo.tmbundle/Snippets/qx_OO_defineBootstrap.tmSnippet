@@ -20,11 +20,11 @@
   }
 });</string>
 	<key>name</key>
-	<string>qx.Bootstrap.define</string>
+	<string>qx.Class.define</string>
 	<key>scope</key>
 	<string>source.js</string>
 	<key>tabTrigger</key>
-	<string>Bootstrap</string>
+	<string>Class</string>
 	<key>uuid</key>
 	<string>D1D58444-F3E7-4290-A82A-21EA44CCF5AA</string>
 </dict>
