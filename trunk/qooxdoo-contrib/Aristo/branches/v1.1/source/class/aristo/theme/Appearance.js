@@ -145,13 +145,11 @@ qx.Theme.define("aristo.theme.Appearance", {
 					decorator = "button";
 					textColor = undefined;
 				}
-				var useCSS = qx.core.Environment
-						.get("css.boxshadow");
+				var useCSS = qx.core.Environment.get("css.boxshadow");
 				if (useCSS)
 					decorator += "-css";
 
-				if (states.focused
-						|| (states.invalid && !states.disabled)) {
+				if (states.focused || (states.invalid && !states.disabled)) {
 					shadow = useCSS ? "shadow-css" : "shadow";
 				}
 
@@ -696,9 +694,9 @@ qx.Theme.define("aristo.theme.Appearance", {
 
 		"window" : {
 			style : function(states) {
+				var useCSS = qx.core.Environment.get("css.boxshadow");
 				return {
-					shadow : states.active ? "shadow-window-active"
-							: "shadow-window-inactive",
+					shadow : (states.active ? "shadow-window-active" : "shadow-window-inactive") + (useCSS ? "-css" : ""),
 					contentPadding : [ 10, 10, 10, 10 ]
 				};
 			}

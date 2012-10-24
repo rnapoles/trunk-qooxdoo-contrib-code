@@ -191,7 +191,23 @@ qx.Theme.define("aristo.theme.Decoration", {
 
 			style : {
 				baseImage : "aristo/decoration/shadow/shadow-window.png",
-				insets : [ 6, 8, 8, 6 ]
+				insets : [ -4, 14, 16, -4 ]
+			}
+		},
+
+		"shadow-window-inactive-css" : {
+			decorator : [ qx.ui.decoration.MSingleBorder,
+							qx.ui.decoration.MBorderRadius,
+							qx.ui.decoration.MBoxShadow ],
+
+			style : {
+				width : 0,
+				color : "window-shadow",
+				radius : 2,
+				shadowLength : 1,
+				shadowBlurRadius : 6,
+				shadowSpreadRadius: 0,
+				shadowColor : "window-shadow"
 			}
 		},
 
@@ -200,7 +216,23 @@ qx.Theme.define("aristo.theme.Decoration", {
 
 			style : {
 				baseImage : "aristo/decoration/shadow/shadow-window-active.png",
-				insets : [ 8, 10, 10, 8 ]
+				insets : [ -6, 22, 24, -6 ]
+			}
+		},
+
+		"shadow-window-active-css" : {
+			decorator : [ qx.ui.decoration.MSingleBorder,
+							qx.ui.decoration.MBorderRadius,
+							qx.ui.decoration.MBoxShadow ],
+
+			style : {
+				width : 0,
+				color : "window-shadow",
+				radius : 2,
+				shadowLength : 2,
+				shadowBlurRadius : 10,
+				shadowSpreadRadius: 2,
+				shadowColor : "window-shadow"
 			}
 		},
 

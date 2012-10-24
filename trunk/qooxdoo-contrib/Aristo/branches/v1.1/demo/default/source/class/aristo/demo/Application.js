@@ -431,6 +431,8 @@ qx.Class.define("aristo.demo.Application",
       var colorWindow = this.colorWindow = new aristo.demo.ColorWindow();
       colorWindow.addListener("changeActive", this.resetShowcase, this);
 
+      this.calcWindow.open();
+      this.colorWindow.open();
       
       if (selWidgetButton)
     	  widgetButton.setSelection([selWidgetButton]);

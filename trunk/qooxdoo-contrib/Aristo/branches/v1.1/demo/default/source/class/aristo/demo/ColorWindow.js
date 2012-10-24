@@ -48,7 +48,7 @@ qx.Class.define("aristo.demo.ColorWindow",
     this.addListenerOnce("appear", function(e)
       {
       this.add(box, {flex: 1});
-    this.center();
+    this.moveTo(350, 150);
     }, this);
     }
   }
