@@ -64,7 +64,6 @@ qx.Theme.define("aristo.theme.Color",
 		"background-medium"				: "#c2c2c2",
 		"background-tip" 					: "#b8def5",
 		"background-pane" 				: "#F3F3F3",
-		"background-splitpane"		: "#AFAFAF",
 		"background-odd" 					: "#E4E4E4",
 	    "background-selected-dark" : "#333333",
 		
@@ -89,14 +88,14 @@ qx.Theme.define("aristo.theme.Color",
     // "table-row-background-selected" and "table-row-background-focused-selected"
     // are inspired by the colors of the selection decorator
     "table-focus-indicator" : "#0880EF",
-    "table-row-background-focused-selected" : "#cce4fc", //"#b4dbf2", //"#5f83b9",
+    "table-row-background-focused-selected" : "#5f83b9",
     "table-row-background-focused" : "#80B4EF",
     "table-row-background-selected" : "#5f83b9",
 
     "table-row-background-even" : "#F7FCFE", //"#F3F3F3",
     "table-row-background-odd" : "#ebf8ff", //"#E4E4E4",
 
-    "table-row-selected" : "#111111", //"#fffefe",
+    "table-row-selected" : "#fffefe",
     "table-row" : "#1a1a1a",
 
     // equal to "border-collumn"
