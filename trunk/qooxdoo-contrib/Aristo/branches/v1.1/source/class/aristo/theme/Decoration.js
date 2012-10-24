@@ -9,7 +9,7 @@
 
    Authors:
  * Guilherme R. Aiolfi (guilhermeaiolfi)
-     * John Spackman (john.spackman@zenesis.com)
+ * John Spackman (john.spackman@zenesis.com)
 
    ======================================================================
 
@@ -72,17 +72,18 @@ qx.Theme.define("aristo.theme.Decoration", {
 				insets : 2
 			}
 		},
-		"button-css": {
-			decorator: [ qx.ui.decoration.MLinearBackgroundGradient, 
-			             qx.ui.decoration.MBorderRadius, 
-			             qx.ui.decoration.MSingleBorder ],
-            style: {
-				startColor: "button-gradient-start",
-				endColor: "button-gradient-end",
-				radius: 2,
-				width: 1,
-				color: "border-main"
-            }
+		"button-css" : {
+			decorator : [
+					qx.ui.decoration.MLinearBackgroundGradient,
+					qx.ui.decoration.MBorderRadius,
+					qx.ui.decoration.MSingleBorder ],
+			style : {
+				startColor : "button-gradient-start",
+				endColor : "button-gradient-end",
+				radius : 2,
+				width : 1,
+				color : "border-main"
+			}
 		},
 
 		"button-hovered" : {
@@ -93,19 +94,20 @@ qx.Theme.define("aristo.theme.Decoration", {
 				insets : 2
 			}
 		},
-		"button-hovered-css": {
-			decorator: [ qx.ui.decoration.MLinearBackgroundGradient, 
-			             qx.ui.decoration.MBorderRadius, 
-			             qx.ui.decoration.MSingleBorder ],
-            style: {
-				startColor: "button-active-gradient-start",
-				endColor: "button-active-gradient-end",
-				radius: 2,
-				width: 1,
-				color: "border-main"
-            }
+		"button-hovered-css" : {
+			decorator : [
+					qx.ui.decoration.MLinearBackgroundGradient,
+					qx.ui.decoration.MBorderRadius,
+					qx.ui.decoration.MSingleBorder ],
+			style : {
+				startColor : "button-active-gradient-start",
+				endColor : "button-active-gradient-end",
+				radius : 2,
+				width : 1,
+				color : "border-main"
+			}
 		},
-		
+
 		"button-pressed" : {
 			decorator : qx.ui.decoration.Grid,
 
@@ -114,17 +116,18 @@ qx.Theme.define("aristo.theme.Decoration", {
 				insets : 2
 			}
 		},
-		"button-pressed-css": {
-			decorator: [ qx.ui.decoration.MLinearBackgroundGradient, 
-			             qx.ui.decoration.MBorderRadius, 
-			             qx.ui.decoration.MSingleBorder ],
-            style: {
-				startColor: "button-gradient-end",
-				endColor: "button-gradient-start",
-				radius: 2,
-				width: 1,
-				color: "border-main"
-            }
+		"button-pressed-css" : {
+			decorator : [
+					qx.ui.decoration.MLinearBackgroundGradient,
+					qx.ui.decoration.MBorderRadius,
+					qx.ui.decoration.MSingleBorder ],
+			style : {
+				startColor : "button-gradient-end",
+				endColor : "button-gradient-start",
+				radius : 2,
+				width : 1,
+				color : "border-main"
+			}
 		},
 
 		"button-checked" : {
@@ -135,8 +138,8 @@ qx.Theme.define("aristo.theme.Decoration", {
 				insets : 2
 			}
 		},
-		"button-checked-css": { 
-			include: "button-pressed-css" 
+		"button-checked-css" : {
+			include : "button-pressed-css"
 		},
 
 		"button-disabled" : {
@@ -147,8 +150,9 @@ qx.Theme.define("aristo.theme.Decoration", {
 				insets : 2
 			}
 		},
-		"button-disabled-css": { include: "button-disabled" },
-		
+		"button-disabled-css" : {
+			include : "button-disabled"
+		},
 
 		/*******************************************************
 		 * SHADOW ******************************
@@ -159,49 +163,46 @@ qx.Theme.define("aristo.theme.Decoration", {
 
 			style : {
 				baseImage : "aristo/decoration/shadow/shadow.png",
-				insets : 3
+				insets : 1
 			}
 		},
-		"shadow-cssXX": {
-			decorator: [ qx.ui.decoration.MSingleBorder, qx.ui.decoration.MBorderRadius, qx.ui.decoration.MBoxShadow ],
-			
-			style: {
-				width: 1,
-				color: "button-focused-shadow",
-				radius: 2,
-				shadowLength: 0,
-				shadowBlurRadius: 2,
-				shadowColor: "button-focused-shadow"
+		"shadow-css" : {
+			decorator : [ qx.ui.decoration.MSingleBorder,
+					qx.ui.decoration.MBorderRadius,
+					qx.ui.decoration.MBoxShadow ],
+
+			style : {
+				width : 0,
+				color : "button-focused-shadow",
+				radius : 2,
+				shadowLength : 1,
+				shadowBlurRadius : 2,
+				shadowColor : "button-focused-shadow"
 			}
 		},
-	    "shadow-css" :
-	    {
-	      decorator : qx.ui.decoration.Single,
+		/*
+		 * "shadow-css" : { decorator : qx.ui.decoration.Single,
+		 * 
+		 * style : { color : "invalid", width : 1 } },
+		 */
 
-	      style :
-	      {
-	        color : "invalid",
-	        width : 1
-	      }
-	    },
+		"shadow-window-inactive" : {
+			decorator : qx.ui.decoration.Grid,
 
-    "shadow-window-inactive" : {
-      decorator : qx.ui.decoration.Grid,
+			style : {
+				baseImage : "aristo/decoration/shadow/shadow-window.png",
+				insets : [ 6, 8, 8, 6 ]
+			}
+		},
 
-      style : {
-        baseImage : "aristo/decoration/shadow/shadow-window.png",
-        insets : [ 6, 8, 8, 6 ]
-      }
-    },
+		"shadow-window-active" : {
+			decorator : qx.ui.decoration.Grid,
 
-    "shadow-window-active" : {
-      decorator : qx.ui.decoration.Grid,
-
-      style : {
-        baseImage : "aristo/decoration/shadow/shadow-window-active.png",
-        insets : [ 8, 10, 10, 8 ]
-      }
-    },
+			style : {
+				baseImage : "aristo/decoration/shadow/shadow-window-active.png",
+				insets : [ 8, 10, 10, 8 ]
+			}
+		},
 
 		"red-shadow" : {
 			decorator : qx.ui.decoration.Grid,
@@ -257,7 +258,6 @@ qx.Theme.define("aristo.theme.Decoration", {
 		"list" : {
 			decorator : qx.ui.decoration.Single,
 			style : {
-				width : 1,
 				width : 1,
 
 				color : "#b8b8b8",
@@ -443,13 +443,13 @@ qx.Theme.define("aristo.theme.Decoration", {
 			}
 		},
 
-    "window-captionbar-active" : {
-      decorator : qx.ui.decoration.Grid,
+		"window-captionbar-active" : {
+			decorator : qx.ui.decoration.Grid,
 
-      style : {
-        baseImage : "aristo/decoration/window/captionbar-active.png"
-      }
-    },
+			style : {
+				baseImage : "aristo/decoration/window/captionbar-active.png"
+			}
+		},
 
 		"window-statusbar" : {
 			decorator : qx.ui.decoration.Single,
