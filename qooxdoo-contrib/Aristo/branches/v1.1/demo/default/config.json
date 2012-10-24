@@ -34,12 +34,14 @@
   "let" :
   {
     "APPLICATION"  : "aristo.demo",
-    "XQOOXDOO_PATH" : "../../../../qooxdoo/1.6",
-    "QOOXDOO_PATH" : "../../../../../../../../Local/WebContent/public/grasshopper/qooxdoo-trunk",
+    "QOOXDOO_PATH" : "../../../../qooxdoo/2.0",
+    "XQOOXDOO_PATH" : "../../../../../../../../Local/WebContent/public/grasshopper/qooxdoo-trunk",
+    "XQOOXDOO_PATH" : "../../../../../../../../../../../os/qooxdoo-1.6-sdk",
+    "XQOOXDOO_PATH" : "../../../../../../../../../../../os/qooxdoo-2.0.2-sdk",
     "QXTHEME"      : "aristo.Aristo",
     "API_EXCLUDE"  : ["qx.test.*", "${APPLICATION}.theme.*", "${APPLICATION}.test.*"],
     "LOCALES"      : [ "en" ],
-    "CACHE"        : "${TMPDIR}/cache",
+    "CACHE"        : "./cache",
     "ROOT"         : "."
   },
 

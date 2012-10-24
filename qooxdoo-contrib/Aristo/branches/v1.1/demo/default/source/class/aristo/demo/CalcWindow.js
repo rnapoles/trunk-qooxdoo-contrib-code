@@ -37,7 +37,7 @@ qx.Class.define("aristo.demo.CalcWindow",
       this.addListenerOnce("appear", function(e)
       {
       this.add(this.createCalculator(), { flex : 1 });
-    this.center();
+    this.moveTo(50, 150);
     }, this);
     },
 
