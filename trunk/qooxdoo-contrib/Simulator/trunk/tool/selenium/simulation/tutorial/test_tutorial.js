@@ -23,6 +23,7 @@ var locators = {
   buttonCloseWindow : "//div[contains(@style, 'close.gif')]",
   buttonForward : "//div[contains(@style, 'media-skip-forward.png')]",
   jsErrorMessage : "//div[contains(@style, 'red')]",
+  aceContent : "//div[contains(@class, 'ace_content')]",
   aceIconWarning : "//div[contains(@class, 'ace_warning')]",
   aceIconError : "//div[contains(@class, 'ace_error')]",
   windowConfirm : "qxhv=[@classname='tutorial.view.Confirm']",
@@ -44,7 +45,7 @@ simulation.Simulation.prototype.runTest = function()
 
 simulation.Simulation.prototype.testTutorial = function(shortTitle, longTitle)
 {
-  this.log("Testing tutorial '" + shortTitle + " : " + longTitle + "'", "info");
+  this.log("Testing tutorial '" + shortTitle + ": " + longTitle + "'", "info");
   try {
     this.selectTutorial(longTitle);
   } catch(ex) {
@@ -83,7 +84,9 @@ simulation.Simulation.prototype.testTutorialStep = function(step)
     this.log("Step " + step + " title not found!", "error");
   }
 
-  editorContentLength = this.getEditorContentLength();
+  if (this.hasAce()) {
+    editorContentLength = this.getEditorContentLength();
+  }
   this.qxClick(locators.buttonHelp);
 
   if (!this.__replaceCodeConfirmed) {
@@ -94,13 +97,15 @@ simulation.Simulation.prototype.testTutorialStep = function(step)
     this.log("Confirmed code replacement", "info");
   }
 
-  if (editorContentLength == this.getEditorContentLength()) {
+  if (this.hasAce() && editorContentLength == this.getEditorContentLength()) {
     this.log("Editor content did not change!", "error");
     return;
   }
 
   this.logJsError();
-  this.logAceError();
+  if (this.hasAce()) {
+    this.logAceError();
+  }
 };
 
 simulation.Simulation.prototype.logAceError = function() {
@@ -124,7 +129,8 @@ simulation.Simulation.prototype.logJsError = function() {
 
 simulation.Simulation.prototype.getEditorContentLength = function()
 {
-  var getLength = "selenium.browserbot.findElement('//div[contains(@class, \"ace_content\")]').innerHTML.length";
+  var locator = locators.aceContent.replace(/'/g, "\\'");
+  var getLength = "selenium.browserbot.findElement('" + locator + "').innerHTML.length";
   var result = this.__sel.getEval(getLength);
   return parseInt(result, 10);
 };
@@ -199,6 +205,11 @@ simulation.Simulation.prototype.getTutorialTitles = function()
   this.qxClick(locators.buttonCloseWindow);
 
   return titlesList;
+};
+
+simulation.Simulation.prototype.hasAce = function()
+{
+  return this.isElementPresent(locators.aceContent);
 };
 
 // - Main --------------------------------------------------------------------
