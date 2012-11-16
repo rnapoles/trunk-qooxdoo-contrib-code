@@ -779,6 +779,19 @@ simulation.Simulation.prototype.waitForElementPresent = function(locator, timeou
 };
 
 /**
+ * Repeatedly checks if an element is not present. If the element is still present
+ * when the timeout is reached, an exception is thrown.
+ * @param locator {String} Element locator
+ * @param timeout {Integer} Timeout in milliseconds
+ * @throws {Error} if the element was still present when the timeout was reached
+ */
+simulation.Simulation.prototype.waitForElementNotPresent = function(locator, timeout)
+{
+  var condition = '!selenium.isElementPresent("' + locator + '")';
+  this.__sel.waitForCondition(condition, timeout || 5000);
+};
+
+/**
  * Checks if an element is visible, i.e. "display" is not "none" and "visibility"
  * is not "hidden"
  * @param locator {String} Element locator
