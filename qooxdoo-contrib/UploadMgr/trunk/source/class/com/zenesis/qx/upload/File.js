@@ -104,6 +104,15 @@ qx.Class.define("com.zenesis.qx.upload.File", {
 			nullable: true,
 			check: "String",
 			event: "changeResponse"
+		},
+		
+		/**
+		 * The widget that triggered the upload
+		 */
+		uploadWidget: {
+			init: null,
+			nullable: true,
+			event: "changeUploadWidget"
 		}
 	},
 	
