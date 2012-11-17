@@ -28,6 +28,8 @@
  * in qx.ui.core.Widget must not be fired.
  */
 qx.Mixin.define("com.zenesis.qx.upload.MUploadButton", {
+	include: [ com.zenesis.qx.upload.MParameters ],
+	
 	members: {
 	    // overridden
 	    capture : qx.lang.Function.empty,

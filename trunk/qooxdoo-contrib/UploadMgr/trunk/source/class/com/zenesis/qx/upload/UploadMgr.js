@@ -36,6 +36,7 @@
  */
 qx.Class.define("com.zenesis.qx.upload.UploadMgr", {
 	extend: qx.core.Object,
+	include: [ com.zenesis.qx.upload.MParameters ],
 	
 	construct: function(widget, uploadUrl) {
 		this.base(arguments);
@@ -128,7 +129,6 @@ qx.Class.define("com.zenesis.qx.upload.UploadMgr", {
 		__widgetsData: null,
 		__inputSerial: 0,
 		__uploadHandler: null,
-		__params: null,
 		
 		/**
 		 * Adds a widget which is to have an input[type=file] attached; this would typically be an 
@@ -178,40 +178,6 @@ qx.Class.define("com.zenesis.qx.upload.UploadMgr", {
 					widget.removeListener(data.keydownId);
 				delete this.__widgetsData[widget.toHashCode()];
 			}
-		},
-		
-		/**
-		 * Sets a parameter value to be sent with the file
-		 * @param name {String} name of the parameter
-		 * @param value {String} the value of the parameter, or null to delete a previous parameter
-		 */
-		setParam: function(name, value) {
-			if (value !== null && typeof value != "string")
-				value ="" + value;
-			if (!this.__params)
-				this.__params = {};
-			this.__params[name] = value;
-		},
-		
-		/**
-		 * Returns a parameter value to be sent with the file
-		 * @param name
-		 * @returns {Boolean}
-		 */
-		getParam: function(name) {
-			return this.__params && this.__params[name];
-		},
-		
-		/**
-		 * Returns a list of parameter names
-		 * @returns {Array}
-		 */
-		getParamNames: function() {
-			var result = [];
-			if (this.__params)
-				for (var name in this.__params)
-					result.push(name);
-			return result;
 		},
 		
 		/**
@@ -310,7 +276,7 @@ qx.Class.define("com.zenesis.qx.upload.UploadMgr", {
 		_onInputChange: function(elem, evt) {
 			var widget = elem.getWidget();
 			
-			this.getUploadHandler().addFile(elem.getDomElement());
+			this.getUploadHandler().addFile(elem.getDomElement(), widget);
 			if (this.getAutoUpload())
 				this.getUploadHandler().beginUploads();
 			this._resetInputElement(widget);

@@ -74,14 +74,18 @@ qx.Class.define("com.zenesis.qx.upload.AbstractHandler", {
 		 * Adds a file to the upload queue; this does not start uploading until
 		 * beginUploads is called.
 		 * @param input {DOM} either one input[type=file] or an array of input[type=file]
+		 * @param widget {Widget} the widget that trigger the upload
 		 */
-		addFile: function(input) {
+		addFile: function(input, widget) {
 			var files = this._createFile(input);
-			if (!qx.lang.Type.isArray(files))
+			if (!qx.lang.Type.isArray(files)) {
+				files.setUploadWidget(widget);
 				this._addFile(files);
-			else
-				for (var i = 0; i < files.length; i++)
+			} else
+				for (var i = 0; i < files.length; i++) {
+					files[i].setUploadWidget(widget);
 					this._addFile(files[i]);
+				}
 		},
 		
 		/**
@@ -227,24 +231,21 @@ qx.Class.define("com.zenesis.qx.upload.AbstractHandler", {
 				if (value !== null)
 					result[name] = value;
 			}
-			var names = this.__uploader.getParamNames();
-			for (var i = 0; i < names.length; i++) {
-				var name = names[i],
-					value = this.__uploader.getParam(name);
-				if (value !== null)
-					result[name] = value;
-				else
-					delete result[name];
+			function merge(obj) {
+				var names = obj.getParamNames();
+				for (var i = 0; i < names.length; i++) {
+					var name = names[i],
+						value = obj.getParam(name);
+					if (value !== null)
+						result[name] = value;
+					else
+						delete result[name];
+				}
 			}
-			var names = file.getParamNames();
-			for (var i = 0; i < names.length; i++) {
-				var name = names[i],
-					value = file.getParam(name);
-				if (value !== null)
-					result[name] = value;
-				else
-					delete result[name];
-			}
+			merge(this.__uploader);
+			if (typeof file.getParamNames == "function")
+				merge(file.getUploadWidget());
+			merge(file);
 			return result;
 		},
 		
