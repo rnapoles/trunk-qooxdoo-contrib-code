@@ -46,6 +46,15 @@ qx.Theme.define("silverbluetheme.theme.Appearance",
     },
     
     "app-header-label": "label",
+    
+    "app-splitpane" : {
+      alias : "splitpane",
+      style : function(states) {
+        return {
+          padding: 0
+        }
+      }
+    },
 
     /*
     ---------------------------------------------------------------------------

@@ -29,7 +29,7 @@
   {
     "APPLICATION"  : "silverbluetheme",
     "APPLICATION_MAIN_CLASS" : "${APPLICATION}.demo.Demo",
-    "QOOXDOO_PATH" : "../../qooxdoo/2.0.1",
+    "QOOXDOO_PATH" : "../../qooxdoo/2.1",
     "QXTHEME"      : "silverbluetheme.theme.Theme",
     "API_EXCLUDE"  : ["qx.test.*", "silverbluetheme.demo.*", "${APPLICATION}.theme.*", "${APPLICATION}.test.*"],
     "LOCALES"      : [ "en" ],

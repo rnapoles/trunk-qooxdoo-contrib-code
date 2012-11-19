@@ -33,7 +33,7 @@
   "let" :
   {
     "APPLICATION"  : "silverbluetheme.demo",
-    "QOOXDOO_PATH" : "../../../../qooxdoo/2.0.1",
+    "QOOXDOO_PATH" : "../../../../qooxdoo/2.1",
     "QXTHEME"      : "silverbluetheme.SilverBlueTheme",
     "API_EXCLUDE"  : ["qx.test.*", "${APPLICATION}.theme.*", "${APPLICATION}.test.*"],
     "LOCALES"      : [ "en" ],
