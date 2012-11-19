@@ -588,7 +588,8 @@ qx.Theme.define("silverbluetheme.theme.Decoration",
 
       style: {
         baseImage: "decoration/shadow/shadow.png",
-        insets: [0, 21, 8, -7]
+        // insets: [0, 21, 8, -7]
+        insets: [4, 8, 8, 8]
       }
     },
 
