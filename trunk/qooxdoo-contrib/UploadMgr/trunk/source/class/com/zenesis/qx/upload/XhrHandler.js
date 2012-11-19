@@ -25,10 +25,10 @@
      * John Spackman (john.spackman@zenesis.com)
 
 ************************************************************************/
-/*
-#ignore(File)
-#ignore(FileReader)
-#ignore(FormData)
+/**
+ * @ignore(File)
+ * @ignore(FileReader)
+ * @ignore(FormData)
  */
 /**
  * Implementation of AbstractHandler that uses XMLHttpRequest; this is based on work 
