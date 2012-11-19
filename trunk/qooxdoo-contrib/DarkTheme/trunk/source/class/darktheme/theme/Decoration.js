@@ -510,7 +510,8 @@ qx.Theme.define("darktheme.theme.Decoration",
 
       style : {
         baseImage : "decoration/shadow/shadow.png",
-        insets    : [ 3, 4, 4, 3 ]
+        // insets    : [ 3, 4, 4, 3 ]
+        insets    : [ 4, 8, 8, 8 ]
       }
     },
 
