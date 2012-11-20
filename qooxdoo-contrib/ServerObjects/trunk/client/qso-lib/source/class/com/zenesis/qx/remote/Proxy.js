@@ -153,9 +153,9 @@ qx.Class.define("com.zenesis.qx.remote.Proxy", {
 		__storePropertyOnDemand: function(propDef, value) {
 			var oldValue;
 			if (this.$$proxyUser && (oldValue = this.$$proxyUser[propDef.name])) {
-				if (propDef.array = "wrap") {
+				if (propDef.array = "wrap" && propDef.changeListenerId) {
 					oldValue.removeListenerById(propDef.changeListenerId);
-					delete propDef.changeListenerId;
+					propDef.changeListenerId = null;
 				}
 				delete this.$$proxyUser[propDef.name];
 			}

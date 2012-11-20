@@ -183,7 +183,7 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 			var statusCode = evt.getStatusCode();
 			
 			if (statusCode == 200) {
-				txt = qx.lang.String.trim(txt);
+				txt = txt.trim();
 				try {
 					//this.debug("received: txt=" + txt);
 					if (!txt.length)
@@ -205,7 +205,7 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 		 * Called to handle the response from an upload
 		 */
 		uploadResponse: function(txt) {
-			txt = qx.lang.String.trim(txt);
+			txt = txt.trim();
 			try {
 				//this.debug("received: txt=" + txt);
 				if (!txt.length)
@@ -800,7 +800,7 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 					else if (def.array && def.array == "wrap") {
 						var current = serverObject["get" + upname]();
 						if (value != null)
-							value = qx.lang.Array.toArray(value);
+							value = qx.lang.Array.cast(value, Array);
 						if (current == null) {
 							var arr = new qx.data.Array();
 							arr.append(value);
