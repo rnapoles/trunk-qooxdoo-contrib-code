@@ -18,7 +18,6 @@ import com.zenesis.qx.remote.annotations.Remote;
  * @author "John Spackman <john.spackman@zenesis.com>"
  */
 @Properties({
-	@Property(value="appFile", readOnly=Remote.Toggle.TRUE),
 	@Property(value="bytesUploaded", onDemand=true),
 	@Property("uploadId")
 })
@@ -36,10 +35,6 @@ public class UploadingFile implements Proxied {
 	
 	// The name on the users PC
 	private String originalName;
-	
-	// After the upload is complete, the file can be wrapped by AppFile so that it can be
-	//	given to the client
-	private AppFile appFile;
 	
 	// Number of bytes to go
 	private long bytesUploaded;
@@ -62,20 +57,6 @@ public class UploadingFile implements Proxied {
 	 */
 	public void addBytesUploaded(int size) {
 		bytesUploaded += size;
-	}
-
-	/**
-	 * @return the appFile
-	 */
-	public AppFile getAppFile() {
-		return appFile;
-	}
-
-	/**
-	 * @param appFile the appFile to set
-	 */
-	public void setAppFile(AppFile appFile) {
-		this.appFile = ProxyManager.changeProperty(this, "appFile", appFile, this.appFile);
 	}
 
 	/**

@@ -31,6 +31,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -47,10 +49,12 @@ import com.oreilly.servlet.multipart.MultipartParser;
 import com.oreilly.servlet.multipart.ParamPart;
 import com.oreilly.servlet.multipart.Part;
 import com.zenesis.qx.remote.CommandId.CommandType;
+import com.zenesis.qx.remote.FileApi.FileInfo;
 import com.zenesis.qx.remote.RequestHandler.ExceptionDetails;
 
 /**
- * Handles file uploads and attaches them to a ProxySessionTracker
+ * Handles file uploads and attaches them to a ProxySessionTracker.  NOTE:: The ProxySessionTracker.getBootstrapObject()
+ * MUST BE an instance of FileApiProvider
  * 
  * @author "John Spackman <john.spackman@zenesis.com>"
  */
@@ -106,7 +110,7 @@ public class UploadHandler {
 			response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE, "Upload is too big: " + request.getContentLength() + " exceeds " + maxUploadSize);
         	return;
 		}
-		response.setContentType("text/html");
+		response.setContentType("text/html; charset=utf-8");
         
 		// Accumulate POST parameters
 		HashMap<String, Object> params = new HashMap<String, Object>();
@@ -133,20 +137,36 @@ public class UploadHandler {
     		tracker.getObjectMapper().writeValue(response.getWriter(), tracker.getQueue());
 	}
 	
-    private void receiveOctetStream(HttpServletRequest request) throws IOException {
+	/**
+	 * Receives an uploaded file from an application/octet-stream (ie Ajax upload)
+	 * @param request
+	 * @throws IOException
+	 */
+    protected void receiveOctetStream(HttpServletRequest request) throws IOException {
         String filename = request.getHeader("X-File-Name");
         int pos = filename.lastIndexOf('/');
         if (pos > -1)
         	filename = filename.substring(pos + 1);
 		File file = ProxyManager.getInstance().createTemporaryFile(filename);
 		UploadingFile uploading = new UploadingFile("0", file, filename, Collections.EMPTY_MAP);
-        ArrayList<AppFile> files = new ArrayList<AppFile>();
-       	files.add(receiveFile(request.getInputStream(), uploading));
+        ArrayList<FileApi.FileInfo> files = new ArrayList<FileApi.FileInfo>();
+        file = receiveFile(request.getInputStream(), uploading);
+        FileApi api = ((FileApiProvider)tracker.getBootstrap()).getFileApi();
+        FileApi.FileInfo info = api.getFileInfo(file);
+        if (info != null)
+        	files.add(info);
 		tracker.getQueue().queueCommand(CommandId.CommandType.FUNCTION_RETURN, null, null, files);
     }
     
-    private void receiveMultipart(HttpServletRequest request, HttpServletResponse response, HashMap<String, Object> params) throws IOException {
-        ArrayList<AppFile> files = new ArrayList<AppFile>();
+    /**
+     * Receives uploaded file(s) from a multi-part request
+     * @param request
+     * @param response
+     * @param params
+     * @throws IOException
+     */
+    protected void receiveMultipart(HttpServletRequest request, HttpServletResponse response, HashMap<String, Object> params) throws IOException {
+        ArrayList<FileApi.FileInfo> files = new ArrayList<FileApi.FileInfo>();
         
 		MultipartParser parser = new MultipartParser(request, Integer.MAX_VALUE, true, true, null);
 		Part part;
@@ -162,14 +182,15 @@ public class UploadHandler {
 				 * This is a quick hack for getting server objects passed as parameters
 				 * 
 				 */
-				try {
-					if (value != null) {
+				if (value != null) {
+					try {
 						int serverId = Integer.parseInt((String)value);
 						if (serverId > -1)
 							value = tracker.getProxied(serverId);
+					} catch(IllegalArgumentException e) {
+						if (value instanceof String)
+							value = URLDecoder.decode((String)value, "utf-8");				
 					}
-				} catch(IllegalArgumentException e) {
-					// Nothing
 				}
 				params.put(name, value);
 				
@@ -188,17 +209,26 @@ public class UploadHandler {
 				log.info("Starting receive of " + file.getAbsolutePath());
 				UploadingFile uploading = new UploadingFile(uploadId, file, fileName, params);
 				
-				AppFile appFile = receiveFile(filePart.getInputStream(), uploading);
-				files.add(appFile);
+				File receivedFile = receiveFile(filePart.getInputStream(), uploading);
+				FileInfo info = getFileApi().getFileInfo(receivedFile);
+				if (info != null)
+					files.add(info);
 			}
 		}
 		tracker.getQueue().queueCommand(CommandId.CommandType.FUNCTION_RETURN, null, null, files);
 	}
     
-    private AppFile receiveFile(InputStream is, UploadingFile uploading) throws IOException {
-        UploadReceiver receiver = (UploadReceiver)tracker.getBootstrap();
+    /**
+     * Called to handle the uploading of the file and passing it to the FileApi 
+     * @param is
+     * @param uploading
+     * @return
+     * @throws IOException
+     */
+    protected File receiveFile(InputStream is, UploadingFile uploading) throws IOException {
+        FileApi api = getFileApi();
         
-		receiver.beginUploadingFile(uploading);
+		api.beginUploadingFile(uploading);
 		
 		FileOutputStream os = null;
 		File file = uploading.getFile();
@@ -215,12 +245,11 @@ public class UploadHandler {
 			os.close();
 			os = null;
 			log.info("Receive complete");
-			AppFile appFile = receiver.endUploadingFile(uploading, true);
-			return appFile;
+			return api.endUploadingFile(uploading, true);
 		}catch(IOException e) {
 			log.error("Failed to upload " + file.getName() + ": " + e.getMessage(), e);
 			
-			receiver.endUploadingFile(uploading, false);
+			api.endUploadingFile(uploading, false);
 			file.delete();
 			if (is != null)
 				try {
@@ -237,6 +266,15 @@ public class UploadHandler {
 			throw e;
 		}
     	
+    }
+    
+    /**
+     * Returns the FileApi instance to use
+     * @return
+     */
+    protected FileApi getFileApi() {
+        FileApi api = ((FileApiProvider)tracker.getBootstrap()).getFileApi();
+        return api;
     }
     
     /**
@@ -258,6 +296,11 @@ public class UploadHandler {
 				name = name.substring(0, pos);
 			}
 			
+			try {
+				value = URLDecoder.decode(value, "utf-8");
+			} catch (UnsupportedEncodingException e) {
+				log.error(e.getMessage(), e);
+			}
 			params.put(name, value);
 		}
     }

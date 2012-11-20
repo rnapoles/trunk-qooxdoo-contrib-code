@@ -27,8 +27,8 @@
  */
 package com.zenesis.qx.remote.explorer;
 
-import com.zenesis.qx.remote.AppFile;
 import com.zenesis.qx.remote.BasicBootstrap;
+import com.zenesis.qx.remote.FileApi;
 
 /**
  * Bootstrap class for FileExplorer demo
@@ -38,10 +38,7 @@ import com.zenesis.qx.remote.BasicBootstrap;
 public class FileExplorer extends BasicBootstrap {
 
 	public FileExplorer() {
-		super();
-		AppFile root = new AppFile(FileExplorerServlet.getInstance().getRoot(), "/public/all-files");
-		setAppFilesRoot(root);
-		setUploadFolder(root);
+		super(new FileApi(FileExplorerServlet.getInstance().getRoot(), "/public/all-files"));
 	}
 
 }
