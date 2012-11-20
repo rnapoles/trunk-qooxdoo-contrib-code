@@ -378,6 +378,19 @@ public class ProxySessionTracker {
 	}
 	
 	/**
+	 * Causes the tracker to forget about the Proxied object
+	 * @param proxied
+	 */
+	public synchronized void forget(Proxied proxied) {
+		Integer id = objectIds.get(proxied);
+		if (id != null) {
+			objectIds.remove(proxied);
+			objectsById.remove(id);
+			invalidObjects.remove(proxied);
+		}
+	}
+	
+	/**
 	 * When the client creates an instance of a Proxied class addClientObject is used
 	 * to obtain an ID for it and add it to the lists of objects 
 	 * @param proxied

@@ -487,6 +487,44 @@ public class ProxyManager implements EventListener {
 				tracker.invalidateCache((Proxied)obj);
 		}
 	}
+	
+	/**
+	 * Forgets an object
+	 * @param keyObject
+	 */
+	public static void forget(Proxied keyObject) {
+		ProxySessionTracker tracker = getTracker();
+		if (tracker == null)
+			return;
+		tracker.forget(keyObject);
+	}
+
+	/**
+	 * Forgets objects
+	 * @param keyObjects
+	 */
+	public static void forget(Proxied[] keyObjects) {
+		ProxySessionTracker tracker = getTracker();
+		if (tracker == null)
+			return;
+		for (Proxied obj : keyObjects)
+			tracker.forget(obj);
+	}
+
+	/**
+	 * forgets objects
+	 * @param keyObjects
+	 */
+	public static void forget(Iterable list) {
+		ProxySessionTracker tracker = getTracker();
+		if (tracker == null)
+			return;
+		for (Iterator iter = list.iterator(); iter.hasNext(); ) {
+			Object obj = iter.next();
+			if (obj instanceof Proxied)
+				tracker.forget((Proxied)obj);
+		}
+	}
 
 	/**
 	 * Sends a class definition to the server

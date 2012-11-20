@@ -240,7 +240,7 @@ public class ProxyPropertyImpl extends AbstractProxyProperty {
 		} catch(IllegalAccessException e) {
 			throw new IllegalArgumentException("Cannot write property " + name + " in class " + clazz + " in object " + proxied + ": " + e.getMessage(), e);
 		} catch(IllegalArgumentException e) {
-			throw new IllegalArgumentException("Failed to set value for property " + name + " in class " + clazz + " to value " + value, e);
+			throw new IllegalArgumentException("Failed to set value for property " + name + " in class " + clazz + " to value " + value + ", method=" + setMethod + ", field=" + field, e);
 		}
 	}
 

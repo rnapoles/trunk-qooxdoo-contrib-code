@@ -10,6 +10,7 @@ import com.zenesis.qx.remote.annotations.DoNotProxy;
 import com.zenesis.qx.remote.annotations.Properties;
 import com.zenesis.qx.remote.annotations.Property;
 import com.zenesis.qx.remote.annotations.Remote;
+import com.zenesis.qx.remote.annotations.Remote.Toggle;
 
 /**
  * Basic implementation of a Bootstrap object, which provides methods for handling uploading.
@@ -20,17 +21,11 @@ import com.zenesis.qx.remote.annotations.Remote;
  * 
  * @author "John Spackman <john.spackman@zenesis.com>"
  */
-@Properties({
-	@Property(value="appFilesRoot", readOnly=Remote.Toggle.TRUE),
-	@Property("uploadFolder")
-})
-public class BasicBootstrap implements UploadReceiver {
+public class BasicBootstrap implements FileApiProvider {
 	
-	private AppFile appFilesRoot;
-	private AppFile uploadFolder;
-	private HashMap<String, UploadingFile> uploading = new HashMap<String, UploadingFile>();
-	private boolean restrictUploadFolder = true;
-
+	@Property(readOnly=Toggle.TRUE)
+	private FileApi fileApi;
+	
 	/**
 	 * Constructor
 	 */
@@ -41,9 +36,9 @@ public class BasicBootstrap implements UploadReceiver {
 	/**
 	 * @param appFilesRoot
 	 */
-	public BasicBootstrap(AppFile appFilesRoot) {
+	public BasicBootstrap(FileApi fileApi) {
 		super();
-		this.appFilesRoot = appFilesRoot;
+		this.fileApi = fileApi;
 	}
 	
 	/**
@@ -56,170 +51,20 @@ public class BasicBootstrap implements UploadReceiver {
 	public void loadProxyType(Object data) throws ClassNotFoundException {
 		ProxyManager.loadProxyType(data);
 	}
-	
-	/**
-	 * Converts <code>file</code>into an <code>AppFile</code>; the file must be within the root folder
-	 * @param file
-	 * @return  
-	 */
-	@DoNotProxy
-	public AppFile getAppFile(File file) throws IllegalArgumentException {
-		AppFile appFile = getAppFilesRoot();
-		if (appFile == null)
-			throw new IllegalArgumentException("Cannot convert file because there is no app files root");
-		
-		// Check it's within the root folder
-		String strRF = appFile.getFile().getAbsolutePath().toLowerCase();
-		String strF = file.getAbsolutePath().toLowerCase();
-		int lenRF = strRF.length();
-		if (!strF.startsWith(strRF) || (strF.length() > lenRF && "\\/".indexOf(strF.charAt(lenRF)) < 0))
-			throw new IllegalArgumentException("Cannot convert " + strF + " because it is outside the root folder");
-		
-		// Exact match for the app root
-		if (lenRF == strF.length())
-			return appFile;
-		
-		// Walk the tree to find the child
-		strF = strF.substring(lenRF + 1).replace('\\', '/');
-		StringTokenizer st = new StringTokenizer(strF, "/");
-		while (st.hasMoreTokens()) {
-			String name = st.nextToken();
-			appFile = appFile.getChild(name);
-			if (appFile == null)
-				return null;
-		}
-		
-		return appFile;
-	}
-	
-	/**
-	 * Returns the AppFile for a given download URL (i.e. AppFile.getUrl() matches the result of this method)
-	 * @param partialUrl
-	 * @return null if the file cannot be found
-	 */
-	public AppFile getAppFileFromURL(String partialUrl) {
-		AppFile appFile = getAppFilesRoot();
-		if (appFile == null)
-			throw new IllegalArgumentException("Cannot convert file because there is no app files root");
-		
-		int pos = partialUrl.indexOf('?');
-		if (pos > 0)
-			partialUrl = partialUrl.substring(0, pos);
-		partialUrl = partialUrl.replace('\\', '/');
-		
-		if (partialUrl.startsWith("/") && !partialUrl.startsWith(appFile.getUrl()))
-			throw new IllegalArgumentException("Cannot get AppFile because the url " + partialUrl + " is not inside the app files root");
-		partialUrl = partialUrl.substring(appFile.getUrl().length());
-		
-		StringTokenizer st = new StringTokenizer(partialUrl, "/");
-		while (st.hasMoreTokens()) {
-			String name = st.nextToken();
-			appFile = appFile.getChild(name);
-			if (appFile == null)
-				return null;
-		}
-		
-		return appFile;
-	}
-	
-	/* (non-Javadoc)
-	 * @see com.zenesis.qx.remote.UploadReceiver#beginUploadingFile(com.zenesis.qx.remote.UploadingFile)
-	 */
-	@Override
-	public void beginUploadingFile(UploadingFile upfile) throws IOException {
-		uploading.put(upfile.getUploadId(), upfile);
-	}
 
 	/* (non-Javadoc)
-	 * @see com.zenesis.qx.remote.UploadReceiver#endUploadingFile(com.zenesis.qx.remote.UploadingFile, boolean)
+	 * @see com.zenesis.qx.remote.FileApiProvider#getFileApi()
 	 */
 	@Override
-	public AppFile endUploadingFile(UploadingFile upfile, boolean success) throws IOException {
-		if (!success) {
-			uploading.remove(upfile.getUploadId());
-			return null;
-		}
-		
-		Object obj = upfile.getParams().get("uploadFolder");
-		AppFile uploadFolder = (AppFile)obj;
-		if (uploadFolder != null) {
-			if (isRestrictUploadFolder() && getAppFilesRoot() != null) {
-				String strUF = uploadFolder.getFile().getAbsolutePath().replace('\\', '/');
-				String strRF = getAppFilesRoot().getFile().getAbsolutePath().replace('\\', '/');
-				if (strRF.charAt(strRF.length() - 1) != '/')
-					strRF += "/";
-				if (strUF.charAt(strUF.length() - 1) != '/')
-					strUF += "/";
-				if (!strUF.startsWith(strRF))
-					throw new IOException("Cannot upload " + upfile + " because the upload folder is outside the root folder");
-			}
-		} else
-			uploadFolder = getUploadFolder();
-		if (uploadFolder == null)
-			throw new IOException("Cannot upload " + upfile + " because there is no root to upload to");
-		AppFile appFile = uploadFolder.addFile(upfile.getFile(), upfile.getOriginalName(), false, false);
-		return appFile;
-	}
-
-	/* (non-Javadoc)
-	 * @see com.zenesis.qx.remote.UploadReceiver#getUploadingFile(java.lang.String)
-	 */
-	@Override
-	public UploadingFile getUploadingFile(String uploadId) {
-		UploadingFile upfile = uploading.get(uploadId);
-		return upfile;
-	}
-	
-	/* (non-Javadoc)
-	 * @see com.zenesis.qx.remote.UploadReceiver#clearUploadedFile(java.lang.String)
-	 */
-	@Override
-	public void clearUploadedFile(String uploadId) {
-		uploading.remove(uploadId);
+	public FileApi getFileApi() {
+		return fileApi;
 	}
 
 	/**
-	 * @return the restrictUploadFolder
+	 * @param fileApi the fileApi to set
 	 */
-	public boolean isRestrictUploadFolder() {
-		return restrictUploadFolder;
+	public void setFileApi(FileApi fileApi) {
+		this.fileApi = fileApi;
 	}
-
-	/**
-	 * @param restrictUploadFolder the restrictUploadFolder to set
-	 */
-	@DoNotProxy
-	public void setRestrictUploadFolder(boolean restrictUploadFolder) {
-		this.restrictUploadFolder = restrictUploadFolder;
-	}
-
-	/**
-	 * @return the appFilesRoot
-	 */
-	public AppFile getAppFilesRoot() {
-		return appFilesRoot;
-	}
-
-	/**
-	 * @param appFilesRoot the appFilesRoot to set
-	 */
-	public void setAppFilesRoot(AppFile appFilesRoot) {
-		this.appFilesRoot = appFilesRoot;
-	}
-
-	/**
-	 * @return the uploadFolder
-	 */
-	public AppFile getUploadFolder() {
-		return uploadFolder;
-	}
-
-	/**
-	 * @param uploadFolder the uploadFolder to set
-	 */
-	public void setUploadFolder(AppFile uploadFolder) {
-		this.uploadFolder = uploadFolder;
-	}
-	
 	
 }
