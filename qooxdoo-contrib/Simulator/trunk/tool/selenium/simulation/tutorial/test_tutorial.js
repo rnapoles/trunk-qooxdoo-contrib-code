@@ -35,6 +35,7 @@ var locators = {
 
 simulation.Simulation.prototype.runTest = function()
 {
+  this.__sel.windowMaximize();
   this.__replaceCodeConfirmed = false;
   var titles = this.getTutorialTitles();
 
