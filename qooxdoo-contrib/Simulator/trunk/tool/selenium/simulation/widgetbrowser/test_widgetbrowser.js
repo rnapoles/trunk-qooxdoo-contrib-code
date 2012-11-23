@@ -30,7 +30,7 @@ var locators = {
   tabContainer : '/qx.ui.container.SlideBar/qx.ui.core.scroll.ScrollPane/qx.ui.container.Composite',
   themeSelectBox : 'qxh=child[0]/[@classname="widgetbrowser.view.Header"]/qx.ui.form.SelectBox',
   themeListItem : 'qxh=*/qx.ui.popup.Popup/qx.ui.form.List/[@label="THEME"]',
-  stateButtonLocator : 'qxhv=qx.ui.container.Composite/*/qx.ui.tabview.TabView/*/[@label="STATE"]'
+  stateButtonLocator : 'qxhv=qx.ui.container.Composite/qx.ui.container.Scroll/[@classname="widgetbrowser.view.TabView"]/[@classname="widgetbrowser.view.TabPage"]/child[1]/[@label="STATE"]'
 };
 
 simulation.Simulation.prototype.runTest = function()
@@ -43,6 +43,9 @@ simulation.Simulation.prototype.runTest = function()
   this.logGlobalErrors();
   this.clearGlobalErrorStore();
 
+  var legacyIe = this.getEnvironment("engine.name") == "mshtml" &&
+    this.getEnvironment("browser.documentmode") < 9;
+
   var tabNames = this.getTabNames();
   var themeNames = this.getThemeNames();
 
@@ -50,6 +53,11 @@ simulation.Simulation.prototype.runTest = function()
     var theme = themeNames[i];
     this.selectTheme(theme);
     for (var j = tabNames.length - 1; j >= 0; j--) {
+      // IE running in an Application Compatibility VPC Image-based VM will crash 
+      // when trying to destroy a Flash object
+      if (tabNames[j] == "Embed" && legacyIe) {
+        continue;
+      }
       this.testTab(tabNames[j]);
     }
   }
