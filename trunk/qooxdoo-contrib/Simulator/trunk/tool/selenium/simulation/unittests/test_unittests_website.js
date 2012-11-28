@@ -54,7 +54,8 @@ simulation.Simulation.prototype.logResults = function()
   }
   
   var uri = mySim.getConfigSetting("autHost") + "" + mySim.getConfigSetting("autPath");
-  uri += '&autorun=1';
+  var delimiter = uri.indexOf('?') == -1 ? '?' : '&';
+  uri += delimiter + 'autorun=1';
   mySim.__sel.open(uri);
   
   mySim.waitForElementPresent("//span[contains(text(), 'Test suite finished')]", 300000);
