@@ -177,26 +177,26 @@ simulation.Simulation = function(baseConf, args)
    * store them in a map.
    *
    * @private
-   * @param args {String} a space-delimited string of 'key=value' pairs
+   * @param args {Map} Map of arguments. Keys are index numbers.
    * @return {Map} a map of key-value pairs
    */
   function getConfigFromArgs(args)
   {
     var conf = {};
-    for (var i in args) {
-      if (args[i].indexOf("=") >0) {
-        var tempArr = args[i].split("=");
-        if (tempArr[1] == "true") {
-          conf[tempArr[0]] = true;
+    for (var prop in args) {
+      if (args[prop].indexOf("=") > 0) {
+        var key = args[prop].substr(0, args[prop].indexOf("="));
+        var value = args[prop].substr(args[prop].indexOf("=") + 1);
+        if (value == "true") {
+          value = true;
         }
-        else if (tempArr[1] == "false") {
-          conf[tempArr[0]] = false;
+        else if (value == "false") {
+          value = false;
         }
-        else {
-          conf[tempArr[0]] = tempArr[1];
-        }
+        conf[key] = value;
       }
     }
+
     return conf;
   }
 
