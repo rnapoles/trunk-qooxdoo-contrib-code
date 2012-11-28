@@ -57,7 +57,7 @@ simulation.Simulation.prototype.runTest = function()
   var lastLoadedPackage, lastRunningPackage;
   var loadCycles = 0;
   var runCycles = 0;
-  
+
   var getSuiteState = selWin + "." + qxAppInst + ".runner.getTestSuiteState()";
   var suiteStateCheck = getSuiteState + " !== \"loading\"";
   var suiteReady = this.waitForCondition(suiteStateCheck, 120000);
@@ -65,14 +65,15 @@ simulation.Simulation.prototype.runTest = function()
     this.log("Test suite not loaded within two minutes, aborting!", "error");
   }
   var getViewStatus = selWin + "." + qxAppInst + ".runner.view.getStatus()";
-  
+
   while (true) {
     Packages.java.lang.Thread.sleep(accessInterval);
     //Selenium doesn't like to execute the same command multiple times
     this.__sel.getSpeed();
     var suiteState = String(this.getEval(getSuiteState));
     var viewStatus = String(this.getEval(getViewStatus));
-    
+    var match, msg;
+
     print("=========================================================");
     switch (suiteState) {
       case "error":
@@ -86,16 +87,17 @@ simulation.Simulation.prototype.runTest = function()
           this.logResult();
           return;
         }
+        break;
       case "loading":
-        var match = viewStatus.match(/Loading package (.*)/i);
+        match = viewStatus.match(/Loading package (.*)/i);
         if (match && match.length > 1) {
           var loadingPackage = match[1];
           print(suiteState + " " + loadingPackage);
-          
+
           if (lastLoadedPackage && lastLoadedPackage == loadingPackage) {
             loadCycles++;
             var loadTime = (loadCycles * accessInterval);
-            var msg = "Package " + loadingPackage + " loading for " + 
+            msg = "Package " + loadingPackage + " loading for " +
             (loadTime  / 1000) + "s";
             this.log(msg, "debug");
             print(msg);
@@ -113,16 +115,16 @@ simulation.Simulation.prototype.runTest = function()
         }
         break;
       case "running":
-        var match = viewStatus.match(/Running package (.*)/i);
+        match = viewStatus.match(/Running package (.*)/i);
         if (match && match.length > 1) {
           var runningPackage = match[1];
           print(suiteState + " " + runningPackage);
-          
+
           if (lastRunningPackage && lastRunningPackage == runningPackage) {
-            var packageRunTimeout = this.getConfigSetting("packageRunTimeout")
+            var packageRunTimeout = this.getConfigSetting("packageRunTimeout");
             runCycles++;
             var runTime = (runCycles * accessInterval);
-            var msg = "Package " + runningPackage + " running for " + 
+            msg = "Package " + runningPackage + " running for " +
             (runTime  / 1000) + "s";
             this.log(msg, "debug");
             print(msg);
@@ -140,7 +142,7 @@ simulation.Simulation.prototype.runTest = function()
         }
         break;
       default:
-        var msg = "Unexpected suite state: " + suiteState + " View status: " + 
+        msg = "Unexpected suite state: " + suiteState + " View status: " +
         viewStatus;
         this.log(msg, "warn");
         return;
@@ -155,7 +157,7 @@ simulation.Simulation.prototype.logAutErrors = function()
     var errors = selenium.qxStoredVars['autWindow'].qx.core.Init.getApplication().runner.view.getFormattedAutErrors();
     return selenium.qxStoredVars['autWindow'].qx.lang.Json.stringify(errors);
   };
-  
+
   this.addOwnFunction("getAutErrors", autErrorGetter);
   var autErrors = "";
   try {
@@ -165,7 +167,7 @@ simulation.Simulation.prototype.logAutErrors = function()
     this.log("Couldn't get AUT errors " + ex.message, "warn");
     return;
   }
-  
+
   if (autErrors.length != "") {
     var errArr = eval(autErrors);
     for (var i=0,l=errArr.length; i<l; i++) {
@@ -238,7 +240,7 @@ simulation.Simulation.prototype.ignoreMessage = function(msg) {
     if (mySim.getConfigSetting("debug")) {
       print("Test run finished successfully.");
     }
-    
+
     var totalErrors = mySim.getTotalErrorsLogged() + mySim.getTotalWarningsLogged();
     mySim.log("Tests with warnings or errors: " + totalErrors, "info");
   }
