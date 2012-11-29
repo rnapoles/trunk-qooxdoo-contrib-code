@@ -34,7 +34,7 @@ simulation.Simulation.prototype.getSuiteState = function()
 
 simulation.Simulation.prototype.waitForSuiteState = function(state, timeout)
 {
-  var timeout = timeout || 60000;
+  timeout = timeout || 60000;
   var suiteStateCheck = suiteState + " == \"" + state + "\"";
   return this.waitForCondition(suiteStateCheck, timeout);
 };
@@ -53,7 +53,7 @@ simulation.Simulation.prototype.getResultCounts = function()
     failed : failedCount,
     skipped : skippedCount,
     successful : successfulCount
-  }
+  };
 };
 
 simulation.Simulation.prototype.getTestCount = function()
@@ -75,6 +75,13 @@ simulation.Simulation.prototype.runTest = function()
     this.log("Test suite not loaded within one minute, aborting!", "error");
     return;
   }
+
+  if (this.getEnvironment("browser.name") == "firefox" &&
+      parseFloat(this.getEnvironment("browser.version")) < 4 )
+  {
+    locators.stackTraceToggle = locators.stackTraceToggle.replace("//div[text()", "//*[@value");
+  }
+
   this.log("Suite loaded, running tests", "debug");
 
   var tests = [
@@ -102,20 +109,20 @@ simulation.Simulation.prototype.runTest = function()
 simulation.Simulation.prototype.testRunTests = function()
 {
   var testCountBefore = this.getTestCount();
-  if (!testCountBefore > 0) {
+  if (testCountBefore === 0) {
     throw new Error("No tests queued!");
   }
   this.qxClick(locators.toolbarButtonRun);
   if (!this.waitForSuiteState("finished")) {
     throw new Error("Test suite was not finished within one minute!");
   }
-  if (!this.getTestCount() === 0) {
+  if (this.getTestCount() !== 0) {
     throw new Error("Suite is finished but not all tests were executed!");
   }
 
   var resultCounts = this.getResultCounts();
-  var totalResults = resultCounts.success + resultCounts.skipped + resultCounts.failed;
-  if (!totalResults == testCountBefore) {
+  var totalResults = resultCounts.successful + resultCounts.skipped + resultCounts.failed;
+  if (totalResults !== testCountBefore) {
     throw new Error("Got " + totalResults + " results for " + testCountBefore + " tests!");
   }
 
