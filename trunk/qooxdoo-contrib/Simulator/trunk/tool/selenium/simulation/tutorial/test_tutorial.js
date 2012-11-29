@@ -37,6 +37,18 @@ simulation.Simulation.prototype.runTest = function()
 {
   this.__sel.windowMaximize();
   this.__replaceCodeConfirmed = false;
+
+  this.__isFF36 = false;
+  if (this.getEnvironment("browser.name") == "firefox" &&
+      parseFloat(this.getEnvironment("browser.version")) < 4 )
+  {
+    this.__isFF36 = true;
+    // qx uses labels instead of divs for the button text but '//label'
+    // doesn't find anything (?!?)
+    for (var locator in locators) {
+      locators[locator] = locators[locator].replace("//div[text()", "//*[@value");
+    }
+  }
   var titles = this.getTutorialTitles();
 
   for (var i=0,l=titles.length; i<l; i++) {
@@ -119,8 +131,18 @@ simulation.Simulation.prototype.logAceError = function() {
 };
 
 simulation.Simulation.prototype.logJsError = function() {
-  var locator = locators.jsErrorMessage.replace(/'/g, "\\'");
-  var getJSerror = "selenium.browserbot.findElement('" + locator + "').innerHTML";
+  var locator, getJSerror;
+  if (this.__isFF36) {
+    locator = "//div[contains(@style, 'red')]";
+    locator = locator.replace(/'/g, "\\'");
+    getJSerror = "selenium.browserbot.findElement('" + locator + "').firstChild.value";
+  }
+  else {
+    locator = locators.jsErrorMessage;
+    locator = locator.replace(/'/g, "\\'");
+    getJSerror = "selenium.browserbot.findElement('" + locator + "').innerHTML";
+  }
+
   var jsError = String(this.__sel.getEval(getJSerror));
   if (jsError.length > 0)
   {
@@ -182,7 +204,7 @@ simulation.Simulation.prototype.getTutorialTitles = function()
 
   var getterFunc = 'var labels = []; var children = this.getChildren();' +
   'for (var i=0; i<children.length; i++) {' +
-  '  if (children[i].getLabel) { ' +
+  '  if (children[i].getLabel && children[i].getEnabled()) { ' +
   '    labels.push(children[i].getLabel()); ' +
   '  } ' +
   '}' +
