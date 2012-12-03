@@ -138,7 +138,7 @@ qx.Class.define("com.zenesis.qx.upload.FormHandler", {
 		    // var iframe = document.createElement('iframe');
 		    // iframe.setAttribute('name', id);
 		
-		    var iframe = qx.bom.Element.create("iframe", { 
+		    var iframe = qx.dom.Element.create("iframe", { 
 		    	src: "javascript:false;", // src="javascript:false;" removes ie6 prompt on https 
 		    	name: id, 
 		    	id: "upload-iframe-" + id 
@@ -162,7 +162,7 @@ qx.Class.define("com.zenesis.qx.upload.FormHandler", {
 		    // form.setAttribute('method', 'post');
 		    // form.setAttribute('enctype', 'multipart/form-data');
 		    // Because in this case file won't be attached to request
-		    var form = qx.bom.Element.create("form", { 
+		    var form = qx.dom.Element.create("form", { 
 		    	enctype: "multipart/form-data",
 		    	encoding: "multipart/form-data",
 		    	action: this._getUploader().getUploadUrl(),
@@ -171,12 +171,12 @@ qx.Class.define("com.zenesis.qx.upload.FormHandler", {
 		    	id: "upload-form-" + file.getId()
 			});
 		
-		    qx.bom.element.Style.setStyles(form, {
+		    qx.dom.Element.Style.setStyles(form, {
 		    	display: 'none'
 		    });
 		    var params = this._getMergedParams(file);
 		    for (var name in params) {
-		    	var el = qx.bom.Element.create('input', {
+		    	var el = qx.dom.Element.create('input', {
 		    		type: "hidden",
 		    		name: name,
 		    		value: params[name]
