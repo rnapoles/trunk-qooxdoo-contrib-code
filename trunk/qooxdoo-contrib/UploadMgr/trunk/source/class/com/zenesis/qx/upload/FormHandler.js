@@ -171,7 +171,7 @@ qx.Class.define("com.zenesis.qx.upload.FormHandler", {
 		    	id: "upload-form-" + file.getId()
 			});
 		
-		    qx.dom.Element.Style.setStyles(form, {
+		    qx.bom.element.Style.setStyles(form, {
 		    	display: 'none'
 		    });
 		    var params = this._getMergedParams(file);
