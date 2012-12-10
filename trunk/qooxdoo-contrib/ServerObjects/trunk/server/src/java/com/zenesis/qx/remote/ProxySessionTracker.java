@@ -273,8 +273,8 @@ public class ProxySessionTracker {
 	 * Resets the session, called when the application restarts
 	 */
 	/*package*/ void resetSession() {
+		resetBootstrap();
 		queue = null;
-		bootstrap = null;
 		deliveredTypes.clear();
 		objectsById.clear();
 		objectIds.clear();
@@ -303,6 +303,13 @@ public class ProxySessionTracker {
 	 */
 	protected void initialiseBootstrap(Proxied bootstrap) {
 		// Nothing
+	}
+
+	/**
+	 * Called to reset the bootstrap instance for a new session
+	 */
+	protected void resetBootstrap() {
+		bootstrap = null;
 	}
 	
 	/**
