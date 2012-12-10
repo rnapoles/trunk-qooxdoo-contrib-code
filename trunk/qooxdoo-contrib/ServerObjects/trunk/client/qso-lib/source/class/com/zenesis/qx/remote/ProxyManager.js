@@ -87,7 +87,7 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 			};
 		}
 		if (!qx.lang.Json)
-			qx.lang.Json = qx.util.Json;
+			qx.lang.Json = eval("qx.util.Json");
 	},
 	
 	properties: {
