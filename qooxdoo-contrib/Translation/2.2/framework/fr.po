@@ -39,6 +39,9 @@ msgstr "'%1'n'est pas une adresse email."
 msgid "Automatic"
 msgstr "Automatique"
 
+msgid "Basic Colors"
+msgstr ""
+
 msgid "Cancel"
 msgstr "Annuler"
 
@@ -80,6 +83,9 @@ msgstr "Aperçu (Ancien/Nouveau)"
 
 msgid "RGB"
 msgstr "RVB"
+
+msgid "Recent Colors"
+msgstr ""
 
 msgid "Reset column widths"
 msgstr "Réinitialiser la largeur des colonnes"
@@ -254,8 +260,8 @@ msgstr "Win"
 
 msgid "one of one row"
 msgid_plural "%1 of %2 rows"
-msgstr[0] "ligne une de une"
-msgstr[1] "ligne %1 de %2"
+msgstr[0] "une ligne sur une"
+msgstr[1] "%1 lignes sur %2"
 
 msgid "one row"
 msgid_plural "%1 rows"
