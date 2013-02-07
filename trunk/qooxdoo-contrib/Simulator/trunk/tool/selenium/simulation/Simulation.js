@@ -229,6 +229,11 @@ simulation.Simulation = function(baseConf, args)
     }
   };
 
+  this.setConfigSetting = function(prop, value)
+  {
+    __config[prop] = value;
+  };
+
   function addZero(val)
   {
     if (val < 10) {
