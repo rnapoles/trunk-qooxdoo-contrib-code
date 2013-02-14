@@ -28,7 +28,7 @@
       "UploadMgr" : {},
 //      "VirtualData" : {},
 //      "progressbar" : {},
-      "collapsablePanel" : {}      
+      "collapsablePanel" : {}
     /*
       // Use all supported contributions
       "*" : {
@@ -38,7 +38,7 @@
       }
     */
     }
-    
+
     /*
     //Use wildcards for all attributes to exclude a library:
     "exclude" : {
@@ -48,6 +48,6 @@
         "qooxdoo-versions" : ["*"]
       }
     }
-    */    
+    */
   }
 }
