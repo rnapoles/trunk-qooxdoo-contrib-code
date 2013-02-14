@@ -46,29 +46,29 @@
 
   "jobs" :
   {
-    "libraries" : 
+    "libraries" :
     {
       "library" :
       [
         {
           "manifest" : "${QOOXDOO_PATH}/application/demobrowser/Manifest.json"
         },
-        
+
         {
           "manifest"   : "${QOOXDOO_PATH}/component/library/logpane/Manifest.json"
         }
       ]
     },
-    
-    
+
+
     "common" :
     {
       "environment" :
       {
         "qx.contrib" : true
-      }    
+      }
     },
-    
+
     // -- Source jobs ----------------------------------------------------------
 
     "source-data" :
@@ -86,13 +86,13 @@
     "source" :
     {
       "desc"    : "create source version of Demobrowser",
-      
+
       "extend" : ["common"],
-      
+
       "copy-files" :
       {
         "source" : "source/resource/${APPLICATION}",
-        
+
         "files" : [ "welcome.html" ],
 
         "target" : "source/demo"
@@ -104,20 +104,20 @@
         "source-data"
       ]
     },
-    
+
     "source-with-build-demos" :
     {
       "desc" : "create source version of demobrowser with build versions of demos",
-      
+
       "extend" : ["common"],
-      
+
       "run" :
       [
         "source-data-copydemos",
         "source-copy"
       ]
     },
-    
+
     "source-data-copydemos" :
     {
       "desc"    : "generates the build version of all valid demos and the index file (demodata.json) for the demobrowser. Copies the built demos to the demobrowser's demo directory.",
@@ -129,24 +129,24 @@
         "command" : "${PYTHON} ${QOOXDOO_PATH}/tool/admin/bin/repository.py -r ../../ -C /var/tmp -c config.demo.json -j demos-build,api,store-data -d ./source --copy-demos"
       }
     },
-    
+
     "source-copy" :
     {
-    
+
     "copy-files" :
       {
         "source" : "source/resource/${APPLICATION}",
-        
+
         "files" : [ "welcome.html" ],
 
         "target" : "source/demo"
       }
-    
+
     },
 
 
     // -- Build jobs -----------------------------------------------------------
-    
+
     "build-data-copydemos" :
     {
       "desc"    : "generates the build version of all valid demos and the index file (demodata.json) for the demobrowser. Copies the built demos to the demobrowser's demo directory.",
@@ -158,19 +158,19 @@
         "command" : "${PYTHON} ${QOOXDOO_PATH}/tool/admin/bin/repository.py -r ../../ -C /var/tmp -c config.demo.json -j demos-build,api,store-data -d $BUILD_PATH --copy-demos"
       }
     },
-    
+
     "build-copy" :
     {
-    
+
     "copy-files" :
       {
         "source" : "source/resource/${APPLICATION}",
-        
+
         "files" : [ "welcome.html" ],
 
         "target" : "build/demo"
       }
-    
+
     },
 
     "build" :
@@ -184,14 +184,14 @@
         "build-copy"
       ]
     },
-    
-    
+
+
     // -- Clean jobs -----------------------------------------------------------
-    
+
     "clean-demos" :
     {
       "desc" : "deletes demo artifacts",
-    
+
       "clean-files" :
       {
         "Cleaning up demos in build path" :
@@ -199,7 +199,7 @@
           "build/demo/*",
           "build/script/demodata.json"
         ],
-        
+
         "Cleaning up demos in source path" :
         [
           "source/demo/*",
@@ -207,21 +207,21 @@
         ]
       }
     },
-    
-    "clean" : 
+
+    "clean" :
     {
-    
+
       "run" : ["clean-demos"]
-    
+
     },
-    
+
     "distclean" :
     {
-    
+
       "run" : ["clean-demos"]
-    
+
     },
-    
+
     "clean-cache" :
     {
       "desc"    : "deletes the cache but leaves artifacts untouched",
@@ -229,27 +229,27 @@
       "clean-files" : {
         "Deleting nothing" : []
       },
-      
+
       "cache" : {
         "compile"      : "${CACHE}",
         "downloads"    : "${CACHE}/downloads",
         "invalidate-on-tool-change" : true
       }
     },
-    
+
     // -- Misc jobs ------------------------------------------------------------
-    
+
     "lint-libraries" :
     {
       "desc" : "runs a Lint check on each library",
-    
+
       "shell" :
       {
         "command" : "${PYTHON} ${QOOXDOO_PATH}/tool/admin/bin/repository.py -r ../../ -c config.demo.json -j lint-check"
       }
-      
-    }    
-    
+
+    }
+
   }
 
 }
