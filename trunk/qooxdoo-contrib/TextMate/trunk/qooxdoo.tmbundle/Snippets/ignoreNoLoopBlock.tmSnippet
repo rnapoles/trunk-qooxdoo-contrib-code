@@ -9,7 +9,7 @@
 	<key>scope</key>
 	<string>comment.block</string>
 	<key>tabTrigger</key>
-	<string>lint</string>
+	<string>ignore</string>
 	<key>uuid</key>
 	<string>1E1028CC-F9A6-4052-AC49-740B8A72E7AF</string>
 </dict>
