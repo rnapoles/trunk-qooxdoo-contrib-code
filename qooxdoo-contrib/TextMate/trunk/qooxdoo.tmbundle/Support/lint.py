@@ -16,6 +16,7 @@ util.addQooxdooClassPath()
 from ecmascript.frontend import treegenerator
 from ecmascript.transform.check import scopes, lint
 from generator import Context as context
+from misc.ExtMap import ExtMap
 
 
 def do_lint(file_, popup):
@@ -32,8 +33,9 @@ def do_lint(file_, popup):
         tree_ = treegenerator.createFileTree_from_string(
             codecs.open(file_, "r", "utf-8").read())
         tree_ = scopes.create_scopes(tree_)
-        if not hasattr(context,'jobconf'):
-            context.jobconf = {}
+        if not getattr(context,'jobconf', None):
+            context.jobconf = ExtMap()
+        context.jobconf.set("lint-check/warn-unknown-jsdoc-keys", True)
         lint.lint_check(tree_, "", opts)
 
     except treegenerator.SyntaxException, e:
