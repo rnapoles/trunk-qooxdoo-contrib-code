@@ -54,6 +54,7 @@ qx.Class.define("com.zenesis.qx.remote.ProxyManager", {
 	},
 	
 	construct: function(proxyUrl) {
+		this.warn("This version of the QxServerObjects contrib is out of date - please consider upgrading to the version at GitHub: https://github.com/johnspackman/qx-serverobjects");
 		if (this.constructor.__instance)
 			this.warn("Not setting ProxyManager instance because one is already defined");
 		else
