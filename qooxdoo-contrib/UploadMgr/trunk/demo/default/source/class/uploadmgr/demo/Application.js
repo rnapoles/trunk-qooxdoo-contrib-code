@@ -205,6 +205,22 @@ qx.Class.define("uploadmgr.demo.Application", {
       		});
       		part.add(btn);
       		
+      		// Menu button
+      		var menuTop = new qx.ui.toolbar.MenuButton("Menu");
+      		var menu = new qx.ui.menu.Menu;
+      		var mni = new com.zenesis.qx.upload.UploadMenuButton("Add File(s)", "com/zenesis/qx/upload/test.png");
+      		/*
+            btn.set({
+              label: "Upload Menu Button",
+              icon: "com/zenesis/qx/upload/test.png",
+              cursor: "pointer"
+            });
+            */
+      		menu.add(mni);
+      		menuTop.setMenu(menu);
+      		part.add(menuTop);
+            uploader.addWidget(mni);
+      		
       		btn = new com.zenesis.qx.upload.UploadToolbarButton("Add File(s)", "com/zenesis/qx/upload/test.png");
       		uploader.addWidget(btn);
       		part.add(btn);
