@@ -79,15 +79,15 @@ simulation.Simulation.prototype.checkArticle = function()
     this.log("Article found.", "info");
   }
   else {
-    this.log("ERROR: No Article found.", "error");    
-  }  
+    this.log("ERROR: No Article found.", "error");
+  }
 };
 
 simulation.Simulation.prototype.checkFeeds = function()
 {
   var feedChecker = function()
   {
-    var qxApp = selenium.browserbot.getCurrentWindow().qx.core.Init.getApplication(); 
+    var qxApp = selenium.browserbot.getCurrentWindow().qx.core.Init.getApplication();
     var items = qxApp.getRoot().getChildren()[0].getChildren()[2].getChildren()[0].getItems();
     var invalidFeeds = [];
     for (var i=0,l=items.length; i<l; i++) {
@@ -97,7 +97,7 @@ simulation.Simulation.prototype.checkFeeds = function()
     }
     return invalidFeeds.join("|");
   };
-  
+
   this.addOwnFunction("checkFeeds", feedChecker);
   var invalidFeeds = this.getEval("selenium.qxStoredVars['autWindow'].qx.Simulation.checkFeeds()");
   invalidFeeds = String(invalidFeeds);
@@ -107,22 +107,22 @@ simulation.Simulation.prototype.checkFeeds = function()
       this.log("Feed not loaded: " + invalidFeedArray[i], "warn");
     }
   }
-  
+
 };
 
 simulation.Simulation.prototype.testLocaleSwitch = function()
 {
-  var staticFeedsLabel = this.tree + ".getItems()[0].getContentElement().getChildren()[2].getChildren()[0].getValue().toString()";
-  
+  var staticFeedsLabel = this.tree + ".getItems()[0].getChildControl(\"label\").getValue().toString()";
+
   var oldLabel = this.getEval(staticFeedsLabel, "Getting label of Static Feeds");
 
-  // Use the preferences window to change the application language  
-  // Click the preferences button, then check if the prefs window opened.  
+  // Use the preferences window to change the application language
+  // Click the preferences button, then check if the prefs window opened.
   this.qxClick(locators.preferencesButton, "", "Clicking Preferences button.");
   Packages.java.lang.Thread.sleep(2000);
 
   var prefWindowScript = 'selenium.getQxWidgetByLocator(\'' + locators.preferencesWindow + '\')';
-  var isPrefWindowVisible = prefWindowScript + ".getVisibility() == 'visible'";    
+  var isPrefWindowVisible = prefWindowScript + ".getVisibility() == 'visible'";
   this.waitForCondition(isPrefWindowVisible, 10000, "Waiting for Preferences window to open.");
   Packages.java.lang.Thread.sleep(2000);
 
@@ -132,11 +132,11 @@ simulation.Simulation.prototype.testLocaleSwitch = function()
   Packages.java.lang.Thread.sleep(2000);
   // Click again just to be sure (bug #2193).
   this.qxClick(radioItalian, "", "Selecting language");
-  
-  // Click the "OK" button   
-  this.qxClick(locators.buttonOk, "", "Clicking OK.");    
+
+  // Click the "OK" button
+  this.qxClick(locators.buttonOk, "", "Clicking OK.");
   Packages.java.lang.Thread.sleep(2000);
-  
+
   // Check if the preferences window closed. Click "OK" again if it isn't.
   var prefWinVis = this.getEval(isPrefWindowVisible, "Checking if preferences window is visible");
   // getEval returns an object, not a boolean
@@ -144,7 +144,7 @@ simulation.Simulation.prototype.testLocaleSwitch = function()
     this.qxClick(locators.buttonOk, "", "Clicking OK again.");
     Packages.java.lang.Thread.sleep(2000);
   }
-  
+
   var isPrefWindowHidden = prefWindowScript + ".getVisibility() == 'hidden'";
   this.waitForCondition(isPrefWindowHidden, 10000, "Waiting for preferences window to close");
 
@@ -165,7 +165,7 @@ simulation.Simulation.prototype.isIe9 = function()
   var browser = String(this.getEval(getBrowser));
   var version = String(this.getEval(getVersion));
   version = parseInt(version, 10);
-  
+
   return (browser == "ie" && version >= 9);
 };
 
@@ -176,7 +176,7 @@ simulation.Simulation.prototype.testAddFeed = function()
     this.log("Skipping testAddFeed", "debug");
     return;
   }
-  
+
   var lastFeedNum = this.getEval(this.tree + '.getItems().length - 1', "Getting last feed's number");
   var getLastFeedLabel = this.tree + ".getItems()[" + lastFeedNum + "].getLabel()";
   var lastFeedLabel = this.getEval(getLastFeedLabel, "Getting last feed's label");
@@ -184,12 +184,12 @@ simulation.Simulation.prototype.testAddFeed = function()
   // Click "Add Feed"
   this.qxClick(locators.addFeedButton, "", "Clicking Add Feed button");
   Packages.java.lang.Thread.sleep(2000);
-  
-  var feedWindowScript = 'selenium.getQxWidgetByLocator(\'' + locators.feedWindow + '\')';  
+
+  var feedWindowScript = 'selenium.getQxWidgetByLocator(\'' + locators.feedWindow + '\')';
   var isFeedWindowVisible = feedWindowScript + ".getVisibility() == 'visible'";
   this.waitForCondition(isFeedWindowVisible, 10000, "Waiting for Add Feed window to open.");
   Packages.java.lang.Thread.sleep(2000);
-  
+
   // Check if the Add Feed window's caption was translated.
   var addFeedWindowLabel = feedWindowScript + ".getCaption().toString()";
   var addLabel = this.getEval(addFeedWindowLabel, "Getting Add Feed window's caption");
@@ -200,14 +200,14 @@ simulation.Simulation.prototype.testAddFeed = function()
   else {
     this.log("Feed window has translated title", "info");
   }
-  
+
   // Enter new feed details
   this.qxType(locators.feedWindow + "/qx.ui.form.renderer.SinglePlaceholder/child[1]", "Heise");
   this.qxType(locators.feedWindow + "/qx.ui.form.renderer.SinglePlaceholder/child[2]", "http://www.heise.de/newsticker/heise-atom.xml");
-  
+
   this.qxClick(locators.feedWindowButton, "", "Clicking 'Add'.");
   Packages.java.lang.Thread.sleep(2000);
-  
+
   // Check if the Add Feed Window closed.
   var feedWinVis = this.getEval(isFeedWindowVisible, "Waiting for Add Feed window to close.");
   if (String(feedWinVis) == "true") {
@@ -215,34 +215,34 @@ simulation.Simulation.prototype.testAddFeed = function()
     this.qxClick(locators.feedWindowButton, "", "Clicking 'Add'.");
   }
 
-  var isFeedWindowHidden = feedWindowScript + ".getVisibility() == 'hidden'";  
+  var isFeedWindowHidden = feedWindowScript + ".getVisibility() == 'hidden'";
   this.waitForCondition(isFeedWindowHidden, 10000, "Checking if Add Feed window is closed");
-  
+
   // Check if the new feed loaded.
-  var newLastFeedNum = this.getEval(this.tree + ".getItems().length - 1", "Getting last feed's number");  
+  var newLastFeedNum = this.getEval(this.tree + ".getItems().length - 1", "Getting last feed's number");
   var isNewLastFeedLoaded = this.tree + ".getItems()[" + newLastFeedNum + "].getIcon().indexOf('internet-feed-reader.png') >= 0";
-  
+
   try {
-    this.__sel.waitForCondition(isNewLastFeedLoaded, this.feedLoadTimeout.toString());    
+    this.__sel.waitForCondition(isNewLastFeedLoaded, this.feedLoadTimeout.toString());
   } catch(ex) {
     this.log("New feed not loaded after 30 seconds, waiting another 30 sec.", "info");
     this.waitForCondition(isNewLastFeedLoaded, this.feedLoadTimeout, "Waiting for new feed to load.");
   }
-    
+
   var getNewLastFeedLabel = this.tree + ".getItems()[" + newLastFeedNum + "].getLabel()";
   var newLastFeedLabel = this.getEval(getNewLastFeedLabel, "Getting new feed's label");
-  
+
   if (newLastFeedLabel != lastFeedLabel) {
     this.log("New feed loaded correctly.", "info");
   }
   else {
     this.log("ERROR: New feed has unexpected label: " + newLastFeedLabel, "error");
   }
-  
+
   // Select the new feed
   var treeLastSelect = this.tree + ".addToSelection(" + this.tree + ".getItems()[" + newLastFeedNum + "])";
-  this.getEval(treeLastSelect, "Selecting new feed.");      
-  
+  this.getEval(treeLastSelect, "Selecting new feed.");
+
   this.qxClick(locators.firstFeedItem, "", "Selecting first item from new feed.");
   this.checkArticle();
 };
@@ -258,11 +258,11 @@ simulation.Simulation.prototype.checkCombinedImage = function()
     return qxImg.getContentElement().getDomElement().style.backgroundImage;
   }
   this.addOwnFunction("getImageBackground", getImageBackground);
-  
+
   var imgLoc = locators.addFeedButton + "/child[0]";
   var imageBackground = this.getEval('selenium.qxStoredVars["autWindow"].qx.Simulation.getImageBackground("' + imgLoc +'")');
   imageBackground = String(imageBackground);
-  
+
   if (imageBackground.indexOf("combined") >= 0 || imageBackground.indexOf("base64") >= 0) {
     this.log("Add Feed button icon uses combined image.", "info");
   } else {
@@ -273,37 +273,37 @@ simulation.Simulation.prototype.checkCombinedImage = function()
 mySim.runTest = function()
 {
   this.feedLoadTimeout = 30000;
-  this.tree = 'selenium.getQxWidgetByLocator("' + locators.feedTree + '")';  
-  
+  this.tree = 'selenium.getQxWidgetByLocator("' + locators.feedTree + '")';
+
   this.waitForFeeds();
   this.checkFeeds();
-  
+
   this.__sel.setSpeed("1000");
-  
+
   this.getEval(this.tree + ".resetSelection()", "Resetting tree selection");
-  this.qxClick(locators.firstFeed, "", "Selecting first feed from list");  
+  this.qxClick(locators.firstFeed, "", "Selecting first feed from list");
   this.qxClick(locators.firstFeedItem, "", "Selecting first feed item.");
   this.checkArticle();
-  
+
   this.testLocaleSwitch();
-  
+
   this.testAddFeed();
-  
+
   this.checkCombinedImage();
 };
 
 // - Main --------------------------------------------------------------------
 
-(function() { 
+(function() {
   mySim.testFailed = false;
 
   var sessionStarted = mySim.startSession();
-  
+
   if (!sessionStarted) {
     return;
   }
 
-  var isAppReady = mySim.waitForCondition(simulation.Simulation.ISQXAPPREADY, 60000, 
+  var isAppReady = mySim.waitForCondition(simulation.Simulation.ISQXAPPREADY, 60000,
                                           "Waiting for qooxdoo application");
 
   if (!isAppReady) {
@@ -315,7 +315,7 @@ mySim.runTest = function()
   try {
     mySim.setupApplicationLogging();
     mySim.addGlobalErrorHandler();
-    mySim.runTest();    
+    mySim.runTest();
   }
   catch(ex) {
     mySim.testFailed = true;

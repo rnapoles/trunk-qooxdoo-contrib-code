@@ -117,7 +117,7 @@ simulation.Simulation.prototype.testToolbar = function()
   }
 
   //click load button
-  this.qxClick("//div[contains(@class, 'toolbar-button')]/descendant::div[text() = 'Take a new picture']");
+  this.qxClick("//img[contains(@src, 'camera')]");
   var loadingDialogLocator = "//div[text() = 'Loading...']";
   this.waitForElementPresent(loadingDialogLocator);
   //the loading dialog disappears after 5sec

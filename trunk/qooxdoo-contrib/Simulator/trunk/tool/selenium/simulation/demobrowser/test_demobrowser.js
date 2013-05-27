@@ -59,7 +59,7 @@ mySim.checkDemoReady = 'var demoReady = false;' +
   overflowButton : "//div[contains(@style, 'media-seek-forward')]",
   overflowMenuLogFileButton : "//div[text() = 'Log File']/parent::div",
   //logEmbed : 'qxhv=[@classname="demobrowser.DemoBrowser"]/qx.ui.splitpane.Pane/qx.ui.splitpane.Pane/qx.ui.container.Stack/[@classname="qxc.ui.logpane.LogView"]/qx.ui.embed.Html'
-  logEmbed: '//div[@qxclass="qxc.ui.logpane.LogView"]/*/div[@qxclass="qx.ui.embed.Html"]/div'
+  logEmbed: '//div[@qxclass="qxc.ui.logpane.LogView"]/div[@qxclass="qx.ui.embed.Html"]/div'
  };
 mySim.qxLog = "selenium.page().findElement('" + mySim.locators.logEmbed + "').innerHTML";
 /*
