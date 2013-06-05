@@ -140,7 +140,7 @@ qx.Class.define("com.zenesis.qx.upload.UploadMgr", {
 				var data = this.__widgetsData[widget.toHashCode()];
 				if (data) {
 					data.appearId = null;
-					var container = widget.getContainerElement();
+					var container = widget.getContentElement();
 					container.setStyle("overflow", "hidden");
 					container.addAt(this._createInputElement(widget), 0);
 					this.__fixupSize(widget);
@@ -262,7 +262,7 @@ qx.Class.define("com.zenesis.qx.upload.UploadMgr", {
 		_resetInputElement: function(widget) {
 			var data = this.__widgetsData[widget.toHashCode()],
 				elem = data.inputElement,
-				container = widget.getContainerElement();
+				container = widget.getContentElement();
 			data.inputElement = null;
 			container.remove(elem);
 			container.addAt(this._createInputElement(widget), 0);

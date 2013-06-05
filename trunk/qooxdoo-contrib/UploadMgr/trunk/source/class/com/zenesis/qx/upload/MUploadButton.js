@@ -32,9 +32,13 @@ qx.Mixin.define("com.zenesis.qx.upload.MUploadButton", {
 	
 	members: {
 	    // overridden
-	    capture : qx.lang.Function.empty,
+	    capture : function() {
+	    	// Nothing
+	    },
 
 	    // overridden
-	    releaseCapture : qx.lang.Function.empty
+	    releaseCapture : function() {
+	    	// Nothing
+	    }
 	}
 });
