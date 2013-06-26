@@ -21,19 +21,19 @@ var selWin = simulation.Simulation.SELENIUMWINDOW;
 var qxAppInst = simulation.Simulation.QXAPPINSTANCE;
 
 // - Main --------------------------------------------------------------------
-(function() { 
+(function() {
   mySim.testFailed = false;
 
   var sessionStarted = mySim.startSession();
-  
+
   if (!sessionStarted) {
     return;
   }
-  
-  mySim.__sel.click("//a[contains(text(), 'Launch Configuration Editor')]");
+
+  mySim.__sel.click("//a[contains(text(), 'Launch full configuration editor')]");
   mySim.setupEnvironment();
 
-  var isAppReady = mySim.waitForCondition(simulation.Simulation.ISQXAPPREADY, 60000, 
+  var isAppReady = mySim.waitForCondition(simulation.Simulation.ISQXAPPREADY, 60000,
     "Waiting for qooxdoo application");
 
 
