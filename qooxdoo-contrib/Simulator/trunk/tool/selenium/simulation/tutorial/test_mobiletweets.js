@@ -24,7 +24,7 @@ var qxAppInst = simulation.Simulation.QXAPPINSTANCE;
 simulation.Simulation.prototype.runTest = function() {
   var backButtonLocator = "css=.navigationbar-backbutton";
 
-  this.__sel.type("css=.textField", "linuxfoundation");
+  this.__sel.type("css=.text-field", "linuxfoundation");
   this.qxClick("css=.button");
   try {
     this.waitForElementPresent(backButtonLocator, 3000);
@@ -35,7 +35,7 @@ simulation.Simulation.prototype.runTest = function() {
   }
 
   try {
-    this.waitForElementPresent("css=.listItem", 1000);
+    this.waitForElementPresent("css=.list-item", 1000);
   }
   catch(ex) {
     this.log("No list items displayed!", "error");
