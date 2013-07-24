@@ -1372,7 +1372,8 @@ simulation.Simulation.prototype.getApplicationType = function()
 
   try {
     var q = this.__sel.getEval(simulation.Simulation.SELENIUMWINDOW + ".q");
-    if (String(q) == "[Class q]") {
+    var qRepr = String(q)
+    if (qRepr == "[Class q]" || qRepr == "[Class qxWeb]") {
       return this.__appType = "website";
     }
   } catch(ex) {}
