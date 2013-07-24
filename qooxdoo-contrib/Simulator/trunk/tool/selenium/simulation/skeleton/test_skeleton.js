@@ -77,6 +77,13 @@ simulation.Simulation.prototype.guiTest = function()
   this.killBoxes();
 };
 
+simulation.Simulation.prototype.mobileTest = function()
+{
+  this.waitForElementPresent("qx_id_8");
+  this.qxClick("qx_id_8");
+  this.waitForElementPresent("xpath=//div[text() = 'Content of Page 2']");
+};
+
 simulation.Simulation.prototype.runTest = function()
 {
   var appType = this.getApplicationType();
@@ -91,9 +98,12 @@ simulation.Simulation.prototype.runTest = function()
     case "standalone":
       this.guiTest();
       break;
+    case "mobile":
+      this.mobileTest();
+      break;
     default:
       this.log("No test case for application type " + appType, "warn");
-  };
+  }
 };
 
 // - Main --------------------------------------------------------------------
