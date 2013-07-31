@@ -29,7 +29,7 @@ simulation.Simulation.prototype.addListItemLabelGetter = function()
     }
     return selenium.browserbot.getCurrentWindow().JSON.stringify(labels);
   };
-  
+
   this.addOwnFunction("getTitles", titleGetter);
 };
 
@@ -39,7 +39,7 @@ simulation.Simulation.prototype.getListItemLabels = function()
   //var qxAppInst = simulation.Simulation.QXAPPINSTANCE;
   var titlesJson = this.getEval(selWin + ".qx.Simulation.getTitles();", "Getting feed titles");
   eval("var titles = " + titlesJson);
-  
+
   return titles;
 };
 
@@ -54,16 +54,18 @@ simulation.Simulation.prototype.checkFeeds = function(titles)
     }
     feedTitles.push(titles[i]);
   }
-  
+
   var firstArticleTitle = null;
-  
+
   for (var i=0,l=feedTitles.length; i<l; i++) {
     var feedTitleLocator = "//div[contains(text(),'" +  feedTitles[i] + "')]";
     this.waitForElementPresent(feedTitleLocator);
+    Packages.java.lang.Thread.sleep(1000);
 
     try {
       this.__sel.qxClick(feedTitleLocator);
       this.waitForElementPresent(this.backButtonLocator, 2000);
+      Packages.java.lang.Thread.sleep(1000);
     }
     catch(ex) {
       this.log("Error while clicking feed title '" + feedTitles[i] + "': " + ex.message, "error");
@@ -81,7 +83,7 @@ simulation.Simulation.prototype.checkFeeds = function(titles)
       var firstArticleTitle = null;
     }
     else if (articleTitles[0] == firstArticleTitle) {
-      this.log("Found the same article title for '" + feedTitles[i-1] + "' and '" + feedTitles[i] + "'", "error");
+      this.log("Found the same article title '" + articleTitles[0] + "' for '" + feedTitles[i-1] + "' and '" + feedTitles[i] + "'", "error");
     }
     else {
       this.log("Found " + articleTitles.length + " articles in feed '" + feedTitles[i] + "'", "info");
@@ -89,7 +91,7 @@ simulation.Simulation.prototype.checkFeeds = function(titles)
       Packages.java.lang.Thread.sleep(2000);
     }
     firstArticleTitle = feedTitles[0];
-    
+
     this.__sel.qxClick(this.backButtonLocator);
   }
 };
@@ -100,7 +102,7 @@ simulation.Simulation.prototype.checkRandomArticle = function(titles)
   var index = Math.floor(Math.random() * (titles.length));
   var title = titles[index].replace(/([^a-z0-9\ -'"])/gi, "");
   var labelLoc = "//div[text() = '" + titles[index] + "']";
-  
+
   try {
     this.__sel.qxClick(labelLoc);
   }
@@ -108,23 +110,23 @@ simulation.Simulation.prototype.checkRandomArticle = function(titles)
     this.log("Error while clicking article '" + title + "': " + ex.message, "error");
     return;
   }
-  
+
   try {
     this.waitForElementPresent("//a[text() = 'read more ...']");
   }
   catch(ex) {
     this.log("Content of article '" + title + "' is not displayed!", "error");
   }
-  
+
   this.__sel.qxClick(this.backButtonLocator);
 };
 
 
 mySim.runTest = function()
 {
-  this.feedLoadTimeout = 30000;  
+  this.feedLoadTimeout = 30000;
   this.backButtonLocator = "//div[@class='navigationbar-backbutton']";
-  
+
   this.waitForElementPresent("//h1[contains(text(), 'Feed Reader')]");
   this.addListItemLabelGetter();
   var titles = this.getListItemLabels();
@@ -133,16 +135,16 @@ mySim.runTest = function()
 
 // - Main --------------------------------------------------------------------
 
-(function() { 
+(function() {
   mySim.testFailed = false;
 
   var sessionStarted = mySim.startSession();
-  
+
   if (!sessionStarted) {
     return;
   }
 
-  var isAppReady = mySim.waitForCondition(simulation.Simulation.ISQXAPPREADY, 60000, 
+  var isAppReady = mySim.waitForCondition(simulation.Simulation.ISQXAPPREADY, 60000,
                                           "Waiting for qooxdoo application");
 
   if (!isAppReady) {
@@ -154,7 +156,7 @@ mySim.runTest = function()
   try {
     mySim.setupApplicationLogging();
     mySim.addGlobalErrorHandler();
-    mySim.runTest();    
+    mySim.runTest();
   }
   catch(ex) {
     mySim.testFailed = true;
