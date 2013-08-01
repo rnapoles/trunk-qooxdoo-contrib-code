@@ -33,7 +33,7 @@ simulation.Simulation.prototype.runTest = function()
   if (this.getConfigSetting("autPath").indexOf("~press") > 0) {
     this.checkUrlParameter();
   }
-  
+
   // Add a function that finds tags with the given content
   var hasElementWithContent = function(tagNames, content) {
     var found = false;
@@ -51,22 +51,22 @@ simulation.Simulation.prototype.runTest = function()
     }
     return found;
   };
-  
+
   this.addOwnFunction("hasElementWithContent", hasElementWithContent);
-  
+
   var getInnerHtml = function(locator) {
     var widget = selenium.getQxWidgetByLocator(locator);
     return widget.getContentElement().getDomElement().innerHTML;
   };
-  
+
   this.addOwnFunction("getInnerHtml", getInnerHtml);
-  
+
   this.checkSearch();
   this.checkView("getActive", "Properties");
   //this.checkView("addChildrenToQueue", "Inherited");
   this.checkView("_activateMoveHandle", "Protected");
   this.checkView("__computeMoveCoordinates", "Private");
-  
+
   var constructorDetail = false;
   try {
     this.__sel.click('//img[contains(@onclick, "toggleShowItemDetails(\'construct\')")]');
@@ -74,17 +74,17 @@ simulation.Simulation.prototype.runTest = function()
   } catch(ex) {
     this.log("Error while opening constructor details: " + ex, "error");
   }
-  
+
   var clickedLink = false;
   if (constructorDetail && this.getConfigSetting("browserId").indexOf("Safari 3") < 0 ) {
     try {
       this.__sel.click("link=qx.ui.core.Widget#construct");
       clickedLink = true;
     } catch(ex) {
-      this.log("Error while clicking internal link: " + ex, "error"); 
+      this.log("Error while clicking internal link: " + ex, "error");
     }
   }
-  
+
   if (clickedLink) {
     // Check if the HTML embed's content has changed.
     var classViewerHtml = this.checkViewerContent();
@@ -95,19 +95,21 @@ simulation.Simulation.prototype.runTest = function()
       this.log("Link opened successfully", "info");
     }
   }
+
+  this.checkUrlQuery();
 };
 
 simulation.Simulation.prototype.checkSearch = function()
 {
   this.qxClick("qxh=app:viewer/qx.ui.toolbar.ToolBar/qx.ui.toolbar.Part/child[1]", "", "Clicking search button");
-  
+
   this.qxType("qxh=app:viewer/[@_searchView]/qx.ui.container.Composite/qx.ui.form.TextField", "qx.ui.window.Windo");
   // execute typeKeys once so all needed events are fired.
   Packages.java.lang.Thread.sleep(2000);
   this.qxTypeKeys("qxh=app:viewer/[@_searchView]/qx.ui.container.Composite/qx.ui.form.TextField", "w");
 
   Packages.java.lang.Thread.sleep(1000);
-  
+
   this.qxTableClick("qxh=app:viewer/[@_searchView]/qx.ui.table.Table","row=0");
   Packages.java.lang.Thread.sleep(1000);
   // Temporary workaround: Click the search result again to make sure it's
@@ -122,7 +124,7 @@ simulation.Simulation.prototype.checkSearch = function()
   }
   else {
     this.log("Successfully opened search result", "info");
-  }  
+  }
 };
 
 simulation.Simulation.prototype.checkViewerContent = function()
@@ -147,7 +149,7 @@ simulation.Simulation.prototype.checkView = function(newMethodName, buttonLabel)
   this.qxClick("qxh=app:viewer/qx.ui.toolbar.ToolBar/child[2]/qx.ui.toolbar.MenuButton", "", "Clicking View menu button");
   this.qxClick('qxh=app:viewer/qx.ui.toolbar.ToolBar/child[2]/qx.ui.toolbar.MenuButton/qx.ui.menu.Menu/[@label="' + buttonLabel + '"]', "", "Clicking " + buttonLabel);
   */
- 
+
   var active = String(this.__sel.getQxObjectFunction('qxh=app:viewer/qx.ui.toolbar.ToolBar/child[2]/[@label="' + buttonLabel + '"]', 'getValue'));
   // check if the view option is already activated
   if (active == "false") {
@@ -155,7 +157,7 @@ simulation.Simulation.prototype.checkView = function(newMethodName, buttonLabel)
     Packages.java.lang.Thread.sleep(3000);
   }
   var foundNewMethod = this.getEval(selWin + ".qx.Simulation.hasElementWithContent(['a', 'span'], '" + newMethodName + "');", "Checking for " + buttonLabel + " documentation");
-  
+
   if (String(foundNewMethod) != "true") {
     this.log("Documentation for " + newMethodName + " not found, possible problem with " + buttonLabel, "error");
   }
@@ -172,22 +174,39 @@ simulation.Simulation.prototype.checkUrlParameter = function()
     this.log("URI parameter handling checked: OK", "info");
   }
   catch(ex) {
-    this.log("Expected element not found after opening with URL parameter!");
+    this.log("Expected element not found after opening with URL hash!", "error");
   }
-  
+};
+
+simulation.Simulation.prototype.checkUrlQuery = function() {
+  var path = this.getConfigSetting("autPath").split("#")[0];
+  var uri = this.getConfigSetting("autHost") + "" + path;
+  uri += "?search=ui.form.Button";
+  this.qxOpen(uri);
+  mySim.setupApplicationLogging();
+  mySim.addGlobalErrorHandler();
+
+  try {
+    this.waitForElementVisible("//h1/span/a[text() = 'Button']", 3000)
+    this.log("URI query handling checked: OK", "info");
+  }
+  catch(ex) {
+    this.log("Expected element not found after opening with URL query!", "error");
+  }
+
 };
 
 // - Main --------------------------------------------------------------------
-(function() { 
+(function() {
   mySim.testFailed = false;
 
   var sessionStarted = mySim.startSession();
-  
+
   if (!sessionStarted) {
     return;
   }
 
-  var isAppReady = mySim.waitForCondition(simulation.Simulation.ISQXAPPREADY, 60000, 
+  var isAppReady = mySim.waitForCondition(simulation.Simulation.ISQXAPPREADY, 60000,
                                           "Waiting for qooxdoo application");
 
 
