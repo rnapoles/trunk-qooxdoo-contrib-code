@@ -43,7 +43,7 @@ simulation.Simulation.prototype.getListItemLabels = function()
 {
   var selWin = simulation.Simulation.SELENIUMWINDOW;
   //var qxAppInst = simulation.Simulation.QXAPPINSTANCE;
-  var titlesJson = this.getEval(selWin + ".qx.Simulation.getTitles();", "Getting feed titles");
+  var titlesJson = this.getEval(selWin + ".qx.Simulation.getTitles();", "Getting list item labels...");
   eval("var titles = " + titlesJson);
 
   return titles;
