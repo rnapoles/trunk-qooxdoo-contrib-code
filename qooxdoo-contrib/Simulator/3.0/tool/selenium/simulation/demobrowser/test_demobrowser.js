@@ -58,8 +58,7 @@ mySim.checkDemoReady = 'var demoReady = false;' +
   toolbarLogButton : "qxhv=*/qx.ui.toolbar.ToolBar/*/[@label=Log File]",
   overflowButton : "//div[contains(@style, 'media-seek-forward')]",
   overflowMenuLogFileButton : "//div[text() = 'Log File']/parent::div",
-  //logEmbed : 'qxhv=[@classname="demobrowser.DemoBrowser"]/qx.ui.splitpane.Pane/qx.ui.splitpane.Pane/qx.ui.container.Stack/[@classname="qxc.ui.logpane.LogView"]/qx.ui.embed.Html'
-  logEmbed: '//div[@qxclass="qxc.ui.logpane.LogView"]/div[@qxclass="qx.ui.embed.Html"]/div'
+  logEmbed: '//div[@class="qxappender"]'
  };
 mySim.qxLog = "selenium.page().findElement('" + mySim.locators.logEmbed + "').innerHTML";
 /*
@@ -260,9 +259,10 @@ simulation.Simulation.prototype.sampleRunner = function(script)
   this.openLog();
   print(category + " - " + currentSample + ": Processing log");
 
-  var sampleLog = String(this.getEval(this.qxLog, "Getting log for sample " + category + " - " + currentSample));
-
-  if (!sampleLog) {
+  var sampleLog;
+  try {
+    sampleLog = String(this.getEval(this.qxLog, "Getting log for sample " + category + " - " + currentSample));
+  } catch(ex) {
     this.log("Unable to get log for sample " + category + "-" + currentSample, "error");
     return [category,currentSample];
   }
