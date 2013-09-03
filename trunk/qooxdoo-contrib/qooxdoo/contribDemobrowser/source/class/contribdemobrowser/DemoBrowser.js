@@ -8,12 +8,8 @@
 
 ************************************************************************ */
 
-/* ************************************************************************
-#asset(qx/icon/Tango/22/apps/utilities-dictionary.png)
-************************************************************************ */
-
 /**
- * 
+ * @asset(qx/icon/Tango/22/apps/utilities-dictionary.png)
  */
 qx.Class.define("contribdemobrowser.DemoBrowser",
 {
@@ -22,15 +18,15 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
   construct : function()
   {
     this.base(arguments);
-    
+
     this.__versionSelect.addListener("changeSelection", function(ev) {
       this._versionFilter = ev.getData()[0].getModel();
       this.filter(this._searchTextField.getValue() || "");
     }, this);
-    
+
     this.__demoStack = this.__makeDemoStack();
     this._infosplit.add(this.__demoStack, 2);
-    
+
     this._apiButton = new qx.ui.toolbar.Button("Open API Viewer", "icon/22/apps/utilities-dictionary.png");
     this._apiButton.setEnabled(false);
     this._apiButton.addListener("execute", function(ev) {
@@ -38,7 +34,7 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
     }, this);
     this._navPart.add(this._apiButton);
   },
-  
+
   members :
   {
     __versionSelect : null,
@@ -46,7 +42,7 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
     __infoView : null,
     __readmeView : null,
     __demoStack : null,
-    
+
     /**
      * Creates the application header.
      */
@@ -55,14 +51,14 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
       var layout = new qx.ui.layout.HBox();
       var header = new qx.ui.container.Composite(layout);
       header.setAppearance("app-header");
-    
+
       var title = new qx.ui.basic.Label("Contrib Demo Browser");
-    
-      header.add(title);    
+
+      header.add(title);
       return header;
     },
-    
-    
+
+
     __makeDemoStack : function()
     {
       var demoStack = new qx.ui.container.Stack();
@@ -73,7 +69,7 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
       demoStack.add(this.__readmeView);
       return demoStack;
     },
-    
+
     _makeVersionSelect : function()
     {
       var versionComposite = new qx.ui.container.Composite();
@@ -92,8 +88,8 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
       this.__versionSelect.add(itemAll);
       */
     },
-    
-    
+
+
     /**
      * Add a library version's "qxVersion" tags to the list of version tags
      *
@@ -113,7 +109,7 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
         }
       }
     },
-    
+
 
     /**
      * Add an option for each version to the version select box
@@ -132,20 +128,8 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
         li.setModel("qxVersion_" + versions[i]);
         this.__versionSelect.add(li);
       }
-      
-      /*
-      if (this.__versionSelect.getSelection()[0].getLabel().indexOf("-pre")) {
-        var items = this.__versionSelect.getChildren();
-        for (var i=0,l=items.length; i<l; i++) {
-          if (items[i].getLabel().indexOf("-pre") < 0) {
-            this.__versionSelect.setSelection([items[i]]);
-            break;
-          }
-        }
-      }
-      */
     },
-    
+
     treeGetSelection : function(e)
     {
       this._apiButton.setEnabled(false);
@@ -170,14 +154,14 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
             libJobs.push("demo");
             // Don't display redundant "homepage" manifest entry
             if (modelNode.manifest.info.homepage) {
-              delete modelNode.manifest.info.homepage; 
+              delete modelNode.manifest.info.homepage;
             }
-            if (modelNode.parent.jobsExecuted && 
+            if (modelNode.parent.jobsExecuted &&
              qx.lang.Array.contains(modelNode.parent.jobsExecuted, "api")) {
                this._apiButton.setEnabled(true);
              }
           }
-          
+
           this.__infoView.setManifestData(modelNode.manifest);
           this.__infoView.setFeatures(libJobs);
           this.setActiveView("manifest");
@@ -199,7 +183,7 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
         this.setActiveView("demo");
       }
     },
-    
+
     setActiveView : function(view)
     {
       switch (view) {
@@ -211,9 +195,9 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
           break;
         default:
           this.__demoStack.setSelection([this._demoView]);
-      }      
+      }
     },
-    
+
     /**
      * event handler for the Run Test button - performs the tests
      *
@@ -223,7 +207,7 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
     runSample : function(e)
     {
       this.setActiveView("demo");
-      
+
       if (this.tests.selected &&
           this.tests.selected.indexOf(".html") > 0) {
         var file = this.tests.selected.replace(/\|/g, "/");
@@ -232,7 +216,7 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
         this.playNext();
       }
     },
-    
+
     /**
      * Opens the API Viewer for the selected library version
      */
@@ -245,11 +229,11 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
         //demo selected, look at its parent library
         modelNode = modelNode.parent;
       }
-      
+
       if (modelNode && modelNode.manifest.provides && modelNode.manifest.provides.namespace) {
         nameSpace = modelNode.manifest.provides.namespace;
       }
-      
+
       var file = this.tests.handler.getFullName(modelNode).replace(/\|/g, "/");
       var apiViewerUrl = 'demo/' + file + '/api/index.html';
       if (nameSpace) {
@@ -257,11 +241,11 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
       }
       window.open(apiViewerUrl, "_blank");
     },
-    
+
     /**
      * Loads the sample preceding the currently selected one
-     * 
-     * @param {Event} e
+     *
+     * @param e {Event} The command's execute event
      */
     playPrev : function(e)
     {
@@ -292,11 +276,11 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
         this._runbutton.setVisibility("visible");
       }
     },
-    
+
     /**
      * Loads the sample following the currently selected one
-     * 
-     * @param {Event} e
+     *
+     * @param e {Event} The command's execute event
      */
     playNext : function(e)
     {
@@ -327,7 +311,7 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
         this._runbutton.setVisibility("visible");
       }
     },
-  
+
     /**
      * TODOC
      *
@@ -345,20 +329,25 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
       }
 
       var url;
+      var qxVersion;
       var treeNode = this._sampleToTreeNodeMap[value];
+
       if (treeNode)
       {
         if (setFilter) {
-          var qxVersion = /\/.*?\/.*?\/(.*?)\/index.html$/.exec(value);
+          if (!qxVersion) {
+            var res = /\/.*?\/.*?\/(.*?)\/index.html$/.exec(value);
+            if (res) {
+              qxVersion = res[1];
+            }
+          }
+
           if (qxVersion) {
-            this._setVersionFilter(qxVersion[1]);
+            this._setVersionFilter(qxVersion);
           }
         }
         url = 'demo/' + value;
         treeNode.getTree().setSelection([treeNode]);
-        if (setFilter) {
-          this.setActiveView("demo");
-        }
       }
       else
       {
@@ -385,8 +374,8 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
       this._currentSample = value;
       this._currentSampleUrl = url;
     },
-  
-    
+
+
     _setVersionFilter : function(qxVersion)
     {
       var items = this.__versionSelect.getSelectables(true);
@@ -395,10 +384,10 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
           this.__versionSelect.setSelection([items[i]]);
         }
       }
-    
+
     },
-    
-    
+
+
     /**
      * This method filters the folders in the tree.
      * @param term {String} The search term.
@@ -407,14 +396,14 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
     {
       var searchRegExp = new RegExp("^.*" + term + ".*", "ig");
       var items = this._tree.getRoot().getItems(true, true);
-      
+
       var showing = 0;
       var count = 0;
       for (var i = 0; i < items.length; i++) {
         items[i].setOpen(false);
         items[i].exclude();
       }
-            
+
       for (var i = 0; i < items.length; i++) {
         var file = items[i];
         var tags = file.getUserData("tags");
@@ -422,20 +411,20 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
           continue;
         }
         count++;
-        
+
         var inTags = false;
         var selectedVersion = false;
         for (var j = 0; j < tags.length; j++) {
-          
+
           if (!!tags[j].match(searchRegExp)) {
             inTags = true;
           }
-          
+
           if (!this._versionFilter || tags[j] == this._versionFilter) {
             selectedVersion = true;
           }
         }
-        
+
         if (inTags && selectedVersion) {
           file.show();
           showing++;
@@ -449,11 +438,11 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
           file.exclude();
         }
       }
-      
+
       this._status.setValue(showing + "/" + count);
     },
-    
-    
+
+
     /**
      * TODOC
      *
@@ -504,10 +493,9 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
 
       req.send();
     }
-    
-  
+
   },
-  
+
   /*
   *****************************************************************************
      DESTRUCTOR
@@ -516,7 +504,7 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
 
   destruct : function()
   {
-    this._disposeObjects("__demoStack", "__infoView", "__readmeView", 
+    this._disposeObjects("__demoStack", "__infoView", "__readmeView",
       "__versionTags", "__versionSelect");
   }
 });
