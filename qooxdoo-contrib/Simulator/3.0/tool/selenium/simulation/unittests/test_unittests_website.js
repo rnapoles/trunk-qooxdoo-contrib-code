@@ -21,7 +21,7 @@ var mySim = new simulation.Simulation(baseConf,args);
 simulation.Simulation.prototype.logResults = function()
 {
   var getStatus = 'selenium.browserbot.getCurrentWindow().document.getElementById("status").innerHTML';
-  
+
   var status = this.__sel.getEval(getStatus);
   var failed = /Failed: (\d+)/.exec(status);
   var totalErrors;
@@ -33,7 +33,7 @@ simulation.Simulation.prototype.logResults = function()
   else {
     totalErrors = 1;
   }
-  
+
   if (!totalErrors) {
     this.log("Could not retrieve failed test count!", "error");
     totalErrors = 1;
@@ -52,17 +52,18 @@ simulation.Simulation.prototype.logResults = function()
   if (!sessionStarted) {
     return;
   }
-  
+
   var uri = mySim.getConfigSetting("autHost") + "" + mySim.getConfigSetting("autPath");
   var delimiter = uri.indexOf('?') == -1 ? '?' : '&';
   uri += delimiter + 'autorun=1';
   mySim.__sel.open(uri);
-  
+
+  Packages.java.lang.Thread.sleep(2000);
   mySim.waitForElementPresent("//span[contains(text(), 'Test suite finished')]", 300000);
   Packages.java.lang.Thread.sleep(5000);
-  
+
   mySim.logResults();
-    
+
   mySim.stop();
   mySim.logTestDuration();
 })();
