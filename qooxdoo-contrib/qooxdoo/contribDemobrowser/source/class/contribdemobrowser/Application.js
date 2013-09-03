@@ -8,12 +8,10 @@
 
 ************************************************************************ */
 
-/* ************************************************************************
-
-#asset(contribdemobrowser/*)
-#asset(demobrowser/*)
-
-************************************************************************ */
+/**
+ * @asset(contribdemobrowser/*)
+ * @asset(demobrowser/*)
+ */
 
 /**
  * This is the main application class of your custom application "contribdemobrowser"

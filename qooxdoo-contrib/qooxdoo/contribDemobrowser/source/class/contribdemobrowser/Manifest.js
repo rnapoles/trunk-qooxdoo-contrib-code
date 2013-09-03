@@ -17,15 +17,11 @@
 
 ************************************************************************ */
 
-/* ************************************************************************
-
-#asset(qx/icon/Tango/22/actions/media-playback-start.png)
-#asset(qx/icon/Tango/22/apps/utilities-dictionary.png)
-
-************************************************************************ */
-
 /**
  * Displays the "info" section of a qooxdoo application's Manifest.json file.
+ *
+ * @asset(qx/icon/Tango/22/actions/media-playback-start.png)
+ * @asset(qx/icon/Tango/22/apps/utilities-dictionary.png)
  */
 qx.Class.define("contribdemobrowser.Manifest", {
 
@@ -53,7 +49,7 @@ qx.Class.define("contribdemobrowser.Manifest", {
     {
       apply : "_applyManifestData"
     },
-    
+
     features :
     {
       apply : "_applyFeatures"
@@ -107,13 +103,13 @@ qx.Class.define("contribdemobrowser.Manifest", {
 
       this.__container.add(this._getGroupBox("Info", this._getSortedInfo(value.info)));
     },
-    
+
     _applyFeatures : function(value, old)
     {
       if (value === old) {
         return;
       }
-      
+
       for (var i=0,l=value.length; i<l; i++) {
         switch(value[i]) {
           case "demo":
@@ -185,7 +181,7 @@ qx.Class.define("contribdemobrowser.Manifest", {
 
       return runButton;
     },
-    
+
     _getApiViewerButton : function()
     {
       if (this.__apiviewerButton) {
