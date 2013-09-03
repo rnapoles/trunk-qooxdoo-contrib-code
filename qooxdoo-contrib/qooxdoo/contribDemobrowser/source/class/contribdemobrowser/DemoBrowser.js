@@ -75,7 +75,7 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
       var versionComposite = new qx.ui.container.Composite();
       versionComposite.setLayout(new qx.ui.layout.HBox(3));
       this._leftComposite.add(versionComposite);
-      var versionLabel = new qx.ui.basic.Label("Compatible with: ");
+      var versionLabel = new qx.ui.basic.Label("Compatible with qx version: ");
       versionLabel.setPadding(4, 5, 0, 2);
       versionComposite.add(versionLabel);
 
@@ -331,6 +331,13 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
       var url;
       var qxVersion;
       var treeNode = this._sampleToTreeNodeMap[value];
+      if (!treeNode) {
+        var found = this._getQxVersionForContrib(value);
+        if (found) {
+          qxVersion = found[0];
+          treeNode = found[1];
+        }
+      }
 
       if (treeNode)
       {
@@ -341,7 +348,6 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
               qxVersion = res[1];
             }
           }
-
           if (qxVersion) {
             this._setVersionFilter(qxVersion);
           }
@@ -376,11 +382,49 @@ qx.Class.define("contribdemobrowser.DemoBrowser",
     },
 
 
+    _getQxVersionForContrib: function(contribName) {
+      var items = this._tree.getRoot().getItems(true, true);
+      var qxVersion = null;
+      var contrib = null;
+      var contribTreeNode = null;
+      items.forEach(function(item, index) {
+        var candidate = item.getUserData("modelLink");
+        if (candidate.label == contribName) {
+          contrib = candidate;
+          contribTreeNode = item;
+          var versions = contrib.getChildren().sort(function(a, b) {
+            if (a.label == "trunk") {
+              return 1;
+            }
+            if (b.label == "trunk") {
+              return -1;
+            }
+            if (parseFloat(a.label) > parseFloat(b.label)) {
+              return 1;
+            }
+            if (parseFloat(a.label) < parseFloat(b.label)) {
+              return -1;
+            }
+            return 0;
+          });
+          var latest = versions[versions.length - 1];
+          if (latest.manifest && latest.manifest.info && latest.manifest.info["qooxdoo-versions"]) {
+            var qxVersions = latest.manifest.info["qooxdoo-versions"].sort();
+            qxVersion = qxVersions[qxVersions.length - 1];
+            return;
+          }
+        }
+      }.bind(this));
+
+      return (qxVersion && contribTreeNode) ? [qxVersion, contribTreeNode] : null;
+    },
+
+
     _setVersionFilter : function(qxVersion)
     {
       var items = this.__versionSelect.getSelectables(true);
       for (var i=0,l=items.length; i<l; i++) {
-        if (items[i].getModel() == "qxVersion_" + qxVersion) {
+        if (items[i].getModel().indexOf("qxVersion_" + qxVersion) === 0) {
           this.__versionSelect.setSelection([items[i]]);
         }
       }
