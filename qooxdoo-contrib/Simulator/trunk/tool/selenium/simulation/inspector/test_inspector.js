@@ -74,7 +74,7 @@ simulation.Simulation.prototype.addAppChecker = function()
     catch(ex) {}
     return ready;
   };
-  
+
   this.addOwnFunction("checkApp", checkApp);
 };
 
@@ -118,7 +118,7 @@ simulation.Simulation.prototype.checkButtons = function()
 {
   var ua = String(this.getEval("navigator.userAgent"));
   if (ua.indexOf("Linux") && ua.indexOf("Firefox/7")) {
-    // FF 7 on the Linux test machine has a strange issue where windowMaximize 
+    // FF 7 on the Linux test machine has a strange issue where windowMaximize
     // resizes the viewport (scroll bars disappear) but not the browser window.
     // The toolbar overflow button is outside the visible part of the viewport
     // and clicking it does not open the menu.
@@ -136,7 +136,7 @@ simulation.Simulation.prototype.checkButtons = function()
         } catch(ex) {
           this.log("Error checking button value: " + ex, "error");
         }
-        
+
         if (buttonValue == "false") {
           this.qxClick(loc, "", "Clicking button");
           Packages.java.lang.Thread.sleep(2000);
@@ -202,7 +202,7 @@ simulation.Simulation.prototype.checkObjects = function()
   // Refresh the view to include objects created after application start
   this.qxClick(this.locators.windowObjectsReloadButton);
   Packages.java.lang.Thread.sleep(1000);
-  
+
   var expectedWidget = this.getSelectedWidget();
   // Check if the currently inspected widget is selected in the table
   var selected = String(this.__sel.qxTableGetSelectedRowData(this.locators.windowObjectsTable));
@@ -213,7 +213,7 @@ simulation.Simulation.prototype.checkObjects = function()
   } else {
     this.log("Objects window has correct selection", "info");
   }
-  
+
   // Filter the table and select the first row
   this.qxType(this.locators.windowObjectsTextField, "qx.ui.toolbar.Button");
   Packages.java.lang.Thread.sleep(25000);
@@ -237,7 +237,7 @@ simulation.Simulation.prototype.checkWidgets = function()
     this.log("Selected object is not a widget, skipping Widgets window test", "warn");
     return;
   }
-  
+
   var getTreeSelectionLabels = function(locator)
   {
     var tree = selenium.getQxWidgetByLocator(locator);
@@ -248,7 +248,7 @@ simulation.Simulation.prototype.checkWidgets = function()
     }
     return selenium.toJson(labels);
   };
-  
+
   this.addOwnFunction("getTreeSelectionLabels", getTreeSelectionLabels);
   var treeSelection = String(this.getEval('selenium.browserbot.getCurrentWindow().qx.Simulation.getTreeSelectionLabels("' + this.locators.windowWidgetsTree + '")'));
   var treeLabels = eval(treeSelection);
@@ -258,7 +258,7 @@ simulation.Simulation.prototype.checkWidgets = function()
   } else {
     this.log("Widgets window: Expected selected widget to be " + expectedWidget + " but found " + selectedWidget, "error");
   }
-  
+
   // Click the tree's root node and check if the inspected widget is updated
   this.qxClick(this.locators.windowWidgetsTree + "/child[0]");
   Packages.java.lang.Thread.sleep(1000);
@@ -296,29 +296,29 @@ simulation.Simulation.prototype.runTest = function()
   if (this.getConfigSetting("debug")) {
     this.log("Loading application " + inspectedAppPath + " in Inspector", "debug");
   }
-  this.qxType("xpath=//input", inspectedAppPath);
-  
+  this.qxType("css=input", inspectedAppPath);
+
   if (this.getEnvironment("browser.name") == "safari") {
     this.qxClick("//div[contains(@style, 'view-refresh')]");
   }
-  
+
   Packages.java.lang.Thread.sleep(10000);
 
   var inspectedAppLoaded = "selenium.qxStoredVars['autWindow'].qx.core.Init.getApplication()._loadedWindow.qx.core.Init.getApplication()";
-  var isAppReady = mySim.waitForCondition(inspectedAppLoaded, 100000, 
+  var isAppReady = mySim.waitForCondition(inspectedAppLoaded, 100000,
                                           "Waiting for inspected application");
-  
+
   if (isAppReady) {
     this.log("Inspected application loaded in Inspector", "info");
   }
   else {
     this.testFailed = true;
-    this.log("Inspected application not loaded!", "error");    
+    this.log("Inspected application not loaded!", "error");
     return;
   }
 
   this.checkButtons();
-  
+
   var toolbarEnabled = String(this.__sel.getQxObjectFunction(this.locators.inspectorToolBar, "getEnabled"));
   if (toolbarEnabled == "false") {
     this.log("Inspector toolbar is disabled!", "error");
@@ -327,21 +327,21 @@ simulation.Simulation.prototype.runTest = function()
   else {
     this.log("Inspector toolbar is enabled.", "info");
   }
-  
+
   var selectedWidgetInitial = this.getSelectedWidget();
   this.log("Initially selected widget: " + selectedWidgetInitial, "info");
-  
+
   this.selectWidgetByClick();
   var selectedWidget = this.getSelectedWidget();
   if (selectedWidgetInitial == selectedWidget) {
     this.log("Selected widget did not change", "error");
   }
-  
+
   var browser = this.getEval("navigator.userAgent");
   var launcher = this.getConfigSetting("testBrowser");
   // Simulating native key events doesn't work in WebKit
-  // The Console window uses window.top to eval commands which doesn't work 
-  // during IE tests because the Inspector is loaded in an Iframe 
+  // The Console window uses window.top to eval commands which doesn't work
+  // during IE tests because the Inspector is loaded in an Iframe
   if (browser.indexOf("AppleWebKit") < 0 && launcher.indexOf("*iexplore") < 0
       && browser.indexOf("Firefox/4") < 0) {
     try {
@@ -350,26 +350,26 @@ simulation.Simulation.prototype.runTest = function()
       this.log("Exception while checking Console window: " + ex, "error");
     }
   }
-  
+
   try {
     this.checkProperties();
   } catch(ex) {
     this.log("Exception while checking Properties window: " + ex, "error");
   }
-  
+
   /*
   try {
     this.checkObjects();
   } catch(ex) {
     this.log("Exception while checking Objects window: " + ex, "error");
   }
-  
+
   try {
     this.checkWidgets();
   } catch(ex) {
     this.log("Exception while checking Widgets window: " + ex, "error");
   }
-  
+
   if (!this.getConfigSetting("autHost").indexOf("file") == 0 ) {
     try {
       this.checkSelenium();
@@ -382,16 +382,16 @@ simulation.Simulation.prototype.runTest = function()
 };
 
 // - Main --------------------------------------------------------------------
-(function() { 
+(function() {
   mySim.testFailed = false;
 
   var sessionStarted = mySim.startSession();
-  
+
   if (!sessionStarted) {
     return;
   }
 
-  var isAppReady = mySim.waitForCondition(simulation.Simulation.ISQXAPPREADY, 60000, 
+  var isAppReady = mySim.waitForCondition(simulation.Simulation.ISQXAPPREADY, 60000,
                                           "Waiting for qooxdoo application");
 
 
@@ -401,10 +401,11 @@ simulation.Simulation.prototype.runTest = function()
     return;
   }
 
-  try {
+  //try {
     mySim.setupApplicationLogging();
     mySim.addGlobalErrorHandler();
     mySim.runTest();
+  /*
   }
   catch(ex) {
     mySim.testFailed = true;
@@ -414,6 +415,7 @@ simulation.Simulation.prototype.runTest = function()
     }
     mySim.log(msg + "<br/>" + ex, "error");
   }
+  */
 
   mySim.logGlobalErrors();
   mySim.logResults();
