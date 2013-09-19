@@ -823,18 +823,15 @@ simulation.Simulation.prototype.waitForElementVisible = function(locator, timeou
 };
 
 /**
- * Creates a {@link qx.bom.Collection} and returns the innerHTML of each element
+ * Creates a qxWeb Collection and returns the innerHTML of each element
  * in the collection in an array.
  * @param query {String} Selector query string
  * @return {String[]} Array of HTML strings
  */
 simulation.Simulation.prototype.getInnerHtmlFromCollection = function(query)
 {
-  var getter="var titles = [];" +
-  "var coll = selenium.browserbot.getCurrentWindow().qx.bom.Collection.query('" + query + "');" +
-  "for (var i=0, l=coll.length; i<l; i++) {" +
-    "titles.push(coll[i].innerHTML)" +
-  "}" +
+  var getter = "var titles = [];" +
+  "selenium.browserbot.getCurrentWindow().qxWeb('" + query + "').forEach(function(item) { titles.push(item.innerHTML); });" +
   "selenium.browserbot.getCurrentWindow().qx.lang.Json.stringify(titles);";
 
   var stringResult;
