@@ -30,7 +30,7 @@ var qxAppInst = simulation.Simulation.QXAPPINSTANCE;
     return;
   }
 
-  mySim.__sel.click("//a[contains(text(), 'Launch full configuration editor')]");
+  mySim.__sel.click("link=Launch full configuration editor");
   mySim.setupEnvironment();
 
   var isAppReady = mySim.waitForCondition(simulation.Simulation.ISQXAPPREADY, 60000,
