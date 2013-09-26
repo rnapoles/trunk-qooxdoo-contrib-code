@@ -15,20 +15,19 @@ load([simSvn + "/trunk/tool/selenium/simulation/Simulation.js"]);
 var mySim = new simulation.Simulation(baseConf, args);
 
 var locators = {
-  buttonBackward : "//div[contains(@style, 'media-skip-backward.png')]",
-  buttonHelp : "//div[text() = 'Help me out']",
-  buttonRun : "//div[contains(@style, 'media-playback-start.png')]",
-  buttonSelectTutorial : "//div[text() = 'Select Tutorial']",
+  buttonBackward : "qxhv=*/[@icon=media-skip-backward.png]",
+  buttonHelp : "qxhv=*/[@label=Help me out]",
+  buttonRun : "qxhv=*/[@icon=media-playback-start.png]",
+  buttonSelectTutorial : "qxhv=*/[@label=Select Tutorial]",
   windowSelectTutorial : "qxhv=[@classname='tutorial.view.SelectionWindow']",
-  buttonCloseWindow : "//div[contains(@style, 'close.gif')]",
-  buttonForward : "//div[contains(@style, 'media-skip-forward.png')]",
+  buttonCloseWindow : "qxhv=*/[@caption=Select Tutorial]/*/[@source=.*close.gif]",
+  buttonForward : "qxhv=*/[@icon=media-skip-forward.png]",
   jsErrorMessage : "//div[contains(@style, 'red')]",
-  aceContent : "//div[contains(@class, 'ace_content')]",
-  aceIconWarning : "//div[contains(@class, 'ace_warning')]",
-  aceIconError : "//div[contains(@class, 'ace_error')]",
+  aceContent : "css=.ace_content",
+  aceIconWarning : "css=.ace_warning",
+  aceIconError : "css=.ace_error",
   windowConfirm : "qxhv=[@classname='tutorial.view.Confirm']",
   windowConfirmCheckbox : "qxhv=[@classname='tutorial.view.Confirm']/qx.ui.form.CheckBox",
-  windowConfirmTitle : "//div[text() = 'Confirm']",
   windowConfirmButtonCancel : "qxhv=[@classname='tutorial.view.Confirm']/[@label='Cancel']",
   windowConfirmButtonOk : "qxhv=[@classname='tutorial.view.Confirm']/[@label='Ok']"
 };
@@ -38,9 +37,12 @@ simulation.Simulation.prototype.runTest = function()
   this.__sel.windowMaximize();
   this.__replaceCodeConfirmed = false;
 
+  var browserName = this.getEnvironment("browser.name");
+  var browserVersion = parseFloat(this.getEnvironment("browser.version"));
+  var documentMode = parseFloat(this.getEnvironment("browser.documentmode"));
   this.__isFF36 = false;
-  if (this.getEnvironment("browser.name") == "firefox" &&
-      parseFloat(this.getEnvironment("browser.version")) < 4 )
+  this.__isLegacyIe = false;
+  if (browserName == "firefox" && browserVersion < 4 )
   {
     this.__isFF36 = true;
     // qx uses labels instead of divs for the button text but '//label'
@@ -49,6 +51,11 @@ simulation.Simulation.prototype.runTest = function()
       locators[locator] = locators[locator].replace("//div[text()", "//*[@value");
     }
   }
+
+  if (browserName == "ie" && documentMode < 9) {
+    this.__isLegacyIe = true;
+  }
+
   var titles = this.getTutorialTitles();
 
   for (var i=0,l=titles.length; i<l; i++) {
@@ -66,7 +73,7 @@ simulation.Simulation.prototype.testTutorial = function(shortTitle, longTitle)
     return;
   }
 
-  if (!this.isElementVisible("//p[text() = '" + shortTitle + "']")) {
+  if (!this.isElementVisible("qxhv=*/[@value=" + shortTitle + "]")) {
     this.error("Tutorial title not found in page!", "error");
   }
 
@@ -92,7 +99,7 @@ simulation.Simulation.prototype.testTutorialSteps = function()
 simulation.Simulation.prototype.testTutorialStep = function(step)
 {
   this.log(new Date().getTime() + " Testing step " + step, "debug");
-  var stepLoc = "//p[starts-with(text(), 'Step " + step + "/')]";
+  var stepLoc = "qxhv=*/[@html=.*" + step + ".*]";
   if (!this.isElementPresent(stepLoc)) {
     this.log("Step " + step + " title not found!", "error");
   }
@@ -132,6 +139,9 @@ simulation.Simulation.prototype.logAceError = function() {
 
 simulation.Simulation.prototype.logJsError = function() {
   var locator, getJSerror;
+  if (this.__isLegacyIe) {
+    return;
+  }
   if (this.__isFF36) {
     locator = "//div[contains(@style, 'red')]";
     locator = locator.replace(/'/g, "\\'");
@@ -189,10 +199,12 @@ simulation.Simulation.prototype.selectTutorial = function(title) {
   if (!this.isElementPresent(locators.windowSelectTutorial) ||
       !this.isElementVisible(locators.windowSelectTutorial))
   {
+    this.log("Clicking 'Select Tutorial'", "debug");
     this.qxClick(locators.buttonSelectTutorial);
     this.waitForElementPresent(locators.windowSelectTutorial, 4000);
   }
-  var tutorialButton = locators.windowSelectTutorial + "/[@label='" + title + "']";
+  var tutorialButton = locators.windowSelectTutorial + "/*/[@label=" + title + "]";
+  this.log("Clicking '" + title + "'", "debug");
   this.qxClick(tutorialButton);
   this.waitForElementNotPresent(locators.windowSelectTutorial, 2000);
 };
