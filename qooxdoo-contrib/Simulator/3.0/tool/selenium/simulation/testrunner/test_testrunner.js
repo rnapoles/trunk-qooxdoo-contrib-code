@@ -23,7 +23,7 @@ var testCount = selWin + "." + qxAppInst + ".runner.getTestCount()";
 var locators = {
   toolbarButtonRun : "qxhv=*/[@icon=media-playback-start]",
   toolbarButtonResultOptions : "qxhv=*/[@icon=document-properties]",
-  stackTraceToggle : "//div[text() = 'Show Stack Trace']",
+  stackTraceToggle : "qxhv=*/[@label=Show Stack Trace]",
   toolbarButtonReload : "qxhv=*/[@icon=view-refresh]"
 };
 
