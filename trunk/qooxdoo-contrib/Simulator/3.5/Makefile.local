@@ -1,0 +1,56 @@
+################################################################################
+#
+#  qooxdoo - the new era of web development
+#
+#  http://qooxdoo.org
+#
+#  Copyright:
+#    2007 1&1 Internet AG, Germany, http://www.1and1.org
+#
+#  License:
+#    LGPL: http://www.gnu.org/licenses/lgpl.html
+#    EPL: http://www.eclipse.org/org/documents/epl-v10.php
+#    See the LICENSE file in the project's top-level directory for details.
+#
+#  Authors:
+#    * Thomas Herchenroeder (thron7)
+#
+################################################################################
+
+################################################################################
+# SETTINGS
+################################################################################
+
+#
+# Path to the folder of your qooxdoo distribution.
+# Can either be
+# a) a relative path to the location of this Makefile (preferred) or
+# b) an absolute path starting at the root of your file system
+# Example: If you put the skeleton folder next to the qooxdoo SDK folder,
+# you can use the following relative path:
+# QOOXDOO_PATH = ../../qooxdoo-0.7-sdk
+# Please note that Windows users should always use relative paths.
+# It should end with the last directory. Please omit a trailing slash.
+#
+QOOXDOO_PATH = ../../qooxdoo/qooxdoo-0.7.3-sdk
+
+#APPLICATION_INCLUDES = ../../Inspector/trunk
+
+# Path to your Selenium RC installation
+#SELENIUM_RC_PATH = PLEASE_DEFINE_SELENIUM_RC_ROOT
+SELENIUM_RC_PATH = ../../../packages/selenium-remote-control-0.9.2
+
+# Path to your Mozilla Rhino installation
+#MOZILLA_RHINO_PATH = PLEASE_DEFINE_RHINO_ROOT
+MOZILLA_RHINO_PATH = ../../../packages/rhino1_6R7
+
+# Java changed the separator for the CLASSPATH variable between 1.5 and 1.6 (I think)
+# Java 1.6
+#JAVA_CP_SEP = ;
+# Java 1.5
+JAVA_CP_SEP = :
+
+# JDK Paths
+JAVA  = java
+JAVAC = javac
+JAR   = jar
