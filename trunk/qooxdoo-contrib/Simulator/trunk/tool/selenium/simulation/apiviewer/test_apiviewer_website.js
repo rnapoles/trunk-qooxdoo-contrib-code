@@ -36,24 +36,19 @@ simulation.Simulation.prototype.runTest = function()
 
   // content scrolls when clicking a list entry
   var q = simulation.Simulation.SELENIUMWINDOW + ".q";
-  this.qxClick("//a[@href = '#Css']");
-  var scrollTop = parseInt(String(this.getEval(q + '("#content").getScrollTop()')));
-  if (scrollTop < 6500) {
-    this.log("Expected content scrollTop to be > 6800 after clicking 'Css' but found " + scrollTop, "error");
+  var scrollTopInitial = parseInt(String(this.getEval(q + '("#content").getScrollTop()')));
+
+  this.qxClick("//div[@id='list']/ul/li[position() = 1]");
+  this.qxClick("//li[@class='nav-getAttribute']/a");
+
+  var scrollTopNew = parseInt(String(this.getEval(q + '("#content").getScrollTop()')));
+  if (scrollTopNew == scrollTopInitial) {
+    this.log("Content scroll position did not change after clicking list entry!", "error");
   }
 
   // syntax highlighting
-  if (!this.__sel.isElementPresent("//pre[@class = 'javascript']/span[@class = 'string']")) {
+  if (!this.__sel.isElementPresent("//pre[@class = 'javascript']/code/span[@class = 'string']")) {
     this.log("Syntax highlighting is not active!", "error");
-  }
-
-  // toggle plugin API
-  this.__sel.click("plugintoggle");
-  if (!this.__sel.isVisible("//div[@id = 'plugintoggle']/span[text() = 'hide']")) {
-    this.log("Plugin toggle text did not change after click!", "error");
-  }
-  if (!this.__sel.isVisible("q.$attach")) {
-    this.log("q.$attach documentation is not displayed!", "error");
   }
 
   // MDN link
