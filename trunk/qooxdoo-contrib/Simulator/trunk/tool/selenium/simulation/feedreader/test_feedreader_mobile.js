@@ -107,7 +107,7 @@ simulation.Simulation.prototype.checkRandomArticle = function(titles)
     this.__sel.qxClick(labelLoc);
   }
   catch(ex) {
-    this.log("Error while clicking article '" + title + "': " + ex.message, "error");
+    this.log("Error while clicking randomly selected article '" + title + "': " + ex.message, "error");
     return;
   }
 
@@ -125,7 +125,7 @@ simulation.Simulation.prototype.checkRandomArticle = function(titles)
 mySim.runTest = function()
 {
   this.feedLoadTimeout = 30000;
-  this.backButtonLocator = "//div[@class='navigationbar-backbutton']";
+  this.backButtonLocator = "//div[contains(@class, 'navigationbar-backbutton')]";
 
   this.waitForElementPresent("//h1[contains(text(), 'Feed Reader')]");
   this.addListItemLabelGetter();
