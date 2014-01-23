@@ -97,7 +97,7 @@ simulation.Simulation.prototype.testToolbar = function()
 
   //click search button
   this.qxClick("//div[contains(@class, 'toolbar-button')]/descendant::div[text() = 'Search']");
-  var searchDialogButtonLocator = "//div[text() = 'Search']/ancestor::div[@class= 'button']";
+  var searchDialogButtonLocator = "//div[contains(@class, 'popup-content')]//div[contains(@class, 'button')]";
   this.waitForElementPresent(searchDialogButtonLocator);
   this.qxClick(searchDialogButtonLocator);
   Packages.java.lang.Thread.sleep(500);
