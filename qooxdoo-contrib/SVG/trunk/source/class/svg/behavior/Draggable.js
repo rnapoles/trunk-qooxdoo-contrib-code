@@ -29,18 +29,30 @@ qx.Class.define("svg.behavior.Draggable",
 
   /**
    * @param svgElement {svg.core.Element}
-   *   Element that should become draggable. 
+   *   Element that should become draggable.
+   *   
+   * @param x {Integer?}
+   *   Initial x offset.
+   *   
+   * @param y {Integer?}
+   *   Initial y offset.
    */
-  construct : function(svgElement)
+  construct : function(svgElement, x, y)
   {
     this.base(arguments);
 
     this.__element = svgElement;
     
-    this.__offsets = {x:0, y:0};
+    this.__offsets = {
+      x: x || 0,
+      y: y || 0
+    };
     this.__addListener();
     
     this.__convert = svg.coords.Convert.clientToUserspace; //shortcut to much used function
+    
+    this.__transformation = new svg.coords.transform.Translate(null, this.__offsets.x, this.__offsets.y);
+    svgElement.setTransform(this.__transformation);
   },
 
   members :
@@ -52,6 +64,7 @@ qx.Class.define("svg.behavior.Draggable",
     __mouseMoveListenerId : null,
     __lastMousePos : null,
     __offsets : null,
+    __transformation : null,
 
     /**
      * The SVG element made draggable.
@@ -61,14 +74,23 @@ qx.Class.define("svg.behavior.Draggable",
     getElement : function() {
       return this.__element;
     },
-
+    
     /**
      * Adds listener(s) to start dragging.
      */
     __addListener : function()
     {
       //add mousedown listener
-      this.__mouseDownListenerId = this.__element.addListener("mousedown", this.__onMouseDown, this);
+      this.__mouseDownListenerId = this.__element.addListener("mousedown", this.__onMouseDown, this, true);
+    },
+    
+    generateMouseDown : function(docX, docY)
+    {
+      this.__onMouseDown({
+        isLeftPressed : function() {return true},
+        getDocumentLeft : function() {return docX},
+        getDocumentTop : function() {return docY}
+      });
     },
 
     /**
@@ -81,6 +103,13 @@ qx.Class.define("svg.behavior.Draggable",
     {
       if (!e.isLeftPressed()) {
         return;
+      }
+      
+      //if there has been an error or slowdown in the browser, which causes the mouseup
+      //event to not have been handled, we will need to remove the previous events first
+      //so that we don't have two mouseup/mousemove listeners on a single element.
+      if (this.__mouseUpListenerId || this.__mouseMoveListenerId) {
+        this.__onMouseUp();
       }
       
       //convert mouse coordinates to userspace
@@ -125,9 +154,8 @@ qx.Class.define("svg.behavior.Draggable",
       //remove mousedown listener
       parent.removeListenerById(this.__mouseUpListenerId);
       this.__mouseUpListenerId = null;
-      
+
       parent.releaseCapture();
-      
     },
 
     /**
@@ -139,7 +167,6 @@ qx.Class.define("svg.behavior.Draggable",
     __onMouseMove : function(e)
     {
       e.stopPropagation();
-      
       var curMousePos = this.__convert(this.__element, e.getDocumentLeft(), e.getDocumentTop());
       var lastMousePos = this.__lastMousePos;
 
@@ -148,7 +175,10 @@ qx.Class.define("svg.behavior.Draggable",
       this.__offsets.y += curMousePos.y - lastMousePos.y;
       
       //apply new offsets to element
-      this.__element.setAttribute("transform", "translate(" + this.__offsets.x + "," + this.__offsets.y + ")");
+      this.__transformation.set({
+        tx : this.__offsets.x,
+        ty : this.__offsets.y
+      });
       
       //store current mouse position as last know mouse position
       this.__lastMousePos = curMousePos;
