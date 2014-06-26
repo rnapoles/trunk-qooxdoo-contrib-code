@@ -99,7 +99,7 @@ qx.Class.define("svg.coords.transform.TransformList",
       for (var i=0,j=this.__array.getLength(); i<j; i++) {
         str += this.__array.getItem(i).toString() + " ";
       }
-      return qx.lang.String.trim(str);
+      return str.trim();
     },
 
     /**
@@ -149,7 +149,7 @@ qx.Class.define("svg.coords.transform.TransformList",
           };
           this._asMatrixString = str;
           this._cachedMatrixString = true;
-          return qx.lang.String.trim(str);
+          return str.trim();
           
         case "concat":
           var mx = this.toMatrix();
