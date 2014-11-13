@@ -93,8 +93,8 @@ qx.Class.define("com.zenesis.qx.upload.AbstractHandler", {
 		 * @param file {com.zenesis.qx.upload.File} the file to add
 		 */
 		_addFile: function(file) {
-			this.__queue.push(file);
-			this.__uploader.fireDataEvent("addFile", file);
+			if (this.__uploader.fireDataEvent("addFile", file, null, true))
+			  this.__queue.push(file);
 		},
 		
 		/**

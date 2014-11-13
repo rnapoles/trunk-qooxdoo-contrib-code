@@ -22,10 +22,6 @@
 
 ************************************************************************/
 
-/*
-#require(qx.event.handler.Input)
- */
-
 /**
  * Manages uploading of files to the server; this class can use any suitable
  * widget to attach the input[type=file] to, provided the widget includes
@@ -33,6 +29,7 @@
  * 
  * Uploader will use XhrHandler to upload via XMLHttpRequest if supported or 
  * will fall back to FormHandler.
+ * @require(qx.event.handler.Input)
  */
 qx.Class.define("com.zenesis.qx.upload.UploadMgr", {
 	extend: qx.core.Object,
@@ -129,6 +126,7 @@ qx.Class.define("com.zenesis.qx.upload.UploadMgr", {
 		__widgetsData: null,
 		__inputSerial: 0,
 		__uploadHandler: null,
+    __uploadId: 0,
 		
 		/**
 		 * Adds a widget which is to have an input[type=file] attached; this would typically be an 
@@ -294,6 +292,15 @@ qx.Class.define("com.zenesis.qx.upload.UploadMgr", {
 					this.__uploadHandler = new com.zenesis.qx.upload.FormHandler(this);
 			}
 			return this.__uploadHandler;
-		}
+		},
+		
+    /**
+     * Allocates a new upload ID; this is just a unique number that widgets or application
+     * code can use to uniquely identify themselves to the server
+     */
+    allocateUploadId: function() {
+      return "uploadId:" + (++this.__uploadId);
+    }
+
 	}
 });
