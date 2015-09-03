@@ -31,11 +31,11 @@
  * @ignore(FormData)
  */
 /**
- * Implementation of AbstractHandler that uses XMLHttpRequest; this is based on
- * work at http://valums.com/ajax-upload/.
+ * Implementation of AbstractHandler that uses XMLHttpRequest; this is based on work 
+ * at http://valums.com/ajax-upload/.
  * 
- * Call com.zenesis.qx.upload.XhrHandler.isSupported() to check whether this
- * class can be used (otherwise use FormHandler)
+ * Call com.zenesis.qx.upload.XhrHandler.isSupported() to check whether this class
+ * can be used (otherwise use FormHandler)
  */
 qx.Class.define("com.zenesis.qx.upload.XhrHandler", {
   extend: com.zenesis.qx.upload.AbstractHandler,
@@ -50,12 +50,11 @@ qx.Class.define("com.zenesis.qx.upload.XhrHandler", {
         this.debug("No files found to upload via XhrHandler");
 
       var files = [];
-      for ( var i = 0; i < bomFiles.length; i++) {
+      for (var i = 0; i < bomFiles.length; i++) {
         var bomFile = bomFiles[i];
         var id = "upload-" + this._getUniqueFileId(),
         // fix missing name in Safari 4
-        // filename = bomFile.fileName != null ? bomFile.fileName :
-        // bomFile.name,
+        //filename = bomFile.fileName != null ? bomFile.fileName : bomFile.name,
         filename = typeof bomFile.name != "undefined" ? bomFile.name : bomFile.fileName, file = new com.zenesis.qx.upload.File(
             bomFile, filename, id),
         // fileSize = bomFile.fileSize != null ? bomFile.fileSize :
@@ -75,14 +74,13 @@ qx.Class.define("com.zenesis.qx.upload.XhrHandler", {
       var xhr = new XMLHttpRequest();
       if (com.zenesis.qx.upload.XhrHandler.isWithCredentials())
         xhr.withCredentials = true;
-      
+
       var self = this;
 
       file.setUserData("com.zenesis.qx.upload.XhrHandler", xhr);
 
       xhr.upload.onprogress = function(e) {
-        // self.debug("onprogress: lengthComputable=" + e.lengthComputable + ",
-        // total=" + e.total + ", loaded=" + e.loaded);
+        //self.debug("onprogress: lengthComputable=" + e.lengthComputable + ", total=" + e.total + ", loaded=" + e.loaded);
         if (e.lengthComputable) {
           file.setSize(e.total);
           file.setProgress(e.loaded);
@@ -92,8 +90,7 @@ qx.Class.define("com.zenesis.qx.upload.XhrHandler", {
       xhr.onreadystatechange = function() {
         if (xhr.readyState == 4) {
           var response = xhr.responseText;
-          // self.debug("xhr server status=" + xhr.status + ", responseText=" +
-          // response);
+          //self.debug("xhr server status=" + xhr.status + ", responseText=" + response);
           file.setUserData("com.zenesis.qx.upload.XhrHandler", null);
           self._onCompleted(file, response);
         }
@@ -165,7 +162,6 @@ qx.Class.define("com.zenesis.qx.upload.XhrHandler", {
 
     /**
      * Detects whether this handler is support on the current browser
-     * 
      * @returns {Boolean}
      */
     isSupported: function(requireMultipartFormData) {
